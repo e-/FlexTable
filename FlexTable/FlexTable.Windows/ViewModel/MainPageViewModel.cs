@@ -18,11 +18,29 @@ namespace FlexTable.ViewModel
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-
         protected void OnPropertyChanged(String propertyName)
         {
-            if (this.PropertyChanged != null)
-                this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public void RowShuffle()
+        {
+            Random random = new Random();
+            for (Int32 i = 0; i < 1000; ++i)
+            {
+                Int32 x = random.Next(sheet.RowCount), y = random.Next(sheet.RowCount);
+                Int32 temp;
+                temp = sheet.Rows[x].Index;
+                sheet.Rows[x].Index = sheet.Rows[y].Index;
+                sheet.Rows[y].Index = temp;
+            }
+
+            foreach (Model.Row row in sheet.Rows)
+            {
+                row.OnPropertyChanged("Y");
+                row.OnPropertyChanged("Opacity");
+            }
         }
     }
 }

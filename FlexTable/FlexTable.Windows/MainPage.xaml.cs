@@ -34,25 +34,6 @@ namespace FlexTable
             this.InitializeComponent();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            /*Random random = new Random();
-
-            for (Int32 i = 0; i < 20; ++i)
-            {
-                Int32 q = random.Next(Data[0].Count);
-                Int32 w = random.Next(Data[0].Count);
-                Item temp;
-                temp = Data[0][q];
-                Data[0][q] = Data[0][w];
-                Data[0][w] = temp;
-            }
-            */
-            //Data[0].RemoveAt(0);
-            //Data[0] = new ObservableCollection<Item>(Data[0].OrderBy(x => random.Next()));
-            //Data[1] = new ObservableCollection<Item>(Data[1].OrderBy(x => random.Next()));
-        }
-
         public async Task<Model.Sheet> Load()
         {
             String name = "Insurance.csv";
@@ -67,19 +48,21 @@ namespace FlexTable
                 Name = name
             };
 
-
             var header = parser.Read();
             if (header == null) // no header row
                 return null;
 
+            Int32 index = 0;
             foreach (String columnName in header)
             {
                 sheet.Columns.Add(new Model.Column()
                 {
-                    Name = columnName
+                    Name = columnName,
+                    Index = index++
                 });
             }
 
+            Int32 rowIndex = 0;
             while (true) // body
             {
                 var cellValues = parser.Read();
@@ -87,16 +70,33 @@ namespace FlexTable
                 if (cellValues == null)
                     break;
 
-                Model.Row row = new Model.Row();
+                Model.Row row = new Model.Row()
+                {
+                    Index = rowIndex++
+                };
+
                 sheet.Rows.Add(row);
 
+                Int32 columnIndex = 0;
                 foreach (String cellValue in cellValues)
                 {
                     row.Cells.Add(new Model.Cell()
                     {
-                        Content = cellValue
+                        Content = cellValue,
+                        Column = sheet.Columns[columnIndex++]
                     });
                 }
+            }
+
+            foreach (Model.Column column in sheet.Columns)
+            {
+                String maxValue = (from row in sheet.Rows
+                                  orderby row.Cells[column.Index].ContentAsString.Count() descending
+                                  select row.Cells[column.Index].ContentAsString).First();
+                DummyCell.Text = maxValue;
+                DummyCell.Measure(new Size(Double.MaxValue, Double.MaxValue));
+
+                column.Width = DummyCell.ActualWidth;
             }
             
             return sheet;
@@ -105,6 +105,17 @@ namespace FlexTable
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
             mainPageViewModel.Sheet = await Load();
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            mainPageViewModel.RowShuffle();
+
+            for (Int32 i = 0; i < RowsControl.Items.Count; ++i)
+            {
+                RowPresenter ele = VisualTreeHelper.GetChild((RowsControl.ContainerFromIndex(i) as ContentPresenter), 0) as RowPresenter;
+                ele.Update();
+            }
         }
     }
 }

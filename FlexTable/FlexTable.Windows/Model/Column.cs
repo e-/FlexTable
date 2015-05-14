@@ -11,5 +11,11 @@ namespace FlexTable.Model
         private String name;
         public String Name { get { return name; } set { name = value; } }
 
+        private Int32 index;
+        public Int32 Index { get { return index; } set { index = value; } }
+
+        private Double width;
+        public Double Width { get { return width; } set { width = value; } }
+
     }
 }

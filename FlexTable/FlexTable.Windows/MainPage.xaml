@@ -8,13 +8,13 @@
     mc:Ignorable="d"
     Loaded="Page_Loaded">
 
-    <Grid>
-        <TextBlock Text="{Binding Sheet.Name}"/>
-        <ScrollViewer VerticalScrollMode="Auto" VerticalScrollBarVisibility="Auto" HorizontalScrollMode="Auto" HorizontalScrollBarVisibility="Auto">
-            <ItemsControl ItemsSource="{Binding Sheet.Rows}">
+    <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
+        <TextBlock Name="DummyCell" Style="{StaticResource CellStyle}" Foreground="Transparent" IsHitTestVisible="False"></TextBlock>
+        <ScrollViewer VerticalScrollMode="Auto" VerticalScrollBarVisibility="Auto" HorizontalScrollMode="Auto" HorizontalScrollBarVisibility="Auto" Width="1920" Height="1080">
+            <ItemsControl ItemsSource="{Binding Sheet.Rows}" Name="RowsControl" Height="2000">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <StackPanel>
+                        <Canvas>
                             <!--<StackPanel.Transitions>
                                 <TransitionCollection>
                                     <EntranceThemeTransition />
@@ -22,30 +22,12 @@
                                     <AddDeleteThemeTransition />
                                 </TransitionCollection>
                             </StackPanel.Transitions>-->
-                        </StackPanel>
+                        </Canvas>
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <ListView ItemsSource="{Binding Cells}"  SelectionMode="None">
-                            <!--<ListView.Transitions>
-                                <TransitionCollection>
-                                    <EntranceThemeTransition />
-                                    <AddDeleteThemeTransition />
-                                    <ReorderThemeTransition />
-                                </TransitionCollection>
-                            </ListView.Transitions>-->
-                            <ListView.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <StackPanel Orientation="Horizontal"/>
-                                </ItemsPanelTemplate>
-                            </ListView.ItemsPanel>
-                            <ListView.ItemTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding Content}" Width="100"/>
-                                </DataTemplate>
-                            </ListView.ItemTemplate>
-                        </ListView>
+                        <local:RowPresenter />
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>

@@ -4,5 +4,6 @@
     <RemoteDebugMachine>hcil-surface</RemoteDebugMachine>
     <UseAuthentication>true</UseAuthentication>
     <RemoteDebugEnabled>true</RemoteDebugEnabled>
+    <UseSimulator>false</UseSimulator>
   </PropertyGroup>
 </Project>

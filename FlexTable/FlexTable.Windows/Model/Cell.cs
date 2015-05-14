@@ -14,5 +14,7 @@ namespace FlexTable.Model
 
         public String ContentAsString { get { return (String)content; } }
         public Double ContentAsDouble { get { return (Double)content; } }
+
+        public Column Column { get; set; }
     }
 }
