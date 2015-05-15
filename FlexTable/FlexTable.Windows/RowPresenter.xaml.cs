@@ -20,22 +20,36 @@ namespace FlexTable
     public sealed partial class RowPresenter : UserControl
     {
         private Model.Row row;
+        private List<CellPresenter> cellPresenters = new List<CellPresenter>();
 
         public RowPresenter(Model.Row row)
         {
             this.row = row;
+            this.DataContext = row;
             this.InitializeComponent();
+
+            foreach (Model.Cell cell in row.Cells)
+            {
+                CellPresenter cellPresenter = new CellPresenter(cell);
+                CellCanvas.Children.Add(cellPresenter);
+                cellPresenters.Add(cellPresenter);
+                cellPresenter.Update();
+            }
         }
 
         public void Update()
         {
             Int32 index = (this.DataContext as Model.Row).Index;
-            if (index < 60)
-                Wrapper.Opacity = .2;
-            else
-                Wrapper.Opacity = 0;
-            YAnimation.BeginTime = TimeSpan.FromMilliseconds(index * 20);
+            //YAnimation.BeginTime = TimeSpan.FromMilliseconds(index * 20);
             YAnimation.Begin();
+        }
+
+        public void UpdateCells()
+        {
+            foreach (CellPresenter cellPresenter in cellPresenters)
+            {
+                cellPresenter.Update();
+            }
         }
     }
 }

@@ -39,7 +39,7 @@ namespace FlexTable.ViewModel
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public void RowShuffle()
+        public void ShuffleRows()
         {
             Random random = new Random();
             for (Int32 i = 0; i < 1000; ++i)
@@ -59,6 +59,26 @@ namespace FlexTable.ViewModel
 
             foreach(RowPresenter rowPresenter in rowPresenters) {
                 rowPresenter.Update();
+            }
+        }
+
+        public void ShuffleColumns()
+        {
+            Random random = new Random();
+            for (Int32 i = 0; i < 1000; ++i)
+            {
+                Int32 x = random.Next(sheet.ColumnCount), y = random.Next(sheet.ColumnCount);
+                Int32 temp;
+                temp = sheet.Columns[x].Index;
+                sheet.Columns[x].Index = sheet.Columns[y].Index;
+                sheet.Columns[y].Index = temp;
+            }
+
+            sheet.UpdateColumnX();
+
+            foreach (RowPresenter rowPresenter in rowPresenters)
+            {
+                rowPresenter.UpdateCells();
             }
         }
     }

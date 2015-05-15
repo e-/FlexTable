@@ -12,10 +12,16 @@
         <TextBlock Name="DummyCell" Style="{StaticResource CellStyle}" Foreground="Transparent" IsHitTestVisible="False"></TextBlock>
         
         <ScrollViewer VerticalScrollMode="Auto" VerticalScrollBarVisibility="Auto" HorizontalScrollMode="Auto" HorizontalScrollBarVisibility="Auto" 
-                      Width="{Binding Width}" Height="{Binding Height}">
+                      Width="{Binding Width}" Height="{Binding Height}" ZoomMode="Disabled">
             <Canvas Name="TableCanvas">
             </Canvas>
         </ScrollViewer>
-        <Button Click="Button_Click">qwer</Button>
+        <StackPanel>
+            <StackPanel.RenderTransform>
+                <CompositeTransform TranslateY="500" />
+            </StackPanel.RenderTransform>
+            <Button Click="Button_Click">Shuffle All Rows</Button>
+            <Button Click="Button2_Click">Shuffle All Columns</Button>
+        </StackPanel>
     </Grid>
 </Page>

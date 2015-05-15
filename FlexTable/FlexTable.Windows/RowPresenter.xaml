@@ -13,30 +13,19 @@
         <Storyboard x:Name="YAnimation">
             <DoubleAnimation Storyboard.TargetName="CompositeTransform" Storyboard.TargetProperty="TranslateY" To="{Binding Y}" Duration="00:00:00.3">
                 <DoubleAnimation.EasingFunction>
-                    <ExponentialEase EasingMode="EaseIn" />
+                    <ExponentialEase EasingMode="EaseInOut" />
                 </DoubleAnimation.EasingFunction>
             </DoubleAnimation>
-            <DoubleAnimation Storyboard.TargetName="Wrapper" Storyboard.TargetProperty="Opacity" To="{Binding Opacity}" Duration="00:00:00.3">
+            <DoubleAnimation Storyboard.TargetName="CellCanvas" Storyboard.TargetProperty="Opacity" To="{Binding Opacity}" Duration="00:00:00.3">
                 <DoubleAnimation.EasingFunction>
                     <ExponentialEase EasingMode="EaseIn" />
                 </DoubleAnimation.EasingFunction>
             </DoubleAnimation>
         </Storyboard>
     </UserControl.Resources>
-    <ItemsControl ItemsSource="{Binding Cells}" x:Name="Wrapper">
-        <ItemsControl.RenderTransform>
+    <Canvas x:Name="CellCanvas">
+        <Canvas.RenderTransform>
             <CompositeTransform x:Name="CompositeTransform"/>
-        </ItemsControl.RenderTransform>
-        <ItemsControl.ItemsPanel>
-            <ItemsPanelTemplate>
-                <StackPanel Orientation="Horizontal">
-                </StackPanel>
-            </ItemsPanelTemplate>
-        </ItemsControl.ItemsPanel>
-        <ItemsControl.ItemTemplate>
-            <DataTemplate>
-                <TextBlock Text="{Binding Content}" Width="{Binding Column.Width}" Style="{StaticResource CellStyle}"/>
-            </DataTemplate>
-        </ItemsControl.ItemTemplate>
-    </ItemsControl>
+        </Canvas.RenderTransform>
+    </Canvas>
 </UserControl>

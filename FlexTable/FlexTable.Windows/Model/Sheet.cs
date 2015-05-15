@@ -39,7 +39,7 @@ namespace FlexTable.Model
 
         public void MeasureColumnWidth(TextBlock dummyCell)
         {
-            foreach (Model.Column column in Columns)
+            foreach (Model.Column column in columns)
             {
                 String maxValue = (from row in Rows
                                    orderby row.Cells[column.Index].ContentAsString.Count() descending
@@ -48,6 +48,16 @@ namespace FlexTable.Model
                 dummyCell.Measure(new Size(Double.MaxValue, Double.MaxValue));
 
                 column.Width = dummyCell.ActualWidth;
+            }
+        }
+
+        public void UpdateColumnX()
+        {
+            Double total = 0;
+            foreach (Column column in columns.OrderBy(c => c.Index))
+            {
+                column.X = total;
+                total += column.Width;
             }
         }
     }

@@ -38,12 +38,13 @@ namespace FlexTable
         {
             Model.Sheet sheet = await csvLoader.Load();
             sheet.MeasureColumnWidth(DummyCell);
+            sheet.UpdateColumnX();
+
             mainPageViewModel.Sheet = sheet;
 
             foreach (Model.Row row in sheet.Rows)
             {
                 RowPresenter rowPresenter = new RowPresenter(row);
-                rowPresenter.DataContext = row;
                 TableCanvas.Children.Add(rowPresenter);
                 rowPresenter.Update();
                 mainPageViewModel.RowPresenters.Add(rowPresenter);
@@ -52,7 +53,12 @@ namespace FlexTable
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            mainPageViewModel.RowShuffle();
+            mainPageViewModel.ShuffleRows();
+        }
+
+        private void Button2_Click(object sender, RoutedEventArgs e)
+        {
+            mainPageViewModel.ShuffleColumns();
         }
     }
 }
