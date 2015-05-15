@@ -5,6 +5,8 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Foundation;
+using Windows.UI.Xaml.Controls;
 
 namespace FlexTable.Model
 {
@@ -33,6 +35,20 @@ namespace FlexTable.Model
         {
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public void MeasureColumnWidth(TextBlock dummyCell)
+        {
+            foreach (Model.Column column in Columns)
+            {
+                String maxValue = (from row in Rows
+                                   orderby row.Cells[column.Index].ContentAsString.Count() descending
+                                   select row.Cells[column.Index].ContentAsString).First();
+                dummyCell.Text = maxValue;
+                dummyCell.Measure(new Size(Double.MaxValue, Double.MaxValue));
+
+                column.Width = dummyCell.ActualWidth;
+            }
         }
     }
 }

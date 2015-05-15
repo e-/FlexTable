@@ -10,27 +10,11 @@
 
     <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
         <TextBlock Name="DummyCell" Style="{StaticResource CellStyle}" Foreground="Transparent" IsHitTestVisible="False"></TextBlock>
-        <ScrollViewer VerticalScrollMode="Auto" VerticalScrollBarVisibility="Auto" HorizontalScrollMode="Auto" HorizontalScrollBarVisibility="Auto" Width="1920" Height="1080">
-            <ItemsControl ItemsSource="{Binding Sheet.Rows}" Name="RowsControl" Height="2000">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <Canvas>
-                            <!--<StackPanel.Transitions>
-                                <TransitionCollection>
-                                    <EntranceThemeTransition />
-                                    <RepositionThemeTransition />
-                                    <AddDeleteThemeTransition />
-                                </TransitionCollection>
-                            </StackPanel.Transitions>-->
-                        </Canvas>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <local:RowPresenter />
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+        
+        <ScrollViewer VerticalScrollMode="Auto" VerticalScrollBarVisibility="Auto" HorizontalScrollMode="Auto" HorizontalScrollBarVisibility="Auto" 
+                      Width="{Binding Width}" Height="{Binding Height}">
+            <Canvas Name="TableCanvas">
+            </Canvas>
         </ScrollViewer>
         <Button Click="Button_Click">qwer</Button>
     </Grid>

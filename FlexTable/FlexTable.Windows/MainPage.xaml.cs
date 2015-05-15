@@ -13,7 +13,6 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using System.Collections.ObjectModel;
-using CsvHelper;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -27,6 +26,7 @@ namespace FlexTable
     public sealed partial class MainPage : Page
     {
         ViewModel.MainPageViewModel mainPageViewModel = new ViewModel.MainPageViewModel();
+        Util.CsvLoader csvLoader = new Util.CsvLoader();
 
         public MainPage()
         {
@@ -34,88 +34,25 @@ namespace FlexTable
             this.InitializeComponent();
         }
 
-        public async Task<Model.Sheet> Load()
-        {
-            String name = "Insurance.csv";
-            var folder = await Windows.ApplicationModel.Package.Current.InstalledLocation.GetFolderAsync("Data");
-            var file = await folder.GetFileAsync(name);
-            var content = await Windows.Storage.FileIO.ReadTextAsync(file);
-            var ms = new MemoryStream(Encoding.UTF8.GetBytes(content));
-            StreamReader sr = new StreamReader(ms);
-            var parser = new CsvParser(sr);
-            Model.Sheet sheet = new Model.Sheet()
-            {
-                Name = name
-            };
-
-            var header = parser.Read();
-            if (header == null) // no header row
-                return null;
-
-            Int32 index = 0;
-            foreach (String columnName in header)
-            {
-                sheet.Columns.Add(new Model.Column()
-                {
-                    Name = columnName,
-                    Index = index++
-                });
-            }
-
-            Int32 rowIndex = 0;
-            while (true) // body
-            {
-                var cellValues = parser.Read();
-
-                if (cellValues == null)
-                    break;
-
-                Model.Row row = new Model.Row()
-                {
-                    Index = rowIndex++
-                };
-
-                sheet.Rows.Add(row);
-
-                Int32 columnIndex = 0;
-                foreach (String cellValue in cellValues)
-                {
-                    row.Cells.Add(new Model.Cell()
-                    {
-                        Content = cellValue,
-                        Column = sheet.Columns[columnIndex++]
-                    });
-                }
-            }
-
-            foreach (Model.Column column in sheet.Columns)
-            {
-                String maxValue = (from row in sheet.Rows
-                                  orderby row.Cells[column.Index].ContentAsString.Count() descending
-                                  select row.Cells[column.Index].ContentAsString).First();
-                DummyCell.Text = maxValue;
-                DummyCell.Measure(new Size(Double.MaxValue, Double.MaxValue));
-
-                column.Width = DummyCell.ActualWidth;
-            }
-            
-            return sheet;
-        }
-
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            mainPageViewModel.Sheet = await Load();
+            Model.Sheet sheet = await csvLoader.Load();
+            sheet.MeasureColumnWidth(DummyCell);
+            mainPageViewModel.Sheet = sheet;
+
+            foreach (Model.Row row in sheet.Rows)
+            {
+                RowPresenter rowPresenter = new RowPresenter(row);
+                rowPresenter.DataContext = row;
+                TableCanvas.Children.Add(rowPresenter);
+                rowPresenter.Update();
+                mainPageViewModel.RowPresenters.Add(rowPresenter);
+            }
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             mainPageViewModel.RowShuffle();
-
-            for (Int32 i = 0; i < RowsControl.Items.Count; ++i)
-            {
-                RowPresenter ele = VisualTreeHelper.GetChild((RowsControl.ContainerFromIndex(i) as ContentPresenter), 0) as RowPresenter;
-                ele.Update();
-            }
         }
     }
 }

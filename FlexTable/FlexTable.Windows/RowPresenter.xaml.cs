@@ -19,8 +19,11 @@ namespace FlexTable
 {
     public sealed partial class RowPresenter : UserControl
     {
-        public RowPresenter()
+        private Model.Row row;
+
+        public RowPresenter(Model.Row row)
         {
+            this.row = row;
             this.InitializeComponent();
         }
 

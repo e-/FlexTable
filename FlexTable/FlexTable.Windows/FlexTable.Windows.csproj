@@ -114,6 +114,7 @@
     <Compile Include="RowPresenter.xaml.cs">
       <DependentUpon>RowPresenter.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Util\CsvLoader.cs" />
     <Compile Include="ViewModel\MainPageViewModel.cs" />
   </ItemGroup>
   <ItemGroup>

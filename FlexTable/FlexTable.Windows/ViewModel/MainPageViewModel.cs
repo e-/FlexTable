@@ -4,6 +4,8 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Foundation;
+using Windows.UI.Xaml;
 
 namespace FlexTable.ViewModel
 {
@@ -16,7 +18,20 @@ namespace FlexTable.ViewModel
             set { sheet = value; OnPropertyChanged("Sheet"); }
         }
 
+        private Rect bounds;
+        public Double Width { get { return bounds.Width; } }
+        public Double Height { get { return bounds.Height; } }
+
         public event PropertyChangedEventHandler PropertyChanged;
+        private List<RowPresenter> rowPresenters = new List<RowPresenter>();
+        public List<RowPresenter> RowPresenters { get { return rowPresenters; } }
+
+        public MainPageViewModel()
+        {
+            bounds = Window.Current.Bounds;
+            OnPropertyChanged("Width");
+            OnPropertyChanged("Height");
+        }
 
         protected void OnPropertyChanged(String propertyName)
         {
@@ -40,6 +55,10 @@ namespace FlexTable.ViewModel
             {
                 row.OnPropertyChanged("Y");
                 row.OnPropertyChanged("Opacity");
+            }
+
+            foreach(RowPresenter rowPresenter in rowPresenters) {
+                rowPresenter.Update();
             }
         }
     }
