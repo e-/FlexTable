@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
@@ -17,8 +18,7 @@ namespace FlexTable.ViewModel
             get { return sheet; }
             set { 
                 sheet = value;
-                SheetWidth = sheet.Columns.Select(c => c.Width).Sum() + (Double)App.Current.Resources["RowHeaderWidth"];
-                SheetHeight = sheet.RowCount * (Double)App.Current.Resources["RowHeight"];
+                Initialize();
                 OnPropertyChanged("Sheet"); 
             }
         }
@@ -27,27 +27,41 @@ namespace FlexTable.ViewModel
         public Double Width { get { return bounds.Width; } }
         public Double Height { get { return bounds.Height; } }
 
-        public Double SheetViewWidth { get { return bounds.Width / 2; } }
-        public Double SheetViewHeight { get { return bounds.Height - (Double)App.Current.Resources["ColumnHeaderHeight"]; } }
+        //public Double SheetViewWidth { get { return bounds.Width / 2; } }
+        //public Double SheetViewHeight { get { return bounds.Height - (Double)App.Current.Resources["ColumnHeaderHeight"]; } }
 
         private Double sheetWidth;
         public Double SheetWidth { get { return sheetWidth; } private set { sheetWidth = value; OnPropertyChanged("SheetWidth"); } }
 
         private Double sheetHeight;
         public Double SheetHeight { get { return sheetHeight; } private set { sheetHeight = value; OnPropertyChanged("SheetHeight"); } }
-        
+
+        private ObservableCollection<Model.RowHeader> rowHeaderItems = new ObservableCollection<Model.RowHeader>();
+        public ObservableCollection<Model.RowHeader> RowHeaderItems { get { return rowHeaderItems; } }
+                
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private List<RowPresenter> rowPresenters = new List<RowPresenter>();
-        public List<RowPresenter> RowPresenters { get { return rowPresenters; } }
+        private List<View.RowPresenter> rowPresenters = new List<View.RowPresenter>();
+        public List<View.RowPresenter> RowPresenters { get { return rowPresenters; } }
 
         public MainPageViewModel()
         {
             bounds = Window.Current.Bounds;
             OnPropertyChanged("Width");
             OnPropertyChanged("Height");
-            OnPropertyChanged("SheetViewWidth");
-            OnPropertyChanged("SheetViewHeight");
+            //OnPropertyChanged("SheetViewWidth");
+            //OnPropertyChanged("SheetViewHeight");
+        }
+
+        public void Initialize()
+        {
+            SheetWidth = sheet.Columns.Select(c => c.Width).Sum() + (Double)App.Current.Resources["RowHeaderWidth"];
+            SheetHeight = sheet.RowCount * (Double)App.Current.Resources["RowHeight"];
+            rowHeaderItems.Clear();
+            for (Int32 i = 1; i <= sheet.RowCount; ++i)
+            {
+                rowHeaderItems.Add(new Model.RowHeader() { Index = i });
+            }
         }
 
         protected void OnPropertyChanged(String propertyName)
@@ -73,7 +87,7 @@ namespace FlexTable.ViewModel
                 row.OnPropertyChanged("Y");
             }
 
-            foreach(RowPresenter rowPresenter in rowPresenters) {
+            foreach(View.RowPresenter rowPresenter in rowPresenters) {
                 rowPresenter.Update();
             }
         }
@@ -92,7 +106,7 @@ namespace FlexTable.ViewModel
 
             sheet.UpdateColumnX();
 
-            foreach (RowPresenter rowPresenter in rowPresenters)
+            foreach (View.RowPresenter rowPresenter in rowPresenters)
             {
                 rowPresenter.UpdateCells();
             }

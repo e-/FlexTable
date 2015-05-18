@@ -15,22 +15,23 @@ using Windows.UI.Xaml.Navigation;
 
 // 사용자 정의 컨트롤 항목 템플릿에 대한 설명은 http://go.microsoft.com/fwlink/?LinkId=234236에 나와 있습니다.
 
-namespace FlexTable
+namespace FlexTable.View
 {
     public sealed partial class ColumnHeaderCellPresenter : UserControl
     {
-        private Model.Column column;
-
-        public ColumnHeaderCellPresenter(Model.Column column)
+        public ColumnHeaderCellPresenter()
         {
-            this.column = column;
-            this.DataContext = column;
             this.InitializeComponent();
         }
 
         public void Update()
         {
             XAnimation.Begin();
+        }
+
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            Update();
         }
     }
 }

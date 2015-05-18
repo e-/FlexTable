@@ -103,13 +103,15 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="CellPresenter.xaml.cs">
+    <Compile Include="Model\RowHeader.cs" />
+    <Compile Include="Util\GridLengthConverter.cs" />
+    <Compile Include="View\CellPresenter.xaml.cs">
       <DependentUpon>CellPresenter.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ColumnHeaderCellPresenter.xaml.cs">
+    <Compile Include="View\ColumnHeaderCellPresenter.xaml.cs">
       <DependentUpon>ColumnHeaderCellPresenter.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ColumnHeaderPresenter.xaml.cs">
+    <Compile Include="View\ColumnHeaderPresenter.xaml.cs">
       <DependentUpon>ColumnHeaderPresenter.xaml</DependentUpon>
     </Compile>
     <Compile Include="MainPage.xaml.cs">
@@ -120,7 +122,10 @@
     <Compile Include="Model\Row.cs" />
     <Compile Include="Model\Sheet.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RowPresenter.xaml.cs">
+    <Compile Include="View\RowHeaderPresenter.xaml.cs">
+      <DependentUpon>RowHeaderPresenter.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\RowPresenter.xaml.cs">
       <DependentUpon>RowPresenter.xaml</DependentUpon>
     </Compile>
     <Compile Include="Util\CsvLoader.cs" />
@@ -143,15 +148,15 @@
     <Content Include="Assets\StoreLogo.scale-100.png" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="CellPresenter.xaml">
+    <Page Include="View\CellPresenter.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ColumnHeaderCellPresenter.xaml">
+    <Page Include="View\ColumnHeaderCellPresenter.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ColumnHeaderPresenter.xaml">
+    <Page Include="View\ColumnHeaderPresenter.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -159,7 +164,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="RowPresenter.xaml">
+    <Page Include="View\RowHeaderPresenter.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\RowPresenter.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -169,6 +178,13 @@
       <HintPath>..\..\packages\CsvHelper.2.13.0.0\lib\portable-net40+sl5+win8+wpa+wp8\CsvHelper.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\MyPDollarGestureRecognizer\MyPDollarGestureRecognizer.csproj">
+      <Project>{640e5632-ee41-42ca-878f-ebdf5ceedc29}</Project>
+      <Name>MyPDollarGestureRecognizer</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>
   </PropertyGroup>

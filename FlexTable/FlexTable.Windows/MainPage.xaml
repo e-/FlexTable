@@ -3,32 +3,39 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:FlexTable"
+    xmlns:util="using:FlexTable.Util"
+    xmlns:view="using:FlexTable.View"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Loaded="Page_Loaded">
-
     <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"></ColumnDefinition>
             <ColumnDefinition Width="*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
         <TextBlock Name="DummyCell" Style="{StaticResource CellStyle}" Foreground="Transparent" IsHitTestVisible="False"></TextBlock>        
-        <StackPanel Grid.Column="0">
-            <local:ColumnHeaderPresenter x:Name="ColumnHeaderPresenter" />
+        <Grid Grid.Column="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="{StaticResource RowHeaderWidthInGridLength}"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="{StaticResource ColumnHeaderHeightInGridLength}"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+            </Grid.RowDefinitions>
+            <view:ColumnHeaderPresenter Grid.Row="0" Grid.Column="1" x:Name="ColumnHeader"></view:ColumnHeaderPresenter>
+            <view:RowHeaderPresenter Grid.Row="1" Grid.Column="0" x:Name="RowHeader"></view:RowHeaderPresenter>
             <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" 
-                          ZoomMode="Disabled" Width="{Binding SheetViewWidth}" Height="{Binding SheetViewHeight}"
+                          ZoomMode="Disabled" Grid.Row="1" Grid.Column="1"
                           ViewChanged="ScrollViewer_ViewChanged"
                           >
                 <Canvas Name="TableCanvas" Width="{Binding SheetWidth}" Height="{Binding SheetHeight}">
                     <Grid Name="GuidelineGrid" Canvas.Top="-1" Width="{Binding SheetWidth}" Height="{Binding SheetHeight}" IsHitTestVisible="False">
                     </Grid>
-                    <Rectangle Canvas.Top="0" Canvas.Left="0" Style="{StaticResource RowHeaderBackgroundStyle}" 
-                               Height="{Binding SheetHeight}" Width="{StaticResource RowHeaderWidth}">
-                    </Rectangle>
                 </Canvas>
             </ScrollViewer>
-        </StackPanel>
+        </Grid>
         <StackPanel Grid.Column="1">
             <Button Click="Button_Click">Shuffle All Rows</Button>
             <Button Click="Button2_Click">Shuffle All Columns</Button>
