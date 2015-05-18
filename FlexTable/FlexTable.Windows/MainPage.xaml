@@ -9,17 +9,27 @@
     Loaded="Page_Loaded">
 
     <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
-        <TextBlock Name="DummyCell" Style="{StaticResource CellStyle}" Foreground="Transparent" IsHitTestVisible="False"></TextBlock>
-        
-        <ScrollViewer VerticalScrollMode="Auto" VerticalScrollBarVisibility="Auto" HorizontalScrollMode="Auto" HorizontalScrollBarVisibility="Auto" 
-                      Width="{Binding Width}" Height="{Binding Height}" ZoomMode="Disabled">
-            <Canvas Name="TableCanvas">
-            </Canvas>
-        </ScrollViewer>
-        <StackPanel>
-            <StackPanel.RenderTransform>
-                <CompositeTransform TranslateY="500" />
-            </StackPanel.RenderTransform>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <TextBlock Name="DummyCell" Style="{StaticResource CellStyle}" Foreground="Transparent" IsHitTestVisible="False"></TextBlock>        
+        <StackPanel Grid.Column="0">
+            <local:ColumnHeaderPresenter x:Name="ColumnHeaderPresenter" />
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" 
+                          ZoomMode="Disabled" Width="{Binding SheetViewWidth}" Height="{Binding SheetViewHeight}"
+                          ViewChanged="ScrollViewer_ViewChanged"
+                          >
+                <Canvas Name="TableCanvas" Width="{Binding SheetWidth}" Height="{Binding SheetHeight}">
+                    <Grid Name="GuidelineGrid" Canvas.Top="-1" Width="{Binding SheetWidth}" Height="{Binding SheetHeight}" IsHitTestVisible="False">
+                    </Grid>
+                    <Rectangle Canvas.Top="0" Canvas.Left="0" Style="{StaticResource RowHeaderBackgroundStyle}" 
+                               Height="{Binding SheetHeight}" Width="{StaticResource RowHeaderWidth}">
+                    </Rectangle>
+                </Canvas>
+            </ScrollViewer>
+        </StackPanel>
+        <StackPanel Grid.Column="1">
             <Button Click="Button_Click">Shuffle All Rows</Button>
             <Button Click="Button2_Click">Shuffle All Columns</Button>
         </StackPanel>

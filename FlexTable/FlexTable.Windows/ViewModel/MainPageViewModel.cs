@@ -15,14 +15,29 @@ namespace FlexTable.ViewModel
         public Model.Sheet Sheet
         {
             get { return sheet; }
-            set { sheet = value; OnPropertyChanged("Sheet"); }
+            set { 
+                sheet = value;
+                SheetWidth = sheet.Columns.Select(c => c.Width).Sum() + (Double)App.Current.Resources["RowHeaderWidth"];
+                SheetHeight = sheet.RowCount * (Double)App.Current.Resources["RowHeight"];
+                OnPropertyChanged("Sheet"); 
+            }
         }
 
         private Rect bounds;
         public Double Width { get { return bounds.Width; } }
         public Double Height { get { return bounds.Height; } }
 
+        public Double SheetViewWidth { get { return bounds.Width / 2; } }
+        public Double SheetViewHeight { get { return bounds.Height - (Double)App.Current.Resources["ColumnHeaderHeight"]; } }
+
+        private Double sheetWidth;
+        public Double SheetWidth { get { return sheetWidth; } private set { sheetWidth = value; OnPropertyChanged("SheetWidth"); } }
+
+        private Double sheetHeight;
+        public Double SheetHeight { get { return sheetHeight; } private set { sheetHeight = value; OnPropertyChanged("SheetHeight"); } }
+        
         public event PropertyChangedEventHandler PropertyChanged;
+
         private List<RowPresenter> rowPresenters = new List<RowPresenter>();
         public List<RowPresenter> RowPresenters { get { return rowPresenters; } }
 
@@ -31,6 +46,8 @@ namespace FlexTable.ViewModel
             bounds = Window.Current.Bounds;
             OnPropertyChanged("Width");
             OnPropertyChanged("Height");
+            OnPropertyChanged("SheetViewWidth");
+            OnPropertyChanged("SheetViewHeight");
         }
 
         protected void OnPropertyChanged(String propertyName)
@@ -54,7 +71,6 @@ namespace FlexTable.ViewModel
             foreach (Model.Row row in sheet.Rows)
             {
                 row.OnPropertyChanged("Y");
-                row.OnPropertyChanged("Opacity");
             }
 
             foreach(RowPresenter rowPresenter in rowPresenters) {

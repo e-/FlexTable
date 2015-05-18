@@ -15,6 +15,7 @@ using Windows.UI.Xaml.Navigation;
 using System.Collections.ObjectModel;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI.Xaml.Shapes;
 
 // 빈 페이지 항목 템플릿에 대한 설명은 http://go.microsoft.com/fwlink/?LinkId=234238에 나와 있습니다.
 
@@ -41,6 +42,24 @@ namespace FlexTable
             sheet.UpdateColumnX();
 
             mainPageViewModel.Sheet = sheet;
+            ColumnHeaderPresenter.Sheet = sheet;
+
+            for (Int32 i = 0; i < sheet.RowCount - 1; ++i)
+            {
+                RowDefinition rd = new RowDefinition()
+                {
+                    Height = new GridLength((Double)App.Current.Resources["RowHeight"])
+                };
+                GuidelineGrid.RowDefinitions.Add(rd);
+
+                Rectangle rectangle = new Rectangle()
+                {
+                    Style = (Style)App.Current.Resources["RowGuidelineStyle"]
+                };
+                Grid.SetRow(rectangle, i);
+
+                GuidelineGrid.Children.Add(rectangle);
+            }
 
             foreach (Model.Row row in sheet.Rows)
             {
@@ -59,6 +78,13 @@ namespace FlexTable
         private void Button2_Click(object sender, RoutedEventArgs e)
         {
             mainPageViewModel.ShuffleColumns();
+            ColumnHeaderPresenter.UpdateCells();
+        }
+
+        private void ScrollViewer_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
+        {
+            ScrollViewer sv = sender as ScrollViewer;
+            ColumnHeaderPresenter.HorizontalOffset = sv.HorizontalOffset;
         }
     }
 }

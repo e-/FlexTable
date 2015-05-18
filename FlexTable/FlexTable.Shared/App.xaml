@@ -7,10 +7,42 @@
 
     <Application.Resources>
         <ResourceDictionary>
+            <x:Double x:Key="RowHeight">20</x:Double>
+            <x:Double x:Key="RowHeaderWidth">40</x:Double>
+            <x:Double x:Key="ColumnHeaderHeight">50</x:Double>
+            
             <Style TargetType="TextBlock" x:Key="CellStyle">
                 <Setter Property="Padding" Value="10 2" />
                 <Setter Property="Height" Value="24" />
                 <Setter Property="TextAlignment" Value="Center" />
+            </Style>
+
+            <Style TargetType="TextBlock" x:Key="RowHeaderStyle">
+                <Setter Property="Padding" Value="10 2" />
+                <Setter Property="Height" Value="24" />
+                <Setter Property="TextAlignment" Value="Center" />
+                <Setter Property="Width" Value="{StaticResource RowHeaderWidth}" />
+                <Setter Property="FontWeight" Value="Bold" />
+            </Style>
+
+            <Style TargetType="TextBlock" x:Key="ColumnHeaderStyle">
+                <Setter Property="Padding" Value="10 2" />
+                <Setter Property="TextAlignment" Value="Center" />
+                <Setter Property="FontWeight" Value="Bold" />
+            </Style>
+
+            <Style TargetType="Rectangle" x:Key="RowGuidelineStyle">
+                <Setter Property="Height" Value="1"/>
+                <Setter Property="Fill" Value="#EEEEEE" />
+                <Setter Property="VerticalAlignment" Value="Bottom" />
+            </Style>
+            
+            <Style TargetType="Rectangle" x:Key="RowHeaderBackgroundStyle">
+                <Setter Property="Fill" Value="#EEEEEE" />
+            </Style>
+
+            <Style TargetType="Rectangle" x:Key="ColumnHeaderBackgroundStyle">
+                <Setter Property="Fill" Value="#EEEEEE" />
             </Style>
         </ResourceDictionary>
     </Application.Resources>

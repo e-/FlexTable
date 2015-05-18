@@ -1,5 +1,5 @@
 ﻿<UserControl
-    x:Class="FlexTable.RowPresenter"
+    x:Class="FlexTable.ColumnHeaderCellPresenter"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:FlexTable"
@@ -10,19 +10,21 @@
     d:DesignWidth="400">
 
     <UserControl.Resources>
-        <Storyboard x:Name="YAnimation">
-            <DoubleAnimation Storyboard.TargetName="CompositeTransform" Storyboard.TargetProperty="TranslateY" To="{Binding Y}" Duration="00:00:00.3">
+        <Storyboard x:Name="XAnimation">
+            <DoubleAnimation Storyboard.TargetName="CompositeTransform" Storyboard.TargetProperty="TranslateX" To="{Binding X}" Duration="00:00:00.3">
                 <DoubleAnimation.EasingFunction>
                     <ExponentialEase EasingMode="EaseInOut" />
                 </DoubleAnimation.EasingFunction>
             </DoubleAnimation>
         </Storyboard>
     </UserControl.Resources>
-    <StackPanel Orientation="Horizontal">
-        <StackPanel.RenderTransform>
-            <CompositeTransform x:Name="CompositeTransform"/>
-        </StackPanel.RenderTransform>
-        <TextBlock Text="{Binding IndexFromOne}" Style="{StaticResource RowHeaderStyle}"/>
-        <Canvas x:Name="CellCanvas"></Canvas>
-    </StackPanel>
+
+    <Border Height="{StaticResource ColumnHeaderHeight}">
+        <Border.RenderTransform>
+            <CompositeTransform  x:Name="CompositeTransform" />
+        </Border.RenderTransform>
+        <TextBlock Text="{Binding Name}" Width="{Binding Width}" 
+                   Style="{StaticResource ColumnHeaderStyle}" VerticalAlignment="Bottom">
+        </TextBlock>
+    </Border>
 </UserControl>

@@ -14,15 +14,19 @@ namespace FlexTable.Model
         public ObservableCollection<Cell> Cells { get { return cells; } }
 
         private Int32 index;
-        public Int32 Index { 
-            get { return index; } 
-            set { 
-                index = value; 
+        public Int32 Index
+        {
+            get { return index; }
+            set
+            {
+                index = value;
                 OnPropertyChanged("Index");
+                OnPropertyChanged("IndexFromOne");
             }
         }
-        public Double Y { get { return index * 20; } }
-        public Double Opacity { get { return index < 60 ? 1 : 0; } }
+        public Int32 IndexFromOne { get { return index + 1; } }
+
+        public Double Y { get { return index * (Double)App.Current.Resources["RowHeight"]; } }
 
         public event PropertyChangedEventHandler PropertyChanged;
 

@@ -25,7 +25,7 @@ namespace FlexTable.Model
         public Int32 RowCount { get { return rows.Count; } }
 
         public event PropertyChangedEventHandler PropertyChanged;
-
+        
         public Sheet()
         {
             
