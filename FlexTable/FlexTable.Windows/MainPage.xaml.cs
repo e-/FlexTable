@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.UI;
@@ -189,7 +191,7 @@ namespace FlexTable
                     }
 
                     pointerDictionary.Remove(id);
-                    //RecognizeStrokes();
+                    RecognizeStrokes();
                 }
 
                 e.Handled = true;
@@ -249,6 +251,75 @@ namespace FlexTable
                 Canvas.SetTop(el, inkSegment.Position.Y - 5);
                 //TestCanvas.Children.Add(el);
 #endif
+            }
+        }
+
+        void RemoveAllStrokes()
+        {
+            foreach (InkStroke stroke in inkManager.GetStrokes())
+            {
+                stroke.Selected = true;
+            }
+            inkManager.DeleteSelected();
+            RenderAllStrokes();
+        }
+
+        async Task RecognizeStrokes()
+        {
+            IReadOnlyList<InkStroke> strokes = inkManager.GetStrokes();
+
+            if (strokes.Count == 0) return;
+
+            if (strokes.Count == 1 && strokes[0].BoundingRect.Width < 40 && strokes[0].BoundingRect.Height > 100)
+            {
+                var segments = strokes[0].GetRenderingSegments();
+                InkStrokeRenderingSegment first = segments.First(), last = segments.Last();
+                Double centerX = strokes[0].BoundingRect.X + strokes[0].BoundingRect.Width / 2 - (Double)App.Current.Resources["RowHeaderWidth"] + TableScrollViewer.HorizontalOffset;
+                Int32 columnIndex = -1, index = 0;
+                foreach (Model.Column column in mainPageViewModel.Sheet.Columns)
+                {
+                    if (column.X <= centerX && centerX < column.X + column.Width)
+                    {
+                        columnIndex = index;
+                        break;
+                    }
+                    index++;
+                }
+
+                if (columnIndex >= 0)
+                {
+                    if (first.Position.Y < last.Position.Y)
+                    {
+                        mainPageViewModel.Sort(columnIndex, false); //오름차순
+                    }
+                    else
+                    {
+                        mainPageViewModel.Sort(columnIndex, true); // 내림차순
+                    }
+                }
+                RemoveAllStrokes();
+                return;
+            }
+            
+            IReadOnlyList<InkRecognitionResult> results = await this.inkManager.RecognizeAsync(InkRecognitionTarget.All);
+
+            foreach (InkRecognitionResult result in results)
+            {
+                foreach (String candidate in result.GetTextCandidates())
+                {
+                    if (candidate == "a")
+                    {
+                        mainPageViewModel.ShuffleRows();
+                        RemoveAllStrokes();
+                    }
+
+                    if (candidate == "b")
+                    {
+                        mainPageViewModel.ShuffleColumns();
+                        ColumnHeader.Update();
+                        RemoveAllStrokes();
+                    }
+                }
             }
         }
     }

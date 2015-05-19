@@ -26,12 +26,14 @@
                 <RowDefinition Height="{StaticResource ColumnHeaderHeightInGridLength}"></RowDefinition>
                 <RowDefinition Height="*"></RowDefinition>
             </Grid.RowDefinitions>
+            <Border Grid.Row="0" Grid.Column="0" Background="LightGray"></Border>
             <view:ColumnHeaderPresenter Grid.Row="0" Grid.Column="1" x:Name="ColumnHeader"></view:ColumnHeaderPresenter>
             <view:RowHeaderPresenter Grid.Row="1" Grid.Column="0" x:Name="RowHeader"></view:RowHeaderPresenter>
             <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" 
                           ZoomMode="Disabled" Grid.Row="1" Grid.Column="1"
                           ViewChanged="ScrollViewer_ViewChanged"
                           ManipulationMode="All"
+                          x:Name="TableScrollViewer"
                           >
                 <Canvas Name="TableCanvas" Width="{Binding SheetWidth}" Height="{Binding SheetHeight}">
                     <Grid Name="GuidelineGrid" Canvas.Top="-1" Width="{Binding SheetWidth}" Height="{Binding SheetHeight}" IsHitTestVisible="False">

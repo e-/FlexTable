@@ -111,5 +111,34 @@ namespace FlexTable.ViewModel
                 rowPresenter.UpdateCells();
             }
         }
+
+        public void Sort(Int32 sortIndex, Boolean isDescending)
+        {
+            IOrderedEnumerable<Model.Row> sorted = null;
+            if (isDescending)
+            {
+                sorted = sheet.Rows.ToList().OrderByDescending(r => r.Cells[sortIndex].Content);
+            }
+            else
+            {
+                sorted = sheet.Rows.ToList().OrderBy(r => r.Cells[sortIndex].Content);
+            }
+            Int32 index = 0;
+
+            foreach (Model.Row row in sorted)
+            {
+                row.Index = index++;
+            }
+
+            foreach (Model.Row row in sheet.Rows)
+            {
+                row.OnPropertyChanged("Y");
+            }
+
+            foreach (View.RowPresenter rowPresenter in rowPresenters)
+            {
+                rowPresenter.Update();
+            }
+        }
     }
 }
