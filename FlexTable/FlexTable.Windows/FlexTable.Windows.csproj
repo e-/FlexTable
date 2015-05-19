@@ -104,6 +104,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Model\RowHeader.cs" />
+    <Compile Include="Util\BooleanConverter.cs" />
+    <Compile Include="Util\BooleanToEnabledOpacityConverter.cs" />
     <Compile Include="Util\GridLengthConverter.cs" />
     <Compile Include="View\CellPresenter.xaml.cs">
       <DependentUpon>CellPresenter.xaml</DependentUpon>

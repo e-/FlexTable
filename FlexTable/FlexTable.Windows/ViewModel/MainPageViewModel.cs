@@ -140,5 +140,24 @@ namespace FlexTable.ViewModel
                 rowPresenter.Update();
             }
         }
+
+        public void MoveColumnToLast(Model.Column movingColumn)
+        {
+            movingColumn.Enabled = false;
+            IEnumerable<Model.Column> nexts = sheet.Columns.Where(c => c.Index > movingColumn.Index);
+
+            foreach (Model.Column column in nexts)
+            {
+                column.Index--;
+            }
+            movingColumn.Index = sheet.ColumnCount - 1;
+
+            sheet.UpdateColumnX();
+
+            foreach (View.RowPresenter rowPresenter in rowPresenters)
+            {
+                rowPresenter.UpdateCells();
+            }
+        }
     }
 }

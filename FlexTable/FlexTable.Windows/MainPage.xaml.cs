@@ -270,21 +270,22 @@ namespace FlexTable
 
             if (strokes.Count == 0) return;
 
+            Double centerX = strokes[0].BoundingRect.X + strokes[0].BoundingRect.Width / 2 - (Double)App.Current.Resources["RowHeaderWidth"] + TableScrollViewer.HorizontalOffset;
+            Int32 columnIndex = -1, index = 0;
+            foreach (Model.Column column in mainPageViewModel.Sheet.Columns)
+            {
+                if (column.X <= centerX && centerX < column.X + column.Width)
+                {
+                    columnIndex = index;
+                    break;
+                }
+                index++;
+            }
+
             if (strokes.Count == 1 && strokes[0].BoundingRect.Width < 40 && strokes[0].BoundingRect.Height > 100)
             {
                 var segments = strokes[0].GetRenderingSegments();
-                InkStrokeRenderingSegment first = segments.First(), last = segments.Last();
-                Double centerX = strokes[0].BoundingRect.X + strokes[0].BoundingRect.Width / 2 - (Double)App.Current.Resources["RowHeaderWidth"] + TableScrollViewer.HorizontalOffset;
-                Int32 columnIndex = -1, index = 0;
-                foreach (Model.Column column in mainPageViewModel.Sheet.Columns)
-                {
-                    if (column.X <= centerX && centerX < column.X + column.Width)
-                    {
-                        columnIndex = index;
-                        break;
-                    }
-                    index++;
-                }
+                InkStrokeRenderingSegment first = segments.First(), last = segments.Last();               
 
                 if (columnIndex >= 0)
                 {
@@ -297,6 +298,7 @@ namespace FlexTable
                         mainPageViewModel.Sort(columnIndex, true); // 내림차순
                     }
                 }
+
                 RemoveAllStrokes();
                 return;
             }
@@ -311,6 +313,7 @@ namespace FlexTable
                     {
                         mainPageViewModel.ShuffleRows();
                         RemoveAllStrokes();
+                        return;
                     }
 
                     if (candidate == "b")
@@ -318,6 +321,15 @@ namespace FlexTable
                         mainPageViewModel.ShuffleColumns();
                         ColumnHeader.Update();
                         RemoveAllStrokes();
+                        return;
+                    }
+
+                    if (columnIndex >=0 && (candidate == "x" || candidate == "X"))
+                    {
+                        mainPageViewModel.MoveColumnToLast(mainPageViewModel.Sheet.Columns[columnIndex]);
+                        ColumnHeader.Update();
+                        RemoveAllStrokes();
+                        return;
                     }
                 }
             }

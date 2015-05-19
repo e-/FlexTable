@@ -21,6 +21,9 @@ namespace FlexTable.Model
         private Double x;
         public Double X { get { return x; } set { x = value; OnPropertyChanged("X"); } }
 
+        private Boolean enabled = true;
+        public Boolean Enabled { get { return enabled; } set { enabled = value; OnPropertyChanged("Enabled"); } }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected void OnPropertyChanged(String propertyName)
