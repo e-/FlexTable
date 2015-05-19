@@ -9,12 +9,14 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Loaded="Page_Loaded">
-    <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
+    <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}" 
+          PointerPressed="PenCanvas_PointerPressed" PointerMoved="PenCanvas_PointerMoved" PointerReleased="PenCanvas_PointerReleased">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"></ColumnDefinition>
             <ColumnDefinition Width="*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <TextBlock Name="DummyCell" Style="{StaticResource CellStyle}" Foreground="Transparent" IsHitTestVisible="False"></TextBlock>        
+        <TextBlock Name="DummyCell" Style="{StaticResource CellStyle}" Foreground="Transparent" IsHitTestVisible="False"></TextBlock>
+        
         <Grid Grid.Column="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="{StaticResource RowHeaderWidthInGridLength}"></ColumnDefinition>
@@ -29,6 +31,7 @@
             <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" 
                           ZoomMode="Disabled" Grid.Row="1" Grid.Column="1"
                           ViewChanged="ScrollViewer_ViewChanged"
+                          ManipulationMode="All"
                           >
                 <Canvas Name="TableCanvas" Width="{Binding SheetWidth}" Height="{Binding SheetHeight}">
                     <Grid Name="GuidelineGrid" Canvas.Top="-1" Width="{Binding SheetWidth}" Height="{Binding SheetHeight}" IsHitTestVisible="False">
@@ -40,5 +43,9 @@
             <Button Click="Button_Click">Shuffle All Rows</Button>
             <Button Click="Button2_Click">Shuffle All Columns</Button>
         </StackPanel>
+        
+        <Grid x:Name="StrokeGrid" Grid.Column="0" Grid.ColumnSpan="2" IsHitTestVisible="False"></Grid>
+        <Grid x:Name="NewStrokeGrid" Grid.Column="0" Grid.ColumnSpan="2" IsHitTestVisible="False"></Grid>
+        <Canvas x:Name="TestCanvas" Grid.Column="0" Grid.ColumnSpan="2" IsHitTestVisible="False"></Canvas>
     </Grid>
 </Page>
