@@ -8,9 +8,14 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Loaded="Page_Loaded">
-    <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}" 
-          PointerPressed="PenCanvas_PointerPressed" PointerMoved="PenCanvas_PointerMoved" PointerReleased="PenCanvas_PointerReleased">
+    Loaded="Page_Loaded"
+    FontFamily="Roboto"
+    >
+    <Page.Resources>
+        <util:BooleanToOpacityConverter x:Key="BooleanToOpacityConverter" />
+    </Page.Resources>
+    <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}" >
+          <!--PointerPressed="PenCanvas_PointerPressed" PointerMoved="PenCanvas_PointerMoved" PointerReleased="PenCanvas_PointerReleased">-->
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"></ColumnDefinition>
             <ColumnDefinition Width="*"></ColumnDefinition>
@@ -25,21 +30,44 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="{StaticResource ColumnHeaderHeightInGridLength}"></RowDefinition>
                 <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="{StaticResource ColumnHeaderHeightInGridLength}"></RowDefinition>
             </Grid.RowDefinitions>
             <Border Grid.Row="0" Grid.Column="0" Background="LightGray"></Border>
-            <view:ColumnHeaderPresenter Grid.Row="0" Grid.Column="1" x:Name="ColumnHeader"></view:ColumnHeaderPresenter>
+            <view:ColumnHeaderPresenter Grid.Row="0" Grid.Column="1" x:Name="TopColumnHeader"></view:ColumnHeaderPresenter>
+            
             <view:RowHeaderPresenter Grid.Row="1" Grid.Column="0" x:Name="RowHeader"></view:RowHeaderPresenter>
+            <view:ColumnIndexer Grid.Row="1" Grid.Column="0" x:Name="ColumnIndex"></view:ColumnIndexer>
             <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" 
                           ZoomMode="Disabled" Grid.Row="1" Grid.Column="1"
                           ViewChanged="ScrollViewer_ViewChanged"
                           ManipulationMode="All"
                           x:Name="TableScrollViewer"
                           >
-                <Canvas Name="TableCanvas" Width="{Binding SheetWidth}" Height="{Binding SheetHeight}">
+                <Canvas x:Name="TableCanvas" Width="{Binding SheetWidth}" Height="{Binding SheetHeight}">
                     <Grid Name="GuidelineGrid" Canvas.Top="-1" Width="{Binding SheetWidth}" Height="{Binding SheetHeight}" IsHitTestVisible="False">
                     </Grid>
+                    <ItemsControl ItemsSource="{Binding Sheet.Columns}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <Canvas />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Rectangle Width="{Binding Width}" Height="{Binding Height, ElementName=TableCanvas}" Fill="#19000000"
+                                           Opacity="{Binding Highlighted, Converter={StaticResource BooleanToOpacityConverter}}"
+                                           >
+                                    <Rectangle.RenderTransform>
+                                        <TranslateTransform X="{Binding X}" />
+                                    </Rectangle.RenderTransform>
+                                </Rectangle>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
                 </Canvas>
             </ScrollViewer>
+            <Border Grid.Row="2" Grid.Column="0" Background="LightGray"></Border>
+            <view:ColumnHeaderPresenter Grid.Row="2" Grid.Column="1" x:Name="BottomColumnHeader"></view:ColumnHeaderPresenter>
         </Grid>
         <StackPanel Grid.Column="1">
             <Button Click="Button_Click">Shuffle All Rows</Button>

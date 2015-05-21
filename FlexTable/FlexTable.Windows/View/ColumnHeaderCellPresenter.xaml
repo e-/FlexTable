@@ -22,13 +22,19 @@
         <util:BooleanToEnabledOpacityConverter x:Key="BooleanToEnabledOpacityConverter" />
     </UserControl.Resources>
 
-    <Border Height="{StaticResource ColumnHeaderHeight}">
+    <Border Height="{StaticResource ColumnHeaderHeight}" 
+            PointerEntered="Border_PointerEntered" 
+            PointerExited="Border_PointerExited"
+            PointerPressed="Border_PointerPressed"
+            PointerCaptureLost="Border_PointerCaptureLost"
+            PointerCanceled="Border_PointerCanceled"
+            >
         <Border.RenderTransform>
             <CompositeTransform  x:Name="CompositeTransform" />
         </Border.RenderTransform>
         <TextBlock Text="{Binding Name}" Width="{Binding Width}" 
                    Opacity="{Binding Enabled, Converter={StaticResource BooleanToEnabledOpacityConverter}}"
-                   Style="{StaticResource ColumnHeaderStyle}" VerticalAlignment="Bottom">
+                   Style="{StaticResource ColumnHeaderStyle}" VerticalAlignment="Center">
         </TextBlock>
     </Border>
 </UserControl>

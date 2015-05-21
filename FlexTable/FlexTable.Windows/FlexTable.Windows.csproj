@@ -103,9 +103,11 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="IMainPage.cs" />
     <Compile Include="Model\RowHeader.cs" />
     <Compile Include="Util\BooleanConverter.cs" />
     <Compile Include="Util\BooleanToEnabledOpacityConverter.cs" />
+    <Compile Include="Util\BooleanToOpacityConverter.cs" />
     <Compile Include="Util\GridLengthConverter.cs" />
     <Compile Include="View\CellPresenter.xaml.cs">
       <DependentUpon>CellPresenter.xaml</DependentUpon>
@@ -124,6 +126,9 @@
     <Compile Include="Model\Row.cs" />
     <Compile Include="Model\Sheet.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="View\ColumnIndexer.xaml.cs">
+      <DependentUpon>ColumnIndexer.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\RowHeaderPresenter.xaml.cs">
       <DependentUpon>RowHeaderPresenter.xaml</DependentUpon>
     </Compile>
@@ -165,6 +170,10 @@
     <Page Include="MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\ColumnIndexer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\RowHeaderPresenter.xaml">
       <SubType>Designer</SubType>

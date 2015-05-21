@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace FlexTable.Util
 {
-    public sealed class BooleanToEnabledOpacityConverter : BooleanConverter<Double>
+    public sealed class BooleanToOpacityConverter : BooleanConverter<Double>
     {
-        public BooleanToEnabledOpacityConverter() : base(1.0, 0.15) { }
+        public BooleanToOpacityConverter() : base(1.0, 0) { }
     }
 }

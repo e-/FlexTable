@@ -21,7 +21,9 @@
         <util:BooleanToEnabledOpacityConverter x:Key="BooleanToEnabledOpacityConverter" />
     </UserControl.Resources>
 
-    <TextBlock Text="{Binding Content}" Width="{Binding Column.Width}" Style="{StaticResource CellStyle}" Opacity="{Binding Column.Enabled, Converter={StaticResource BooleanToEnabledOpacityConverter}}">
+    <TextBlock Text="{Binding Content}" Width="{Binding Column.Width}" Style="{StaticResource CellStyle}"
+               Opacity="{Binding Column.Enabled, Converter={StaticResource BooleanToEnabledOpacityConverter}}"
+               >
         <TextBlock.RenderTransform>
             <CompositeTransform  x:Name="CompositeTransform" />
         </TextBlock.RenderTransform>

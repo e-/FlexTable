@@ -20,9 +20,9 @@ namespace FlexTable
     /// <summary>
     /// 자체에서 사용하거나 프레임 내에서 탐색할 수 있는 빈 페이지입니다.
     /// </summary>
-    public sealed partial class MainPage : Page
+    public sealed partial class MainPage : Page, IMainPage
     {
-        ViewModel.MainPageViewModel mainPageViewModel = new ViewModel.MainPageViewModel();
+        ViewModel.MainPageViewModel mainPageViewModel;
         Util.CsvLoader csvLoader = new Util.CsvLoader();
         InkManager inkManager = new InkManager();
         InkDrawingAttributes inkDrawingAttributes = new InkDrawingAttributes();
@@ -30,6 +30,7 @@ namespace FlexTable
 
         public MainPage()
         {
+            mainPageViewModel = new ViewModel.MainPageViewModel(this);
             this.DataContext = mainPageViewModel;
             this.InitializeComponent();
         }
@@ -52,7 +53,7 @@ namespace FlexTable
 
                 Rectangle rectangle = new Rectangle()
                 {
-                    Style = (Style)App.Current.Resources["RowGuidelineStyle"]
+                    Style = (Style)App.Current.Resources["RowGuidelineStyle" + (i%2).ToString()]
                 };
                 Grid.SetRow(rectangle, i);
 
@@ -80,14 +81,16 @@ namespace FlexTable
         private void Button2_Click(object sender, RoutedEventArgs e)
         {
             mainPageViewModel.ShuffleColumns();
-            ColumnHeader.Update();
+            TopColumnHeader.Update();
+            BottomColumnHeader.Update();
         }
 
         private void ScrollViewer_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
         {
             ScrollViewer sv = sender as ScrollViewer;
             RowHeader.VerticalOffset = sv.VerticalOffset;
-            ColumnHeader.HorizontalOffset = sv.HorizontalOffset;
+            TopColumnHeader.HorizontalOffset = sv.HorizontalOffset;
+            BottomColumnHeader.HorizontalOffset = sv.HorizontalOffset;
         }
 
         private void PenCanvas_PointerPressed(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
@@ -309,6 +312,7 @@ namespace FlexTable
             {
                 foreach (String candidate in result.GetTextCandidates())
                 {
+                    Debug.WriteLine(candidate);
                     if (candidate == "a")
                     {
                         mainPageViewModel.ShuffleRows();
@@ -319,7 +323,8 @@ namespace FlexTable
                     if (candidate == "b")
                     {
                         mainPageViewModel.ShuffleColumns();
-                        ColumnHeader.Update();
+                        TopColumnHeader.Update();
+                        BottomColumnHeader.Update();
                         RemoveAllStrokes();
                         return;
                     }
@@ -327,12 +332,43 @@ namespace FlexTable
                     if (columnIndex >=0 && (candidate == "x" || candidate == "X"))
                     {
                         mainPageViewModel.MoveColumnToLast(mainPageViewModel.Sheet.Columns[columnIndex]);
-                        ColumnHeader.Update();
+                        TopColumnHeader.Update();
+                        BottomColumnHeader.Update();
+                        RemoveAllStrokes();
+                        return;
+                    }
+
+                    if (columnIndex >= 0 && (candidate == "o" || candidate == "O" || candidate == "0"))
+                    {
+                        mainPageViewModel.MoveColumnToEnabled(mainPageViewModel.Sheet.Columns[columnIndex]);
+                        TopColumnHeader.Update();
+                        BottomColumnHeader.Update();
                         RemoveAllStrokes();
                         return;
                     }
                 }
             }
+        }
+
+        public void ScrollToColumn(Model.Column column)
+        {
+            Double offset = TableScrollViewer.HorizontalOffset,
+                   width = mainPageViewModel.SheetViewWidth,
+                   x1 = column.X,
+                   x2 = column.X + column.Width;
+
+            Double? to = null;
+
+            if (x1 < offset)
+            {
+                to = x1 - 20;
+            }
+            else if (offset + width < x2)
+            {
+                to = x2 - width + 20;
+            }
+
+            TableScrollViewer.ChangeView(to, null, null);
         }
     }
 }

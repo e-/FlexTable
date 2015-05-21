@@ -19,6 +19,9 @@ namespace FlexTable.View
 {
     public sealed partial class ColumnHeaderCellPresenter : UserControl
     {
+        Dictionary<uint, Pointer> contacts = new Dictionary<uint, Pointer>();
+        uint numActiveContacts=0;
+
         public ColumnHeaderCellPresenter()
         {
             this.InitializeComponent();
@@ -32,6 +35,58 @@ namespace FlexTable.View
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             Update();
+        }
+
+        private void Border_PointerEntered(object sender, PointerRoutedEventArgs e)
+        {
+            if (contacts.ContainsKey(e.Pointer.PointerId)) { return; }
+            contacts[e.Pointer.PointerId] = e.Pointer;
+            ++numActiveContacts;
+            (DataContext as Model.Column).Highlighted = true;
+        }
+
+        private void Border_PointerExited(object sender, PointerRoutedEventArgs e)
+        {
+            if (contacts.ContainsKey(e.Pointer.PointerId))
+            {
+                contacts[e.Pointer.PointerId] = null;
+                contacts.Remove(e.Pointer.PointerId);
+                --numActiveContacts;
+            }
+            
+            if(numActiveContacts == 0) (DataContext as Model.Column).Highlighted = false;
+        }
+
+        private void Border_PointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            if (contacts.ContainsKey(e.Pointer.PointerId)) { return; }
+            contacts[e.Pointer.PointerId] = e.Pointer;
+            ++numActiveContacts;
+            (DataContext as Model.Column).Highlighted = true;
+        }
+
+        private void Border_PointerCaptureLost(object sender, PointerRoutedEventArgs e)
+        {
+            if (contacts.ContainsKey(e.Pointer.PointerId))
+            {
+                contacts[e.Pointer.PointerId] = null;
+                contacts.Remove(e.Pointer.PointerId);
+                --numActiveContacts;
+            }
+
+            if (numActiveContacts == 0) (DataContext as Model.Column).Highlighted = false;
+        }
+
+        private void Border_PointerCanceled(object sender, PointerRoutedEventArgs e)
+        {
+            if (contacts.ContainsKey(e.Pointer.PointerId))
+            {
+                contacts[e.Pointer.PointerId] = null;
+                contacts.Remove(e.Pointer.PointerId);
+                --numActiveContacts;
+            }
+
+            if (numActiveContacts == 0) (DataContext as Model.Column).Highlighted = false;
         }
     }
 }

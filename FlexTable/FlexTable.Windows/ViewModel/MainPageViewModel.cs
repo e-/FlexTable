@@ -12,6 +12,7 @@ namespace FlexTable.ViewModel
 {
     public class MainPageViewModel : INotifyPropertyChanged
     {
+        private IMainPage view;
         private Model.Sheet sheet;
         public Model.Sheet Sheet
         {
@@ -27,8 +28,8 @@ namespace FlexTable.ViewModel
         public Double Width { get { return bounds.Width; } }
         public Double Height { get { return bounds.Height; } }
 
-        //public Double SheetViewWidth { get { return bounds.Width / 2; } }
-        //public Double SheetViewHeight { get { return bounds.Height - (Double)App.Current.Resources["ColumnHeaderHeight"]; } }
+        public Double SheetViewWidth { get { return bounds.Width / 2 - (Double)App.Current.Resources["RowHeaderWidth"]; } }
+        public Double SheetViewHeight { get { return bounds.Height - (Double)App.Current.Resources["ColumnHeaderHeight"] * 2; } }
 
         private Double sheetWidth;
         public Double SheetWidth { get { return sheetWidth; } private set { sheetWidth = value; OnPropertyChanged("SheetWidth"); } }
@@ -44,13 +45,14 @@ namespace FlexTable.ViewModel
         private List<View.RowPresenter> rowPresenters = new List<View.RowPresenter>();
         public List<View.RowPresenter> RowPresenters { get { return rowPresenters; } }
 
-        public MainPageViewModel()
+        public MainPageViewModel(IMainPage view)
         {
+            this.view = view;
             bounds = Window.Current.Bounds;
             OnPropertyChanged("Width");
             OnPropertyChanged("Height");
-            //OnPropertyChanged("SheetViewWidth");
-            //OnPropertyChanged("SheetViewHeight");
+            OnPropertyChanged("SheetViewWidth");
+            OnPropertyChanged("SheetViewHeight");
         }
 
         public void Initialize()
@@ -143,6 +145,8 @@ namespace FlexTable.ViewModel
 
         public void MoveColumnToLast(Model.Column movingColumn)
         {
+            if (!movingColumn.Enabled) return;
+
             movingColumn.Enabled = false;
             IEnumerable<Model.Column> nexts = sheet.Columns.Where(c => c.Index > movingColumn.Index);
 
@@ -158,6 +162,43 @@ namespace FlexTable.ViewModel
             {
                 rowPresenter.UpdateCells();
             }
+        }
+
+        public void MoveColumnToEnabled(Model.Column movingColumn)
+        {
+            if (movingColumn.Enabled) return;
+            
+            Int32 index = sheet.Columns.Count(c => c.Enabled);
+            IEnumerable<Model.Column> nexts = sheet.Columns.Where(c => c.Index <= index && !c.Enabled);
+
+            foreach (Model.Column column in nexts)
+            {
+                column.Index++;
+            }
+            movingColumn.Index = index;
+            movingColumn.Enabled = true;
+
+            sheet.UpdateColumnX();
+
+            foreach (View.RowPresenter rowPresenter in rowPresenters)
+            {
+                rowPresenter.UpdateCells();
+            }
+        }
+
+        public void GoToColumn(Double y)
+        {
+            Double totalHeight = SheetViewHeight;
+            Int32 columnIndex = (Int32)Math.Floor(y / totalHeight * sheet.ColumnCount);
+
+            foreach (Model.Column column in sheet.Columns) column.Highlighted = false;
+            sheet.Columns[columnIndex].Highlighted = true;
+            view.ScrollToColumn(sheet.Columns[columnIndex]);
+        }
+
+        public void CancelIndexing()
+        {
+            foreach (Model.Column column in sheet.Columns) column.Highlighted = false;
         }
     }
 }
