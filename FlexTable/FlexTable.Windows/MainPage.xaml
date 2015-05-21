@@ -66,6 +66,15 @@
                     </ItemsControl>
                 </Canvas>
             </ScrollViewer>
+            <Canvas Grid.Row="1" Grid.Column="1">
+                <Border Opacity="{Binding IsIndexTooltipVisible,Converter={StaticResource BooleanToOpacityConverter}}"
+                       Background="#CC000000">
+                    <Border.RenderTransform>
+                        <TranslateTransform X="5" Y="{Binding IndexTooltipY}" />
+                    </Border.RenderTransform>
+                    <TextBlock FontSize="20" Foreground="White" Padding="20 5" Text="{Binding IndexTooltipContent}"/>
+                </Border>
+            </Canvas>
             <Border Grid.Row="2" Grid.Column="0" Background="LightGray"></Border>
             <view:ColumnHeaderPresenter Grid.Row="2" Grid.Column="1" x:Name="BottomColumnHeader"></view:ColumnHeaderPresenter>
         </Grid>

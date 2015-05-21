@@ -45,6 +45,10 @@ namespace FlexTable.ViewModel
         private List<View.RowPresenter> rowPresenters = new List<View.RowPresenter>();
         public List<View.RowPresenter> RowPresenters { get { return rowPresenters; } }
 
+        public Boolean IsIndexTooltipVisible { get; set; }
+        public Double IndexTooltipY { get; set; }
+        public String IndexTooltipContent { get; set; }
+
         public MainPageViewModel(IMainPage view)
         {
             this.view = view;
@@ -191,14 +195,25 @@ namespace FlexTable.ViewModel
             Double totalHeight = SheetViewHeight;
             Int32 columnIndex = (Int32)Math.Floor(y / totalHeight * sheet.ColumnCount);
 
+            if (columnIndex < 0 || columnIndex >= sheet.ColumnCount) return;
             foreach (Model.Column column in sheet.Columns) column.Highlighted = false;
             sheet.Columns[columnIndex].Highlighted = true;
             view.ScrollToColumn(sheet.Columns[columnIndex]);
+
+            IsIndexTooltipVisible = true;
+            IndexTooltipY = (columnIndex + 0.5) * (totalHeight / sheet.ColumnCount) - 15;
+            IndexTooltipContent = sheet.Columns[columnIndex].Name;
+            OnPropertyChanged("IsIndexTooltipVisible");
+            OnPropertyChanged("IndexTooltipY");
+            OnPropertyChanged("IndexTooltipContent");
         }
 
         public void CancelIndexing()
         {
             foreach (Model.Column column in sheet.Columns) column.Highlighted = false;
+
+            IsIndexTooltipVisible = false;
+            OnPropertyChanged("IsIndexTooltipVisible");
         }
     }
 }
