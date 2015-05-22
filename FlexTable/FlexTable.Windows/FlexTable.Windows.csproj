@@ -109,6 +109,8 @@
     <Compile Include="Util\BooleanToEnabledOpacityConverter.cs" />
     <Compile Include="Util\BooleanToOpacityConverter.cs" />
     <Compile Include="Util\GridLengthConverter.cs" />
+    <Compile Include="ViewModel\ColumnViewModel.cs" />
+    <Compile Include="ViewModel\SummaryViewModel.cs" />
     <Compile Include="View\CellPresenter.xaml.cs">
       <DependentUpon>CellPresenter.xaml</DependentUpon>
     </Compile>

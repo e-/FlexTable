@@ -73,18 +73,6 @@ namespace FlexTable
             inkManager.SetDefaultDrawingAttributes(inkDrawingAttributes);
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            mainPageViewModel.ShuffleRows();
-        }
-
-        private void Button2_Click(object sender, RoutedEventArgs e)
-        {
-            mainPageViewModel.ShuffleColumns();
-            TopColumnHeader.Update();
-            BottomColumnHeader.Update();
-        }
-
         private void ScrollViewer_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
         {
             ScrollViewer sv = sender as ScrollViewer;
@@ -313,21 +301,6 @@ namespace FlexTable
                 foreach (String candidate in result.GetTextCandidates())
                 {
                     Debug.WriteLine(candidate);
-                    if (candidate == "a")
-                    {
-                        mainPageViewModel.ShuffleRows();
-                        RemoveAllStrokes();
-                        return;
-                    }
-
-                    if (candidate == "b")
-                    {
-                        mainPageViewModel.ShuffleColumns();
-                        TopColumnHeader.Update();
-                        BottomColumnHeader.Update();
-                        RemoveAllStrokes();
-                        return;
-                    }
 
                     if (columnIndex >=0 && (candidate == "x" || candidate == "X"))
                     {

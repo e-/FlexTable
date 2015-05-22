@@ -13,7 +13,7 @@
 
     <UserControl.Resources>
         <Storyboard x:Name="XAnimation">
-            <DoubleAnimation Storyboard.TargetName="CompositeTransform" Storyboard.TargetProperty="TranslateX" To="{Binding X}" Duration="00:00:00.3">
+            <DoubleAnimation Storyboard.TargetName="CompositeTransform" Storyboard.TargetProperty="TranslateX" To="{Binding Column.X}" Duration="00:00:00.3">
                 <DoubleAnimation.EasingFunction>
                     <ExponentialEase EasingMode="EaseInOut" />
                 </DoubleAnimation.EasingFunction>
@@ -22,19 +22,21 @@
         <util:BooleanToEnabledOpacityConverter x:Key="BooleanToEnabledOpacityConverter" />
     </UserControl.Resources>
 
-    <Border Height="{StaticResource ColumnHeaderHeight}" 
+    <Grid Height="{StaticResource ColumnHeaderHeight}" 
+            Width="{Binding Width}"
             PointerEntered="Border_PointerEntered" 
             PointerExited="Border_PointerExited"
             PointerPressed="Border_PointerPressed"
             PointerCaptureLost="Border_PointerCaptureLost"
             PointerCanceled="Border_PointerCanceled"
+          Background="Transparent"
             >
-        <Border.RenderTransform>
-            <CompositeTransform  x:Name="CompositeTransform" />
-        </Border.RenderTransform>
-        <TextBlock Text="{Binding Name}" Width="{Binding Width}" 
-                   Opacity="{Binding Enabled, Converter={StaticResource BooleanToEnabledOpacityConverter}}"
-                   Style="{StaticResource ColumnHeaderStyle}" VerticalAlignment="Center">
+        <Grid.RenderTransform>
+            <CompositeTransform x:Name="CompositeTransform" />
+        </Grid.RenderTransform>
+        <TextBlock Text="{Binding Column.Name}" Width="{Binding Column.Width}" 
+                   Opacity="{Binding Column.Enabled, Converter={StaticResource BooleanToEnabledOpacityConverter}}"
+                   Style="{StaticResource ColumnHeaderStyle}" VerticalAlignment="Center" IsHitTestVisible="False">
         </TextBlock>
-    </Border>
+    </Grid>
 </UserControl>

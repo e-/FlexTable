@@ -39,7 +39,7 @@ namespace FlexTable.ViewModel
 
         private ObservableCollection<Model.RowHeader> rowHeaderItems = new ObservableCollection<Model.RowHeader>();
         public ObservableCollection<Model.RowHeader> RowHeaderItems { get { return rowHeaderItems; } }
-                
+        
         public event PropertyChangedEventHandler PropertyChanged;
 
         private List<View.RowPresenter> rowPresenters = new List<View.RowPresenter>();
@@ -48,6 +48,12 @@ namespace FlexTable.ViewModel
         public Boolean IsIndexTooltipVisible { get; set; }
         public Double IndexTooltipY { get; set; }
         public String IndexTooltipContent { get; set; }
+
+        public ObservableCollection<ViewModel.ColumnViewModel> columnViewModels = new ObservableCollection<ColumnViewModel>();
+        public ObservableCollection<ViewModel.ColumnViewModel> ColumnViewModels { get { return columnViewModels; } }
+
+        private ViewModel.SummaryViewModel summaryViewModel;
+        public ViewModel.SummaryViewModel SummaryViewModel { get { return summaryViewModel; } set { summaryViewModel = value; OnPropertyChanged("SummaryViewModel"); } }
 
         public MainPageViewModel(IMainPage view)
         {
@@ -68,54 +74,19 @@ namespace FlexTable.ViewModel
             {
                 rowHeaderItems.Add(new Model.RowHeader() { Index = i });
             }
+            columnViewModels.Clear();
+            foreach (Model.Column column in sheet.Columns)
+            {
+                columnViewModels.Add(new ViewModel.ColumnViewModel(this) { Column = column });
+            }
+            SummaryViewModel = new ViewModel.SummaryViewModel(this);
+            
         }
 
         protected void OnPropertyChanged(String propertyName)
         {
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        public void ShuffleRows()
-        {
-            Random random = new Random();
-            for (Int32 i = 0; i < 1000; ++i)
-            {
-                Int32 x = random.Next(sheet.RowCount), y = random.Next(sheet.RowCount);
-                Int32 temp;
-                temp = sheet.Rows[x].Index;
-                sheet.Rows[x].Index = sheet.Rows[y].Index;
-                sheet.Rows[y].Index = temp;
-            }
-
-            foreach (Model.Row row in sheet.Rows)
-            {
-                row.OnPropertyChanged("Y");
-            }
-
-            foreach(View.RowPresenter rowPresenter in rowPresenters) {
-                rowPresenter.Update();
-            }
-        }
-
-        public void ShuffleColumns()
-        {
-            Random random = new Random();
-            for (Int32 i = 0; i < 1000; ++i)
-            {
-                Int32 x = random.Next(sheet.ColumnCount), y = random.Next(sheet.ColumnCount);
-                Int32 temp;
-                temp = sheet.Columns[x].Index;
-                sheet.Columns[x].Index = sheet.Columns[y].Index;
-                sheet.Columns[y].Index = temp;
-            }
-
-            sheet.UpdateColumnX();
-
-            foreach (View.RowPresenter rowPresenter in rowPresenters)
-            {
-                rowPresenter.UpdateCells();
-            }
         }
 
         public void Sort(Int32 sortIndex, Boolean isDescending)
@@ -190,22 +161,32 @@ namespace FlexTable.ViewModel
             }
         }
 
-        public void GoToColumn(Double y)
+        public void IndexColumn(Double y)
         {
             Double totalHeight = SheetViewHeight;
             Int32 columnIndex = (Int32)Math.Floor(y / totalHeight * sheet.ColumnCount);
 
             if (columnIndex < 0 || columnIndex >= sheet.ColumnCount) return;
-            foreach (Model.Column column in sheet.Columns) column.Highlighted = false;
-            sheet.Columns[columnIndex].Highlighted = true;
-            view.ScrollToColumn(sheet.Columns[columnIndex]);
+            Model.Column indexedColumn = sheet.Columns[columnIndex];
+
+            view.ScrollToColumn(indexedColumn);
 
             IsIndexTooltipVisible = true;
             IndexTooltipY = (columnIndex + 0.5) * (totalHeight / sheet.ColumnCount) - 15;
-            IndexTooltipContent = sheet.Columns[columnIndex].Name;
+            IndexTooltipContent = indexedColumn.Name;
             OnPropertyChanged("IsIndexTooltipVisible");
             OnPropertyChanged("IndexTooltipY");
             OnPropertyChanged("IndexTooltipContent");
+
+            HighlightColumn(indexedColumn);
+        }
+
+        public void HighlightColumn(Model.Column column)
+        {
+            foreach (Model.Column c in sheet.Columns) c.Highlighted = false;
+            column.Highlighted = true;
+
+            summaryViewModel.Summarize(column);
         }
 
         public void CancelIndexing()
