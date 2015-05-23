@@ -58,7 +58,7 @@ namespace FlexTable.Util
                 {
                     row.Cells.Add(new Model.Cell()
                     {
-                        Content = cellValue,
+                        RawContent = cellValue,
                         Column = sheet.Columns[columnIndex++]
                     });
                 }

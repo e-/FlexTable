@@ -29,10 +29,30 @@ namespace FlexTable.Model
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        public ColumnType Type { get; set; }
+
         protected void OnPropertyChanged(String propertyName)
         {
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public static ColumnType GuessColumnType(IEnumerable<String> cellValues)
+        {
+            Boolean allDouble = true;
+            Double result;
+
+            foreach (String value in cellValues)
+            {
+                if (!Double.TryParse(value, out result))
+                {
+                    allDouble = false;
+                    break;
+                }
+            }
+
+            if (allDouble) return ColumnType.Double;
+            return ColumnType.String;
         }
     }
 }

@@ -104,6 +104,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="IMainPage.cs" />
+    <Compile Include="Model\ColumnType.cs" />
     <Compile Include="Model\RowHeader.cs" />
     <Compile Include="Util\BooleanConverter.cs" />
     <Compile Include="Util\BooleanToEnabledOpacityConverter.cs" />

@@ -42,8 +42,8 @@ namespace FlexTable.Model
             foreach (Model.Column column in columns)
             {
                 String maxValue = (from row in Rows
-                                   orderby row.Cells[column.Index].ContentAsString.Count() descending
-                                   select row.Cells[column.Index].ContentAsString).First();
+                                   orderby row.Cells[column.Index].RawContent.Count() descending
+                                   select row.Cells[column.Index].RawContent).First();
                 dummyCell.Text = maxValue;
                 dummyCell.Measure(new Size(Double.MaxValue, Double.MaxValue));
 
@@ -58,6 +58,29 @@ namespace FlexTable.Model
             {
                 column.X = total;
                 total += column.Width;
+            }
+        }
+
+        public void GuessColumnType()
+        {
+            Int32 i;
+            for (i = 0; i < ColumnCount; ++i)
+            {
+                columns[i].Type = Model.Column.GuessColumnType(rows.Select(r => r.Cells[i].RawContent));
+                if(columns[i].Type == ColumnType.String)
+                {
+                    foreach (Model.Row row in rows)
+                    {
+                        row.Cells[i].Content = row.Cells[i].RawContent;
+                    }
+                }
+                else
+                {
+                    foreach (Model.Row row in rows)
+                    {
+                        row.Cells[i].Content = Double.Parse(row.Cells[i].RawContent);
+                    }
+                }
             }
         }
     }

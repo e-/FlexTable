@@ -8,13 +8,12 @@ namespace FlexTable.Model
 {
     public class Cell
     {
+        private String rawContent;
+        public String RawContent { get { return rawContent; } set { rawContent = value; } }
+
         private Object content;
-        
         public Object Content { get { return content; } set { content = value; } }
-
-        public String ContentAsString { get { return (String)content; } }
-        public Double ContentAsDouble { get { return (Double)content; } }
-
+           
         public Column Column { get; set; }
     }
 }

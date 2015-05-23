@@ -40,6 +40,7 @@ namespace FlexTable
             Model.Sheet sheet = await csvLoader.Load();
             sheet.MeasureColumnWidth(DummyCell);
             sheet.UpdateColumnX();
+            sheet.GuessColumnType();
 
             mainPageViewModel.Sheet = sheet;
 

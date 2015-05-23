@@ -116,26 +116,26 @@ namespace FlexTable.View
                 HideRightStoryboard.Begin();
                 HideLeftStoryboard.Begin();
                 HideUpStoryboard.Begin();
+                UnHighlightUpStoryboard.Begin();
+                UnHighlightDownStoryboard.Begin();
+                UnHighlightLeftStoryboard.Begin();
+                UnHighlightRightStoryboard.Begin();
 
                 if (upSelected)
                 {
                     columnViewModel.SortDescending();
-                    UnHighlightUpStoryboard.Begin();
                 }
                 else if (downSelected)
                 {
                     columnViewModel.SortAscending();
-                    UnHighlightDownStoryboard.Begin();
                 }
                 else if (leftSelected)
                 {
                     columnViewModel.MarkEnabled();
-                    UnHighlightLeftStoryboard.Begin();
                 }
                 else if (rightSelected)
                 {
                     columnViewModel.MarkDisabled();
-                    UnHighlightRightStoryboard.Begin();
                 }
                 upSelected = downSelected = leftSelected = rightSelected = false;
                 columnViewModel.Unhighlight();
