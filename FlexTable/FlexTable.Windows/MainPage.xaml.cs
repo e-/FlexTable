@@ -273,7 +273,7 @@ namespace FlexTable
                 index++;
             }
 
-            if (strokes.Count == 1 && strokes[0].BoundingRect.Width < 40 && strokes[0].BoundingRect.Height > 100)
+            /*if (strokes.Count == 1 && strokes[0].BoundingRect.Width < 40 && strokes[0].BoundingRect.Height > 100)
             {
                 var segments = strokes[0].GetRenderingSegments();
                 InkStrokeRenderingSegment first = segments.First(), last = segments.Last();               
@@ -292,7 +292,7 @@ namespace FlexTable
 
                 RemoveAllStrokes();
                 return;
-            }
+            }*/
             
             IReadOnlyList<InkRecognitionResult> results = await this.inkManager.RecognizeAsync(InkRecognitionTarget.All);
 
@@ -304,7 +304,7 @@ namespace FlexTable
 
                     if (columnIndex >=0 && (candidate == "x" || candidate == "X"))
                     {
-                        mainPageViewModel.MoveColumnToLast(mainPageViewModel.Sheet.Columns[columnIndex]);
+                        mainPageViewModel.MarkColumnDisabled(mainPageViewModel.Sheet.Columns[columnIndex]);
                         TopColumnHeader.Update();
                         BottomColumnHeader.Update();
                         RemoveAllStrokes();
@@ -313,7 +313,7 @@ namespace FlexTable
 
                     if (columnIndex >= 0 && (candidate == "o" || candidate == "O" || candidate == "0"))
                     {
-                        mainPageViewModel.MoveColumnToEnabled(mainPageViewModel.Sheet.Columns[columnIndex]);
+                        mainPageViewModel.MarkColumnEnabled(mainPageViewModel.Sheet.Columns[columnIndex]);
                         TopColumnHeader.Update();
                         BottomColumnHeader.Update();
                         RemoveAllStrokes();
@@ -342,6 +342,12 @@ namespace FlexTable
             }
 
             TableScrollViewer.ChangeView(to, null, null);
+        }
+
+        public void UpdateColumnHeaders()
+        {
+            TopColumnHeader.Update();
+            BottomColumnHeader.Update();
         }
     }
 }

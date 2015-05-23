@@ -89,8 +89,10 @@ namespace FlexTable.ViewModel
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public void Sort(Int32 sortIndex, Boolean isDescending)
+        public void Sort(Model.Column column, Boolean isDescending)
         {
+            Int32 sortIndex = sheet.Columns.IndexOf(column);
+
             IOrderedEnumerable<Model.Row> sorted = null;
             if (isDescending)
             {
@@ -118,7 +120,7 @@ namespace FlexTable.ViewModel
             }
         }
 
-        public void MoveColumnToLast(Model.Column movingColumn)
+        public void MarkColumnDisabled(Model.Column movingColumn)
         {
             if (!movingColumn.Enabled) return;
 
@@ -137,9 +139,11 @@ namespace FlexTable.ViewModel
             {
                 rowPresenter.UpdateCells();
             }
+
+            view.UpdateColumnHeaders();
         }
 
-        public void MoveColumnToEnabled(Model.Column movingColumn)
+        public void MarkColumnEnabled(Model.Column movingColumn)
         {
             if (movingColumn.Enabled) return;
             
@@ -159,6 +163,8 @@ namespace FlexTable.ViewModel
             {
                 rowPresenter.UpdateCells();
             }
+
+            view.UpdateColumnHeaders();
         }
 
         public void IndexColumn(Double y)
@@ -187,6 +193,11 @@ namespace FlexTable.ViewModel
             column.Highlighted = true;
 
             summaryViewModel.Summarize(column);
+        }
+
+        public void UnhighlightColumn(Model.Column column)
+        {
+            column.Highlighted = false;
         }
 
         public void CancelIndexing()

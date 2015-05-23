@@ -31,5 +31,30 @@ namespace FlexTable.ViewModel
         {
             mainPageViewModel.HighlightColumn(column);
         }
+
+        public void Unhighlight()
+        {
+            mainPageViewModel.UnhighlightColumn(column);
+        }
+
+        public void MarkEnabled()
+        {
+            mainPageViewModel.MarkColumnEnabled(column);
+        }
+
+        public void MarkDisabled()
+        {
+            mainPageViewModel.MarkColumnDisabled(column);
+        }
+
+        public void SortAscending()
+        {
+            mainPageViewModel.Sort(column, false);
+        }
+
+        public void SortDescending()
+        {
+            mainPageViewModel.Sort(column, true);
+        }
     }
 }

@@ -9,5 +9,6 @@ namespace FlexTable
     public interface IMainPage
     {
         void ScrollToColumn(Model.Column column);
+        void UpdateColumnHeaders();
     }
 }
