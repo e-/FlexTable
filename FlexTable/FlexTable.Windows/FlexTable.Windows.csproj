@@ -104,12 +104,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="IMainPage.cs" />
+    <Compile Include="Model\Bin.cs" />
     <Compile Include="Model\ColumnType.cs" />
     <Compile Include="Model\RowHeader.cs" />
     <Compile Include="Util\BooleanConverter.cs" />
     <Compile Include="Util\BooleanToEnabledOpacityConverter.cs" />
     <Compile Include="Util\BooleanToOpacityConverter.cs" />
-    <Compile Include="Util\GridLengthConverter.cs" />
     <Compile Include="ViewModel\ColumnViewModel.cs" />
     <Compile Include="ViewModel\SummaryViewModel.cs" />
     <Compile Include="View\CellPresenter.xaml.cs">
@@ -140,6 +140,9 @@
     </Compile>
     <Compile Include="Util\CsvLoader.cs" />
     <Compile Include="ViewModel\MainPageViewModel.cs" />
+    <Compile Include="View\SummaryView.xaml.cs">
+      <DependentUpon>SummaryView.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -186,6 +189,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\SummaryView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="CsvHelper">
@@ -193,12 +200,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\MyPDollarGestureRecognizer\MyPDollarGestureRecognizer.csproj">
-      <Project>{640e5632-ee41-42ca-878f-ebdf5ceedc29}</Project>
-      <Name>MyPDollarGestureRecognizer</Name>
+    <ProjectReference Include="..\..\d3\d3.csproj">
+      <Project>{71af7058-4319-44f0-b24c-93b2de4f9a49}</Project>
+      <Name>d3</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>
   </PropertyGroup>

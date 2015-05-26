@@ -41,7 +41,7 @@ namespace FlexTable
             sheet.MeasureColumnWidth(DummyCell);
             sheet.UpdateColumnX();
             sheet.GuessColumnType();
-
+            sheet.CreateColumnSummary();
             mainPageViewModel.Sheet = sheet;
 
             for (Int32 i = 0; i < sheet.RowCount - 1; ++i)

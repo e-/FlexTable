@@ -83,5 +83,21 @@ namespace FlexTable.Model
                 }
             }
         }
+
+        public void CreateColumnSummary()
+        {
+            for (Int32 i = 0; i < ColumnCount; ++i)
+            {
+                Column column = columns[i];
+                if (column.Type == ColumnType.String) // bar chart
+                {
+                    column.Bins = Model.Column.GetFrequencyBins(rows.Select(r => r.Cells[i].RawContent));
+                }
+                else // histogram
+                {
+                    column.Bins = Model.Column.GetHistogramBins(rows.Select(r => (Double)r.Cells[i].Content));
+                }
+            }
+        }
     }
 }

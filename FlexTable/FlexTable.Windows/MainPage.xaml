@@ -82,12 +82,7 @@
             <Border Grid.Row="2" Grid.Column="0" Background="LightGray"></Border>
             <view:ColumnHeaderPresenter Grid.Row="2" Grid.Column="1" x:Name="BottomColumnHeader"></view:ColumnHeaderPresenter>
         </Grid>
-        <Grid Grid.Column="1" Grid.Row="0">
-            <TextBlock Text="{Binding SummaryViewModel.Column.Name}"></TextBlock>
-            <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                <TextBlock TextAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="25">Preview Area</TextBlock>
-            </Border>
-        </Grid>
+        <view:SummaryView Grid.Column="1" Grid.Row="0" DataContext="{Binding SummaryViewModel}"></view:SummaryView>
         <Grid Grid.Column="1" Grid.Row="1">
             <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <TextBlock TextAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="25">Chart Area</TextBlock>

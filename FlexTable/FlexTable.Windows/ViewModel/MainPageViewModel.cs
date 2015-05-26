@@ -58,6 +58,7 @@ namespace FlexTable.ViewModel
         public MainPageViewModel(IMainPage view)
         {
             this.view = view;
+            SummaryViewModel = new ViewModel.SummaryViewModel(this);
             bounds = Window.Current.Bounds;
             OnPropertyChanged("Width");
             OnPropertyChanged("Height");
@@ -79,8 +80,6 @@ namespace FlexTable.ViewModel
             {
                 columnViewModels.Add(new ViewModel.ColumnViewModel(this) { Column = column });
             }
-            SummaryViewModel = new ViewModel.SummaryViewModel(this);
-            
         }
 
         protected void OnPropertyChanged(String propertyName)
@@ -167,24 +166,29 @@ namespace FlexTable.ViewModel
             view.UpdateColumnHeaders();
         }
 
+        Int32 indexedColumnIndex = -1;
         public void IndexColumn(Double y)
         {
             Double totalHeight = SheetViewHeight;
             Int32 columnIndex = (Int32)Math.Floor(y / totalHeight * sheet.ColumnCount);
 
             if (columnIndex < 0 || columnIndex >= sheet.ColumnCount) return;
-            Model.Column indexedColumn = sheet.Columns[columnIndex];
 
-            view.ScrollToColumn(indexedColumn);
+            if (indexedColumnIndex != columnIndex)
+            {
+                Model.Column indexedColumn = sheet.Columns.First(c => c.Index == columnIndex);
+                view.ScrollToColumn(indexedColumn);
 
-            IsIndexTooltipVisible = true;
-            IndexTooltipY = (columnIndex + 0.5) * (totalHeight / sheet.ColumnCount) - 15;
-            IndexTooltipContent = indexedColumn.Name;
-            OnPropertyChanged("IsIndexTooltipVisible");
-            OnPropertyChanged("IndexTooltipY");
-            OnPropertyChanged("IndexTooltipContent");
+                IsIndexTooltipVisible = true;
+                IndexTooltipY = (columnIndex + 0.5) * (totalHeight / sheet.ColumnCount) - 15;
+                IndexTooltipContent = indexedColumn.Name;
+                OnPropertyChanged("IsIndexTooltipVisible");
+                OnPropertyChanged("IndexTooltipY");
+                OnPropertyChanged("IndexTooltipContent");
 
-            HighlightColumn(indexedColumn);
+                HighlightColumn(indexedColumn);
+            }
+            indexedColumnIndex = columnIndex;
         }
 
         public void HighlightColumn(Model.Column column)
@@ -192,7 +196,7 @@ namespace FlexTable.ViewModel
             foreach (Model.Column c in sheet.Columns) c.Highlighted = false;
             column.Highlighted = true;
 
-            summaryViewModel.Summarize(column);
+            summaryViewModel.ShowSummary(column);
         }
 
         public void UnhighlightColumn(Model.Column column)
