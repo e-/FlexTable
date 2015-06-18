@@ -80,6 +80,9 @@ namespace FlexTable
             RowHeader.VerticalOffset = sv.VerticalOffset;
             TopColumnHeader.HorizontalOffset = sv.HorizontalOffset;
             BottomColumnHeader.HorizontalOffset = sv.HorizontalOffset;
+
+            mainPageViewModel.ScrollTop = sv.VerticalOffset;
+            mainPageViewModel.ScrollLeft = sv.HorizontalOffset;
         }
 
         private void PenCanvas_PointerPressed(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)

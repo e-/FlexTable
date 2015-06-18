@@ -59,6 +59,7 @@ namespace FlexTable.ViewModel
         public Model.Column HighlightedColumn { get { return highlightedColumn; } set { highlightedColumn = value; OnPropertyChanged("HighlightedColumn"); } }
 
         public Double ScrollLeft { get; set; }
+        public Double ScrollTop { get; set; }
 
         public MainPageViewModel(IMainPage view)
         {

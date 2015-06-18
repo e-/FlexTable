@@ -67,15 +67,9 @@ namespace FlexTable.View
                     TableCanvas.Children.Add(cell);
                 }
 
-                Wrapper.Visibility = Visibility.Visible;
-
-                Brighten.Pause();
-                Darken.Pause();
-                Darken.Begin();
-
                 
                 Double left = column.X - (this.DataContext as ViewModel.MainPageViewModel).ScrollLeft;
-                Debug.WriteLine("left {0}", left);
+                //Debug.WriteLine("left {0}", left);
 
                 if (left - column.Width / 2 < 20)
                 {
@@ -97,12 +91,23 @@ namespace FlexTable.View
 
                 UpperColumnHeader.Width = LowerColumnHeader.Width = MagnifiedColumn.Width = column.Width;
                 UpperColumnHeader.Text = LowerColumnHeader.Text = mpvm.HighlightedColumn.Name;
+
+                Wrapper.Visibility = Visibility.Visible;
+
+                TableScrollViewer.Height = mpvm.SheetViewHeight;
+                TableScrollViewer.UpdateLayout();
+                TableScrollViewer.ChangeView(null, mpvm.ScrollTop, null, true);
+
+                Brighten.Pause();
+                Darken.Pause();
+                Darken.Begin();
             }
             else
             {
                 Darken.Pause();
                 Brighten.Pause();
-                TableScrollViewer.Height = mpvm.Height;
+                TableScrollViewer.Height = mpvm.SheetViewHeight;
+                TableScrollViewer.UpdateLayout();
                 Brighten.Begin();
             }
         }
