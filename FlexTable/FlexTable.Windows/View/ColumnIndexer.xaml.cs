@@ -34,5 +34,12 @@ namespace FlexTable.View
         {
             (DataContext as ViewModel.MainPageViewModel).CancelIndexing();
         }
+
+        private void Border_PointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            Debug.WriteLine("Pressed");
+            Point point = e.GetCurrentPoint(this).Position;
+            (DataContext as ViewModel.MainPageViewModel).IndexColumn(point.Y);
+        }
     }
 }

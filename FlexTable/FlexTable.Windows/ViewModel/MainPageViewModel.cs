@@ -55,6 +55,11 @@ namespace FlexTable.ViewModel
         private ViewModel.SummaryViewModel summaryViewModel;
         public ViewModel.SummaryViewModel SummaryViewModel { get { return summaryViewModel; } set { summaryViewModel = value; OnPropertyChanged("SummaryViewModel"); } }
 
+        private Model.Column highlightedColumn;
+        public Model.Column HighlightedColumn { get { return highlightedColumn; } set { highlightedColumn = value; OnPropertyChanged("HighlightedColumn"); } }
+
+        public Double ScrollLeft { get; set; }
+
         public MainPageViewModel(IMainPage view)
         {
             this.view = view;
@@ -197,6 +202,7 @@ namespace FlexTable.ViewModel
             column.Highlighted = true;
 
             summaryViewModel.ShowSummary(column);
+            HighlightedColumn = column;
         }
 
         public void UnhighlightColumn(Model.Column column)
@@ -210,6 +216,8 @@ namespace FlexTable.ViewModel
 
             IsIndexTooltipVisible = false;
             OnPropertyChanged("IsIndexTooltipVisible");
+            HighlightedColumn = null;
+            indexedColumnIndex = -1;
         }
     }
 }

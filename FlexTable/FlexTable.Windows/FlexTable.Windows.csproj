@@ -129,6 +129,9 @@
     <Compile Include="Model\Row.cs" />
     <Compile Include="Model\Sheet.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="View\ColumnHighlighter.xaml.cs">
+      <DependentUpon>ColumnHighlighter.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\ColumnIndexer.xaml.cs">
       <DependentUpon>ColumnIndexer.xaml</DependentUpon>
     </Compile>
@@ -176,6 +179,10 @@
     <Page Include="MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\ColumnHighlighter.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\ColumnIndexer.xaml">
       <SubType>Designer</SubType>

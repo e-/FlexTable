@@ -26,6 +26,7 @@
         </Grid.RowDefinitions>
         <TextBlock Grid.Column="0" Grid.Row="0" Name="DummyCell" Style="{StaticResource CellStyle}" Foreground="Blue"  IsHitTestVisible="False"></TextBlock>
         
+               
         <Grid Grid.Column="0" Grid.Row="0" Grid.RowSpan="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="{StaticResource RowHeaderWidthInGridLength}"></ColumnDefinition>
@@ -37,8 +38,9 @@
                 <RowDefinition Height="{StaticResource ColumnHeaderHeightInGridLength}"></RowDefinition>
             </Grid.RowDefinitions>
             <Border Grid.Row="0" Grid.Column="0" Background="LightGray"></Border>
-            <view:ColumnHeaderPresenter Grid.Row="0" Grid.Column="1" x:Name="TopColumnHeader"></view:ColumnHeaderPresenter>
             
+            <view:ColumnHeaderPresenter Grid.Row="0" Grid.Column="1" x:Name="TopColumnHeader"></view:ColumnHeaderPresenter>
+        
             <view:RowHeaderPresenter Grid.Row="1" Grid.Column="0" x:Name="RowHeader"></view:RowHeaderPresenter>
             <view:ColumnIndexer Grid.Row="1" Grid.Column="0" x:Name="ColumnIndex"></view:ColumnIndexer>
             <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" 
@@ -70,6 +72,10 @@
                     </ItemsControl>
                 </Canvas>
             </ScrollViewer>
+            <Border Grid.Row="2" Grid.Column="0" Background="LightGray"></Border>
+            <view:ColumnHeaderPresenter Grid.Row="2" Grid.Column="1" x:Name="BottomColumnHeader"></view:ColumnHeaderPresenter>
+            
+            <view:ColumnHighlighter Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" Column="{Binding HighlightedColumn}"></view:ColumnHighlighter>
             <Canvas Grid.Row="1" Grid.Column="1">
                 <Border Opacity="{Binding IsIndexTooltipVisible,Converter={StaticResource BooleanToOpacityConverter}}"
                        Background="#CC000000" CornerRadius="3">
@@ -79,8 +85,9 @@
                     <TextBlock FontSize="20" Foreground="White" Padding="20 5" Text="{Binding IndexTooltipContent}"/>
                 </Border>
             </Canvas>
-            <Border Grid.Row="2" Grid.Column="0" Background="LightGray"></Border>
-            <view:ColumnHeaderPresenter Grid.Row="2" Grid.Column="1" x:Name="BottomColumnHeader"></view:ColumnHeaderPresenter>
+            
+            
+            
         </Grid>
         <view:SummaryView Grid.Column="1" Grid.Row="0" DataContext="{Binding SummaryViewModel}"></view:SummaryView>
         <Grid Grid.Column="1" Grid.Row="1">

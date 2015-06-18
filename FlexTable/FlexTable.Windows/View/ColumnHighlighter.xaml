@@ -1,0 +1,84 @@
+﻿<UserControl
+    x:Class="FlexTable.View.ColumnHighlighter"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:FlexTable.View"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400"
+    
+    >
+    <UserControl.Resources>
+        <QuadraticEase x:Name="EasingFunction" EasingMode="EaseInOut" />
+        <Storyboard x:Name="Darken">
+            <ColorAnimation Storyboard.TargetProperty="(Canvas.Background).(SolidColorBrush.Color)" To="#66000000"
+                            EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2" Storyboard.TargetName="Wrapper" 
+                            ></ColorAnimation>
+            <DoubleAnimation Storyboard.TargetProperty="ScaleX" Storyboard.TargetName="UpperCompositeTransform"
+                             To="2" EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2"></DoubleAnimation>
+            <DoubleAnimation Storyboard.TargetProperty="ScaleY" Storyboard.TargetName="UpperCompositeTransform"
+                             To="2" EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2"></DoubleAnimation>
+
+            <DoubleAnimation Storyboard.TargetProperty="ScaleX" Storyboard.TargetName="BottomCompositeTransform"
+                             To="2" EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2"></DoubleAnimation>
+            <DoubleAnimation Storyboard.TargetProperty="ScaleY" Storyboard.TargetName="BottomCompositeTransform"
+                             To="2" EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2"></DoubleAnimation>
+            <!--<DoubleAnimation Storyboard.TargetProperty="Opacity" Storyboard.TargetName="MagnifiedColumn"
+                             To="1" EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2"></DoubleAnimation>-->
+        </Storyboard>
+        <Storyboard x:Name="Brighten">
+            <ColorAnimation Storyboard.TargetProperty="(Canvas.Background).(SolidColorBrush.Color)" To="#00000000"
+                            EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2" Storyboard.TargetName="Wrapper" 
+                            ></ColorAnimation>
+            <DoubleAnimation Storyboard.TargetProperty="ScaleX" Storyboard.TargetName="UpperCompositeTransform"
+                             To="1" EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2"></DoubleAnimation>
+            <DoubleAnimation Storyboard.TargetProperty="ScaleY" Storyboard.TargetName="UpperCompositeTransform"
+                             To="1" EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2"></DoubleAnimation>
+
+            <DoubleAnimation Storyboard.TargetProperty="ScaleX" Storyboard.TargetName="BottomCompositeTransform"
+                             To="1" EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2"></DoubleAnimation>
+            <DoubleAnimation Storyboard.TargetProperty="ScaleY" Storyboard.TargetName="BottomCompositeTransform"
+                             To="1" EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2"></DoubleAnimation>
+            <!--<DoubleAnimation Storyboard.TargetProperty="Opacity" Storyboard.TargetName="MagnifiedColumn"
+                             To="0" EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2"></DoubleAnimation>-->
+        </Storyboard>        
+    </UserControl.Resources>
+    
+    <Canvas Background="#00000000" x:Name="Wrapper">
+        <Canvas Visibility="Collapsed" x:Name="MagnifiedColumn"> <!-- x position -->
+            <StackPanel Width="{Binding HighlightedColumn.Width}" Background="White">
+                <StackPanel.RenderTransformOrigin>0.5 0</StackPanel.RenderTransformOrigin>
+                <StackPanel.RenderTransform>
+                    <CompositeTransform ScaleX="1" ScaleY="1" x:Name="UpperCompositeTransform"></CompositeTransform>
+                </StackPanel.RenderTransform>
+                <Border Background="{StaticResource GridLineBrush}" Height="{StaticResource ColumnHeaderHeight}">
+                    <TextBlock Text="{Binding HighlightedColumn.Name}" Style="{StaticResource ColumnHeaderStyle}" VerticalAlignment="Center" 
+                           />
+                </Border>
+
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" 
+                              ZoomMode="Disabled" Grid.Row="1" Grid.Column="1"
+                              ManipulationMode="All"
+                              x:Name="TableScrollViewer"
+                              >
+                    <Canvas x:Name="TableCanvas" Height="{Binding SheetHeight}">
+                    </Canvas>
+                </ScrollViewer>
+                <Border Height="1000" Background="White" />
+            </StackPanel>
+
+            <Border Background="{StaticResource GridLineBrush}" Height="{StaticResource ColumnHeaderHeight}" x:Name="BottomHeader"
+                     Width="{Binding HighlightedColumn.Width}">
+                <Border.RenderTransformOrigin>0.5 1</Border.RenderTransformOrigin>
+                <Border.RenderTransform>
+                    <CompositeTransform ScaleX="1" ScaleY="1" x:Name="BottomCompositeTransform"></CompositeTransform>
+                </Border.RenderTransform>
+                <TextBlock Text="{Binding HighlightedColumn.Name}" Style="{StaticResource ColumnHeaderStyle}" VerticalAlignment="Center" 
+                       />
+            </Border>
+        </Canvas>
+    </Canvas>
+    
+</UserControl>

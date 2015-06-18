@@ -343,6 +343,15 @@ namespace FlexTable
             }
 
             TableScrollViewer.ChangeView(to, null, null);
+
+            if (to == null)
+            {
+                mainPageViewModel.ScrollLeft = TableScrollViewer.HorizontalOffset;
+            }
+            else
+            {
+                mainPageViewModel.ScrollLeft = (Double)to;
+            }
         }
 
         public void UpdateColumnHeaders()

@@ -14,6 +14,7 @@
             PointerReleased="Border_PointerReleased"
             PointerCaptureLost="Border_PointerCaptureLost"
             PointerExited="Border_PointerExited"
+            PointerPressed="Border_PointerPressed"
             >
     </Border>
 </UserControl>
