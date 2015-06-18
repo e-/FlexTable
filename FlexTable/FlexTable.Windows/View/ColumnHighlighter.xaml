@@ -12,7 +12,7 @@
     >
     <UserControl.Resources>
         <QuadraticEase x:Name="EasingFunction" EasingMode="EaseInOut" />
-        <Storyboard x:Name="Darken">
+        <Storyboard x:Name="Darken" Completed="Darken_Completed">
             <ColorAnimation Storyboard.TargetProperty="(Canvas.Background).(SolidColorBrush.Color)" To="#66000000"
                             EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2" Storyboard.TargetName="Wrapper" 
                             ></ColorAnimation>
@@ -21,14 +21,18 @@
             <DoubleAnimation Storyboard.TargetProperty="ScaleY" Storyboard.TargetName="UpperCompositeTransform"
                              To="2" EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2"></DoubleAnimation>
 
-            <DoubleAnimation Storyboard.TargetProperty="ScaleX" Storyboard.TargetName="BottomCompositeTransform"
+            <DoubleAnimation Storyboard.TargetProperty="ScaleX" Storyboard.TargetName="LowerCompositeTransform"
                              To="2" EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2"></DoubleAnimation>
-            <DoubleAnimation Storyboard.TargetProperty="ScaleY" Storyboard.TargetName="BottomCompositeTransform"
+            <DoubleAnimation Storyboard.TargetProperty="ScaleY" Storyboard.TargetName="LowerCompositeTransform"
                              To="2" EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2"></DoubleAnimation>
+
+            <!--<DoubleAnimation Storyboard.TargetProperty="Height" Storyboard.TargetName="TableScrollViewer"
+                             To="2" EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2"></DoubleAnimation>-->
+            
             <!--<DoubleAnimation Storyboard.TargetProperty="Opacity" Storyboard.TargetName="MagnifiedColumn"
                              To="1" EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2"></DoubleAnimation>-->
         </Storyboard>
-        <Storyboard x:Name="Brighten">
+        <Storyboard x:Name="Brighten" Completed="Brighten_Completed">
             <ColorAnimation Storyboard.TargetProperty="(Canvas.Background).(SolidColorBrush.Color)" To="#00000000"
                             EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2" Storyboard.TargetName="Wrapper" 
                             ></ColorAnimation>
@@ -37,24 +41,28 @@
             <DoubleAnimation Storyboard.TargetProperty="ScaleY" Storyboard.TargetName="UpperCompositeTransform"
                              To="1" EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2"></DoubleAnimation>
 
-            <DoubleAnimation Storyboard.TargetProperty="ScaleX" Storyboard.TargetName="BottomCompositeTransform"
+            <DoubleAnimation Storyboard.TargetProperty="ScaleX" Storyboard.TargetName="LowerCompositeTransform"
                              To="1" EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2"></DoubleAnimation>
-            <DoubleAnimation Storyboard.TargetProperty="ScaleY" Storyboard.TargetName="BottomCompositeTransform"
+            <DoubleAnimation Storyboard.TargetProperty="ScaleY" Storyboard.TargetName="LowerCompositeTransform"
                              To="1" EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2"></DoubleAnimation>
+
+            <DoubleAnimation Storyboard.TargetProperty="Height" Storyboard.TargetName="TableScrollViewer"
+                             To="3000" EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2"></DoubleAnimation>
+            
             <!--<DoubleAnimation Storyboard.TargetProperty="Opacity" Storyboard.TargetName="MagnifiedColumn"
                              To="0" EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2"></DoubleAnimation>-->
         </Storyboard>        
     </UserControl.Resources>
     
-    <Canvas Background="#00000000" x:Name="Wrapper">
-        <Canvas Visibility="Collapsed" x:Name="MagnifiedColumn"> <!-- x position -->
-            <StackPanel Width="{Binding HighlightedColumn.Width}" Background="White">
+    <Canvas Background="#00000000" x:Name="Wrapper" Visibility="Collapsed">
+        <Canvas x:Name="MagnifiedColumn"> <!-- x position -->
+            <StackPanel Background="White">
                 <StackPanel.RenderTransformOrigin>0.5 0</StackPanel.RenderTransformOrigin>
                 <StackPanel.RenderTransform>
                     <CompositeTransform ScaleX="1" ScaleY="1" x:Name="UpperCompositeTransform"></CompositeTransform>
                 </StackPanel.RenderTransform>
                 <Border Background="{StaticResource GridLineBrush}" Height="{StaticResource ColumnHeaderHeight}">
-                    <TextBlock Text="{Binding HighlightedColumn.Name}" Style="{StaticResource ColumnHeaderStyle}" VerticalAlignment="Center" 
+                    <TextBlock Style="{StaticResource ColumnHeaderStyle}" VerticalAlignment="Center" x:Name="UpperColumnHeader"
                            />
                 </Border>
 
@@ -69,13 +77,13 @@
                 <Border Height="1000" Background="White" />
             </StackPanel>
 
-            <Border Background="{StaticResource GridLineBrush}" Height="{StaticResource ColumnHeaderHeight}" x:Name="BottomHeader"
-                     Width="{Binding HighlightedColumn.Width}">
+            <Border Background="{StaticResource GridLineBrush}" Height="{StaticResource ColumnHeaderHeight}" x:Name="LowerHeader">
                 <Border.RenderTransformOrigin>0.5 1</Border.RenderTransformOrigin>
                 <Border.RenderTransform>
-                    <CompositeTransform ScaleX="1" ScaleY="1" x:Name="BottomCompositeTransform"></CompositeTransform>
+                    <CompositeTransform ScaleX="1" ScaleY="1" x:Name="LowerCompositeTransform"></CompositeTransform>
                 </Border.RenderTransform>
-                <TextBlock Text="{Binding HighlightedColumn.Name}" Style="{StaticResource ColumnHeaderStyle}" VerticalAlignment="Center" 
+                <TextBlock Style="{StaticResource ColumnHeaderStyle}" VerticalAlignment="Center" 
+                           x:Name="LowerColumnHeader"
                        />
             </Border>
         </Canvas>

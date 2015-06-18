@@ -45,17 +45,16 @@ namespace FlexTable.View
             Model.Column column = Column;
             ViewModel.MainPageViewModel mpvm = (this.DataContext as ViewModel.MainPageViewModel);
 
-            Canvas.SetTop(BottomHeader, mpvm.Height - (Double)App.Current.Resources["ColumnHeaderHeight"]);
-            TableScrollViewer.Height = mpvm.SheetViewHeight / 2 - (Double)App.Current.Resources["ColumnHeaderHeight"];
+            Canvas.SetTop(LowerHeader, mpvm.Height - (Double)App.Current.Resources["ColumnHeaderHeight"]);
 
             if (column != null)
-            {
-                
+            {                
                 Int32 columnIndex = mpvm.Sheet.Columns.IndexOf(column);
 
                 TableCanvas.Children.Clear();
 
-                foreach(Model.Row row in mpvm.Sheet.Rows) {
+                foreach (Model.Row row in mpvm.Sheet.Rows)
+                {
                     TextBlock cell = new TextBlock()
                     {
                         Text = row.Cells[columnIndex].Content.ToString(),
@@ -66,25 +65,39 @@ namespace FlexTable.View
                     Canvas.SetTop(cell, row.Y);
                     TableCanvas.Children.Add(cell);
                 }
-                
+
+                Wrapper.Visibility = Visibility.Visible;
 
                 Brighten.Pause();
                 Darken.Pause();
                 Darken.Begin();
 
-                Canvas.SetLeft(MagnifiedColumn, column.X - (this.DataContext as ViewModel.MainPageViewModel).ScrollLeft
-                    );
+                
+                Canvas.SetLeft(MagnifiedColumn, column.X - (this.DataContext as ViewModel.MainPageViewModel).ScrollLeft);
 
-                MagnifiedColumn.Width = column.Width;
-                MagnifiedColumn.Visibility = Visibility.Visible;
+                UpperColumnHeader.Width = LowerColumnHeader.Width = MagnifiedColumn.Width = column.Width;
+                UpperColumnHeader.Text = LowerColumnHeader.Text = mpvm.HighlightedColumn.Name;
             }
             else
             {
                 Darken.Pause();
                 Brighten.Pause();
+                TableScrollViewer.Height = mpvm.Height;
                 Brighten.Begin();
-                MagnifiedColumn.Visibility = Visibility.Collapsed;
             }
         }
+
+
+        private void Darken_Completed(object sender, object e)
+        {
+            ViewModel.MainPageViewModel mpvm = (this.DataContext as ViewModel.MainPageViewModel);
+            TableScrollViewer.Height = mpvm.SheetViewHeight / 2 - (Double)App.Current.Resources["ColumnHeaderHeight"];
+        }
+
+        private void Brighten_Completed(object sender, object e)
+        {
+            Wrapper.Visibility = Visibility.Collapsed;
+        }
+
     }
 }
