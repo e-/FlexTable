@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -45,7 +46,7 @@ namespace FlexTable.View
             Model.Column column = Column;
             ViewModel.MainPageViewModel mpvm = (this.DataContext as ViewModel.MainPageViewModel);
 
-            Canvas.SetTop(LowerHeader, mpvm.Height - (Double)App.Current.Resources["ColumnHeaderHeight"]);
+            Canvas.SetTop(LowerColumn, mpvm.Height - (Double)App.Current.Resources["ColumnHeaderHeight"]);
 
             if (column != null)
             {                
@@ -73,7 +74,26 @@ namespace FlexTable.View
                 Darken.Begin();
 
                 
-                Canvas.SetLeft(MagnifiedColumn, column.X - (this.DataContext as ViewModel.MainPageViewModel).ScrollLeft);
+                Double left = column.X - (this.DataContext as ViewModel.MainPageViewModel).ScrollLeft;
+                Debug.WriteLine("left {0}", left);
+
+                if (left - column.Width / 2 < 20)
+                {
+                    UpperColumn.RenderTransformOrigin = new Point(0, 0);
+                    LowerColumn.RenderTransformOrigin = new Point(0, 1);
+                }
+                else if(left + column.Width * 3 / 2 > mpvm.SheetViewWidth - 20)
+                {
+                    UpperColumn.RenderTransformOrigin = new Point(1, 0);
+                    LowerColumn.RenderTransformOrigin = new Point(1, 1);
+                }
+                else
+                {
+                    UpperColumn.RenderTransformOrigin = new Point(0.5, 0);
+                    LowerColumn.RenderTransformOrigin = new Point(0.5, 1);
+                }
+
+                Canvas.SetLeft(MagnifiedColumn, left);
 
                 UpperColumnHeader.Width = LowerColumnHeader.Width = MagnifiedColumn.Width = column.Width;
                 UpperColumnHeader.Text = LowerColumnHeader.Text = mpvm.HighlightedColumn.Name;
