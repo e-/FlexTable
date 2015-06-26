@@ -34,7 +34,7 @@ namespace FlexTable.Model
         {
             get
             {
-                return Type == ColumnType.String ? "Categorical" : "Continuous";
+                return Type == ColumnType.Categorical ? "Categorical" : "Continuous";
             }
         }
 
@@ -52,9 +52,15 @@ namespace FlexTable.Model
         {
             Boolean allDouble = true;
             Double result;
+            List<String> differentValues = new List<String>();
 
             foreach (String value in cellValues)
             {
+                if (differentValues.IndexOf(value) < 0)
+                {
+                    differentValues.Add(value);
+                }
+
                 if (!Double.TryParse(value, out result))
                 {
                     allDouble = false;
@@ -62,8 +68,11 @@ namespace FlexTable.Model
                 }
             }
 
-            if (allDouble) return ColumnType.Double;
-            return ColumnType.String;
+            // 문자가 하나라도 있으면 무조건 범주형
+            if (!allDouble) return ColumnType.Categorical;
+
+            if (differentValues.Count < 10) return ColumnType.Categorical;
+            return ColumnType.Numerical;
         }
 
         public static List<Bin> GetFrequencyBins(IEnumerable<String> cellValues)

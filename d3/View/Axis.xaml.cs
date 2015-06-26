@@ -51,6 +51,15 @@ namespace d3.View
             }
         }
 
+        public static readonly DependencyProperty TransitionProperty =
+            DependencyProperty.Register("Transition", typeof(Boolean), typeof(Axis), new PropertyMetadata(true, new PropertyChangedCallback(OrientationChanged)));
+
+        public Boolean Transition
+        {
+            get { return (Boolean)GetValue(TransitionProperty); }
+            set { SetValue(TransitionProperty, value); }
+        }
+
         private Int32 tickCount = 5;
         public Int32 TickCount { get { return tickCount; } set { tickCount = value; } }
 
@@ -120,19 +129,65 @@ namespace d3.View
             AxisLine.SetValue(lineSecondary1, 0);
             AxisLine.SetValue(lineSecondary2, 0);
 
-            List<TextBlock> previousTickLabels = tickLabels;
-            Storyboard tickLabelsStoryboard = new Storyboard();
-            //remove previous ticks
-            if (previousTickLabels != null)
+            if (Transition)
             {
-                Int32 index = 0;
-                List<Tick> ticks = previousScale.GetTicks(tickCount);
-                foreach (TextBlock tickLabel in previousTickLabels)
+                List<TextBlock> previousTickLabels = tickLabels;
+                Storyboard tickLabelsStoryboard = new Storyboard();
+                //remove previous ticks
+                if (previousTickLabels != null)
                 {
-                    Tick tick = ticks[index];
+                    Int32 index = 0;
+                    List<Tick> ticks = previousScale.GetTicks(tickCount);
+                    foreach (TextBlock tickLabel in previousTickLabels)
+                    {
+                        Tick tick = ticks[index];
+                        DoubleAnimation positionAnimation = new DoubleAnimation()
+                        {
+                            To = Scale.ClampedMap(tick.DomainValue) - (Double)tickLabel.GetValue(tickLabelSizeProperty) / 2,
+                            Duration = Duration,
+                            EasingFunction = EasingFunction
+                        };
+                        Storyboard.SetTarget(positionAnimation, tickLabel);
+                        Storyboard.SetTargetProperty(positionAnimation, canvasPrimaryString);
+
+                        DoubleAnimation opacityAnimation = new DoubleAnimation()
+                        {
+                            To = 0,
+                            Duration = Duration,
+                            EasingFunction = EasingFunction
+                        };
+                        Storyboard.SetTarget(opacityAnimation, tickLabel);
+                        Storyboard.SetTargetProperty(opacityAnimation, "Opacity");
+
+                        tickLabel.SetValue(canvasSecondary, Orientation == Orientations.Horizontal ? 3 : -tickLabel.ActualWidth - 10);
+
+                        tickLabelsStoryboard.Children.Add(positionAnimation);
+                        tickLabelsStoryboard.Children.Add(opacityAnimation);
+                        index++;
+                    }
+                }
+
+
+                //add new ticks
+                tickLabels = new List<TextBlock>();
+                foreach (Tick tick in Scale.GetTicks(tickCount))
+                {
+                    TextBlock tickLabel = new TextBlock()
+                    {
+                        Text = tick.Label,
+                        Style = Resources["TickLabelStyle"] as Style,
+                        Opacity = 0
+                    };
+
+                    AxisCanvas.Children.Add(tickLabel);
+                    tickLabel.Measure(new Size(Double.MaxValue, Double.MaxValue));
+
+                    tickLabel.SetValue(canvasPrimary, previousScale.ClampedMap(tick.DomainValue) - (Double)tickLabel.GetValue(tickLabelSizeProperty) / 2);
+                    tickLabel.SetValue(canvasSecondary, Orientation == Orientations.Horizontal ? 3 : -tickLabel.ActualWidth - 10);
+
                     DoubleAnimation positionAnimation = new DoubleAnimation()
                     {
-                        To = Scale.ClampedMap(tick.DomainValue) - (Double)tickLabel.GetValue(tickLabelSizeProperty) / 2,
+                        To = tick.RangeValue - (Double)tickLabel.GetValue(tickLabelSizeProperty) / 2,
                         Duration = Duration,
                         EasingFunction = EasingFunction
                     };
@@ -141,65 +196,34 @@ namespace d3.View
 
                     DoubleAnimation opacityAnimation = new DoubleAnimation()
                     {
-                        To = 0,
+                        To = 1,
                         Duration = Duration,
                         EasingFunction = EasingFunction
                     };
                     Storyboard.SetTarget(opacityAnimation, tickLabel);
                     Storyboard.SetTargetProperty(opacityAnimation, "Opacity");
 
-                    tickLabel.SetValue(canvasSecondary, Orientation == Orientations.Horizontal ? 3 : - tickLabel.ActualWidth - 10);
-
                     tickLabelsStoryboard.Children.Add(positionAnimation);
                     tickLabelsStoryboard.Children.Add(opacityAnimation);
-                    index++;
+
+                    tickLabels.Add(tickLabel);
                 }
+
+                tickLabelsStoryboard.Completed += delegate
+                {
+                    if (previousTickLabels != null)
+                    {
+                        foreach (TextBlock tickLabel in previousTickLabels)
+                        {
+                            AxisCanvas.Children.Remove(tickLabel);
+                        }
+                    }
+                };
+                tickLabelsStoryboard.Begin();
             }
-
-
-            //add new ticks
-            tickLabels = new List<TextBlock>();
-            foreach (Tick tick in Scale.GetTicks(tickCount))
+            else
             {
-                TextBlock tickLabel = new TextBlock()
-                {
-                    Text = tick.Label,
-                    Style = Resources["TickLabelStyle"] as Style,
-                    Opacity = 0
-                };
-
-                AxisCanvas.Children.Add(tickLabel);
-                tickLabel.Measure(new Size(Double.MaxValue, Double.MaxValue));
-
-                tickLabel.SetValue(canvasPrimary, previousScale.ClampedMap(tick.DomainValue) - (Double)tickLabel.GetValue(tickLabelSizeProperty) / 2);
-                tickLabel.SetValue(canvasSecondary, Orientation == Orientations.Horizontal ? 3 : - tickLabel.ActualWidth - 10);
-
-                DoubleAnimation positionAnimation = new DoubleAnimation()
-                {
-                    To = tick.RangeValue - (Double)tickLabel.GetValue(tickLabelSizeProperty) / 2,
-                    Duration = Duration,
-                    EasingFunction = EasingFunction
-                };
-                Storyboard.SetTarget(positionAnimation, tickLabel);
-                Storyboard.SetTargetProperty(positionAnimation, canvasPrimaryString);
-
-                DoubleAnimation opacityAnimation = new DoubleAnimation()
-                {
-                    To = 1,
-                    Duration = Duration,
-                    EasingFunction = EasingFunction
-                };
-                Storyboard.SetTarget(opacityAnimation, tickLabel);
-                Storyboard.SetTargetProperty(opacityAnimation, "Opacity");
-
-                tickLabelsStoryboard.Children.Add(positionAnimation);
-                tickLabelsStoryboard.Children.Add(opacityAnimation);
-
-                tickLabels.Add(tickLabel);
-            }
-
-            tickLabelsStoryboard.Completed += delegate
-            {
+                List<TextBlock> previousTickLabels = tickLabels;
                 if (previousTickLabels != null)
                 {
                     foreach (TextBlock tickLabel in previousTickLabels)
@@ -207,8 +231,27 @@ namespace d3.View
                         AxisCanvas.Children.Remove(tickLabel);
                     }
                 }
-            };
-            tickLabelsStoryboard.Begin();
+
+                //add new ticks
+                tickLabels = new List<TextBlock>();
+                foreach (Tick tick in Scale.GetTicks(tickCount))
+                {
+                    TextBlock tickLabel = new TextBlock()
+                    {
+                        Text = tick.Label,
+                        Style = Resources["TickLabelStyle"] as Style,
+                        Opacity = 1
+                    };
+
+                    AxisCanvas.Children.Add(tickLabel);
+                    tickLabel.Measure(new Size(Double.MaxValue, Double.MaxValue));
+
+                    tickLabel.SetValue(canvasPrimary, previousScale.ClampedMap(tick.DomainValue) - (Double)tickLabel.GetValue(tickLabelSizeProperty) / 2);
+                    tickLabel.SetValue(canvasSecondary, Orientation == Orientations.Horizontal ? 3 : -tickLabel.ActualWidth - 10);
+                    tickLabel.SetValue(canvasPrimary, tick.RangeValue - (Double)tickLabel.GetValue(tickLabelSizeProperty) / 2);
+                    tickLabels.Add(tickLabel);
+                }
+            }
         }
     }
 }

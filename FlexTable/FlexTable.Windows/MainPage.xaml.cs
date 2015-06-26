@@ -345,6 +345,8 @@ namespace FlexTable
                 to = x2 - width + 20;
             }
 
+            if (to < 0) to = 0;
+
             TableScrollViewer.ChangeView(to, null, null);
 
             if (to == null)

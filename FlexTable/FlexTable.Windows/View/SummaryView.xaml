@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:d3="using:d3.View"
+    xmlns:util="using:FlexTable.Util"
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400">
@@ -16,18 +17,23 @@
             <Setter Property="TextAlignment" Value="Right" />
             <Setter Property="Padding" Value="0 5 10 5" />
         </Style>
+        <util:BooleanToVisibilityConverter x:Name="BooleanToVisibilityConverter"/>
     </UserControl.Resources>
     
     <Grid Margin="10">
-        <StackPanel>
-            <TextBlock Style="{StaticResource DescriptionStyle}" FontSize="30" FontWeight="Bold" Text="{Binding Column.Name}" />
-            <TextBlock Style="{StaticResource DescriptionStyle}" Text="{Binding Column.TypeString}" />
-        </StackPanel>
-        <Canvas>
-            <d3:Rectangles Data="{Binding Data}" WidthGetter="{Binding WidthGetter}" HeightGetter="{Binding HeightGetter}" 
-                           XGetter="{Binding XGetter}" YGetter="{Binding YGetter}"/>
-            <d3:Axis Orientation="Horizontal" Scale="{Binding XScale}" Canvas.Top="400" Canvas.Left="0"/>
-            <d3:Axis Orientation="Vertical" Scale="{Binding YScale}" Canvas.Top="0" Canvas.Left="50"/>
-        </Canvas>
+        <Grid Visibility="{Binding IsHistogramVisible,Converter={StaticResource BooleanToVisibilityConverter}}">
+            <StackPanel>
+                <TextBlock Style="{StaticResource DescriptionStyle}" FontSize="30" FontWeight="Bold" Text="{Binding Column.Name}" />
+                <TextBlock Style="{StaticResource DescriptionStyle}" Text="{Binding Column.TypeString}" />
+            </StackPanel>
+            <Canvas>
+                <d3:Rectangles Data="{Binding Data}" WidthGetter="{Binding WidthGetter}" HeightGetter="{Binding HeightGetter}" 
+                               XGetter="{Binding XGetter}" YGetter="{Binding YGetter}" ColorGetter="{Binding ColorGetter}"/>
+                <d3:Axis Orientation="Horizontal" Scale="{Binding XScale}" Transition="False" Canvas.Top="400" Canvas.Left="0"/>
+                <d3:Axis Orientation="Vertical" Scale="{Binding YScale}" Transition="False" Canvas.Top="0" Canvas.Left="50"/>
+            </Canvas>
+        </Grid>
+        <Grid>
+        </Grid>
     </Grid>
 </UserControl>

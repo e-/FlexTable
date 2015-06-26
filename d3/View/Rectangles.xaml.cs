@@ -72,6 +72,15 @@ namespace d3.View
             set { SetValue(YGetterProperty, value); }
         }
 
+        public static readonly DependencyProperty ColorGetterProperty =
+            DependencyProperty.Register("ColorGetter", typeof(Func<Object, Int32, Color>), typeof(Rectangles), new PropertyMetadata(default(Func<Object, Int32, Color>)));
+
+        public Func<Object, Int32, Color> ColorGetter
+        {
+            get { return (Func<Object, Int32, Color>)GetValue(ColorGetterProperty); }
+            set { SetValue(ColorGetterProperty, value); }
+        }
+
         public Rectangles()
         {
             this.InitializeComponent();
@@ -93,20 +102,18 @@ namespace d3.View
             }
             previousRectangles.Clear();
 
+            Int32 index = 0;
             foreach (Object datum in Data.Real)
             {
-
-                Debug.WriteLine(HeightGetter(datum));
                 Rectangle rect = new Rectangle()
                 {
                     Width = WidthGetter(datum),
                     Height = HeightGetter(datum),
-                    Fill = new SolidColorBrush(Colors.LightGray)
+                    Fill = ColorGetter == null ? new SolidColorBrush(Colors.LightGray) : new SolidColorBrush(ColorGetter(datum, index++))
                 };
 
                 Canvas.SetLeft(rect, XGetter(datum));
                 Canvas.SetTop(rect, YGetter(datum));
-
 
                 RectanglesCanvas.Children.Add(rect);
                 previousRectangles.Add(rect);

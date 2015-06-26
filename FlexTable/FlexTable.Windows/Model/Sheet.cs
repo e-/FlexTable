@@ -67,7 +67,7 @@ namespace FlexTable.Model
             for (i = 0; i < ColumnCount; ++i)
             {
                 columns[i].Type = Model.Column.GuessColumnType(rows.Select(r => r.Cells[i].RawContent));
-                if(columns[i].Type == ColumnType.String)
+                if(columns[i].Type == ColumnType.Categorical)
                 {
                     foreach (Model.Row row in rows)
                     {
@@ -89,7 +89,7 @@ namespace FlexTable.Model
             for (Int32 i = 0; i < ColumnCount; ++i)
             {
                 Column column = columns[i];
-                if (column.Type == ColumnType.String) // bar chart
+                if (column.Type == ColumnType.Categorical) // bar chart
                 {
                     column.Bins = Model.Column.GetFrequencyBins(rows.Select(r => r.Cells[i].RawContent));
                 }

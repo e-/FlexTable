@@ -8,7 +8,7 @@ namespace FlexTable.Model
 {
     public enum ColumnType
     {
-        String, 
-        Double
+        Categorical, 
+        Numerical
     }
 }

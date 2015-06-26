@@ -71,12 +71,12 @@ namespace FlexTable.View
                 Double left = column.X - (this.DataContext as ViewModel.MainPageViewModel).ScrollLeft;
                 //Debug.WriteLine("left {0}", left);
 
-                if (left - column.Width / 2 < 20)
+                if (left - column.Width / 2 <= 0)
                 {
                     UpperColumn.RenderTransformOrigin = new Point(0, 0);
                     LowerColumn.RenderTransformOrigin = new Point(0, 1);
                 }
-                else if(left + column.Width * 3 / 2 > mpvm.SheetViewWidth - 20)
+                else if(left + column.Width * 3 / 2 >= mpvm.SheetViewWidth)
                 {
                     UpperColumn.RenderTransformOrigin = new Point(1, 0);
                     LowerColumn.RenderTransformOrigin = new Point(1, 1);
