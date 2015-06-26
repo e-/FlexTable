@@ -41,6 +41,18 @@ namespace FlexTable.Model
         private List<Bin> bins;
         public List<Bin> Bins { get { return bins; } set { bins = value; } }
 
+        private Double minValue;
+        public Double MinValue { get { return minValue; } set { minValue = value; OnPropertyChanged("MinValue"); } }
+
+        private Double maxValue;
+        public Double MaxValue { get { return maxValue; } set { maxValue = value; OnPropertyChanged("MaxValue"); } }
+
+        private Double meanValue;
+        public Double MeanValue { get { return meanValue; } set { meanValue = value; OnPropertyChanged("MeanValue"); } }
+
+        private Double medianValue;
+        public Double MedianValue { get { return medianValue; } set { medianValue = value; OnPropertyChanged("MedianValue"); } }
+
 
         protected void OnPropertyChanged(String propertyName)
         {

@@ -110,6 +110,7 @@
     <Compile Include="Util\BooleanConverter.cs" />
     <Compile Include="Util\BooleanToEnabledOpacityConverter.cs" />
     <Compile Include="Util\BooleanToOpacityConverter.cs" />
+    <Compile Include="Util\BooleanToInvertVisibilityConverter.cs" />
     <Compile Include="Util\BooleanToVisibilityConverter.cs" />
     <Compile Include="ViewModel\ColumnViewModel.cs" />
     <Compile Include="ViewModel\SummaryViewModel.cs" />

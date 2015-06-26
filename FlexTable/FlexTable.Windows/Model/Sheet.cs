@@ -95,7 +95,12 @@ namespace FlexTable.Model
                 }
                 else // histogram
                 {
-                    column.Bins = Model.Column.GetHistogramBins(rows.Select(r => (Double)r.Cells[i].Content));
+                    IEnumerable<Double> cellValues = rows.Select(r => (Double)r.Cells[i].Content).OrderBy(v=>v);
+
+                    column.MinValue = cellValues.Min();
+                    column.MaxValue = cellValues.Max();
+                    column.MeanValue = cellValues.Sum() / cellValues.Count();
+                    column.MedianValue = cellValues.ElementAt(cellValues.Count() / 2);
                 }
             }
         }

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using d3;
 using Windows.UI.Xaml.Shapes;
 using Windows.UI;
+using System.Diagnostics;
 
 namespace FlexTable.ViewModel
 {
@@ -111,7 +112,8 @@ namespace FlexTable.ViewModel
             }
         }
 
-        public Boolean IsHistogramVisible { get; set; }
+        private Boolean isHistogramVisible;
+        public Boolean IsHistogramVisible { get { return isHistogramVisible; } set { isHistogramVisible = value; OnPropertyChanged("IsHistogramVisible"); } }
 
         public SummaryViewModel(ViewModel.MainPageViewModel mainPageViewModel)
         {
@@ -168,7 +170,6 @@ namespace FlexTable.ViewModel
             {
 
             }
-            OnPropertyChanged("IsHistogramVisible");
         }
     }
 }

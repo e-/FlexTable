@@ -18,6 +18,7 @@
             <Setter Property="Padding" Value="0 5 10 5" />
         </Style>
         <util:BooleanToVisibilityConverter x:Name="BooleanToVisibilityConverter"/>
+        <util:BooleanToInvertVisibilityConverter x:Name="BooleanToInvertVisibilityConverter"/>
     </UserControl.Resources>
     
     <Grid Margin="10">
@@ -35,7 +36,25 @@
                 <d3:Axis Orientation="Vertical" Scale="{Binding YScale}" Transition="False" Canvas.Top="0" Canvas.Left="50"/>
             </Canvas>
         </Grid>
-        <Grid>
+        <Grid Visibility="{Binding IsHistogramVisible,Converter={StaticResource BooleanToInvertVisibilityConverter}}">
+            <StackPanel>
+                <TextBlock Style="{StaticResource DescriptionStyle}" FontSize="30">
+                Summary of <Run Text="{Binding Column.Name}" FontWeight="Bold"/>
+                </TextBlock>
+                <TextBlock Style="{StaticResource DescriptionStyle}" Text="{Binding Column.TypeString}" />
+                <TextBlock>
+                    Min : <Run Text="{Binding Column.MinValue}"></Run>
+                </TextBlock>
+                <TextBlock>
+                    Mean : <Run Text="{Binding Column.MeanValue}"></Run>
+                </TextBlock>
+                <TextBlock>
+                    Median : <Run Text="{Binding Column.MedianValue}"></Run>
+                </TextBlock>
+                <TextBlock>
+                    Max : <Run Text="{Binding Column.MaxValue}"></Run>
+                </TextBlock>
+            </StackPanel>
         </Grid>
     </Grid>
 </UserControl>
