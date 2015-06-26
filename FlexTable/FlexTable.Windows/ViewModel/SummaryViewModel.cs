@@ -134,14 +134,14 @@ namespace FlexTable.ViewModel
                     DomainStart = 0,
                     DomainEnd = Math.Round(maxCount * 1.2),
                     RangeStart = 400,
-                    RangeEnd = 10
+                    RangeEnd = 50
                 };
                 YScale = yScale;
 
                 d3.Scale.Ordinal xScale = new d3.Scale.Ordinal()
                 {
                     RangeStart = 70,
-                    RangeEnd = 700
+                    RangeEnd = 600
                 };
                 foreach (Model.Bin bin in column.Bins) { xScale.Domain.Add(bin.Name); }
                 XScale = xScale;

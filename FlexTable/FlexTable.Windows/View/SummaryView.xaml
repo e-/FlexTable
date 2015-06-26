@@ -14,7 +14,7 @@
     <UserControl.Resources>
         <Style TargetType="TextBlock" x:Key="DescriptionStyle">
             <Setter Property="FontSize" Value="20" />
-            <Setter Property="TextAlignment" Value="Right" />
+            <Setter Property="TextAlignment" Value="Center" />
             <Setter Property="Padding" Value="0 5 10 5" />
         </Style>
         <util:BooleanToVisibilityConverter x:Name="BooleanToVisibilityConverter"/>
@@ -23,7 +23,9 @@
     <Grid Margin="10">
         <Grid Visibility="{Binding IsHistogramVisible,Converter={StaticResource BooleanToVisibilityConverter}}">
             <StackPanel>
-                <TextBlock Style="{StaticResource DescriptionStyle}" FontSize="30" FontWeight="Bold" Text="{Binding Column.Name}" />
+                <TextBlock Style="{StaticResource DescriptionStyle}" FontSize="30">
+                    Frequency of <Run Text="{Binding Column.Name}" FontWeight="Bold"/>
+                </TextBlock>
                 <TextBlock Style="{StaticResource DescriptionStyle}" Text="{Binding Column.TypeString}" />
             </StackPanel>
             <Canvas>

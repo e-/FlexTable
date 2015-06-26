@@ -34,7 +34,7 @@ namespace FlexTable.Model
         {
             get
             {
-                return Type == ColumnType.Categorical ? "Categorical" : "Continuous";
+                return Type == ColumnType.Categorical ? "Categorical" : "Numerical";
             }
         }
 
