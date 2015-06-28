@@ -24,7 +24,7 @@ namespace d3.View
     /// <summary>
     /// 자체에서 사용하거나 프레임 내에서 탐색할 수 있는 빈 페이지입니다.
     /// </summary>
-    public sealed partial class Rectangles : Page
+    public sealed partial class Rectangles : UserControl
     {
         public static readonly DependencyProperty DataProperty =
             DependencyProperty.Register("Data", typeof(Selection.Data), typeof(Rectangles), new PropertyMetadata(null, new PropertyChangedCallback(DataChanged)));
@@ -36,39 +36,39 @@ namespace d3.View
         }
 
         public static readonly DependencyProperty WidthGetterProperty =
-            DependencyProperty.Register("WidthGetter", typeof(Func<Object, Double>), typeof(Rectangles), new PropertyMetadata(default(Func<Object, Double>)));
+            DependencyProperty.Register("WidthGetter", typeof(Func<Object, Int32, Double>), typeof(Rectangles), new PropertyMetadata(default(Func<Object, Double>)));
 
-        public Func<Object, Double> WidthGetter
+        public Func<Object, Int32, Double> WidthGetter
         {
-            get { return (Func<Object, Double>)GetValue(WidthGetterProperty); }
+            get { return (Func<Object, Int32, Double>)GetValue(WidthGetterProperty); }
             set { SetValue(WidthGetterProperty, value); }
         }
 
         public static readonly DependencyProperty HeightGetterProperty =
-            DependencyProperty.Register("HeightGetter", typeof(Func<Object, Double>), typeof(Rectangles), new PropertyMetadata(default(Func<Object, Double>)));
+            DependencyProperty.Register("HeightGetter", typeof(Func<Object, Int32, Double>), typeof(Rectangles), new PropertyMetadata(default(Func<Object, Double>)));
 
-        public Func<Object, Double> HeightGetter
+        public Func<Object, Int32, Double> HeightGetter
         {
-            get { return (Func<Object, Double>)GetValue(HeightGetterProperty); }
+            get { return (Func<Object, Int32, Double>)GetValue(HeightGetterProperty); }
             set { SetValue(HeightGetterProperty, value); }
         }
 
 
         public static readonly DependencyProperty XGetterProperty =
-            DependencyProperty.Register("XGetter", typeof(Func<Object, Double>), typeof(Rectangles), new PropertyMetadata(default(Func<Object, Double>)));
+            DependencyProperty.Register("XGetter", typeof(Func<Object, Int32, Double>), typeof(Rectangles), new PropertyMetadata(default(Func<Object, Double>)));
 
-        public Func<Object, Double> XGetter
+        public Func<Object, Int32, Double> XGetter
         {
-            get { return (Func<Object, Double>)GetValue(XGetterProperty); }
+            get { return (Func<Object, Int32, Double>)GetValue(XGetterProperty); }
             set { SetValue(XGetterProperty, value); }
         }
 
         public static readonly DependencyProperty YGetterProperty =
-            DependencyProperty.Register("YGetter", typeof(Func<Object, Double>), typeof(Rectangles), new PropertyMetadata(default(Func<Object, Double>)));
+            DependencyProperty.Register("YGetter", typeof(Func<Object, Int32, Double>), typeof(Rectangles), new PropertyMetadata(default(Func<Object, Double>)));
 
-        public Func<Object, Double> YGetter
+        public Func<Object, Int32, Double> YGetter
         {
-            get { return (Func<Object, Double>)GetValue(YGetterProperty); }
+            get { return (Func<Object, Int32, Double>)GetValue(YGetterProperty); }
             set { SetValue(YGetterProperty, value); }
         }
 
@@ -107,14 +107,14 @@ namespace d3.View
             {
                 Rectangle rect = new Rectangle()
                 {
-                    Width = WidthGetter(datum),
-                    Height = HeightGetter(datum),
-                    Fill = ColorGetter == null ? new SolidColorBrush(Colors.LightGray) : new SolidColorBrush(ColorGetter(datum, index++))
+                    Width = WidthGetter(datum, index),
+                    Height = HeightGetter(datum, index),
+                    Fill = ColorGetter == null ? new SolidColorBrush(Colors.LightGray) : new SolidColorBrush(ColorGetter(datum, index))
                 };
 
-                Canvas.SetLeft(rect, XGetter(datum));
-                Canvas.SetTop(rect, YGetter(datum));
-
+                Canvas.SetLeft(rect, XGetter(datum, index));
+                Canvas.SetTop(rect, YGetter(datum, index));
+                index++;
                 RectanglesCanvas.Children.Add(rect);
                 previousRectangles.Add(rect);
             }

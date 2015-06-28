@@ -1,10 +1,12 @@
-﻿using System;
+﻿using FlexTable.Util;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.Input.Inking;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -22,6 +24,33 @@ namespace FlexTable.View
         public SummaryView()
         {
             this.InitializeComponent();
+            Drawable drawable = new Drawable();
+            drawable.Attach(Wrapper, StrokeGrid, NewStrokeGrid);
+            drawable.StrokeAdded += RecognizeStrokes;
+        }
+
+        private void Grid_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            ViewModel.SummaryViewModel svm = this.DataContext as ViewModel.SummaryViewModel;
+            
+            svm.IsSelected = true;
+        }
+
+        Boolean RecognizeStrokes(InkManager inkManager)
+        {
+            IReadOnlyList<InkStroke> strokes = inkManager.GetStrokes();
+            ViewModel.SummaryViewModel svm = this.DataContext as ViewModel.SummaryViewModel;
+
+            if (strokes.Count == 0) return true;
+            if (strokes.Count >= 2) return true;
+
+            InkStroke stroke = strokes.First();
+
+            if (stroke.BoundingRect.Height < 30 && stroke.BoundingRect.Width > 30)
+            {
+                svm.StrokeAdded(stroke);
+            }
+            return true;
         }
     }
 }

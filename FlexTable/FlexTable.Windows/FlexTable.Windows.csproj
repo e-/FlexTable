@@ -112,6 +112,8 @@
     <Compile Include="Util\BooleanToOpacityConverter.cs" />
     <Compile Include="Util\BooleanToInvertVisibilityConverter.cs" />
     <Compile Include="Util\BooleanToVisibilityConverter.cs" />
+    <Compile Include="Util\Drawable.cs" />
+    <Compile Include="Util\SummarySelectedConverter.cs" />
     <Compile Include="ViewModel\ColumnViewModel.cs" />
     <Compile Include="ViewModel\SummaryViewModel.cs" />
     <Compile Include="View\CellPresenter.xaml.cs">

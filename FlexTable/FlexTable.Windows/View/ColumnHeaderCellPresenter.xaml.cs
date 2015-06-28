@@ -24,6 +24,7 @@ namespace FlexTable.View
         Dictionary<uint, Pointer> contacts = new Dictionary<uint, Pointer>();
         uint numActiveContacts=0;
         ViewModel.ColumnViewModel columnViewModel;
+        private Point initialPoint;
 
         public ColumnHeaderCellPresenter()
         {
@@ -61,12 +62,12 @@ namespace FlexTable.View
         private void Border_PointerEntered(object sender, PointerRoutedEventArgs e)
         {
             PointerIn(e.Pointer);
-            //(DataContext as Model.Column).Highlighted = true;
         }
 
         private void Border_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             PointerIn(e.Pointer);
+            initialPoint = e.GetCurrentPoint(this).Position;
 
             Down.IsOpen = true;
             Up.IsOpen = true;
@@ -104,7 +105,6 @@ namespace FlexTable.View
         private void Border_PointerExited(object sender, PointerRoutedEventArgs e)
         {
             PointerOut(e.Pointer);
-            //if(numActiveContacts == 0) (DataContext as Model.Column).Highlighted = false;
         }
 
         private void Border_PointerCaptureLost(object sender, PointerRoutedEventArgs e)
@@ -140,14 +140,11 @@ namespace FlexTable.View
                 upSelected = downSelected = leftSelected = rightSelected = false;
                 columnViewModel.Unhighlight();
             }
-
-            //if (numActiveContacts == 0) (DataContext as Model.Column).Highlighted = false;
         }
 
         private void Border_PointerCanceled(object sender, PointerRoutedEventArgs e)
         {
             PointerOut(e.Pointer);
-            //if (numActiveContacts == 0) (DataContext as Model.Column).Highlighted = false;
         }
 
         Boolean leftDirty = false, downDirty = false, upDirty = false, rightDirty = false; // 기본자리에서 움직였나?
@@ -191,6 +188,111 @@ namespace FlexTable.View
         const Double HorizontalSelectThreshold = 15;
         const Double VerticalSelectThreshold = 15;
         const Double SnapThreshold = 40;
+
+        private void Border_PointerMoved(object sender, PointerRoutedEventArgs e)
+        {            
+            Double y = e.GetCurrentPoint(this).Position.Y - initialPoint.Y,
+                   x = e.GetCurrentPoint(this).Position.X - initialPoint.X;
+
+            Debug.WriteLine("{0} {1}", x, y);
+
+            if (Math.Abs(x) <= SnapThreshold)
+                x = 0;
+            else if (x >= 0)
+                x -= SnapThreshold;
+            else
+                x += SnapThreshold;
+
+            if (Math.Abs(y) <= SnapThreshold)
+                y = 0;
+            else if (y >= 0)
+                y -= SnapThreshold;
+            else
+                y += SnapThreshold;
+
+            if (x == 0 && y == 0)
+            {
+                Reset("all");
+            }
+            else if (-y >= x && -y >= -x) //up
+            {
+                Reset("up");
+
+                if (y < -VerticalSelectThreshold)
+                {
+                    //UpFocusTransform.Y = VerticalSelectThreshold;
+                    if (!upSelected) HighlightUpStoryboard.Begin();
+                    upSelected = true;
+                    upDirty = true;
+                }
+                else if (y < 0)
+                {
+                    //UpFocusTransform.Y = -y;
+                    //upDirty = true;
+                    if (upSelected) UnHighlightUpStoryboard.Begin();
+                    upSelected = false;
+                }
+            }
+            else if (y >= x && y >= -x) //down
+            {
+                Reset("down");
+
+                if (y > VerticalSelectThreshold)
+                {
+                    //DownFocusTransform.Y = -VerticalSelectThreshold;
+                    if (!downSelected) HighlightDownStoryboard.Begin();
+                    downSelected = true;
+                    downDirty = true;
+                }
+                else if (y > 0)
+                {
+                    //DownFocusTransform.Y = -y;
+                    //downDirty = true;
+                    if (downSelected) UnHighlightDownStoryboard.Begin();
+                    downSelected = false;
+                }
+            }
+            else if (x >= y && x >= -y) //right
+            {
+                Reset("right");
+
+                if (x > HorizontalSelectThreshold)
+                {
+                    //RightFocusTransform.X = -HorizontalSelectThreshold;
+                    rightDirty = true;
+                    if (!rightSelected) HighlightRightStoryboard.Begin();
+                    rightSelected = true;
+                }
+                else if (x > 0)
+                {
+                    //RightFocusTransform.X = -x;
+                    //rightDirty = true;
+                    if (rightSelected) UnHighlightRightStoryboard.Begin();
+                    rightSelected = false;
+                }
+            }
+            else //left
+            {
+                Reset("left");
+
+                if (x < -HorizontalSelectThreshold)
+                {
+                    //LeftFocusTransform.X = HorizontalSelectThreshold;
+                    if (!leftSelected) HighlightLeftStoryboard.Begin();
+                    leftSelected = true;
+                    leftDirty = true;
+                }
+                else if (x < 0)
+                {
+                    //LeftFocusTransform.X = -x;
+                    //leftDirty = true;
+                    if (leftSelected) UnHighlightLeftStoryboard.Begin();
+                    leftSelected = false;
+                }
+            }
+                
+
+        }
 
         private void Grid_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {

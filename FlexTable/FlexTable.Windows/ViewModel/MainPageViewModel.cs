@@ -202,6 +202,7 @@ namespace FlexTable.ViewModel
             foreach (Model.Column c in sheet.Columns) c.Highlighted = false;
             column.Highlighted = true;
 
+            summaryViewModel.IsSelected = false; // reset selected because the selected column changed
             summaryViewModel.ShowSummary(column);
             HighlightedColumn = column;
         }
@@ -209,6 +210,9 @@ namespace FlexTable.ViewModel
         public void UnhighlightColumn(Model.Column column)
         {
             column.Highlighted = false;
+            indexedColumnIndex = -1;
+            summaryViewModel.Hide();
+            HighlightedColumn = null;
         }
 
         public void CancelIndexing()
@@ -219,6 +223,7 @@ namespace FlexTable.ViewModel
             OnPropertyChanged("IsIndexTooltipVisible");
             HighlightedColumn = null;
             indexedColumnIndex = -1;
+            summaryViewModel.Hide();
         }
     }
 }

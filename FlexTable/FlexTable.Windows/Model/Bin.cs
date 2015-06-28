@@ -10,5 +10,7 @@ namespace FlexTable.Model
     {
         public String Name { get; set; }
         public Int32 Count { get; set; }
+        public Boolean FilteredOut { get; set; }
+        public Int32 Index { get; set; }
     }
 }

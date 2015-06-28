@@ -9,7 +9,8 @@
     xmlns:util="using:FlexTable.Util"
     mc:Ignorable="d"
     d:DesignHeight="300"
-    d:DesignWidth="400">
+    d:DesignWidth="400"
+    >
     
     <UserControl.Resources>
         <Style TargetType="TextBlock" x:Key="DescriptionStyle">
@@ -17,12 +18,24 @@
             <Setter Property="TextAlignment" Value="Center" />
             <Setter Property="Padding" Value="0 5 10 5" />
         </Style>
+        <Style TargetType="TextBlock" x:Key="SummaryHeaderStyle">
+            <Setter Property="FontSize" Value="20" />
+            <Setter Property="TextAlignment" Value="Right" />
+            <Setter Property="Padding" Value="0 5 10 5" />
+        </Style>
+        <Style TargetType="TextBlock" x:Key="SummaryValueStyle">
+            <Setter Property="FontSize" Value="20" />
+            <Setter Property="TextAlignment" Value="Left" />
+            <Setter Property="Padding" Value="0 5 10 5" />
+        </Style>
+        
         <util:BooleanToVisibilityConverter x:Name="BooleanToVisibilityConverter"/>
         <util:BooleanToInvertVisibilityConverter x:Name="BooleanToInvertVisibilityConverter"/>
+        <util:SummarySelectedConverter x:Name="SummarySelectedConverter" />
     </UserControl.Resources>
     
-    <Grid Margin="10">
-        <Grid Visibility="{Binding IsHistogramVisible,Converter={StaticResource BooleanToVisibilityConverter}}">
+    <Grid x:Name="Wrapper" Background="{Binding IsSelected, Converter={StaticResource SummarySelectedConverter}}" Tapped="Grid_Tapped">        
+        <Grid Margin="10" Visibility="{Binding IsHistogramVisible,Converter={StaticResource BooleanToVisibilityConverter}}">
             <StackPanel>
                 <TextBlock Style="{StaticResource DescriptionStyle}" FontSize="30">
                     Frequency of <Run Text="{Binding Column.Name}" FontWeight="Bold"/>
@@ -34,27 +47,50 @@
                                XGetter="{Binding XGetter}" YGetter="{Binding YGetter}" ColorGetter="{Binding ColorGetter}"/>
                 <d3:Axis Orientation="Horizontal" Scale="{Binding XScale}" Transition="False" Canvas.Top="400" Canvas.Left="0"/>
                 <d3:Axis Orientation="Vertical" Scale="{Binding YScale}" Transition="False" Canvas.Top="0" Canvas.Left="50"/>
+
+                <d3:Rectangles Data="{Binding LegendData}" WidthGetter="{Binding LegendPatchWidthGetter}" 
+                               HeightGetter="{Binding LegendPatchHeightGetter}" XGetter="{Binding LegendPatchXGetter}" 
+                               YGetter="{Binding LegendPatchYGetter}" ColorGetter="{Binding ColorGetter}"
+                               Canvas.Left="{Binding ChartWidth}"/>
+                
+                <d3:Texts Data="{Binding LegendData}" TextGetter="{Binding LegendTextGetter}"
+                          HeightGetter="{Binding LegendPatchHeightGetter}"
+                          XGetter="{Binding LegendTextXGetter}" YGetter="{Binding LegendPatchYGetter}" 
+                          ColorGetter="{Binding LegendTextColorGetter}"
+                          Canvas.Left="{Binding ChartWidth}"/>
             </Canvas>
         </Grid>
-        <Grid Visibility="{Binding IsHistogramVisible,Converter={StaticResource BooleanToInvertVisibilityConverter}}">
+        <Grid Margin="10" Visibility="{Binding IsStatisticalSummaryVisible,Converter={StaticResource BooleanToVisibilityConverter}}">
             <StackPanel>
                 <TextBlock Style="{StaticResource DescriptionStyle}" FontSize="30">
                 Summary of <Run Text="{Binding Column.Name}" FontWeight="Bold"/>
                 </TextBlock>
                 <TextBlock Style="{StaticResource DescriptionStyle}" Text="{Binding Column.TypeString}" />
-                <TextBlock>
-                    Min : <Run Text="{Binding Column.MinValue}"></Run>
-                </TextBlock>
-                <TextBlock>
-                    Mean : <Run Text="{Binding Column.MeanValue}"></Run>
-                </TextBlock>
-                <TextBlock>
-                    Median : <Run Text="{Binding Column.MedianValue}"></Run>
-                </TextBlock>
-                <TextBlock>
-                    Max : <Run Text="{Binding Column.MaxValue}"></Run>
-                </TextBlock>
+                <Grid Margin="0 20 0 0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition></ColumnDefinition>
+                        <ColumnDefinition></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                    </Grid.RowDefinitions>
+                    
+                    <TextBlock Grid.Column="0" Grid.Row="0" Style="{StaticResource SummaryHeaderStyle}">Min</TextBlock>
+                    <TextBlock Grid.Column="0" Grid.Row="1" Style="{StaticResource SummaryHeaderStyle}">Mean</TextBlock>
+                    <TextBlock Grid.Column="0" Grid.Row="2" Style="{StaticResource SummaryHeaderStyle}">Median</TextBlock>
+                    <TextBlock Grid.Column="0" Grid.Row="3" Style="{StaticResource SummaryHeaderStyle}">Max</TextBlock>
+
+                    <TextBlock Grid.Column="1" Grid.Row="0" Style="{StaticResource SummaryValueStyle}" Text="{Binding Column.MinValueString}"></TextBlock>
+                    <TextBlock Grid.Column="1" Grid.Row="1" Style="{StaticResource SummaryValueStyle}" Text="{Binding Column.MeanValueString}"></TextBlock>
+                    <TextBlock Grid.Column="1" Grid.Row="2" Style="{StaticResource SummaryValueStyle}" Text="{Binding Column.MedianValueString}"></TextBlock>
+                    <TextBlock Grid.Column="1" Grid.Row="3" Style="{StaticResource SummaryValueStyle}" Text="{Binding Column.MaxValueString}"></TextBlock>
+                </Grid>
             </StackPanel>
         </Grid>
+        <Grid x:Name="StrokeGrid" IsHitTestVisible="False"></Grid>
+        <Grid x:Name="NewStrokeGrid" IsHitTestVisible="False"></Grid>
     </Grid>
 </UserControl>

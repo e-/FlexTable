@@ -43,16 +43,19 @@ namespace FlexTable.Model
 
         private Double minValue;
         public Double MinValue { get { return minValue; } set { minValue = value; OnPropertyChanged("MinValue"); } }
+        public String MinValueString { get { return String.Format("{0:#,0.#}", minValue); } }
 
         private Double maxValue;
         public Double MaxValue { get { return maxValue; } set { maxValue = value; OnPropertyChanged("MaxValue"); } }
+        public String MaxValueString { get { return String.Format("{0:#,0.#}", maxValue); } }
 
         private Double meanValue;
         public Double MeanValue { get { return meanValue; } set { meanValue = value; OnPropertyChanged("MeanValue"); } }
+        public String MeanValueString { get { return String.Format("{0:#,0.#}", meanValue); } }
 
         private Double medianValue;
         public Double MedianValue { get { return medianValue; } set { medianValue = value; OnPropertyChanged("MedianValue"); } }
-
+        public String MedianValueString { get { return String.Format("{0:#,0.#}", medianValue); } }
 
         protected void OnPropertyChanged(String propertyName)
         {
@@ -104,9 +107,10 @@ namespace FlexTable.Model
             sorted.Sort();
 
             List<Bin> bins = new List<Bin>();
+            Int32 index = 0;
             foreach (String key in sorted)
             {
-                bins.Add(new Bin() { Name = key, Count = dictionary[key] });
+                bins.Add(new Bin() { Name = key, Count = dictionary[key], Index = index++});
             }
 
             return bins;
@@ -131,7 +135,8 @@ namespace FlexTable.Model
 
                 bins.Add(new Bin(){
                     Name = String.Format("{0}-{1}", start, end),
-                    Count = 0
+                    Count = 0,
+                    Index = i
                 });
             }
 

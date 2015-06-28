@@ -51,6 +51,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\Texts.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <TargetPlatform Include="WindowsPhoneApp, Version=8.1" />
@@ -68,6 +72,9 @@
     <Compile Include="Scale\Linear.cs" />
     <Compile Include="View\Rectangles.xaml.cs">
       <DependentUpon>Rectangles.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Texts.xaml.cs">
+      <DependentUpon>Texts.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />

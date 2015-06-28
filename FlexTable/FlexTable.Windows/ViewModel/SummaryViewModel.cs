@@ -8,6 +8,8 @@ using d3;
 using Windows.UI.Xaml.Shapes;
 using Windows.UI;
 using System.Diagnostics;
+using Windows.Foundation;
+using Windows.UI.Input.Inking;
 
 namespace FlexTable.ViewModel
 {
@@ -47,24 +49,30 @@ namespace FlexTable.ViewModel
             }
         }
 
-        public Func<Object, Double> WidthGetter { get { return d => 50; } }
-        public Func<Object, Double> HeightGetter { get { return d => 400 - yScale.Map((d as Model.Bin).Count); } }
-        public Func<Object, Double> XGetter { get { return d => xScale.Map((d as Model.Bin).Name) - 25; } }
-        public Func<Object, Double> YGetter { get { return d => yScale.Map((d as Model.Bin).Count); } }
-        /*
-         * .Set3 .q0-10{fill:rgb(141,211,199)}
-   .Set3 .q1-10{fill:rgb(255,255,179)}
-   .Set3 .q2-10{fill:rgb(190,186,218)}
-   .Set3 .q3-10{fill:rgb(251,128,114)}
-   .Set3 .q4-10{fill:rgb(128,177,211)}
-   .Set3 .q5-10{fill:rgb(253,180,98)}
-   .Set3 .q6-10{fill:rgb(179,222,105)}
-   .Set3 .q7-10{fill:rgb(252,205,229)}
-   .Set3 .q8-10{fill:rgb(217,217,217)}
-   .Set3 .q9-10{fill:rgb(188,128,189)}
-         * 
-         * */
+        public Double ChartHeight { get { return 400; } }
+        public Double ChartWidth { get { return 600; } }
 
+        public Func<Object, Int32, Double> WidthGetter { get { return (d, index) => 50; } }
+        public Func<Object, Int32, Double> HeightGetter { get { return (d, index) => ChartHeight - yScale.Map((d as Model.Bin).Count); } }
+        public Func<Object, Int32, Double> XGetter { get { return (d, index) => xScale.Map((d as Model.Bin).Name) - 25; } }
+        public Func<Object, Int32, Double> YGetter { get { return (d, index) => yScale.Map((d as Model.Bin).Count); } }
+        private d3.Selection.Data data;
+        public d3.Selection.Data Data { get { return data; } set { data = value; OnPropertyChanged("Data"); } }
+
+        public Func<Object, Int32, Double> LegendPatchWidthGetter { get { return (d, index) => 20; } }
+        public Func<Object, Int32, Double> LegendPatchHeightGetter { get { return (d, index) => 20; } }
+        public Func<Object, Int32, Double> LegendPatchXGetter { get { return (d, index) => 30; } }
+        public Func<Object, Int32, Double> LegendPatchYGetter { get { 
+            return (d, index) => (ChartHeight - LegendData.Real.Count * 20 - (LegendData.Real.Count - 1) * 10) / 2 + index * 30; 
+        } }
+
+        public Func<Object, Int32, Double> LegendTextXGetter { get { return (d, index) => 55; } }
+        public Func<Object, Int32, String> LegendTextGetter { get { return (d, index) => (d as Model.Bin).Name; } }
+        public Func<Object, Int32, Color> LegendTextColorGetter { get { return (d, index) => (d as Model.Bin).FilteredOut ? Colors.LightGray : Colors.Black; } }
+
+        private d3.Selection.Data legendData;
+        public d3.Selection.Data LegendData { get { return legendData; } set { legendData = value; OnPropertyChanged("LegendData"); } }
+        
         /*public List<Color> CategoricalColors = new List<Color>()
         {
             Color.FromArgb(255, 141, 211, 199),
@@ -78,18 +86,7 @@ namespace FlexTable.ViewModel
             Color.FromArgb(255, 217, 217, 217),
             Color.FromArgb(255, 199, 128, 189)
         };*/
-         /*
-        1f77b4 #1f77b4
-   ff7f0e #ff7f0e
-   2ca02c #2ca02c
-   d62728 #d62728
-   9467bd #9467bd
-   8c564b #8c564b
-   e377c2 #e377c2
-   7f7f7f #7f7f7f
-   bcbd22 #bcbd22
-   17becf #17becf
-       */
+
         public List<Color> CategoricalColors = new List<Color>()
         {
             Color.FromArgb(255, 31, 119, 180),
@@ -108,24 +105,29 @@ namespace FlexTable.ViewModel
         {
             get
             {
-                return (_, index) => CategoricalColors[index % CategoricalColors.Count];
+                return (bin, index) => CategoricalColors[(bin as Model.Bin).Index % CategoricalColors.Count];
             }
         }
 
         private Boolean isHistogramVisible;
         public Boolean IsHistogramVisible { get { return isHistogramVisible; } set { isHistogramVisible = value; OnPropertyChanged("IsHistogramVisible"); } }
 
+        private Boolean isStatisticalSummaryVisible;
+        public Boolean IsStatisticalSummaryVisible { get { return isStatisticalSummaryVisible; } set { isStatisticalSummaryVisible = value; OnPropertyChanged("IsStatisticalSummaryVisible"); } }
+
+        private Boolean isSelected = false;
+        public Boolean IsSelected { get { return isSelected; } set { isSelected = value; OnPropertyChanged("IsSelected"); } }
+
         public SummaryViewModel(ViewModel.MainPageViewModel mainPageViewModel)
         {
             this.mainPageViewModel = mainPageViewModel;
         }
 
-        public d3.Selection.Data Data { get; set; }
-
         public void ShowSummary(Model.Column column)
         {
             Column = column;
             IsHistogramVisible = column.Type == Model.ColumnType.Categorical;
+            IsStatisticalSummaryVisible = column.Type == Model.ColumnType.Numerical;
 
             if (IsHistogramVisible)
             {
@@ -135,7 +137,7 @@ namespace FlexTable.ViewModel
                 {
                     DomainStart = 0,
                     DomainEnd = Math.Round(maxCount * 1.2),
-                    RangeStart = 400,
+                    RangeStart = ChartHeight,
                     RangeEnd = 50
                 };
                 YScale = yScale;
@@ -143,7 +145,7 @@ namespace FlexTable.ViewModel
                 d3.Scale.Ordinal xScale = new d3.Scale.Ordinal()
                 {
                     RangeStart = 70,
-                    RangeEnd = 600
+                    RangeEnd = ChartWidth
                 };
                 foreach (Model.Bin bin in column.Bins) { xScale.Domain.Add(bin.Name); }
                 XScale = xScale;
@@ -154,22 +156,73 @@ namespace FlexTable.ViewModel
                     Rectangle rect = new Rectangle()
                     {
                         Width = 50,
-                        Height = 400 - yScale.Map(bin.Count)
+                        Height = ChartHeight - yScale.Map(bin.Count)
                     };
                     ++index;
                 }
 
                 Data = new d3.Selection.Data()
                 {
-                    Real = column.Bins.Select(b => b as Object).ToList()
+                    Real = column.Bins.Where(b => !b.FilteredOut).Select(b => b as Object).ToList()
                 };
 
-                OnPropertyChanged("Data");
+                LegendData = new d3.Selection.Data()
+                {
+                    Real = column.Bins.Select(b => b as Object).ToList()
+                };
             }
             else
             {
-
+                
             }
+        }
+
+        public void Hide()
+        {
+            if (!IsSelected)
+            {
+                IsHistogramVisible = false;
+                IsStatisticalSummaryVisible = false;
+            }
+        }
+
+        public void StrokeAdded(InkStroke stroke)
+        {
+            Int32 index = 0;
+            Rect rect = stroke.BoundingRect;
+            Point center = new Point(rect.X + rect.Width / 2, rect.Y + rect.Height / 2);
+
+            foreach (Model.Bin bin in column.Bins.Select(b => b as Object).ToList())
+            {
+                Double x0 = LegendTextXGetter(bin, index),
+                       y0 = LegendPatchYGetter(bin, index) + 10,
+                       y1 = y0 + LegendPatchHeightGetter(bin, index) + 10;
+
+                if (x0 <= center.X - mainPageViewModel.Width / 2 + ChartWidth && y0 <= center.Y && center.Y <= y1)
+                {
+                    bin.FilteredOut = !bin.FilteredOut;
+                    break;
+                }                
+                index++;
+            }
+
+            d3.Scale.Ordinal xScale = new d3.Scale.Ordinal()
+            {
+                RangeStart = 70,
+                RangeEnd = ChartWidth
+            };
+            foreach (Model.Bin bin in column.Bins.Where(b => !b.FilteredOut)) { xScale.Domain.Add(bin.Name); }
+            XScale = xScale;
+
+            Data = new d3.Selection.Data()
+            {
+                Real = column.Bins.Where(b => !b.FilteredOut).Select(b => b as Object).ToList()
+            };
+
+            LegendData = new d3.Selection.Data()
+            {
+                Real = column.Bins.Select(b => b as Object).ToList()
+            };
         }
     }
 }

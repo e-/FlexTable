@@ -61,7 +61,9 @@
                 <StackPanel.RenderTransform>
                     <CompositeTransform ScaleX="1" ScaleY="1" x:Name="UpperCompositeTransform"></CompositeTransform>
                 </StackPanel.RenderTransform>
-                <Border Background="{StaticResource GridLineBrush}" Height="{StaticResource ColumnHeaderHeight}">
+                <Border Background="{StaticResource GridLineBrush}" Height="{StaticResource ColumnHeaderHeight}"
+                        IsHitTestVisible="False"
+                        >
                     <TextBlock Style="{StaticResource ColumnHeaderStyle}" VerticalAlignment="Center" x:Name="UpperColumnHeader"
                            />
                 </Border>
@@ -77,7 +79,8 @@
                 <Border Height="1000" Background="White" />
             </StackPanel>
 
-            <Border Background="{StaticResource GridLineBrush}" Height="{StaticResource ColumnHeaderHeight}" x:Name="LowerColumn">
+            <Border Background="{StaticResource GridLineBrush}" Height="{StaticResource ColumnHeaderHeight}" x:Name="LowerColumn"
+                    IsHitTestVisible="False">
                 <Border.RenderTransformOrigin>0.5 1</Border.RenderTransformOrigin>
                 <Border.RenderTransform>
                     <CompositeTransform ScaleX="1" ScaleY="1" x:Name="LowerCompositeTransform"></CompositeTransform>
