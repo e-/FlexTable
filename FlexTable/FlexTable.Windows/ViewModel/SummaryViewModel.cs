@@ -61,14 +61,14 @@ namespace FlexTable.ViewModel
 
         public Func<Object, Int32, Double> LegendPatchWidthGetter { get { return (d, index) => 20; } }
         public Func<Object, Int32, Double> LegendPatchHeightGetter { get { return (d, index) => 20; } }
-        public Func<Object, Int32, Double> LegendPatchXGetter { get { return (d, index) => 30; } }
+        public Func<Object, Int32, Double> LegendPatchXGetter { get { return (d, index) => 0; } }
         public Func<Object, Int32, Double> LegendPatchYGetter { get { 
             return (d, index) => (ChartHeight - LegendData.Real.Count * 20 - (LegendData.Real.Count - 1) * 10) / 2 + index * 30; 
         } }
 
-        public Func<Object, Int32, Double> LegendTextXGetter { get { return (d, index) => 55; } }
+        public Func<Object, Int32, Double> LegendTextXGetter { get { return (d, index) => 25; } }
         public Func<Object, Int32, String> LegendTextGetter { get { return (d, index) => (d as Model.Bin).Name; } }
-        public Func<Object, Int32, Color> LegendTextColorGetter { get { return (d, index) => (d as Model.Bin).FilteredOut ? Colors.LightGray : Colors.Black; } }
+        public Func<Object, Int32, Color> LegendTextColorGetter { get { return (d, index) => (d as Model.Bin).IsFilteredOut ? Colors.LightGray : Colors.Black; } }
 
         private d3.Selection.Data legendData;
         public d3.Selection.Data LegendData { get { return legendData; } set { legendData = value; OnPropertyChanged("LegendData"); } }
@@ -163,7 +163,7 @@ namespace FlexTable.ViewModel
 
                 Data = new d3.Selection.Data()
                 {
-                    Real = column.Bins.Where(b => !b.FilteredOut).Select(b => b as Object).ToList()
+                    Real = column.Bins.Where(b => !b.IsFilteredOut).Select(b => b as Object).ToList()
                 };
 
                 LegendData = new d3.Selection.Data()
@@ -200,7 +200,7 @@ namespace FlexTable.ViewModel
 
                 if (x0 <= center.X - mainPageViewModel.Width / 2 + ChartWidth && y0 <= center.Y && center.Y <= y1)
                 {
-                    bin.FilteredOut = !bin.FilteredOut;
+                    bin.IsFilteredOut = !bin.IsFilteredOut;
                     break;
                 }                
                 index++;
@@ -211,18 +211,20 @@ namespace FlexTable.ViewModel
                 RangeStart = 70,
                 RangeEnd = ChartWidth
             };
-            foreach (Model.Bin bin in column.Bins.Where(b => !b.FilteredOut)) { xScale.Domain.Add(bin.Name); }
+            foreach (Model.Bin bin in column.Bins.Where(b => !b.IsFilteredOut)) { xScale.Domain.Add(bin.Name); }
             XScale = xScale;
 
             Data = new d3.Selection.Data()
             {
-                Real = column.Bins.Where(b => !b.FilteredOut).Select(b => b as Object).ToList()
+                Real = column.Bins.Where(b => !b.IsFilteredOut).Select(b => b as Object).ToList()
             };
 
             LegendData = new d3.Selection.Data()
             {
                 Real = column.Bins.Select(b => b as Object).ToList()
             };
+
+            mainPageViewModel.UpdateFiltering();
         }
     }
 }

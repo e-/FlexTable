@@ -176,7 +176,7 @@
           PointerEntered="Border_PointerEntered" 
           PointerExited="Border_PointerExited"
           PointerPressed="Border_PointerPressed"
-          
+          PointerCaptureLost="Border_PointerCaptureLost"
           PointerCanceled="Border_PointerCanceled"
           PointerReleased="Border_PointerCaptureLost"
           PointerMoved="Border_PointerMoved"

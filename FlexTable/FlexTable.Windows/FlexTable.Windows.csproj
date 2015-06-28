@@ -109,6 +109,7 @@
     <Compile Include="Model\RowHeader.cs" />
     <Compile Include="Util\BooleanConverter.cs" />
     <Compile Include="Util\BooleanToEnabledOpacityConverter.cs" />
+    <Compile Include="Util\BooleanToInvertedOpacityConverter.cs" />
     <Compile Include="Util\BooleanToOpacityConverter.cs" />
     <Compile Include="Util\BooleanToInvertVisibilityConverter.cs" />
     <Compile Include="Util\BooleanToVisibilityConverter.cs" />

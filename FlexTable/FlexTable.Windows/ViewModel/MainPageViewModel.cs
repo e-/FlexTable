@@ -225,5 +225,44 @@ namespace FlexTable.ViewModel
             indexedColumnIndex = -1;
             summaryViewModel.Hide();
         }
+
+        public void UpdateFiltering()
+        {
+            foreach (Model.Row row in sheet.Rows)
+            {
+                row.IsFilteredOut = false;
+            }
+
+            foreach (Model.Column column in Sheet.Columns)
+            {
+                foreach (Model.Bin bin in column.Bins.Where(b => b.IsFilteredOut))
+                {
+                    foreach (Model.Row row in bin.Rows)
+                    {
+                        row.IsFilteredOut = true;
+                    }
+                }
+            }
+
+            Int32 index = 0;
+            foreach (Model.Row row in sheet.Rows)
+            {
+                if (!row.IsFilteredOut)
+                {
+                    row.Index = index++;
+                }
+            }
+
+            foreach (Model.Row row in sheet.Rows)
+            {
+                row.OnPropertyChanged("Y");
+                row.OnPropertyChanged("IsFilteredOut");
+            }
+
+            foreach (View.RowPresenter rowPresenter in rowPresenters)
+            {
+                rowPresenter.Update();
+            }
+        }
     }
 }

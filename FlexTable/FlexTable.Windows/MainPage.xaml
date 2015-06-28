@@ -52,6 +52,8 @@
                 <Canvas x:Name="TableCanvas" Width="{Binding SheetWidth}" Height="{Binding SheetHeight}">
                     <Grid Name="GuidelineGrid" Canvas.Top="-1" Width="{Binding SheetWidth}" Height="{Binding SheetHeight}" IsHitTestVisible="False">
                     </Grid>
+                    
+                    <!-- Grid Background Pattern -->
                     <ItemsControl ItemsSource="{Binding Sheet.Columns}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>

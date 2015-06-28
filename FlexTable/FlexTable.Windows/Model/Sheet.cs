@@ -91,10 +91,12 @@ namespace FlexTable.Model
                 Column column = columns[i];
                 if (column.Type == ColumnType.Categorical) // bar chart
                 {
-                    column.Bins = Model.Column.GetFrequencyBins(rows.Select(r => r.Cells[i].RawContent));
+                    column.Bins = Model.Column.GetFrequencyBins(rows, i);
                 }
                 else // histogram
                 {
+                    column.Bins = new List<Bin>();
+
                     IEnumerable<Double> cellValues = rows.Select(r => (Double)r.Cells[i].Content).OrderBy(v=>v);
 
                     column.MinValue = cellValues.Min();

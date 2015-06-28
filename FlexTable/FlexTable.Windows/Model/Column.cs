@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
@@ -90,17 +91,18 @@ namespace FlexTable.Model
             return ColumnType.Numerical;
         }
 
-        public static List<Bin> GetFrequencyBins(IEnumerable<String> cellValues)
+        public static List<Bin> GetFrequencyBins(ObservableCollection<Row> rows, Int32 cellIndex)
         {
-            Dictionary<String, Int32> dictionary = new Dictionary<String, Int32>();
+            Dictionary<String, List<Row>> dictionary = new Dictionary<String, List<Row>>();
 
-            foreach (String value in cellValues)
+            foreach (Row row in rows)
             {
+                String value = row.Cells[cellIndex].RawContent;
                 if (!dictionary.ContainsKey(value))
                 {
-                    dictionary[value] = 0;
+                    dictionary[value] = new List<Row>();
                 }
-                dictionary[value]++;
+                dictionary[value].Add(row);
             }
 
             var sorted = dictionary.Keys.ToList();
@@ -110,7 +112,7 @@ namespace FlexTable.Model
             Int32 index = 0;
             foreach (String key in sorted)
             {
-                bins.Add(new Bin() { Name = key, Count = dictionary[key], Index = index++});
+                bins.Add(new Bin() { Name = key, Count = dictionary[key].Count, Index = index++, Rows = dictionary[key]});
             }
 
             return bins;

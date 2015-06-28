@@ -40,8 +40,7 @@ namespace FlexTable.View
         public void Update()
         {
             Int32 index = (this.DataContext as Model.Row).Index;
-            //YAnimation.BeginTime = TimeSpan.FromMilliseconds(index * 20);
-            YAnimation.Begin();
+            UpdateStoryboard.Begin();
         }
 
         public void UpdateCells()

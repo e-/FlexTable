@@ -5,20 +5,26 @@
     xmlns:local="using:FlexTable.View"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:util="using:FlexTable.Util"
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400">
 
     <UserControl.Resources>
-        <Storyboard x:Name="YAnimation">
-            <DoubleAnimation Storyboard.TargetName="CompositeTransform" Storyboard.TargetProperty="TranslateY" To="{Binding Y}" Duration="00:00:00.3">
-                <DoubleAnimation.EasingFunction>
-                    <ExponentialEase EasingMode="EaseInOut" />
-                </DoubleAnimation.EasingFunction>
+        <util:BooleanToInvertedOpacityConverter x:Name="BooleanToInvertedOpacityConverter" />
+        
+        <Storyboard x:Name="UpdateStoryboard">
+            <DoubleAnimation Storyboard.TargetName="CompositeTransform" Storyboard.TargetProperty="TranslateY" 
+                             To="{Binding Y}" Duration="00:00:00.3" EasingFunction="{StaticResource QuarticEaseInOut}">
+                
+            </DoubleAnimation>
+            <DoubleAnimation Storyboard.TargetName="Wrapper" Storyboard.TargetProperty="Opacity" 
+                             To="{Binding IsFilteredOut, Converter={StaticResource BooleanToInvertedOpacityConverter}}" 
+                             Duration="00:00:00.3" EasingFunction="{StaticResource QuarticEaseInOut}">
             </DoubleAnimation>
         </Storyboard>
     </UserControl.Resources>
-    <StackPanel Orientation="Horizontal">
+    <StackPanel Orientation="Horizontal" x:Name="Wrapper">
         <StackPanel.RenderTransform>
             <CompositeTransform x:Name="CompositeTransform"/>
         </StackPanel.RenderTransform>

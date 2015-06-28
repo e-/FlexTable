@@ -27,7 +27,8 @@ namespace FlexTable.Model
         public Int32 IndexFromOne { get { return index + 1; } }
 
         public Double Y { get { return index * (Double)App.Current.Resources["RowHeight"]; } }
-
+        public Boolean IsFilteredOut { get; set; }
+        
         public event PropertyChangedEventHandler PropertyChanged;
 
         public void OnPropertyChanged(String propertyName)

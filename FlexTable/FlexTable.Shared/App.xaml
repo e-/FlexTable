@@ -48,6 +48,8 @@
                 <Setter Property="Fill" Value="#F5F5F5" />
                 <Setter Property="VerticalAlignment" Value="Bottom" />
             </Style>
+            
+            <QuarticEase EasingMode="EaseInOut" x:Key="QuarticEaseInOut" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>
