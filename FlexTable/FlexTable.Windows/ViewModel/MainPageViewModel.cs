@@ -36,9 +36,6 @@ namespace FlexTable.ViewModel
 
         private Double sheetHeight;
         public Double SheetHeight { get { return sheetHeight; } private set { sheetHeight = value; OnPropertyChanged("SheetHeight"); } }
-
-        private ObservableCollection<Model.RowHeader> rowHeaderItems = new ObservableCollection<Model.RowHeader>();
-        public ObservableCollection<Model.RowHeader> RowHeaderItems { get { return rowHeaderItems; } }
         
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -55,6 +52,10 @@ namespace FlexTable.ViewModel
         private ViewModel.SummaryViewModel summaryViewModel;
         public ViewModel.SummaryViewModel SummaryViewModel { get { return summaryViewModel; } set { summaryViewModel = value; OnPropertyChanged("SummaryViewModel"); } }
 
+        private ViewModel.RowHeaderViewModel rowHeaderViewModel;
+        public ViewModel.RowHeaderViewModel RowHeaderViewModel { get { return rowHeaderViewModel; } set { rowHeaderViewModel = value; OnPropertyChanged("RowHeaderViewModel"); } }
+
+
         private Model.Column highlightedColumn;
         public Model.Column HighlightedColumn { get { return highlightedColumn; } set { highlightedColumn = value; OnPropertyChanged("HighlightedColumn"); } }
 
@@ -65,6 +66,8 @@ namespace FlexTable.ViewModel
         {
             this.view = view;
             SummaryViewModel = new ViewModel.SummaryViewModel(this);
+            RowHeaderViewModel = new ViewModel.RowHeaderViewModel(this);
+            
             bounds = Window.Current.Bounds;
             OnPropertyChanged("Width");
             OnPropertyChanged("Height");
@@ -76,11 +79,9 @@ namespace FlexTable.ViewModel
         {
             SheetWidth = sheet.Columns.Select(c => c.Width).Sum() + (Double)App.Current.Resources["RowHeaderWidth"];
             SheetHeight = sheet.RowCount * (Double)App.Current.Resources["RowHeight"];
-            rowHeaderItems.Clear();
-            for (Int32 i = 1; i <= sheet.RowCount; ++i)
-            {
-                rowHeaderItems.Add(new Model.RowHeader() { Index = i });
-            }
+
+            RowHeaderViewModel.SetRowNumber(sheet.RowCount);
+
             columnViewModels.Clear();
             foreach (Model.Column column in sheet.Columns)
             {

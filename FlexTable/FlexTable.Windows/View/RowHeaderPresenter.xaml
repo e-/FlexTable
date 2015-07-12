@@ -15,7 +15,7 @@
         <Border Width="{StaticResource RowHeaderWidth}" Height="{Binding SheetViewHeight}">
             <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden" 
                             VerticalScrollMode="Enabled" Name="HeaderScrollViewer">
-                <ItemsControl ItemsSource="{Binding RowHeaderItems}" Height="{Binding SheetHeight}">
+                <ItemsControl ItemsSource="{Binding RowHeaderViewModel.RowHeaderItems}" Height="{Binding SheetHeight}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <Canvas />

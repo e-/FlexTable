@@ -116,6 +116,8 @@
     <Compile Include="Util\Drawable.cs" />
     <Compile Include="Util\SummarySelectedConverter.cs" />
     <Compile Include="ViewModel\ColumnViewModel.cs" />
+    <Compile Include="ViewModel\NotifyViewModel.cs" />
+    <Compile Include="ViewModel\RowHeaderViewModel.cs" />
     <Compile Include="ViewModel\SummaryViewModel.cs" />
     <Compile Include="View\CellPresenter.xaml.cs">
       <DependentUpon>CellPresenter.xaml</DependentUpon>

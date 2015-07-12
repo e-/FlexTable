@@ -124,5 +124,9 @@ namespace FlexTable.View
             Wrapper.Visibility = Visibility.Collapsed;
         }
 
+        private void Border_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            // grouping 시작되어야 함
+        }
     }
 }

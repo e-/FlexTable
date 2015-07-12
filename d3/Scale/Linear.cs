@@ -87,12 +87,15 @@ namespace d3.Scale
             List<Tick> ticks = new List<Tick>();
             for (Int32 i = 0; i < suggestedTickCount; ++i)
             {
-                Double domainValue = (Double)i / (suggestedTickCount - 1) * (domainEnd - domainStart) + domainStart,
-                       rangeValue = (Double)i / (suggestedTickCount - 1) * (rangeEnd - rangeStart) + rangeStart;
+                Double domainValue = (Double)i / (suggestedTickCount - 1) * (domainEnd - domainStart) + domainStart;
+
+                domainValue = Math.Round(domainValue);
+
+                Double rangeValue = this.Map(domainValue);
 
                 ticks.Add(new Tick()
                 {
-                    Label = Math.Round(domainValue, 1).ToString(),
+                    Label = domainValue.ToString(),
                     DomainValue = domainValue,
                     RangeValue = rangeValue
                 });
