@@ -87,9 +87,6 @@
                     <TextBlock FontSize="20" Foreground="White" Padding="20 5" Text="{Binding IndexTooltipContent}"/>
                 </Border>
             </Canvas>
-            
-            
-            
         </Grid>
         <view:SummaryView Grid.Column="1" Grid.Row="0" DataContext="{Binding SummaryViewModel}"></view:SummaryView>
         <Grid Grid.Column="1" Grid.Row="1">

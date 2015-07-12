@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI.Xaml.Media;
 
 namespace FlexTable.Model
 {
@@ -21,8 +22,8 @@ namespace FlexTable.Model
             }
         }
         public String IndexString { get { return index.ToString(); } }
-        public Double Top { get { return (index - 1) * (Double)App.Current.Resources["RowHeight"]; } }
-
+        public Double Top { get { return (index - 1) * (Double)App.Current.Resources["RowHeight"] - 1; } }
+        public SolidColorBrush Background { get { return (SolidColorBrush)App.Current.Resources["RowGuidelineBrush" + (index+1) % 2]; } }
         public event PropertyChangedEventHandler PropertyChanged;
         
         protected void OnPropertyChanged(String propertyName)

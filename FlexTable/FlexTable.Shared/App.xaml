@@ -28,7 +28,7 @@
                 <Setter Property="Height" Value="24" />
                 <Setter Property="TextAlignment" Value="Center" />
                 <Setter Property="Width" Value="{StaticResource RowHeaderWidth}" />
-                <Setter Property="FontWeight" Value="Bold" />
+                <!--<Setter Property="FontWeight" Value="Bold" />-->
             </Style>
 
             <Style TargetType="TextBlock" x:Key="ColumnHeaderStyle">
@@ -36,16 +36,19 @@
                 <Setter Property="TextAlignment" Value="Center" />
                 <Setter Property="FontWeight" Value="Bold" />
             </Style>
+            
+            <SolidColorBrush x:Key="RowGuidelineBrush0" Color="#FFFFFF" />
+            <SolidColorBrush x:Key="RowGuidelineBrush1" Color="#F5F5F5" />
 
             <Style TargetType="Rectangle" x:Key="RowGuidelineStyle0">
                 <Setter Property="Height" Value="{StaticResource RowHeight}"/>
-                <Setter Property="Fill" Value="#FFFFFF" />
+                <Setter Property="Fill" Value="{StaticResource RowGuidelineBrush0}" />
                 <Setter Property="VerticalAlignment" Value="Bottom" />
             </Style>
 
             <Style TargetType="Rectangle" x:Key="RowGuidelineStyle1">
                 <Setter Property="Height" Value="{StaticResource RowHeight}"/>
-                <Setter Property="Fill" Value="#F5F5F5" />
+                <Setter Property="Fill" Value="{StaticResource RowGuidelineBrush1}" />
                 <Setter Property="VerticalAlignment" Value="Bottom" />
             </Style>
             

@@ -144,10 +144,10 @@ namespace FlexTable.ViewModel
 
                 d3.Scale.Ordinal xScale = new d3.Scale.Ordinal()
                 {
-                    RangeStart = 70,
+                    RangeStart = 50,
                     RangeEnd = ChartWidth
                 };
-                foreach (Model.Bin bin in column.Bins) { xScale.Domain.Add(bin.Name); }
+                foreach (Model.Bin bin in column.Bins.Where(b => !b.IsFilteredOut)) { xScale.Domain.Add(bin.Name); }
                 XScale = xScale;
 
                 Int32 index = 0;
