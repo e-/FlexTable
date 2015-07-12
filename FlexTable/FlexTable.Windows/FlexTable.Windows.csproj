@@ -118,6 +118,7 @@
     <Compile Include="ViewModel\ColumnViewModel.cs" />
     <Compile Include="ViewModel\NotifyViewModel.cs" />
     <Compile Include="ViewModel\RowHeaderViewModel.cs" />
+    <Compile Include="ViewModel\RowViewModel.cs" />
     <Compile Include="ViewModel\SummaryViewModel.cs" />
     <Compile Include="View\CellPresenter.xaml.cs">
       <DependentUpon>CellPresenter.xaml</DependentUpon>

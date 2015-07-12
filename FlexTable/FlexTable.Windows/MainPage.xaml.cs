@@ -61,17 +61,23 @@ namespace FlexTable
                 GuidelineGrid.Children.Add(rectangle);
             }
 
-            foreach (Model.Row row in sheet.Rows)
+            inkDrawingAttributes.Color = Windows.UI.Colors.Black;
+            inkDrawingAttributes.Size = new Size(10, 10);
+            inkManager.SetDefaultDrawingAttributes(inkDrawingAttributes);
+        }
+
+        public void UpdateRows()
+        {
+            TableCanvas.Children.Clear();
+            mainPageViewModel.RowPresenters.Clear(); // do we need RowPresenters? it can be accessed by TableCanvas.Children
+
+            foreach (ViewModel.RowViewModel rowViewModel in mainPageViewModel.RowViewModels)
             {
-                View.RowPresenter rowPresenter = new View.RowPresenter(row);
+                View.RowPresenter rowPresenter = new View.RowPresenter(rowViewModel);
                 TableCanvas.Children.Add(rowPresenter);
                 rowPresenter.Update();
                 mainPageViewModel.RowPresenters.Add(rowPresenter);
             }
-
-            inkDrawingAttributes.Color = Windows.UI.Colors.Black;
-            inkDrawingAttributes.Size = new Size(10, 10);
-            inkManager.SetDefaultDrawingAttributes(inkDrawingAttributes);
         }
 
         private void ScrollViewer_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)

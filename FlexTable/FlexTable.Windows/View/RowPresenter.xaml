@@ -15,11 +15,11 @@
         
         <Storyboard x:Name="UpdateStoryboard">
             <DoubleAnimation Storyboard.TargetName="CompositeTransform" Storyboard.TargetProperty="TranslateY" 
-                             To="{Binding Y}" Duration="00:00:00.3" EasingFunction="{StaticResource QuarticEaseInOut}">
+                             To="{Binding Row.Y}" Duration="00:00:00.3" EasingFunction="{StaticResource QuarticEaseInOut}">
                 
             </DoubleAnimation>
             <DoubleAnimation Storyboard.TargetName="Wrapper" Storyboard.TargetProperty="Opacity" 
-                             To="{Binding IsFilteredOut, Converter={StaticResource BooleanToInvertedOpacityConverter}}" 
+                             To="{Binding Row.IsFilteredOut, Converter={StaticResource BooleanToInvertedOpacityConverter}}" 
                              Duration="00:00:00.3" EasingFunction="{StaticResource QuarticEaseInOut}">
             </DoubleAnimation>
         </Storyboard>

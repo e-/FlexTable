@@ -49,12 +49,15 @@
                           ManipulationMode="All"
                           x:Name="TableScrollViewer"
                           >
-                <Canvas x:Name="TableCanvas" Width="{Binding SheetWidth}" Height="{Binding SheetHeight}">
+                <Grid>
                     <Grid Name="GuidelineGrid" Canvas.Top="-1" Width="{Binding SheetWidth}" Height="{Binding SheetHeight}" IsHitTestVisible="False">
                     </Grid>
-                    
-                    <!-- Grid Background Pattern -->
-                    <ItemsControl ItemsSource="{Binding Sheet.Columns}">
+                    <Canvas x:Name="TableCanvas" Width="{Binding SheetWidth}" Height="{Binding SheetHeight}">
+                    </Canvas>
+                </Grid>
+
+                <!-- Grid Background Pattern -->
+                    <!--<ItemsControl ItemsSource="{Binding Sheet.Columns}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <Canvas />
@@ -71,8 +74,7 @@
                                 </Rectangle>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </Canvas>
+                    </ItemsControl>-->
             </ScrollViewer>
             <Border Grid.Row="2" Grid.Column="0" Background="LightGray"></Border>
             <view:ColumnHeaderPresenter Grid.Row="2" Grid.Column="1" x:Name="BottomColumnHeader"></view:ColumnHeaderPresenter>

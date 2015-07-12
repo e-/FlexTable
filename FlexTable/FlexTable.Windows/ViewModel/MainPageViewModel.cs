@@ -46,15 +46,17 @@ namespace FlexTable.ViewModel
         public Double IndexTooltipY { get; set; }
         public String IndexTooltipContent { get; set; }
 
-        public ObservableCollection<ViewModel.ColumnViewModel> columnViewModels = new ObservableCollection<ColumnViewModel>();
+        private ObservableCollection<ViewModel.ColumnViewModel> columnViewModels = new ObservableCollection<ColumnViewModel>();
         public ObservableCollection<ViewModel.ColumnViewModel> ColumnViewModels { get { return columnViewModels; } }
+
+        private List<ViewModel.RowViewModel> rowViewModels = new List<ViewModel.RowViewModel>();
+        public List<ViewModel.RowViewModel> RowViewModels { get { return rowViewModels; } }
 
         private ViewModel.SummaryViewModel summaryViewModel;
         public ViewModel.SummaryViewModel SummaryViewModel { get { return summaryViewModel; } set { summaryViewModel = value; OnPropertyChanged("SummaryViewModel"); } }
 
         private ViewModel.RowHeaderViewModel rowHeaderViewModel;
         public ViewModel.RowHeaderViewModel RowHeaderViewModel { get { return rowHeaderViewModel; } set { rowHeaderViewModel = value; OnPropertyChanged("RowHeaderViewModel"); } }
-
 
         private Model.Column highlightedColumn;
         public Model.Column HighlightedColumn { get { return highlightedColumn; } set { highlightedColumn = value; OnPropertyChanged("HighlightedColumn"); } }
@@ -82,11 +84,21 @@ namespace FlexTable.ViewModel
 
             RowHeaderViewModel.SetRowNumber(sheet.RowCount);
 
+            /* 기본 컬럼 추가 */
             columnViewModels.Clear();
             foreach (Model.Column column in sheet.Columns)
             {
                 columnViewModels.Add(new ViewModel.ColumnViewModel(this) { Column = column });
             }
+
+            /* 기본 row 추가 */
+            rowViewModels.Clear();
+            foreach (Model.Row row in sheet.Rows)
+            {
+                rowViewModels.Add(new ViewModel.RowViewModel(this) { Row = row });
+            }
+
+            view.UpdateRows();
         }
 
         protected void OnPropertyChanged(String propertyName)

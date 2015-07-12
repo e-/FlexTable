@@ -19,16 +19,16 @@ namespace FlexTable.View
 {
     public sealed partial class RowPresenter : UserControl
     {
-        private Model.Row row;
+        private ViewModel.RowViewModel rowViewModel;
         private List<CellPresenter> cellPresenters = new List<CellPresenter>();
 
-        public RowPresenter(Model.Row row)
+        public RowPresenter(ViewModel.RowViewModel rowViewModel)
         {
-            this.row = row;
-            this.DataContext = row;
+            this.rowViewModel = rowViewModel;
+            this.DataContext = rowViewModel;
             this.InitializeComponent();
 
-            foreach (Model.Cell cell in row.Cells)
+            foreach (Model.Cell cell in rowViewModel.Row.Cells)
             {
                 CellPresenter cellPresenter = new CellPresenter(cell);
                 CellCanvas.Children.Add(cellPresenter);
@@ -39,7 +39,6 @@ namespace FlexTable.View
 
         public void Update()
         {
-            Int32 index = (this.DataContext as Model.Row).Index;
             UpdateStoryboard.Begin();
         }
 
