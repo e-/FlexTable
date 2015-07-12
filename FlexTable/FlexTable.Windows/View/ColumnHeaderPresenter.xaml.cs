@@ -25,9 +25,10 @@ namespace FlexTable.View
 
         public void Update()
         {
+            Items.UpdateLayout();
             foreach (var item in Items.Items)
             {
-                ContentPresenter uiElement = (ContentPresenter)Items.ContainerFromItem(item);
+                var uiElement = Items.ContainerFromItem(item);
                 ColumnHeaderCellPresenter chcp = VisualTreeHelper.GetChild(uiElement, 0) as ColumnHeaderCellPresenter;
                 chcp.Update();
             }

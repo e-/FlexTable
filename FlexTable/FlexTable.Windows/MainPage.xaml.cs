@@ -64,6 +64,14 @@ namespace FlexTable
             inkDrawingAttributes.Color = Windows.UI.Colors.Black;
             inkDrawingAttributes.Size = new Size(10, 10);
             inkManager.SetDefaultDrawingAttributes(inkDrawingAttributes);
+
+            mainPageViewModel.GroupBy(sheet.Columns[2]);
+        }
+
+        public void UpdateColumnHeaders()
+        {
+            TopColumnHeader.Update();
+            BottomColumnHeader.Update();
         }
 
         public void UpdateRows()
@@ -90,6 +98,8 @@ namespace FlexTable
             mainPageViewModel.ScrollTop = sv.VerticalOffset;
             mainPageViewModel.ScrollLeft = sv.HorizontalOffset;
         }
+
+        #region Pen
 
         private void PenCanvas_PointerPressed(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
@@ -333,6 +343,8 @@ namespace FlexTable
             }
         }
 
+        #endregion
+
         public void ScrollToColumn(Model.Column column)
         {
             Double offset = TableScrollViewer.HorizontalOffset,
@@ -365,10 +377,6 @@ namespace FlexTable
             }
         }
 
-        public void UpdateColumnHeaders()
-        {
-            TopColumnHeader.Update();
-            BottomColumnHeader.Update();
-        }
+        
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,7 +11,7 @@ using Windows.UI.Xaml;
 
 namespace FlexTable.ViewModel
 {
-    public class MainPageViewModel : INotifyPropertyChanged
+    public class MainPageViewModel : NotifyViewModel
     {
         private IMainPage view;
         private Model.Sheet sheet;
@@ -37,8 +38,6 @@ namespace FlexTable.ViewModel
         private Double sheetHeight;
         public Double SheetHeight { get { return sheetHeight; } private set { sheetHeight = value; OnPropertyChanged("SheetHeight"); } }
         
-        public event PropertyChangedEventHandler PropertyChanged;
-
         private List<View.RowPresenter> rowPresenters = new List<View.RowPresenter>();
         public List<View.RowPresenter> RowPresenters { get { return rowPresenters; } }
 
@@ -82,8 +81,6 @@ namespace FlexTable.ViewModel
             SheetWidth = sheet.Columns.Select(c => c.Width).Sum() + (Double)App.Current.Resources["RowHeaderWidth"];
             SheetHeight = sheet.RowCount * (Double)App.Current.Resources["RowHeight"];
 
-            RowHeaderViewModel.SetRowNumber(sheet.RowCount);
-
             /* 기본 컬럼 추가 */
             columnViewModels.Clear();
             foreach (Model.Column column in sheet.Columns)
@@ -99,13 +96,82 @@ namespace FlexTable.ViewModel
             }
 
             view.UpdateRows();
+            rowHeaderViewModel.SetRowNumber(sheet.RowCount);
         }
 
-        protected void OnPropertyChanged(String propertyName)
+        public void GroupBy(Model.Column groupBy)
         {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            if (groupBy.Type != Model.ColumnType.Categorical)
+            {
+                Debug.WriteLine("Grouping rows by a numerical column is not supported now.");
+                return;
+            }
+
+            /* 
+             * 먼저 group by 컬럼을 맨 앞으로 
+             * 두개 agg된 경우 생각 안하고 있음
+             */
+
+            IEnumerable<Model.Column> previousColumns = sheet.Columns.Where(c => c.Index < groupBy.Index);
+
+            foreach (Model.Column column in previousColumns)
+            {
+                column.Index++;
+            }
+            groupBy.Index = 0;
+
+            // Column의 x값을 업데이트하고 아래에서 Cell을 추가하므로 RowPresenter.UpdateCells() 를 호출하지 않아도 됨
+            sheet.UpdateColumnX();
+
+            
+            /* 기본 row 추가 */
+            rowViewModels.Clear();
+
+            foreach (Model.Bin bin in groupBy.Bins)
+            {
+                Model.Row row = new Model.Row();
+                row.Index = bin.Index;
+                foreach (Model.Column column in sheet.Columns)
+                {
+                    Model.Cell cell = new Model.Cell();
+
+                    cell.Column = column;
+                    if (column == groupBy)
+                    {
+                        cell.RawContent = bin.Name;
+                        cell.Content = bin.Name;
+                    }
+                    else
+                    {
+                        Int32 index = sheet.Columns.IndexOf(column);
+                        String aggr = Aggregate(column, bin.Rows.Select(r => r.Cells[index].Content));
+                        cell.RawContent = aggr;
+                        cell.Content = aggr;
+                    }
+
+                    row.Cells.Add(cell);
+                }
+                rowViewModels.Add(new ViewModel.RowViewModel(this) { Row = row });
+            }
+
+            view.UpdateRows();
+            rowHeaderViewModel.SetRowNumber(groupBy.Bins.Count);
+            view.UpdateColumnHeaders();
         }
+
+        public String Aggregate(Model.Column column, IEnumerable<Object> values)
+        {
+            if (column.Type == Model.ColumnType.Categorical)
+            {
+                return "Categorical";
+            }
+            else
+            {
+                return Math.Round(values.Sum(v => (Double)v) / values.Count(), 2).ToString();
+            }
+        }
+
+        #region Draft
 
         public void Sort(Model.Column column, Boolean isDescending)
         {
@@ -277,5 +343,7 @@ namespace FlexTable.ViewModel
                 rowPresenter.Update();
             }
         }
+
+        #endregion
     }
 }
