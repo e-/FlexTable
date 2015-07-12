@@ -12,7 +12,8 @@
 
     <UserControl.Resources>
         <Storyboard x:Name="XAnimation">
-            <DoubleAnimation Storyboard.TargetName="CompositeTransform" Storyboard.TargetProperty="TranslateX" To="{Binding Column.X}" Duration="00:00:00.3">
+            <DoubleAnimation Storyboard.TargetName="CompositeTransform" Storyboard.TargetProperty="TranslateX" 
+                             To="{Binding Column.X}" Duration="00:00:00.3">
                 <DoubleAnimation.EasingFunction>
                     <ExponentialEase EasingMode="EaseInOut" />
                 </DoubleAnimation.EasingFunction>

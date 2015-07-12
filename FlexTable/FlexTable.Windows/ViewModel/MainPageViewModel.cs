@@ -92,10 +92,19 @@ namespace FlexTable.ViewModel
             rowViewModels.Clear();
             foreach (Model.Row row in sheet.Rows)
             {
-                rowViewModels.Add(new ViewModel.RowViewModel(this) { Row = row });
+                ViewModel.RowViewModel rowViewModel = new ViewModel.RowViewModel(this) { Row = row };
+                rowViewModels.Add(rowViewModel);
+
+                View.RowPresenter rowPresenter = new View.RowPresenter(rowViewModel);
+                rowPresenters.Add(rowPresenter);
+                
+                view.AddRow(rowPresenter);
+                rowPresenter.Y = row.Y;
+                rowPresenter.Update();
             }
 
-            view.UpdateRows();
+            //view.UpdateRows();
+
             rowHeaderViewModel.SetRowNumber(sheet.RowCount);
         }
 
@@ -124,18 +133,36 @@ namespace FlexTable.ViewModel
             sheet.UpdateColumnX();
 
             
-            /* 기본 row 추가 */
+            foreach (Model.Bin bin in groupBy.Bins)
+            {
+                foreach (Model.Row row in bin.Rows)
+                {
+                    row.Index = bin.Index;
+                    row.OnPropertyChanged("Y");
+                }
+            }
+
+            foreach (View.RowPresenter rowPresenter in rowPresenters)
+            {
+                rowPresenter.UpdateAndDestroy(delegate
+                {
+                    view.RemoveRow(rowPresenter);
+                });
+            }
+              
             rowViewModels.Clear();
+            rowPresenters.Clear();
 
             foreach (Model.Bin bin in groupBy.Bins)
             {
                 Model.Row row = new Model.Row();
+                
                 row.Index = bin.Index;
                 foreach (Model.Column column in sheet.Columns)
                 {
                     Model.Cell cell = new Model.Cell();
 
-                    cell.Column = column;
+                    cell.Column = column; //Cell.Column은 OnPropertyChanged가 안됨.
                     if (column == groupBy)
                     {
                         cell.RawContent = bin.Name;
@@ -151,10 +178,19 @@ namespace FlexTable.ViewModel
 
                     row.Cells.Add(cell);
                 }
-                rowViewModels.Add(new ViewModel.RowViewModel(this) { Row = row });
+                // cell 별로 뷰 업데이트 하지않으려면 일단 cell을 다 만들고 다음에 컨트롤을 만든다.
+                ViewModel.RowViewModel rowViewModel = new ViewModel.RowViewModel(this) { Row = row };
+                View.RowPresenter rowPresenter = new View.RowPresenter(rowViewModel);
+
+                rowViewModels.Add(rowViewModel);
+                rowPresenters.Add(rowPresenter);
+                view.AddRow(rowPresenter);
+
+                rowPresenter.Y = row.Y;
+                rowPresenter.FadeIn();
             }
 
-            view.UpdateRows();
+            //view.UpdateRows();
             rowHeaderViewModel.SetRowNumber(groupBy.Bins.Count);
             view.UpdateColumnHeaders();
         }

@@ -64,8 +64,12 @@ namespace FlexTable
             inkDrawingAttributes.Color = Windows.UI.Colors.Black;
             inkDrawingAttributes.Size = new Size(10, 10);
             inkManager.SetDefaultDrawingAttributes(inkDrawingAttributes);
+        }
 
-            mainPageViewModel.GroupBy(sheet.Columns[2]);
+
+        private void TextBlock_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
+        {
+            mainPageViewModel.GroupBy(mainPageViewModel.Sheet.Columns[2]);
         }
 
         public void UpdateColumnHeaders()
@@ -74,8 +78,19 @@ namespace FlexTable
             BottomColumnHeader.Update();
         }
 
+        public void AddRow(View.RowPresenter rowPresenter)
+        {
+            TableCanvas.Children.Add(rowPresenter);
+        }
+        
+        public void RemoveRow(View.RowPresenter rowPresenter)
+        {
+            TableCanvas.Children.Remove(rowPresenter);
+        }
+
         public void UpdateRows()
         {
+            return;
             TableCanvas.Children.Clear();
             mainPageViewModel.RowPresenters.Clear(); // do we need RowPresenters? it can be accessed by TableCanvas.Children
 
@@ -376,6 +391,7 @@ namespace FlexTable
                 mainPageViewModel.ScrollLeft = (Double)to;
             }
         }
+
 
         
     }

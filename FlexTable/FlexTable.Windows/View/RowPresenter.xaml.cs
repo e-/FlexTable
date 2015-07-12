@@ -22,6 +22,11 @@ namespace FlexTable.View
         private ViewModel.RowViewModel rowViewModel;
         private List<CellPresenter> cellPresenters = new List<CellPresenter>();
 
+        public Double Y
+        {
+            set { CompositeTransform.TranslateY = value; }
+        }
+
         public RowPresenter(ViewModel.RowViewModel rowViewModel)
         {
             this.rowViewModel = rowViewModel;
@@ -48,6 +53,21 @@ namespace FlexTable.View
             {
                 cellPresenter.Update();
             }
+        }
+
+        public void UpdateAndDestroy(Action callback)
+        {
+            UpdateAndDestroyStoryboard.Completed += delegate
+            {
+                callback();
+            };
+
+            UpdateAndDestroyStoryboard.Begin();
+        }
+
+        public void FadeIn()
+        {
+            FadeInStoryboard.Begin();
         }
     }
 }
