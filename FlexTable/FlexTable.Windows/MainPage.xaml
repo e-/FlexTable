@@ -95,14 +95,7 @@
         
         <view:SummaryView Grid.Column="1" Grid.Row="0" DataContext="{Binding SummaryViewModel}"></view:SummaryView>
         <Button Tapped="Button_Tapped" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Bottom">Cancel Grouping</Button>
-        
-        <Grid Grid.Column="1" Grid.Row="1">
-            <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                <TextBlock TextAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="25">
-                    Chart Area
-                </TextBlock>
-            </Border>
-        </Grid>
-        
+
+        <view:ChartView Grid.Column="1" Grid.Row="1" DataContext="{Binding ChartViewModel}"></view:ChartView>
     </Grid>
 </Page>

@@ -135,7 +135,7 @@ namespace FlexTable
 
                         if (candidate == "v" || candidate == "V")
                         {
-                            mainPageViewModel.ChangeAggregationType(columnIndex, Model.AggregationType.Maximum);
+                            mainPageViewModel.DrawChart(columnIndex);
                             drawable.RemoveAllStrokes();
                             return;
                         }
@@ -144,7 +144,7 @@ namespace FlexTable
             }
             catch (Exception e)
             {
-
+                Debug.WriteLine(e.ToString());
             }
 
             drawable.RemoveAllStrokes();
@@ -185,6 +185,7 @@ namespace FlexTable
         private void Button_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
         {
             mainPageViewModel.CancelGroupBy();
+            mainPageViewModel.ChartViewModel.Hide();
         }
     }
 }

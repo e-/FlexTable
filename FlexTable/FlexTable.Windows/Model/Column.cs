@@ -59,6 +59,8 @@ namespace FlexTable.Model
         private Boolean isGroupedBy;
         public Boolean IsGroupedBy { get { return isGroupedBy; } set { isGroupedBy = value; OnPropertyChanged("IsGroupedBy"); } }
 
+        public Model.AggregationType AggregationType { get; set; }
+
         public static ColumnType GuessColumnType(IEnumerable<String> cellValues)
         {
             Boolean allDouble = true;

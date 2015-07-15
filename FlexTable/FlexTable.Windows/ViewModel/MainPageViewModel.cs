@@ -54,6 +54,9 @@ namespace FlexTable.ViewModel
         private ViewModel.SummaryViewModel summaryViewModel;
         public ViewModel.SummaryViewModel SummaryViewModel { get { return summaryViewModel; } set { summaryViewModel = value; OnPropertyChanged("SummaryViewModel"); } }
 
+        private ViewModel.ChartViewModel chartViewModel;
+        public ViewModel.ChartViewModel ChartViewModel { get { return chartViewModel; } set { chartViewModel = value; OnPropertyChanged("ChartViewModel"); } }
+
         private ViewModel.RowHeaderViewModel rowHeaderViewModel;
         public ViewModel.RowHeaderViewModel RowHeaderViewModel { get { return rowHeaderViewModel; } set { rowHeaderViewModel = value; OnPropertyChanged("RowHeaderViewModel"); } }
 
@@ -64,13 +67,15 @@ namespace FlexTable.ViewModel
         public Double ScrollTop { get; set; }
 
         private Model.Column groupedColumn;
+        public Model.Column GroupedColumn { get { return groupedColumn; } set { groupedColumn = value; OnPropertyChanged("GroupedColumn"); } }
 
         public MainPageViewModel(IMainPage view)
         {
             this.view = view;
             SummaryViewModel = new ViewModel.SummaryViewModel(this);
             RowHeaderViewModel = new ViewModel.RowHeaderViewModel(this);
-            
+            ChartViewModel = new ViewModel.ChartViewModel(this);
+
             bounds = Window.Current.Bounds;
             OnPropertyChanged("Width");
             OnPropertyChanged("Height");
@@ -116,7 +121,7 @@ namespace FlexTable.ViewModel
                 return;
             }
 
-            groupedColumn = groupBy;
+            GroupedColumn = groupBy;
             groupBy.IsGroupedBy = true;
 
             /* 
@@ -174,8 +179,9 @@ namespace FlexTable.ViewModel
                     else
                     {
                         Int32 index = sheet.Columns.IndexOf(column);
-                        String aggr = Aggregate(column, bin.Rows.Select(r => r.Cells[index].Content), Model.AggregationType.Average);
-                        cell.RawContent = aggr;
+                        column.AggregationType = Model.AggregationType.Average;
+                        Object aggr = Aggregate(column, bin.Rows.Select(r => r.Cells[index].Content), Model.AggregationType.Average);
+                        cell.RawContent = aggr.ToString();
                         cell.Content = aggr;
                     }
 
@@ -208,15 +214,21 @@ namespace FlexTable.ViewModel
             foreach (Model.Bin bin in groupedColumn.Bins)
             {
                 Model.Row row = rowViewModels[index].Row;
+                column.AggregationType = aggregationType;
 
-                String aggr = Aggregate(column, bin.Rows.Select(r => r.Cells[columnIndex].Content), aggregationType);
-                row.Cells[columnIndex].RawContent = aggr;
+                Object aggr = Aggregate(column, bin.Rows.Select(r => r.Cells[columnIndex].Content), aggregationType);
+                row.Cells[columnIndex].RawContent = aggr.ToString();
                 row.Cells[columnIndex].Content = aggr;
                 index++;
             }
+
+            if (column == chartedColumn)
+            {
+                DrawChart(chartedColumnIndex);
+            }
         }
 
-        public String Aggregate(Model.Column column, IEnumerable<Object> values, Model.AggregationType aggregationType)
+        public Object Aggregate(Model.Column column, IEnumerable<Object> values, Model.AggregationType aggregationType)
         {
             if (column.Type == Model.ColumnType.Categorical)
             {
@@ -227,18 +239,39 @@ namespace FlexTable.ViewModel
                 switch (aggregationType)
                 {
                     case Model.AggregationType.Average:
-                        return Math.Round(values.Sum(v => (Double)v) / values.Count(), 2).ToString();
+                        return Math.Round(values.Sum(v => (Double)v) / values.Count(), 2);
                     case Model.AggregationType.Maximum:
-                        return values.Max().ToString();
+                        return values.Max();
                 }
             }
             throw new Exception("Unknown Aggregation Type");
         }
 
+        private Model.Column chartedColumn;
+        private Int32 chartedColumnIndex;
+
+        public void DrawChart(Int32 columnIndex)
+        {
+            Model.Column column = sheet.Columns[columnIndex];
+
+            if(column.Type != Model.ColumnType.Numerical) return;
+
+            chartedColumn = column;
+            chartedColumnIndex = columnIndex;
+
+            chartViewModel.Draw(
+                groupedColumn, 
+                rowViewModels.Select((rvm, index) => 
+                    new Tuple<String, Double>(groupedColumn.Bins[index].Name, (Double)rvm.Row.Cells[columnIndex].Content)
+                    ),
+                column
+            );
+        }
+
         public void CancelGroupBy()
         {
-            groupedColumn.IsGroupedBy = false;
-            groupedColumn = null;
+            GroupedColumn.IsGroupedBy = false;
+            GroupedColumn = null;
 
             /* 먼저 column의 순서를 원래대로 */
 
@@ -426,8 +459,6 @@ namespace FlexTable.ViewModel
             summaryViewModel.Hide();
             HighlightedColumn = null;
         }
-
-
 
         public void UpdateFiltering()
         {

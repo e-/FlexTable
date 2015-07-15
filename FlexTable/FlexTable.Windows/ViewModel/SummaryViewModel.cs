@@ -142,17 +142,7 @@ namespace FlexTable.ViewModel
                 };
                 foreach (Model.Bin bin in column.Bins.Where(b => !b.IsFilteredOut)) { xScale.Domain.Add(bin.Name); }
                 XScale = xScale;
-
-                Int32 index = 0;
-                foreach (Model.Bin bin in column.Bins)
-                {
-                    Rectangle rect = new Rectangle()
-                    {
-                        Width = 50,
-                        Height = ChartHeight - yScale.Map(bin.Count)
-                    };
-                    ++index;
-                }
+                
 
                 Data = new d3.Selection.Data()
                 {
