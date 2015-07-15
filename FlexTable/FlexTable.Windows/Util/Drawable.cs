@@ -17,7 +17,7 @@ namespace FlexTable.Util
 {
     class Drawable
     {
-        public delegate Boolean StrokeAddedEventHandler(InkManager inkManager);
+        public delegate void StrokeAddedEventHandler(InkManager inkManager);
         public event StrokeAddedEventHandler StrokeAdded;
 
         InkManager inkManager = new InkManager();
@@ -146,10 +146,7 @@ namespace FlexTable.Util
                     }
 
                     pointerDictionary.Remove(id);
-                    if (StrokeAdded(inkManager))
-                    {
-                        RemoveAllStrokes();
-                    }
+                    StrokeAdded(inkManager);
                 }
 
                 e.Handled = true;
@@ -212,7 +209,7 @@ namespace FlexTable.Util
             }
         }
 
-        void RemoveAllStrokes()
+        public void RemoveAllStrokes()
         {
             foreach (InkStroke stroke in inkManager.GetStrokes())
             {

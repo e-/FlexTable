@@ -27,7 +27,7 @@
                                 <Border.RenderTransform>
                                     <TranslateTransform Y="{Binding Top}" />
                                 </Border.RenderTransform>
-                                <TextBlock Text="{Binding IndexString}" Style="{StaticResource RowHeaderStyle}">
+                                <TextBlock Text="{Binding IndexString}" Style="{StaticResource RowHeaderStyle}" Opacity="{Binding Opacity}">
                                 </TextBlock>
                             </Border>
                         </DataTemplate>

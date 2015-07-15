@@ -19,12 +19,28 @@ namespace FlexTable.ViewModel
             this.mainPageViewModel = mainPageViewModel;
         }
 
+        public void SetMaximumRowNumber(Int32 n)
+        {
+            for (Int32 i = 0; i < n; ++i)
+            {
+                rowHeaderItems.Add(new Model.RowHeader()
+                {
+                    Index = i + 1,
+                    Opacity = 1
+                });
+            }
+        }
+
         public void SetRowNumber(Int32 n)
         {
-            rowHeaderItems.Clear();
-            for (Int32 i = 1; i <= n; ++i)
+            foreach (Model.RowHeader rh in rowHeaderItems)
             {
-                rowHeaderItems.Add(new Model.RowHeader() { Index = i });
+                rh.Opacity = 0;
+            }
+
+            for (Int32 i = 0; i < n; ++i)
+            {
+                rowHeaderItems[i].Opacity = 1;
             }
         }
     }

@@ -21,8 +21,16 @@ namespace FlexTable.Model
                 OnPropertyChanged("Top");
             }
         }
+
+        private Double opacity;
+        public Double Opacity
+        {
+            get { return opacity; }
+            set { opacity = value; OnPropertyChanged("Opacity"); }
+        }
+
         public String IndexString { get { return index.ToString(); } }
-        public Double Top { get { return (index - 1) * (Double)App.Current.Resources["RowHeight"] - 1; } }
+        public Double Top { get { return (index - 1) * (Double)App.Current.Resources["RowHeight"]; } }
         public SolidColorBrush Background { get { return (SolidColorBrush)App.Current.Resources["RowGuidelineBrush" + (index+1) % 2]; } }
         public event PropertyChangedEventHandler PropertyChanged;
         

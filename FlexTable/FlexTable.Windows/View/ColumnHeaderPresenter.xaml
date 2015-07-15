@@ -11,7 +11,7 @@
     >
 
     <Border Background="{StaticResource GridLineBrush}">
-        <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden" 
+        <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden" IsEnabled="False"
                         HorizontalScrollMode="Disabled" VerticalScrollMode="Disabled" Name="HeaderScrollViewer">
             <ItemsControl ItemsSource="{Binding ColumnViewModels}" Width="{Binding SheetWidth}" x:Name="Items">
                 <ItemsControl.ItemsPanel>

@@ -10,7 +10,6 @@ namespace FlexTable
     {
         void ScrollToColumn(Model.Column column);
         void UpdateColumnHeaders();
-        void UpdateRows();
         void AddRow(View.RowPresenter rowPresenter);
         void RemoveRow(View.RowPresenter rowPresenter);
     }

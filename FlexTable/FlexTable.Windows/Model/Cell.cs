@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace FlexTable.Model
 {
-    public class Cell
+    public class Cell : NotifyModel
     {
         private String rawContent;
-        public String RawContent { get { return rawContent; } set { rawContent = value; } }
+        public String RawContent { get { return rawContent; } set { rawContent = value; OnPropertyChanged("RawContent"); } }
 
         private Object content;
-        public Object Content { get { return content; } set { content = value; } }
+        public Object Content { get { return content; } set { content = value; OnPropertyChanged("Content"); } }
            
         public Column Column { get; set; }
     }

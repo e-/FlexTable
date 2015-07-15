@@ -13,20 +13,13 @@ using Windows.UI.Input.Inking;
 
 namespace FlexTable.ViewModel
 {
-    public class SummaryViewModel : INotifyPropertyChanged
+    public class SummaryViewModel : NotifyViewModel
     {
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected void OnPropertyChanged(String propertyName)
-        {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-        }
-
         private Model.Column column;
         public Model.Column Column { get { return column; } set { column = value; OnPropertyChanged("Column"); } }
 
         ViewModel.MainPageViewModel mainPageViewModel;
+        public ViewModel.MainPageViewModel MainPageViewModel { get { return mainPageViewModel; } }
 
         private d3.Scale.ScaleBase xScale;
         public d3.Scale.ScaleBase XScale {

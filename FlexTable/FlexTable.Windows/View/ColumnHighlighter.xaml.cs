@@ -54,16 +54,16 @@ namespace FlexTable.View
 
                 TableCanvas.Children.Clear();
 
-                foreach (Model.Row row in mpvm.Sheet.Rows)
+                foreach (ViewModel.RowViewModel rowViewModel in mpvm.RowViewModels)
                 {
                     TextBlock cell = new TextBlock()
                     {
-                        Text = row.Cells[columnIndex].Content.ToString(),
+                        Text = rowViewModel.Row.Cells[columnIndex].Content.ToString(),
                         Style = App.Current.Resources["CellStyle"] as Style,
                         Width = column.Width
                     };
 
-                    Canvas.SetTop(cell, row.Y);
+                    Canvas.SetTop(cell, rowViewModel.Row.Y);
                     TableCanvas.Children.Add(cell);
                 }
 

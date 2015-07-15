@@ -9,7 +9,8 @@
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400"
-    Loaded="UserControl_Loaded">
+    Loaded="UserControl_Loaded"    
+    >
 
     <UserControl.Resources>
         <Storyboard x:Name="XAnimation">
@@ -173,13 +174,13 @@
     <Grid Height="{StaticResource ColumnHeaderHeight}" 
           Width="{Binding Column.Width}"
           x:Name="Wrapper"
-          PointerEntered="Border_PointerEntered" 
-          PointerExited="Border_PointerExited"
-          PointerPressed="Border_PointerPressed"
-          PointerCaptureLost="Border_PointerCaptureLost"
-          PointerCanceled="Border_PointerCanceled"
-          PointerReleased="Border_PointerCaptureLost"
-          PointerMoved="Border_PointerMoved"
+          d:PointerEntered="Border_PointerEntered" 
+          d:PointerExited="Border_PointerExited"
+          d:PointerPressed="Border_PointerPressed"
+          d:PointerCaptureLost="Border_PointerCaptureLost"
+          d:PointerCanceled="Border_PointerCanceled"
+          d:PointerReleased="Border_PointerCaptureLost"
+          d:PointerMoved="Border_PointerMoved"
           Background="Transparent"
 
           >

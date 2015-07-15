@@ -33,16 +33,18 @@ namespace FlexTable.View
         {
             ViewModel.SummaryViewModel svm = this.DataContext as ViewModel.SummaryViewModel;
             
-            svm.IsSelected = true;
+            //svm.IsSelected = true;
+            svm.MainPageViewModel.GroupBy(svm.Column);
+            svm.MainPageViewModel.CancelIndexing();
         }
 
-        Boolean RecognizeStrokes(InkManager inkManager)
+        void RecognizeStrokes(InkManager inkManager)
         {
             IReadOnlyList<InkStroke> strokes = inkManager.GetStrokes();
             ViewModel.SummaryViewModel svm = this.DataContext as ViewModel.SummaryViewModel;
 
-            if (strokes.Count == 0) return true;
-            if (strokes.Count >= 2) return true;
+            if (strokes.Count == 0) return;
+            if (strokes.Count >= 2) return;
 
             InkStroke stroke = strokes.First();
 
@@ -50,7 +52,7 @@ namespace FlexTable.View
             {
                 svm.StrokeAdded(stroke);
             }
-            return true;
+            return;
         }
     }
 }

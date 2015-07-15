@@ -6,4 +6,9 @@
     <RemoteDebugEnabled>true</RemoteDebugEnabled>
     <UseSimulator>false</UseSimulator>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <RemoteDebugMachine>hcil-surface</RemoteDebugMachine>
+    <UseAuthentication>true</UseAuthentication>
+    <RemoteDebugEnabled>true</RemoteDebugEnabled>
+  </PropertyGroup>
 </Project>

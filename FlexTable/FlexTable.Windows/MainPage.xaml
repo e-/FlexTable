@@ -27,7 +27,7 @@
         <TextBlock Grid.Column="0" Grid.Row="0" Name="DummyCell" Style="{StaticResource CellStyle}" Foreground="Blue"  IsHitTestVisible="False"></TextBlock>
         
                
-        <Grid Grid.Column="0" Grid.Row="0" Grid.RowSpan="2">
+        <Grid Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" x:Name="SheetView">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="{StaticResource RowHeaderWidthInGridLength}"></ColumnDefinition>
                 <ColumnDefinition Width="*"></ColumnDefinition>
@@ -90,17 +90,18 @@
                 </Border>
             </Canvas>
         </Grid>
+        <Grid x:Name="StrokeGrid" Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" IsHitTestVisible="False"></Grid>
+        <Grid x:Name="NewStrokeGrid" Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" IsHitTestVisible="False"></Grid>
+        
         <view:SummaryView Grid.Column="1" Grid.Row="0" DataContext="{Binding SummaryViewModel}"></view:SummaryView>
         <Grid Grid.Column="1" Grid.Row="1">
+            <Button Tapped="Button_Tapped">Cancel Grouping</Button>
             <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                <TextBlock TextAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="25"
-                           Tapped="TextBlock_Tapped"
-                           >Chart Area</TextBlock>
+                <TextBlock TextAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="25">
+                    Chart Area
+                </TextBlock>
             </Border>
         </Grid>
         
-        <Grid x:Name="StrokeGrid" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" Grid.RowSpan="2" IsHitTestVisible="False"></Grid>
-        <Grid x:Name="NewStrokeGrid" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" Grid.RowSpan="2" IsHitTestVisible="False"></Grid>
-        <Canvas x:Name="TestCanvas" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" Grid.RowSpan="2" IsHitTestVisible="False"></Canvas>
     </Grid>
 </Page>
