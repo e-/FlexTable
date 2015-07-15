@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace FlexTable.Model
 {
-    public class Column : INotifyPropertyChanged
+    public class Column : NotifyModel
     {
         private String name;
         public String Name { get { return name; } set { name = value; } }
@@ -27,8 +27,6 @@ namespace FlexTable.Model
 
         private Boolean highlighted = false;
         public Boolean Highlighted { get { return highlighted; } set { highlighted = value; OnPropertyChanged("Highlighted"); } }
-
-        public event PropertyChangedEventHandler PropertyChanged;
 
         public ColumnType Type { get; set; }
         public String TypeString
@@ -58,11 +56,8 @@ namespace FlexTable.Model
         public Double MedianValue { get { return medianValue; } set { medianValue = value; OnPropertyChanged("MedianValue"); } }
         public String MedianValueString { get { return String.Format("{0:#,0.#}", medianValue); } }
 
-        protected void OnPropertyChanged(String propertyName)
-        {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-        }
+        private Boolean isGroupedBy;
+        public Boolean IsGroupedBy { get { return isGroupedBy; } set { isGroupedBy = value; OnPropertyChanged("IsGroupedBy"); } }
 
         public static ColumnType GuessColumnType(IEnumerable<String> cellValues)
         {

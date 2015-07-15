@@ -117,6 +117,7 @@ namespace FlexTable.ViewModel
             }
 
             groupedColumn = groupBy;
+            groupBy.IsGroupedBy = true;
 
             /* 
              * 먼저 group by 컬럼을 맨 앞으로 
@@ -236,6 +237,7 @@ namespace FlexTable.ViewModel
 
         public void CancelGroupBy()
         {
+            groupedColumn.IsGroupedBy = false;
             groupedColumn = null;
 
             /* 먼저 column의 순서를 원래대로 */

@@ -7,21 +7,13 @@ using System.Threading.Tasks;
 
 namespace FlexTable.ViewModel
 {
-    public class ColumnViewModel : INotifyPropertyChanged
+    public class ColumnViewModel : NotifyViewModel
     {
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected void OnPropertyChanged(String propertyName)
-        {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-        }
+        private ViewModel.MainPageViewModel mainPageViewModel;
 
         private Model.Column column;
         public Model.Column Column { get { return column; } set { column = value; OnPropertyChanged("Column"); } }        
-
-        private ViewModel.MainPageViewModel mainPageViewModel;       
-
+        
         public ColumnViewModel(ViewModel.MainPageViewModel mainPageViewModel)
         {
             this.mainPageViewModel = mainPageViewModel;

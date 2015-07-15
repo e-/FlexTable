@@ -169,6 +169,7 @@
         </Storyboard>
         
         <util:BooleanToEnabledOpacityConverter x:Key="BooleanToEnabledOpacityConverter" />
+        <util:ColumnHeaderHighlightConverter x:Key="ColumnHeaderHighlightConverter" />
     </UserControl.Resources>
 
     <Grid Height="{StaticResource ColumnHeaderHeight}" 
@@ -190,10 +191,13 @@
         <Grid.RenderTransform>
             <CompositeTransform x:Name="CompositeTransform" />
         </Grid.RenderTransform>
-        <TextBlock Text="{Binding Column.Name}" Width="{Binding Column.Width}" 
+        <Border BorderBrush="{Binding Column.IsGroupedBy, Converter={StaticResource ColumnHeaderHighlightConverter}}" BorderThickness="5">
+            <TextBlock Text="{Binding Column.Name}" Width="{Binding Column.Width}" 
                    Opacity="{Binding Column.Enabled, Converter={StaticResource BooleanToEnabledOpacityConverter}}"
                    Style="{StaticResource ColumnHeaderStyle}" VerticalAlignment="Center" IsHitTestVisible="False">
-        </TextBlock>
+            </TextBlock>
+        </Border>
+        
         <Canvas HorizontalAlignment="Center" VerticalAlignment="Bottom" IsHitTestVisible="False">
             <Popup Canvas.Left="-60" Canvas.Top="50" x:Name="Down" Opacity="0" IsHitTestVisible="False">
                 <Popup.RenderTransform>

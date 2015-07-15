@@ -132,6 +132,13 @@ namespace FlexTable
                             drawable.RemoveAllStrokes();
                             return;
                         }
+
+                        if (candidate == "v" || candidate == "V")
+                        {
+                            mainPageViewModel.ChangeAggregationType(columnIndex, Model.AggregationType.Maximum);
+                            drawable.RemoveAllStrokes();
+                            return;
+                        }
                     }
                 }
             }
