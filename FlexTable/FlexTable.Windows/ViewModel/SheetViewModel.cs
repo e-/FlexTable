@@ -1,10 +1,12 @@
-﻿using System;
+﻿using FlexTable.Model;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Foundation;
 
 namespace FlexTable.ViewModel
 {
@@ -26,19 +28,18 @@ namespace FlexTable.ViewModel
         public List<ViewModel.RowViewModel> RowViewModels { get { return rowViewModels; } }
 
         ViewModel.MainPageViewModel mainPageViewModel;
+        IMainPage view;
 
-        public SheetViewModel(ViewModel.MainPageViewModel mainPageViewModel)
+        public SheetViewModel(ViewModel.MainPageViewModel mainPageViewModel, IMainPage view)
         {
             this.mainPageViewModel = mainPageViewModel;
+            this.view = view;
         }
 
         public void Initialize(Model.Sheet sheet)
         {
-            Sheet = sheet;
-
-            SheetWidth = sheet.Columns.Select(c => c.Width).Sum() + (Double)App.Current.Resources["RowHeaderWidth"];
-            SheetHeight = sheet.Rows.Count * (Double)App.Current.Resources["RowHeight"];
-
+            Sheet = sheet;          
+            
             Int32 index;
 
             /* 기본 컬럼 추가 */
@@ -48,7 +49,8 @@ namespace FlexTable.ViewModel
             {
                 columnViewModels.Add(new ViewModel.ColumnViewModel(mainPageViewModel) { 
                     Column = column,
-                    Index = index
+                    Index = index,
+                    Order = index
                 });
                 index++;
             }
@@ -59,12 +61,25 @@ namespace FlexTable.ViewModel
             foreach (Model.Row row in sheet.Rows)
             {
                 ViewModel.RowViewModel rowViewModel = new ViewModel.RowViewModel(mainPageViewModel) { 
-                    Row = row,
                     Index = index
                 };
+                Int32 index2 = 0;
+                foreach (Cell cell in row.Cells)
+                {
+                    cell.ColumnViewModel = columnViewModels[index2++];
+                    rowViewModel.Cells.Add(cell);
+                }
                 rowViewModels.Add(rowViewModel);
                 index++;
             }
+
+            MeasureColumnWidth();
+            UpdateColumnX();
+            GuessColumnType();
+            CreateColumnSummary();
+
+            SheetWidth = columnViewModels.Select(c => c.Width).Sum() + (Double)App.Current.Resources["RowHeaderWidth"];
+            SheetHeight = rowViewModels.Count * (Double)App.Current.Resources["RowHeight"];
         }
         
         public void Sort(Model.Column column, Boolean isDescending)
@@ -216,7 +231,7 @@ namespace FlexTable.ViewModel
 
         public Object Aggregate(Model.Column column, IEnumerable<Object> values, Model.AggregationType aggregationType)
         {
-            if (column.Type == Model.ColumnType.Categorical)
+        /*    if (column.Type == Model.ColumnType.Categorical)
             {
                 return String.Format("({0})", values.Distinct().Count());
             }
@@ -229,8 +244,79 @@ namespace FlexTable.ViewModel
                     case Model.AggregationType.Maximum:
                         return values.Max();
                 }
-            }
+            }*/
             throw new Exception("Unknown Aggregation Type");
+        }
+
+        public void MeasureColumnWidth()
+        {
+            foreach (ColumnViewModel columnViewModel in columnViewModels)
+            {
+                String maxValue = (from rowViewModel in RowViewModels
+                                   orderby rowViewModel.Cells[columnViewModel.Index].RawContent.Count() descending
+                                   select rowViewModel.Cells[columnViewModel.Index].RawContent).First();
+
+                view.DummyTextBlock.Text = maxValue;
+                view.DummyTextBlock.Measure(new Size(Double.MaxValue, Double.MaxValue));
+
+                columnViewModel.Width = view.DummyTextBlock.ActualWidth;
+            }
+        }
+
+        public void UpdateColumnX()
+        {
+            Double total = 0;
+            foreach (ColumnViewModel columnViewModel in columnViewModels.OrderBy(c => c.Order))
+            {
+                columnViewModel.X = total;
+                total += columnViewModel.Width;
+            }
+        }
+
+        public void GuessColumnType()
+        {
+            foreach (ColumnViewModel columnViewModel in columnViewModels)
+            {
+                Int32 index = columnViewModel.Index;
+                columnViewModel.Type = Column.GuessColumnType(rowViewModels.Select(r => r.Cells[index].RawContent));
+                if (columnViewModel.Type == ColumnType.Categorical)
+                {
+                    foreach (RowViewModel rowViewModel in rowViewModels)
+                    {
+                        rowViewModel.Cells[index].Content = rowViewModel.Cells[index].RawContent;
+                    }
+                }
+                else
+                {
+                    foreach (RowViewModel rowViewModel in rowViewModels)
+                    {
+                        rowViewModel.Cells[index].Content = Double.Parse(rowViewModel.Cells[index].RawContent);
+                    }
+                }
+            }
+        }
+
+        public void CreateColumnSummary()
+        {
+            /*for (Int32 i = 0; i < columnViewModels.Count; ++i)
+            {
+                ColumnViewModel column = columnViewModels[i];
+                if (column.Type == ColumnType.Categorical) // bar chart
+                {
+                    column.Bins = Column.GetFrequencyBins(rows, i);
+                }
+                else // histogram
+                {
+                    column.Bins = new List<Bin>();
+
+                    IEnumerable<Double> cellValues = rowViewModels.Select(r => (Double)r.Cells[i].Content).OrderBy(v => v);
+
+                    column.MinValue = cellValues.Min();
+                    column.MaxValue = cellValues.Max();
+                    column.MeanValue = cellValues.Sum() / cellValues.Count();
+                    column.MedianValue = cellValues.ElementAt(cellValues.Count() / 2);
+                }
+            }*/
         }
     }
 }

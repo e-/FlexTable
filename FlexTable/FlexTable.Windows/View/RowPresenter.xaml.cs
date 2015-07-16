@@ -33,7 +33,7 @@ namespace FlexTable.View
             this.DataContext = rowViewModel;
             this.InitializeComponent();
 
-            foreach (Model.Cell cell in rowViewModel.Row.Cells)
+            foreach (Model.Cell cell in rowViewModel.Cells)
             {
                 CellPresenter cellPresenter = new CellPresenter(cell);
                 CellCanvas.Children.Add(cellPresenter);

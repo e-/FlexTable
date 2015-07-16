@@ -15,12 +15,10 @@ namespace FlexTable.ViewModel
     {
         private IMainPage view;
         private Model.Sheet sheet;
-        public Model.Sheet Sheet
-        {
+        public Model.Sheet Sheet {
             get { return sheet; }
             set { 
                 sheet = value;
-                Initialize();
                 OnPropertyChanged("Sheet"); 
             }
         }
@@ -43,7 +41,7 @@ namespace FlexTable.ViewModel
 
             SummaryViewModel = new SummaryViewModel(this);            
             ChartViewModel = new ChartViewModel(this);
-            SheetViewModel = new SheetViewModel(this);
+            SheetViewModel = new SheetViewModel(this, view);
             TableViewModel = new TableViewModel(this, view);
         }
 
@@ -51,6 +49,7 @@ namespace FlexTable.ViewModel
         {
             sheetViewModel.Initialize(sheet);
             tableViewModel.UpdateRows();
+            view.TableView.AddGuidelines(sheet.Rows.Count);
         }
      
 
@@ -124,49 +123,7 @@ namespace FlexTable.ViewModel
 
             // column header 움직이기
             view.UpdateColumnHeaders();*/
-        }
-
-
-        Int32 indexedColumnIndex = -1;
-        uint ignoredPointerId;
-        uint activatedPointerId;
-
-        public void IndexColumn(uint id, Double y)
-        {
-            /*if (ignoredPointerId == id) return;
-
-            Double totalHeight = SheetViewHeight;
-            Int32 columnIndex = (Int32)Math.Floor(y / totalHeight * sheet.Columns.Count);
-
-            if (columnIndex < 0 || columnIndex >= sheet.Columns.Count) return;
-
-            if (indexedColumnIndex != columnIndex)
-            {
-                Model.Column indexedColumn = sheet.Columns.First(c => c.Index == columnIndex);
-                view.ScrollToColumn(indexedColumn);
-
-                IsIndexTooltipVisible = true;
-                IndexTooltipY = (columnIndex + 0.5) * (totalHeight / sheet.Columns.Count) - 15;
-                IndexTooltipContent = indexedColumn.Name;
-
-                HighlightColumn(indexedColumn);
-            }
-            indexedColumnIndex = columnIndex;
-            activatedPointerId = id;*/
-        }
-
-        public void CancelIndexing()
-        {
-            /*foreach (Model.Column column in sheet.Columns) column.Highlighted = false;
-
-            IsIndexTooltipVisible = false;
-            OnPropertyChanged("IsIndexTooltipVisible");
-            HighlightedColumn = null;
-            indexedColumnIndex = -1;
-            summaryViewModel.Hide();
-
-            ignoredPointerId = activatedPointerId;*/
-        }
+        }        
 
         public void HighlightColumn(Model.Column column)
         {

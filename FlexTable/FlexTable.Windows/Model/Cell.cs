@@ -14,6 +14,6 @@ namespace FlexTable.Model
         private Object content;
         public Object Content { get { return content; } set { content = value; OnPropertyChanged("Content"); } }
            
-        public Column Column { get; set; }
+        public ViewModel.ColumnViewModel ColumnViewModel { get; set; }
     }
 }

@@ -1,5 +1,7 @@
-﻿using System;
+﻿using FlexTable.Model;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,9 +11,6 @@ namespace FlexTable.ViewModel
     public class RowViewModel : NotifyViewModel
     {
         ViewModel.MainPageViewModel mainPageViewModel;
-
-        private Model.Row row;
-        public Model.Row Row { get { return row; } set { row = value; } }
 
         private Int32 index;
         public Int32 Index
@@ -28,6 +27,9 @@ namespace FlexTable.ViewModel
 
         public Double Y { get { return index * (Double)App.Current.Resources["RowHeight"]; } }
         public Boolean IsFilteredOut { get; set; }
+
+        private ObservableCollection<Cell> cells = new ObservableCollection<Cell>();
+        public ObservableCollection<Cell> Cells { get { return cells; } }
 
         public RowViewModel(MainPageViewModel mainPageViewModel)
         {

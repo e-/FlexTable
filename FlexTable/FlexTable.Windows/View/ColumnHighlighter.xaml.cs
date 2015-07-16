@@ -43,7 +43,7 @@ namespace FlexTable.View
 
         public void Update()
         {
-            Model.Column column = Column;
+            /*Model.Column column = Column;
             ViewModel.TableViewModel tvm = (this.DataContext as ViewModel.TableViewModel);
 
             Canvas.SetTop(LowerColumn, tvm.Height - (Double)App.Current.Resources["ColumnHeaderHeight"]);
@@ -109,7 +109,7 @@ namespace FlexTable.View
                 TableScrollViewer.Height = tvm.SheetViewHeight;
                 TableScrollViewer.UpdateLayout();
                 Brighten.Begin();
-            }
+            }*/
         }
 
 

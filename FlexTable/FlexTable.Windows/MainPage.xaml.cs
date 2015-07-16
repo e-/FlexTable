@@ -27,6 +27,7 @@ namespace FlexTable
         Util.CsvLoader csvLoader = new Util.CsvLoader();
 
         public View.TableView TableView { get { return TableViewElement; } }
+        public TextBlock DummyTextBlock { get { return DummyCell; } }
 
         public MainPage()
         {
@@ -38,13 +39,9 @@ namespace FlexTable
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
             Model.Sheet sheet = await csvLoader.Load();
-            sheet.MeasureColumnWidth(DummyCell);
-            sheet.UpdateColumnX();
-            sheet.GuessColumnType();
-            sheet.CreateColumnSummary();
             mainPageViewModel.Sheet = sheet;
 
-            TableView.AddGuidelines(sheet.Rows.Count);
+            mainPageViewModel.Initialize();
         }
        
         private void Button_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)

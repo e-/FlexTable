@@ -28,13 +28,11 @@ namespace FlexTable.Util
             if (header == null) // no header row
                 return null;
 
-            Int32 index = 0;
             foreach (String columnName in header)
             {
                 sheet.Columns.Add(new Model.Column()
                 {
-                    Name = columnName,
-                    Index = index++
+                    Name = columnName
                 });
             }
 
@@ -49,13 +47,11 @@ namespace FlexTable.Util
 
                 sheet.Rows.Add(row);
 
-                Int32 columnIndex = 0;
                 foreach (String cellValue in cellValues)
                 {
                     row.Cells.Add(new Model.Cell()
                     {
-                        RawContent = cellValue,
-                        Column = sheet.Columns[columnIndex++]
+                        RawContent = cellValue
                     });
                 }
             }

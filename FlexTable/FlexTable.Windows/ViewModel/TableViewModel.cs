@@ -81,6 +81,47 @@ namespace FlexTable.ViewModel
             RowHeaderViewModel.SetMaximumRowNumber(SheetViewModel.RowViewModels.Count);
         }
 
+        Int32 indexedColumnIndex = -1;
+        uint ignoredPointerId;
+        uint activatedPointerId;
+
+        public void IndexColumn(uint id, Double y)
+        {
+            /*if (ignoredPointerId == id) return;
+
+            Double totalHeight = SheetViewHeight;
+            Int32 columnIndex = (Int32)Math.Floor(y / totalHeight * SheetViewModel.ColumnViewModels.Count);
+
+            if (columnIndex < 0 || columnIndex >= SheetViewModel.ColumnViewModels.Count) return;
+
+            if (indexedColumnIndex != columnIndex)
+            {
+                ColumnViewModel indexedColumn = SheetViewModel.ColumnViewModels.First(c => c.Index == columnIndex);
+                view.ScrollToColumn(indexedColumn);
+
+                IsIndexTooltipVisible = true;
+                IndexTooltipY = (columnIndex + 0.5) * (totalHeight / sheet.Columns.Count) - 15;
+                IndexTooltipContent = indexedColumn.Name;
+
+                HighlightColumn(indexedColumn);
+            }
+            indexedColumnIndex = columnIndex;
+            activatedPointerId = id;*/
+        }
+
+        public void CancelIndexing()
+        {
+            /*foreach (Model.Column column in sheet.Columns) column.Highlighted = false;
+
+            IsIndexTooltipVisible = false;
+            OnPropertyChanged("IsIndexTooltipVisible");
+            HighlightedColumn = null;
+            indexedColumnIndex = -1;
+            summaryViewModel.Hide();
+
+            ignoredPointerId = activatedPointerId;*/
+        }
+
 /*        public void MarkColumnDisabled(Model.Column movingColumn)
         {
             if (!movingColumn.Enabled) return;

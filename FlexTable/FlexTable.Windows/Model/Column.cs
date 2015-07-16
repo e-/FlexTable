@@ -12,58 +12,7 @@ namespace FlexTable.Model
     {
         private String name;
         public String Name { get { return name; } set { name = value; } }
-
-        private Int32 index;
-        public Int32 Index { get { return index; } set { index = value; } }
-
-        private Double width;
-        public Double Width { get { return width; } set { width = value; } }
-
-        private Double x;
-        public Double X { get { return x; } set { x = value; OnPropertyChanged("X"); } }
-
-        private Boolean enabled = true;
-        public Boolean Enabled { get { return enabled; } set { enabled = value; OnPropertyChanged("Enabled"); } }
-
-        private Boolean highlighted = false;
-        public Boolean Highlighted { get { return highlighted; } set { highlighted = value; OnPropertyChanged("Highlighted"); } }
-
-        public ColumnType Type { get; set; }
-        public String TypeString
-        {
-            get
-            {
-                return Type == ColumnType.Categorical ? "Categorical" : "Numerical";
-            }
-        }
-
-        private List<Bin> bins;
-        public List<Bin> Bins { get { return bins; } set { bins = value; } }
-
-        private Double minValue;
-        public Double MinValue { get { return minValue; } set { minValue = value; OnPropertyChanged("MinValue"); } }
-        public String MinValueString { get { return String.Format("{0:#,0.#}", minValue); } }
-
-        private Double maxValue;
-        public Double MaxValue { get { return maxValue; } set { maxValue = value; OnPropertyChanged("MaxValue"); } }
-        public String MaxValueString { get { return String.Format("{0:#,0.#}", maxValue); } }
-
-        private Double meanValue;
-        public Double MeanValue { get { return meanValue; } set { meanValue = value; OnPropertyChanged("MeanValue"); } }
-        public String MeanValueString { get { return String.Format("{0:#,0.#}", meanValue); } }
-
-        private Double medianValue;
-        public Double MedianValue { get { return medianValue; } set { medianValue = value; OnPropertyChanged("MedianValue"); } }
-        public String MedianValueString { get { return String.Format("{0:#,0.#}", medianValue); } }
-
-        private Boolean isGroupedBy;
-        public Boolean IsGroupedBy { get { return isGroupedBy; } set { isGroupedBy = value; OnPropertyChanged("IsGroupedBy"); } }
-
-        private Boolean isDrawnOnChart;
-        public Boolean IsDrawnOnChart { get { return isDrawnOnChart; } set { isDrawnOnChart = value; OnPropertyChanged("IsDrawnOnChart"); } }
-
-
-        public Model.AggregationType AggregationType { get; set; }
+       
 
         public static ColumnType GuessColumnType(IEnumerable<String> cellValues)
         {

@@ -71,7 +71,7 @@ namespace FlexTable.View
 
         async void RecognizeStrokes(InkManager inkManager)
         {
-            try
+            /*try
             {
                 IReadOnlyList<InkStroke> strokes = inkManager.GetStrokes();
                 Double centerX = strokes[0].BoundingRect.X + strokes[0].BoundingRect.Width / 2 -
@@ -126,12 +126,12 @@ namespace FlexTable.View
                 Debug.WriteLine(e.ToString());
             }
 
-            drawable.RemoveAllStrokes();
+            drawable.RemoveAllStrokes();*/
         }
 
         public void ScrollToColumn(Model.Column column)
         {
-            ViewModel.TableViewModel tableViewModel = this.DataContext as ViewModel.TableViewModel;
+            /*ViewModel.TableViewModel tableViewModel = this.DataContext as ViewModel.TableViewModel;
             Double offset = TableScrollViewer.HorizontalOffset,
                    width = tableViewModel.SheetViewWidth,
                    x1 = column.X,
@@ -159,7 +159,7 @@ namespace FlexTable.View
             else
             {
                 tableViewModel.ScrollLeft = (Double)to;
-            }
+            }*/
         }
 
 

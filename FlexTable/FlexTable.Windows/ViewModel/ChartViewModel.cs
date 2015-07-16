@@ -102,7 +102,7 @@ namespace FlexTable.ViewModel
 
         public void Draw(Model.Column groupedBy, IEnumerable<Tuple<String, Double>> values, Model.Column column)
         {
-            IsChartVisible = true;
+            /*IsChartVisible = true;
             Column = column;
             AggregationType = column.AggregationType;
             GroupedColumn = groupedBy;
@@ -138,14 +138,14 @@ namespace FlexTable.ViewModel
             LegendData = new d3.Selection.Data()
             {
                 Real = groupedBy.Bins.Select(b => b as Object).ToList()
-            };
+            };*/
         }
 
         public void Hide()
         {
-            IsChartVisible = false;
+            /*IsChartVisible = false;
             if(Column != null)
-                Column.IsDrawnOnChart = false;
+                Column.IsDrawnOnChart = false;*/
         }
     }
 }

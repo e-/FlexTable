@@ -15,7 +15,7 @@
     <UserControl.Resources>
         <Storyboard x:Name="XAnimation">
             <DoubleAnimation Storyboard.TargetName="CompositeTransform" Storyboard.TargetProperty="TranslateX" 
-                             To="{Binding Column.X}" Duration="00:00:00.3">
+                             To="{Binding X}" Duration="00:00:00.3">
                 <DoubleAnimation.EasingFunction>
                     <ExponentialEase EasingMode="EaseInOut" />
                 </DoubleAnimation.EasingFunction>
@@ -175,7 +175,7 @@
     </UserControl.Resources>
 
     <Grid Height="{StaticResource ColumnHeaderHeight}" 
-          Width="{Binding Column.Width}"
+          Width="{Binding Width}"
           x:Name="Wrapper"
           d:PointerEntered="Border_PointerEntered" 
           d:PointerExited="Border_PointerExited"
@@ -194,11 +194,11 @@
             <CompositeTransform x:Name="CompositeTransform" />
         </Grid.RenderTransform>
         <Border 
-            BorderBrush="{Binding Column.IsGroupedBy, Converter={StaticResource ColumnHeaderHighlightConverter}}" 
-            BorderThickness="{Binding Column.IsGroupedBy, Converter={StaticResource ColumnHeaderHighlightThicknessConverter}}">
-            <Border Background="{Binding Column.IsDrawnOnChart, Converter={StaticResource ColumnHeaderBackgroundConverter}}">
-                <TextBlock Text="{Binding Column.Name}" Width="{Binding Column.Width}" 
-                       Opacity="{Binding Column.Enabled, Converter={StaticResource BooleanToEnabledOpacityConverter}}"
+            BorderBrush="{Binding IsGroupedBy, Converter={StaticResource ColumnHeaderHighlightConverter}}" 
+            BorderThickness="{Binding IsGroupedBy, Converter={StaticResource ColumnHeaderHighlightThicknessConverter}}">
+            <Border Background="{Binding IsDrawnOnChart, Converter={StaticResource ColumnHeaderBackgroundConverter}}">
+                <TextBlock Text="{Binding Column.Name}" Width="{Binding Width}" 
+                       Opacity="{Binding Enabled, Converter={StaticResource BooleanToEnabledOpacityConverter}}"
                        Style="{StaticResource ColumnHeaderStyle}" VerticalAlignment="Center" IsHitTestVisible="False">
                 </TextBlock>
             </Border>

@@ -118,7 +118,7 @@ namespace FlexTable.ViewModel
 
         public void ShowSummary(Model.Column column)
         {
-            Column = column;
+            /*Column = column;
             IsHistogramVisible = column.Type == Model.ColumnType.Categorical;
             IsStatisticalSummaryVisible = column.Type == Model.ColumnType.Numerical;
 
@@ -157,7 +157,7 @@ namespace FlexTable.ViewModel
             else
             {
                 
-            }
+            }*/
         }
 
         public void Hide()
@@ -171,6 +171,7 @@ namespace FlexTable.ViewModel
 
         public void StrokeAdded(InkStroke stroke)
         {
+            /*
             Int32 index = 0;
             Rect rect = stroke.BoundingRect;
             Point center = new Point(rect.X + rect.Width / 2, rect.Y + rect.Height / 2);
@@ -181,11 +182,11 @@ namespace FlexTable.ViewModel
                        y0 = LegendPatchYGetter(bin, index) + 10,
                        y1 = y0 + LegendPatchHeightGetter(bin, index) + 10;
 
-                /*if (x0 <= center.X - mainPageViewModel.Width / 2 + ChartWidth && y0 <= center.Y && center.Y <= y1)
+                if (x0 <= center.X - mainPageViewModel.Width / 2 + ChartWidth && y0 <= center.Y && center.Y <= y1)
                 {
                     bin.IsFilteredOut = !bin.IsFilteredOut;
                     break;
-                } */               
+                }             
                 index++;
             }
 
@@ -207,7 +208,7 @@ namespace FlexTable.ViewModel
                 Real = column.Bins.Select(b => b as Object).ToList()
             };
 
-            mainPageViewModel.UpdateFiltering();
+            mainPageViewModel.UpdateFiltering();*/
         }
     }
 }

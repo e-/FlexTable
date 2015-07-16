@@ -17,28 +17,28 @@ namespace FlexTable.View
         private void Border_PointerMoved(object sender, PointerRoutedEventArgs e)
         {
             Point point = e.GetCurrentPoint(this).Position;
-            (DataContext as ViewModel.MainPageViewModel).IndexColumn(e.GetCurrentPoint(this).PointerId, point.Y);
+            (DataContext as ViewModel.TableViewModel).IndexColumn(e.GetCurrentPoint(this).PointerId, point.Y);
         }
 
         private void Border_PointerReleased(object sender, PointerRoutedEventArgs e)
         {
-            (DataContext as ViewModel.MainPageViewModel).CancelIndexing();
+            (DataContext as ViewModel.TableViewModel).CancelIndexing();
         }
 
         private void Border_PointerCaptureLost(object sender, PointerRoutedEventArgs e)
         {
-            (DataContext as ViewModel.MainPageViewModel).CancelIndexing();
+            (DataContext as ViewModel.TableViewModel).CancelIndexing();
         }
 
         private void Border_PointerExited(object sender, PointerRoutedEventArgs e)
         {
-            (DataContext as ViewModel.MainPageViewModel).CancelIndexing();
+            (DataContext as ViewModel.TableViewModel).CancelIndexing();
         }
 
         private void Border_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             Point point = e.GetCurrentPoint(this).Position;
-            (DataContext as ViewModel.MainPageViewModel).IndexColumn(e.GetCurrentPoint(this).PointerId, point.Y);
+            (DataContext as ViewModel.TableViewModel).IndexColumn(e.GetCurrentPoint(this).PointerId, point.Y);
         }
     }
 }
