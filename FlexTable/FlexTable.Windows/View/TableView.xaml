@@ -40,9 +40,9 @@
                               x:Name="TableScrollViewer"
                               >
                 <Grid>
-                    <Grid Name="GuidelineGrid" Width="{Binding SheetWidth}" Height="{Binding SheetHeight}" IsHitTestVisible="False">
+                    <Grid Name="GuidelineGrid" Width="{Binding SheetViewModel.SheetWidth}" Height="{Binding SheetViewModel.SheetHeight}" IsHitTestVisible="False">
                     </Grid>
-                    <Canvas x:Name="TableCanvas" Width="{Binding SheetWidth}" Height="{Binding SheetHeight}">
+                    <Canvas x:Name="TableCanvas" Width="{Binding SheetViewModel.SheetWidth}" Height="{Binding SheetViewModel.SheetHeight}">
                     </Canvas>
                 </Grid>
             </ScrollViewer>
@@ -51,7 +51,8 @@
             <Border Grid.Row="2" Grid.Column="0" Background="LightGray"></Border>
             <view:ColumnHeaderPresenter Grid.Row="2" Grid.Column="1" x:Name="BottomColumnHeader"></view:ColumnHeaderPresenter>
 
-            <view:ColumnHighlighter Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" Column="{Binding HighlightedColumn}"></view:ColumnHighlighter>
+            <view:ColumnHighlighter Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" ColumnViewModel="{Binding IndexedColumnViewModel}"></view:ColumnHighlighter>
+            
             <Canvas Grid.Row="1" Grid.Column="1">
                 <Border Opacity="{Binding IsIndexTooltipVisible,Converter={StaticResource BooleanToOpacityConverter}}"
                            Background="#CC000000" CornerRadius="3">

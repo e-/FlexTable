@@ -15,19 +15,21 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
+using FlexTable.ViewModel;
+
 // 사용자 정의 컨트롤 항목 템플릿에 대한 설명은 http://go.microsoft.com/fwlink/?LinkId=234236에 나와 있습니다.
 
 namespace FlexTable.View
 {
     public sealed partial class ColumnHighlighter : UserControl
     {
-        public static readonly DependencyProperty ColumnProperty =
-            DependencyProperty.Register("Column", typeof(Model.Column), typeof(ColumnHighlighter), new PropertyMetadata(null, new PropertyChangedCallback(ColumnChanged)));
+        public static readonly DependencyProperty ColumnViewModelProperty =
+            DependencyProperty.Register("ColumnViewModel", typeof(ColumnViewModel), typeof(ColumnHighlighter), new PropertyMetadata(null, new PropertyChangedCallback(ColumnViewModelChanged)));
 
-        public Model.Column Column
+        public ColumnViewModel ColumnViewModel
         {
-            get { return (Model.Column)GetValue(ColumnProperty); }
-            set { SetValue(ColumnProperty, value); }
+            get { return (ColumnViewModel)GetValue(ColumnViewModelProperty); }
+            set { SetValue(ColumnViewModelProperty, value); }
         }
 
         public ColumnHighlighter()
@@ -35,7 +37,7 @@ namespace FlexTable.View
             this.InitializeComponent();
         }
 
-        private static void ColumnChanged(DependencyObject source, DependencyPropertyChangedEventArgs e)
+        private static void ColumnViewModelChanged(DependencyObject source, DependencyPropertyChangedEventArgs e)
         {
             ColumnHighlighter ch = source as ColumnHighlighter;
             ch.Update();
@@ -43,24 +45,24 @@ namespace FlexTable.View
 
         public void Update()
         {
-            /*Model.Column column = Column;
-            ViewModel.TableViewModel tvm = (this.DataContext as ViewModel.TableViewModel);
+            ColumnViewModel columnViewModel = ColumnViewModel;
+            TableViewModel tvm = (this.DataContext as TableViewModel);
 
             Canvas.SetTop(LowerColumn, tvm.Height - (Double)App.Current.Resources["ColumnHeaderHeight"]);
 
-            if (column != null)
-            {                
-                Int32 columnIndex = tvm.MainPageViewModel.Sheet.Columns.IndexOf(column);
+            if (columnViewModel != null)
+            {
+                Int32 columnIndex = columnViewModel.Index;
 
                 TableCanvas.Children.Clear();
 
-                foreach (ViewModel.RowViewModel rowViewModel in tvm.MainPageViewModel.SheetViewModel.RowViewModels)
+                foreach (ViewModel.RowViewModel rowViewModel in tvm.SheetViewModel.RowViewModels)
                 {
                     TextBlock cell = new TextBlock()
                     {
-                        Text = rowViewModel.Row.Cells[columnIndex].Content.ToString(),
+                        Text = rowViewModel.Cells[columnIndex].Content.ToString(),
                         Style = App.Current.Resources["CellStyle"] as Style,
-                        Width = column.Width
+                        Width = columnViewModel.Width
                     };
 
                     Canvas.SetTop(cell, rowViewModel.Y);
@@ -68,15 +70,15 @@ namespace FlexTable.View
                 }
 
                 
-                Double left = column.X - (this.DataContext as ViewModel.MainPageViewModel).TableViewModel.ScrollLeft;
+                Double left = columnViewModel.X - tvm.ScrollLeft;
                 //Debug.WriteLine("left {0}", left);
 
-                if (left - column.Width / 2 <= 0)
+                if (left - columnViewModel.Width / 2 <= 0)
                 {
                     UpperColumn.RenderTransformOrigin = new Point(0, 0);
                     LowerColumn.RenderTransformOrigin = new Point(0, 1);
                 }
-                else if(left + column.Width * 3 / 2 >= tvm.SheetViewWidth)
+                else if(left + columnViewModel.Width * 3 / 2 >= tvm.SheetViewWidth)
                 {
                     UpperColumn.RenderTransformOrigin = new Point(1, 0);
                     LowerColumn.RenderTransformOrigin = new Point(1, 1);
@@ -89,8 +91,10 @@ namespace FlexTable.View
 
                 Canvas.SetLeft(MagnifiedColumn, left);
 
-                UpperColumnHeader.Width = LowerColumnHeader.Width = MagnifiedColumn.Width = column.Width;
-                //UpperColumnHeader.Text = LowerColumnHeader.Text = mpvm.HighlightedColumn.Name;
+                //Debug.WriteLine(left);
+
+                UpperColumnHeader.Width = LowerColumnHeader.Width = MagnifiedColumn.Width = columnViewModel.Width;
+                UpperColumnHeader.Text = LowerColumnHeader.Text = columnViewModel.Column.Name;
 
                 Wrapper.Visibility = Visibility.Visible;
 
@@ -109,14 +113,14 @@ namespace FlexTable.View
                 TableScrollViewer.Height = tvm.SheetViewHeight;
                 TableScrollViewer.UpdateLayout();
                 Brighten.Begin();
-            }*/
+            }
         }
 
 
         private void Darken_Completed(object sender, object e)
         {
-            ViewModel.TableViewModel mpvm = (this.DataContext as ViewModel.TableViewModel);
-            TableScrollViewer.Height = mpvm.SheetViewHeight / 2 - (Double)App.Current.Resources["ColumnHeaderHeight"];
+            ViewModel.TableViewModel tvm = (this.DataContext as ViewModel.TableViewModel);
+            TableScrollViewer.Height = tvm.SheetViewHeight / 2 - (Double)App.Current.Resources["ColumnHeaderHeight"];
         }
 
         private void Brighten_Completed(object sender, object e)

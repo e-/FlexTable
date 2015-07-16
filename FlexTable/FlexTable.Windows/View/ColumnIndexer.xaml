@@ -9,7 +9,7 @@
     d:DesignHeight="300"
     d:DesignWidth="400">
     
-    <Border Height="{Binding SheetHeight}" Width="{StaticResource RowHeaderWidth}" Background="Transparent"
+    <Border Height="{Binding SheetViewModel.SheetHeight}" Width="{StaticResource RowHeaderWidth}" Background="Transparent"
             PointerMoved="Border_PointerMoved"
             PointerReleased="Border_PointerReleased"
             PointerCaptureLost="Border_PointerCaptureLost"

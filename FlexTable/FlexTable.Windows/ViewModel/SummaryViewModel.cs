@@ -16,7 +16,7 @@ namespace FlexTable.ViewModel
     public class SummaryViewModel : NotifyViewModel
     {
         private Model.Column column;
-        public Model.Column Column { get { return column; } set { column = value; OnPropertyChanged("Column"); } }
+        public Model.Column Column { get { return column; } set { column = value; OnPropertyChanged("ColumnViewModel"); } }
 
         ViewModel.MainPageViewModel mainPageViewModel;
         public ViewModel.MainPageViewModel MainPageViewModel { get { return mainPageViewModel; } }

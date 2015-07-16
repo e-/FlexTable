@@ -1,4 +1,5 @@
 ﻿using FlexTable.Util;
+using FlexTable.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -129,13 +130,13 @@ namespace FlexTable.View
             drawable.RemoveAllStrokes();*/
         }
 
-        public void ScrollToColumn(Model.Column column)
+        public void ScrollToColumnViewModel(ViewModel.ColumnViewModel columnViewModel)
         {
-            /*ViewModel.TableViewModel tableViewModel = this.DataContext as ViewModel.TableViewModel;
+            TableViewModel tableViewModel = this.DataContext as TableViewModel;
             Double offset = TableScrollViewer.HorizontalOffset,
                    width = tableViewModel.SheetViewWidth,
-                   x1 = column.X,
-                   x2 = column.X + column.Width;
+                   x1 = columnViewModel.X,
+                   x2 = columnViewModel.X + columnViewModel.Width;
 
             Double? to = null;
 
@@ -159,7 +160,7 @@ namespace FlexTable.View
             else
             {
                 tableViewModel.ScrollLeft = (Double)to;
-            }*/
+            }
         }
 
 

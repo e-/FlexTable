@@ -125,23 +125,7 @@ namespace FlexTable.ViewModel
             view.UpdateColumnHeaders();*/
         }        
 
-        public void HighlightColumn(Model.Column column)
-        {
-            /*foreach (Model.Column c in sheet.Columns) c.Highlighted = false;
-            column.Highlighted = true;
-
-            summaryViewModel.IsSelected = false; // reset selected because the selected column changed
-            summaryViewModel.ShowSummary(column);
-            HighlightedColumn = column;*/
-        }
-
-        public void UnhighlightColumn(Model.Column column)
-        {
-            /*column.Highlighted = false;
-            indexedColumnIndex = -1;
-            summaryViewModel.Hide();
-            HighlightedColumn = null;*/
-        }
+     
 
         public void UpdateFiltering()
         {

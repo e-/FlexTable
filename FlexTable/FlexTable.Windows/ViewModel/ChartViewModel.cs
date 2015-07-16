@@ -90,7 +90,7 @@ namespace FlexTable.ViewModel
         public Model.AggregationType AggregationType { get { return aggregationType; } set { aggregationType = value; OnPropertyChanged("AggregationType"); } }
 
         private Model.Column column;
-        public Model.Column Column { get { return column; } set { column = value; OnPropertyChanged("Column"); } }
+        public Model.Column Column { get { return column; } set { column = value; OnPropertyChanged("ColumnViewModel"); } }
 
         private Model.Column groupedColumn;
         public Model.Column GroupedColumn { get { return groupedColumn; } set { groupedColumn = value; OnPropertyChanged("GroupedColumn"); } }

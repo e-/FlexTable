@@ -35,7 +35,7 @@
                 </ItemsControl>
             </ScrollViewer>
         </Border>
-        <Line X1="{StaticResource RowHeaderWidth}" Y1="0" X2="{StaticResource RowHeaderWidth}" Y2="{Binding SheetHeight}"
+        <Line X1="{StaticResource RowHeaderWidth}" Y1="0" X2="{StaticResource RowHeaderWidth}" Y2="{Binding SheetViewModel.SheetHeight}"
               Stroke="LightGray" StrokeThickness="1">
             <Line.RenderTransform>
                 <TranslateTransform X="-1" />

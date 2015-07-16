@@ -12,7 +12,7 @@ namespace FlexTable.ViewModel
         private ViewModel.MainPageViewModel mainPageViewModel;
 
         private Model.Column column;
-        public Model.Column Column { get { return column; } set { column = value; OnPropertyChanged("Column"); } }
+        public Model.Column Column { get { return column; } set { column = value; OnPropertyChanged("ColumnViewModel"); } }
 
         private Int32 index;
         public Int32 Index { get { return index; } set { index = value; OnPropertyChanged("Index"); } }
@@ -27,10 +27,7 @@ namespace FlexTable.ViewModel
         public Double X { get { return x; } set { x = value; OnPropertyChanged("X"); } }
 
         private Boolean enabled = true;
-        public Boolean Enabled { get { return enabled; } set { enabled = value; OnPropertyChanged("Enabled"); } }
-
-        private Boolean highlighted = false;
-        public Boolean Highlighted { get { return highlighted; } set { highlighted = value; OnPropertyChanged("Highlighted"); } }
+        public Boolean Enabled { get { return enabled; } set { enabled = value; OnPropertyChanged("Enabled"); } }      
 
         public Model.ColumnType Type { get; set; }
         public String TypeString { get { return Type.ToString(); } }
