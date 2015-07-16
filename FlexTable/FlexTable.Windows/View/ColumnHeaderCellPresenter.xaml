@@ -170,6 +170,8 @@
         
         <util:BooleanToEnabledOpacityConverter x:Key="BooleanToEnabledOpacityConverter" />
         <util:ColumnHeaderHighlightConverter x:Key="ColumnHeaderHighlightConverter" />
+        <local:ColumnHeaderBackgroundConverter x:Key="ColumnHeaderBackgroundConverter" />
+        <local:ColumnHeaderHighlightThicknessConverter x:Key="ColumnHeaderHighlightThicknessConverter" />
     </UserControl.Resources>
 
     <Grid Height="{StaticResource ColumnHeaderHeight}" 
@@ -191,11 +193,15 @@
         <Grid.RenderTransform>
             <CompositeTransform x:Name="CompositeTransform" />
         </Grid.RenderTransform>
-        <Border BorderBrush="{Binding Column.IsGroupedBy, Converter={StaticResource ColumnHeaderHighlightConverter}}" BorderThickness="5">
-            <TextBlock Text="{Binding Column.Name}" Width="{Binding Column.Width}" 
-                   Opacity="{Binding Column.Enabled, Converter={StaticResource BooleanToEnabledOpacityConverter}}"
-                   Style="{StaticResource ColumnHeaderStyle}" VerticalAlignment="Center" IsHitTestVisible="False">
-            </TextBlock>
+        <Border 
+            BorderBrush="{Binding Column.IsGroupedBy, Converter={StaticResource ColumnHeaderHighlightConverter}}" 
+            BorderThickness="{Binding Column.IsGroupedBy, Converter={StaticResource ColumnHeaderHighlightThicknessConverter}}">
+            <Border Background="{Binding Column.IsDrawnOnChart, Converter={StaticResource ColumnHeaderBackgroundConverter}}">
+                <TextBlock Text="{Binding Column.Name}" Width="{Binding Column.Width}" 
+                       Opacity="{Binding Column.Enabled, Converter={StaticResource BooleanToEnabledOpacityConverter}}"
+                       Style="{StaticResource ColumnHeaderStyle}" VerticalAlignment="Center" IsHitTestVisible="False">
+                </TextBlock>
+            </Border>
         </Border>
         
         <Canvas HorizontalAlignment="Center" VerticalAlignment="Bottom" IsHitTestVisible="False">

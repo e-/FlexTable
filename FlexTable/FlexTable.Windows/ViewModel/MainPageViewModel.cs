@@ -256,6 +256,8 @@ namespace FlexTable.ViewModel
 
             if(column.Type != Model.ColumnType.Numerical) return;
 
+            if (chartedColumn != null) chartedColumn.IsDrawnOnChart = false;
+            column.IsDrawnOnChart = true;
             chartedColumn = column;
             chartedColumnIndex = columnIndex;
 

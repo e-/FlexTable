@@ -144,6 +144,8 @@ namespace FlexTable.ViewModel
         public void Hide()
         {
             IsChartVisible = false;
+            if(Column != null)
+                Column.IsDrawnOnChart = false;
         }
     }
 }
