@@ -19,8 +19,8 @@ namespace FlexTable.ViewModel
         private Double sheetHeight;
         public Double SheetHeight { get { return sheetHeight; } private set { sheetHeight = value; OnPropertyChanged("SheetHeight"); } }
 
-        private List<ViewModel.ColumnViewModel> columnViewModels = new List<ColumnViewModel>();
-        public List<ViewModel.ColumnViewModel> ColumnViewModels { get { return columnViewModels; } }
+        private ObservableCollection<ViewModel.ColumnViewModel> columnViewModels = new ObservableCollection<ColumnViewModel>();
+        public ObservableCollection<ViewModel.ColumnViewModel> ColumnViewModels { get { return columnViewModels; } }
 
         private List<ViewModel.RowViewModel> rowViewModels = new List<ViewModel.RowViewModel>();
         public List<ViewModel.RowViewModel> RowViewModels { get { return rowViewModels; } }
