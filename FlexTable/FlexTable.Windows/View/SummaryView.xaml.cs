@@ -34,8 +34,8 @@ namespace FlexTable.View
             ViewModel.SummaryViewModel svm = this.DataContext as ViewModel.SummaryViewModel;
             
             //svm.IsSelected = true;
-            svm.MainPageViewModel.GroupBy(svm.Column);
-            svm.MainPageViewModel.CancelIndexing();
+            /*svm.MainPageViewModel.GroupBy(svm.Column);
+            svm.MainPageViewModel.CancelIndexing();*/
         }
 
         void RecognizeStrokes(InkManager inkManager)

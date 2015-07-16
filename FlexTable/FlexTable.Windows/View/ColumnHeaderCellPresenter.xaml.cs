@@ -108,7 +108,7 @@ namespace FlexTable.View
             LeftFocusTransform.X = 0;
             RightFocusTransform.X = 0;
 
-            columnViewModel.Highlight();
+            //columnViewModel.Highlight();
             Wrapper.CapturePointer(e.Pointer);
         }
 
@@ -133,22 +133,22 @@ namespace FlexTable.View
 
                 if (upSelected)
                 {
-                    columnViewModel.SortDescending();
+                    //columnViewModel.SortDescending();
                 }
                 else if (downSelected)
                 {
-                    columnViewModel.SortAscending();
+                   // columnViewModel.SortAscending();
                 }
                 else if (leftSelected)
                 {
-                    columnViewModel.MarkEnabled();
+                    //columnViewModel.MarkEnabled();
                 }
                 else if (rightSelected)
                 {
-                    columnViewModel.MarkDisabled();
+                    //columnViewModel.MarkDisabled();
                 }
                 upSelected = downSelected = leftSelected = rightSelected = false;
-                columnViewModel.Unhighlight();
+                //columnViewModel.Unhighlight();
             }
         }
 

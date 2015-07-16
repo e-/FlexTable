@@ -21,9 +21,6 @@ namespace FlexTable.Model
         private ObservableCollection<Model.Row> rows = new ObservableCollection<Model.Row>();
         public ObservableCollection<Model.Row> Rows { get { return rows; } private set { rows = value; OnPropertyChanged("Rows"); } }
 
-        public Int32 ColumnCount { get { return columns.Count; } }
-        public Int32 RowCount { get { return rows.Count; } }
-
         public event PropertyChangedEventHandler PropertyChanged;
         
         public Sheet()
@@ -64,7 +61,7 @@ namespace FlexTable.Model
         public void GuessColumnType()
         {
             Int32 i;
-            for (i = 0; i < ColumnCount; ++i)
+            for (i = 0; i < Columns.Count; ++i)
             {
                 columns[i].Type = Model.Column.GuessColumnType(rows.Select(r => r.Cells[i].RawContent));
                 if(columns[i].Type == ColumnType.Categorical)
@@ -86,7 +83,7 @@ namespace FlexTable.Model
 
         public void CreateColumnSummary()
         {
-            for (Int32 i = 0; i < ColumnCount; ++i)
+            for (Int32 i = 0; i < Columns.Count; ++i)
             {
                 Column column = columns[i];
                 if (column.Type == ColumnType.Categorical) // bar chart

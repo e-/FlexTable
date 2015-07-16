@@ -181,11 +181,11 @@ namespace FlexTable.ViewModel
                        y0 = LegendPatchYGetter(bin, index) + 10,
                        y1 = y0 + LegendPatchHeightGetter(bin, index) + 10;
 
-                if (x0 <= center.X - mainPageViewModel.Width / 2 + ChartWidth && y0 <= center.Y && center.Y <= y1)
+                /*if (x0 <= center.X - mainPageViewModel.Width / 2 + ChartWidth && y0 <= center.Y && center.Y <= y1)
                 {
                     bin.IsFilteredOut = !bin.IsFilteredOut;
                     break;
-                }                
+                } */               
                 index++;
             }
 

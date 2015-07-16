@@ -25,16 +25,14 @@ namespace FlexTable
     {
         ViewModel.MainPageViewModel mainPageViewModel;
         Util.CsvLoader csvLoader = new Util.CsvLoader();
-        Drawable drawable = new Drawable();
+
+        public View.TableView TableView { get { return TableViewElement; } }
 
         public MainPage()
         {
             mainPageViewModel = new ViewModel.MainPageViewModel(this);
             this.DataContext = mainPageViewModel;
             this.InitializeComponent();
-            
-            drawable.Attach(SheetView, StrokeGrid, NewStrokeGrid);
-            drawable.StrokeAdded += RecognizeStrokes;
         }
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
@@ -46,142 +44,9 @@ namespace FlexTable
             sheet.CreateColumnSummary();
             mainPageViewModel.Sheet = sheet;
 
-            for (Int32 i = 0; i < sheet.RowCount - 1; ++i)
-            {
-                RowDefinition rd = new RowDefinition()
-                {
-                    Height = new GridLength((Double)App.Current.Resources["RowHeight"])
-                };
-                GuidelineGrid.RowDefinitions.Add(rd);
-
-                Rectangle rectangle = new Rectangle()
-                {
-                    Style = (Style)App.Current.Resources["RowGuidelineStyle" + (i%2).ToString()]
-                };
-                Grid.SetRow(rectangle, i);
-
-                GuidelineGrid.Children.Add(rectangle);
-            }
+            TableView.AddGuidelines(sheet.Rows.Count);
         }
-
-        public void UpdateColumnHeaders()
-        {
-            TopColumnHeader.Update();
-            BottomColumnHeader.Update();
-        }
-
-        public void AddRow(View.RowPresenter rowPresenter)
-        {
-            TableCanvas.Children.Add(rowPresenter);
-        }
-        
-        public void RemoveRow(View.RowPresenter rowPresenter)
-        {
-            TableCanvas.Children.Remove(rowPresenter);
-        }
-
-        private void ScrollViewer_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
-        {
-            ScrollViewer sv = sender as ScrollViewer;
-            RowHeader.VerticalOffset = sv.VerticalOffset;
-            TopColumnHeader.HorizontalOffset = sv.HorizontalOffset;
-            BottomColumnHeader.HorizontalOffset = sv.HorizontalOffset;
-
-            mainPageViewModel.ScrollTop = sv.VerticalOffset;
-            mainPageViewModel.ScrollLeft = sv.HorizontalOffset;
-        }
-
-        async void RecognizeStrokes(InkManager inkManager)
-        {
-            try
-            {
-                IReadOnlyList<InkStroke> strokes = inkManager.GetStrokes();
-                Double centerX = strokes[0].BoundingRect.X + strokes[0].BoundingRect.Width / 2 - 
-                    (Double)App.Current.Resources["RowHeaderWidth"] + TableScrollViewer.HorizontalOffset;
-
-                Int32 columnIndex = -1, index = 0;
-                foreach (Model.Column column in mainPageViewModel.Sheet.Columns)
-                {
-                    if (column.X <= centerX && centerX < column.X + column.Width)
-                    {
-                        columnIndex = index;
-                        break;
-                    }
-                    index++;
-                }
-
-
-                IReadOnlyList<InkRecognitionResult> results = await inkManager.RecognizeAsync(InkRecognitionTarget.Recent);
-
-                foreach (InkRecognitionResult result in results)
-                {
-                    foreach (String candidate in result.GetTextCandidates())
-                    {
-                        Debug.WriteLine(candidate);
-
-                        if(candidate == "a" || candidate == "A")
-                        {
-                            mainPageViewModel.ChangeAggregationType(columnIndex, Model.AggregationType.Average);
-                            drawable.RemoveAllStrokes();
-                            return;
-                        }
-
-                        if (candidate == "m" || candidate == "M")
-                        {
-                            mainPageViewModel.ChangeAggregationType(columnIndex, Model.AggregationType.Maximum);
-                            drawable.RemoveAllStrokes();
-                            return;
-                        }
-
-                        if (candidate == "v" || candidate == "V")
-                        {
-                            mainPageViewModel.DrawChart(columnIndex);
-                            drawable.RemoveAllStrokes();
-                            return;
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e.ToString());
-            }
-
-            drawable.RemoveAllStrokes();
-        }
-
-        public void ScrollToColumn(Model.Column column)
-        {
-            Double offset = TableScrollViewer.HorizontalOffset,
-                   width = mainPageViewModel.SheetViewWidth,
-                   x1 = column.X,
-                   x2 = column.X + column.Width;
-
-            Double? to = null;
-
-            if (x1 < offset)
-            {
-                to = x1 - 20;
-            }
-            else if (offset + width < x2)
-            {
-                to = x2 - width + 20;
-            }
-
-            if (to < 0) to = 0;
-
-            TableScrollViewer.ChangeView(to, null, null);
-
-            if (to == null)
-            {
-                mainPageViewModel.ScrollLeft = TableScrollViewer.HorizontalOffset;
-            }
-            else
-            {
-                mainPageViewModel.ScrollLeft = (Double)to;
-            }
-        }
-
+       
         private void Button_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
         {
             mainPageViewModel.CancelGroupBy();

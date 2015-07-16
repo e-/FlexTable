@@ -8,9 +8,6 @@ namespace FlexTable
 {
     public interface IMainPage
     {
-        void ScrollToColumn(Model.Column column);
-        void UpdateColumnHeaders();
-        void AddRow(View.RowPresenter rowPresenter);
-        void RemoveRow(View.RowPresenter rowPresenter);
+        View.TableView TableView { get; }
     }
 }

@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 namespace FlexTable.ViewModel
 {
     public class RowHeaderViewModel : NotifyViewModel
-    {
-        ViewModel.MainPageViewModel mainPageViewModel;
-
+    {       
         private ObservableCollection<Model.RowHeader> rowHeaderItems = new ObservableCollection<Model.RowHeader>();
         public ObservableCollection<Model.RowHeader> RowHeaderItems { get { return rowHeaderItems; } }
+
+        ViewModel.MainPageViewModel mainPageViewModel;
 
         public RowHeaderViewModel(ViewModel.MainPageViewModel mainPageViewModel)
         {

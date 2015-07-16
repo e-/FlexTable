@@ -118,6 +118,8 @@
     <Compile Include="Util\Drawable.cs" />
     <Compile Include="Util\ColumnHeaderHighlightConverter.cs" />
     <Compile Include="Util\SummarySelectedConverter.cs" />
+    <Compile Include="ViewModel\SheetViewModel.cs" />
+    <Compile Include="ViewModel\TableViewModel.cs" />
     <Compile Include="ViewModel\ColumnViewModel.cs" />
     <Compile Include="ViewModel\NotifyViewModel.cs" />
     <Compile Include="ViewModel\RowHeaderViewModel.cs" />
@@ -160,6 +162,9 @@
     </Compile>
     <Compile Include="View\SummaryView.xaml.cs">
       <DependentUpon>SummaryView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\TableView.xaml.cs">
+      <DependentUpon>TableView.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -216,6 +221,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="View\SummaryView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\TableView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

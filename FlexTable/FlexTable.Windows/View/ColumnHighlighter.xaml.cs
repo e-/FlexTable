@@ -44,17 +44,17 @@ namespace FlexTable.View
         public void Update()
         {
             Model.Column column = Column;
-            ViewModel.MainPageViewModel mpvm = (this.DataContext as ViewModel.MainPageViewModel);
+            ViewModel.TableViewModel tvm = (this.DataContext as ViewModel.TableViewModel);
 
-            Canvas.SetTop(LowerColumn, mpvm.Height - (Double)App.Current.Resources["ColumnHeaderHeight"]);
+            Canvas.SetTop(LowerColumn, tvm.Height - (Double)App.Current.Resources["ColumnHeaderHeight"]);
 
             if (column != null)
             {                
-                Int32 columnIndex = mpvm.Sheet.Columns.IndexOf(column);
+                Int32 columnIndex = tvm.MainPageViewModel.Sheet.Columns.IndexOf(column);
 
                 TableCanvas.Children.Clear();
 
-                foreach (ViewModel.RowViewModel rowViewModel in mpvm.RowViewModels)
+                foreach (ViewModel.RowViewModel rowViewModel in tvm.MainPageViewModel.SheetViewModel.RowViewModels)
                 {
                     TextBlock cell = new TextBlock()
                     {
@@ -63,12 +63,12 @@ namespace FlexTable.View
                         Width = column.Width
                     };
 
-                    Canvas.SetTop(cell, rowViewModel.Row.Y);
+                    Canvas.SetTop(cell, rowViewModel.Y);
                     TableCanvas.Children.Add(cell);
                 }
 
                 
-                Double left = column.X - (this.DataContext as ViewModel.MainPageViewModel).ScrollLeft;
+                Double left = column.X - (this.DataContext as ViewModel.MainPageViewModel).TableViewModel.ScrollLeft;
                 //Debug.WriteLine("left {0}", left);
 
                 if (left - column.Width / 2 <= 0)
@@ -76,7 +76,7 @@ namespace FlexTable.View
                     UpperColumn.RenderTransformOrigin = new Point(0, 0);
                     LowerColumn.RenderTransformOrigin = new Point(0, 1);
                 }
-                else if(left + column.Width * 3 / 2 >= mpvm.SheetViewWidth)
+                else if(left + column.Width * 3 / 2 >= tvm.SheetViewWidth)
                 {
                     UpperColumn.RenderTransformOrigin = new Point(1, 0);
                     LowerColumn.RenderTransformOrigin = new Point(1, 1);
@@ -90,13 +90,13 @@ namespace FlexTable.View
                 Canvas.SetLeft(MagnifiedColumn, left);
 
                 UpperColumnHeader.Width = LowerColumnHeader.Width = MagnifiedColumn.Width = column.Width;
-                UpperColumnHeader.Text = LowerColumnHeader.Text = mpvm.HighlightedColumn.Name;
+                //UpperColumnHeader.Text = LowerColumnHeader.Text = mpvm.HighlightedColumn.Name;
 
                 Wrapper.Visibility = Visibility.Visible;
 
-                TableScrollViewer.Height = mpvm.SheetViewHeight;
+                TableScrollViewer.Height = tvm.SheetViewHeight;
                 TableScrollViewer.UpdateLayout();
-                TableScrollViewer.ChangeView(null, mpvm.ScrollTop, null, true);
+                TableScrollViewer.ChangeView(null, tvm.ScrollTop, null, true);
 
                 Brighten.Pause();
                 Darken.Pause();
@@ -106,7 +106,7 @@ namespace FlexTable.View
             {
                 Darken.Pause();
                 Brighten.Pause();
-                TableScrollViewer.Height = mpvm.SheetViewHeight;
+                TableScrollViewer.Height = tvm.SheetViewHeight;
                 TableScrollViewer.UpdateLayout();
                 Brighten.Begin();
             }
@@ -115,7 +115,7 @@ namespace FlexTable.View
 
         private void Darken_Completed(object sender, object e)
         {
-            ViewModel.MainPageViewModel mpvm = (this.DataContext as ViewModel.MainPageViewModel);
+            ViewModel.TableViewModel mpvm = (this.DataContext as ViewModel.TableViewModel);
             TableScrollViewer.Height = mpvm.SheetViewHeight / 2 - (Double)App.Current.Resources["ColumnHeaderHeight"];
         }
 

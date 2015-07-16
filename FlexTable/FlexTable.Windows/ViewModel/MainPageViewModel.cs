@@ -25,234 +25,42 @@ namespace FlexTable.ViewModel
             }
         }
 
-        private Rect bounds;
-        public Double Width { get { return bounds.Width; } }
-        public Double Height { get { return bounds.Height; } }
+        private SheetViewModel sheetViewModel;
+        public SheetViewModel SheetViewModel { get { return sheetViewModel; } set { sheetViewModel = value; OnPropertyChanged("SheetViewModel"); } }
 
-        public Double SheetViewWidth { get { return bounds.Width / 2 - (Double)App.Current.Resources["RowHeaderWidth"]; } }
-        public Double SheetViewHeight { get { return bounds.Height - (Double)App.Current.Resources["ColumnHeaderHeight"] * 2; } }
+        private SummaryViewModel summaryViewModel;
+        public SummaryViewModel SummaryViewModel { get { return summaryViewModel; } set { summaryViewModel = value; OnPropertyChanged("SummaryViewModel"); } }
 
-        private Double sheetWidth;
-        public Double SheetWidth { get { return sheetWidth; } private set { sheetWidth = value; OnPropertyChanged("SheetWidth"); } }
+        private ChartViewModel chartViewModel;
+        public ChartViewModel ChartViewModel { get { return chartViewModel; } set { chartViewModel = value; OnPropertyChanged("ChartViewModel"); } }
 
-        private Double sheetHeight;
-        public Double SheetHeight { get { return sheetHeight; } private set { sheetHeight = value; OnPropertyChanged("SheetHeight"); } }
-        
-        private List<View.RowPresenter> rowPresenters = new List<View.RowPresenter>();
-        public List<View.RowPresenter> RowPresenters { get { return rowPresenters; } }
-
-        public Boolean IsIndexTooltipVisible { get; set; }
-        public Double IndexTooltipY { get; set; }
-        public String IndexTooltipContent { get; set; }
-
-        private ObservableCollection<ViewModel.ColumnViewModel> columnViewModels = new ObservableCollection<ColumnViewModel>();
-        public ObservableCollection<ViewModel.ColumnViewModel> ColumnViewModels { get { return columnViewModels; } }
-
-        private List<ViewModel.RowViewModel> rowViewModels = new List<ViewModel.RowViewModel>();
-        public List<ViewModel.RowViewModel> RowViewModels { get { return rowViewModels; } }
-
-        private ViewModel.SummaryViewModel summaryViewModel;
-        public ViewModel.SummaryViewModel SummaryViewModel { get { return summaryViewModel; } set { summaryViewModel = value; OnPropertyChanged("SummaryViewModel"); } }
-
-        private ViewModel.ChartViewModel chartViewModel;
-        public ViewModel.ChartViewModel ChartViewModel { get { return chartViewModel; } set { chartViewModel = value; OnPropertyChanged("ChartViewModel"); } }
-
-        private ViewModel.RowHeaderViewModel rowHeaderViewModel;
-        public ViewModel.RowHeaderViewModel RowHeaderViewModel { get { return rowHeaderViewModel; } set { rowHeaderViewModel = value; OnPropertyChanged("RowHeaderViewModel"); } }
-
-        private Model.Column highlightedColumn;
-        public Model.Column HighlightedColumn { get { return highlightedColumn; } set { highlightedColumn = value; OnPropertyChanged("HighlightedColumn"); } }
-
-        public Double ScrollLeft { get; set; }
-        public Double ScrollTop { get; set; }
-
-        private Model.Column groupedColumn;
-        public Model.Column GroupedColumn { get { return groupedColumn; } set { groupedColumn = value; OnPropertyChanged("GroupedColumn"); } }
-
+        private TableViewModel tableViewModel;
+        public TableViewModel TableViewModel { get { return tableViewModel; } set { tableViewModel = value; OnPropertyChanged("TableViewModel"); } }
+       
         public MainPageViewModel(IMainPage view)
         {
             this.view = view;
-            SummaryViewModel = new ViewModel.SummaryViewModel(this);
-            RowHeaderViewModel = new ViewModel.RowHeaderViewModel(this);
-            ChartViewModel = new ViewModel.ChartViewModel(this);
 
-            bounds = Window.Current.Bounds;
-            OnPropertyChanged("Width");
-            OnPropertyChanged("Height");
-            OnPropertyChanged("SheetViewWidth");
-            OnPropertyChanged("SheetViewHeight");
+            SummaryViewModel = new SummaryViewModel(this);            
+            ChartViewModel = new ChartViewModel(this);
+            SheetViewModel = new SheetViewModel(this);
+            TableViewModel = new TableViewModel(this, view);
+
         }
 
         public void Initialize()
         {
-            SheetWidth = sheet.Columns.Select(c => c.Width).Sum() + (Double)App.Current.Resources["RowHeaderWidth"];
-            SheetHeight = sheet.RowCount * (Double)App.Current.Resources["RowHeight"];
-
-            /* 기본 컬럼 추가 */
-            columnViewModels.Clear();
-            foreach (Model.Column column in sheet.Columns)
-            {
-                columnViewModels.Add(new ViewModel.ColumnViewModel(this) { Column = column });
-            }
-
-            /* 기본 row 추가 */
-            rowViewModels.Clear();
-            foreach (Model.Row row in sheet.Rows)
-            {
-                ViewModel.RowViewModel rowViewModel = new ViewModel.RowViewModel(this) { Row = row };
-                rowViewModels.Add(rowViewModel);
-
-                View.RowPresenter rowPresenter = new View.RowPresenter(rowViewModel);
-                rowPresenters.Add(rowPresenter);
-                
-                view.AddRow(rowPresenter);
-                rowPresenter.Y = row.Y;
-                rowPresenter.Update();
-            }
-
-            rowHeaderViewModel.SetMaximumRowNumber(sheet.RowCount);
+            sheetViewModel.Initialize(sheet);
+            tableViewModel.UpdateRows();
         }
-
-        public void GroupBy(Model.Column groupBy)
-        {
-            if (groupBy.Type != Model.ColumnType.Categorical)
-            {
-                Debug.WriteLine("Grouping rows by a numerical column is not supported now.");
-                return;
-            }
-
-            GroupedColumn = groupBy;
-            groupBy.IsGroupedBy = true;
-
-            /* 
-             * 먼저 group by 컬럼을 맨 앞으로 
-             * 두개 agg된 경우 생각 안하고 있음
-             */
-
-            IEnumerable<Model.Column> previousColumns = sheet.Columns.Where(c => c.Index < groupBy.Index);
-
-            foreach (Model.Column column in previousColumns)
-            {
-                column.Index++;
-            }
-            groupBy.Index = 0;
-
-            // Column의 x값을 업데이트하고 아래에서 Cell을 추가하므로 RowPresenter.UpdateCells() 를 호출하지 않아도 됨
-            sheet.UpdateColumnX();
-
-            
-            foreach (Model.Bin bin in groupBy.Bins)
-            {
-                foreach (Model.Row row in bin.Rows)
-                {
-                    row.Index = bin.Index;
-                    row.OnPropertyChanged("Y");
-                }
-            }
-
-            foreach (View.RowPresenter rowPresenter in rowPresenters)
-            {
-                rowPresenter.UpdateAndDestroy(delegate
-                {
-                    view.RemoveRow(rowPresenter);
-                });
-            }
-              
-            rowViewModels.Clear();
-            rowPresenters.Clear();
-
-            foreach (Model.Bin bin in groupBy.Bins)
-            {
-                Model.Row row = new Model.Row();
-                
-                row.Index = bin.Index;
-                foreach (Model.Column column in sheet.Columns)
-                {
-                    Model.Cell cell = new Model.Cell();
-
-                    cell.Column = column; //Cell.Column은 OnPropertyChanged가 안됨.
-                    if (column == groupBy)
-                    {
-                        cell.RawContent = bin.Name;
-                        cell.Content = bin.Name;
-                    }
-                    else
-                    {
-                        Int32 index = sheet.Columns.IndexOf(column);
-                        column.AggregationType = Model.AggregationType.Average;
-                        Object aggr = Aggregate(column, bin.Rows.Select(r => r.Cells[index].Content), Model.AggregationType.Average);
-                        cell.RawContent = aggr.ToString();
-                        cell.Content = aggr;
-                    }
-
-                    row.Cells.Add(cell);
-                }
-                // cell 별로 뷰 업데이트 하지않으려면 일단 cell을 다 만들고 다음에 컨트롤을 만든다.
-                ViewModel.RowViewModel rowViewModel = new ViewModel.RowViewModel(this) { Row = row };
-                View.RowPresenter rowPresenter = new View.RowPresenter(rowViewModel);
-
-                rowViewModels.Add(rowViewModel);
-                rowPresenters.Add(rowPresenter);
-                view.AddRow(rowPresenter);
-
-                rowPresenter.Y = row.Y;
-                rowPresenter.FadeIn();
-            }
-
-            rowHeaderViewModel.SetRowNumber(groupBy.Bins.Count);
-            view.UpdateColumnHeaders();
-            view.ScrollToColumn(groupBy);
-        }
-
-        public void ChangeAggregationType(Int32 columnIndex, Model.AggregationType aggregationType)
-        {
-            if (groupedColumn == null) return;
-
-            Model.Column column = sheet.Columns[columnIndex];
-
-            Int32 index = 0;
-            foreach (Model.Bin bin in groupedColumn.Bins)
-            {
-                Model.Row row = rowViewModels[index].Row;
-                column.AggregationType = aggregationType;
-
-                Object aggr = Aggregate(column, bin.Rows.Select(r => r.Cells[columnIndex].Content), aggregationType);
-                row.Cells[columnIndex].RawContent = aggr.ToString();
-                row.Cells[columnIndex].Content = aggr;
-                index++;
-            }
-
-            if (column == chartedColumn)
-            {
-                DrawChart(chartedColumnIndex);
-            }
-        }
-
-        public Object Aggregate(Model.Column column, IEnumerable<Object> values, Model.AggregationType aggregationType)
-        {
-            if (column.Type == Model.ColumnType.Categorical)
-            {
-                return String.Format("({0})", values.Distinct().Count());
-            }
-            else
-            {
-                switch (aggregationType)
-                {
-                    case Model.AggregationType.Average:
-                        return Math.Round(values.Sum(v => (Double)v) / values.Count(), 2);
-                    case Model.AggregationType.Maximum:
-                        return values.Max();
-                }
-            }
-            throw new Exception("Unknown Aggregation Type");
-        }
+     
 
         private Model.Column chartedColumn;
         private Int32 chartedColumnIndex;
 
         public void DrawChart(Int32 columnIndex)
         {
-            Model.Column column = sheet.Columns[columnIndex];
+            /*Model.Column column = sheet.Columns[columnIndex];
 
             if(column.Type != Model.ColumnType.Numerical) return;
 
@@ -267,15 +75,15 @@ namespace FlexTable.ViewModel
                     new Tuple<String, Double>(groupedColumn.Bins[index].Name, (Double)rvm.Row.Cells[columnIndex].Content)
                     ),
                 column
-            );
+            );*/
         }
 
         public void CancelGroupBy()
         {
-            GroupedColumn.IsGroupedBy = false;
+            /*GroupedColumn.IsGroupedBy = false;
             GroupedColumn = null;
 
-            /* 먼저 column의 순서를 원래대로 */
+            // 먼저 column의 순서를 원래대로 
 
             for (Int32 i = 0; i < sheet.Columns.Count; ++i)
             {
@@ -313,90 +121,10 @@ namespace FlexTable.ViewModel
                 //rowPresenter.Update();
             }
             
-            rowHeaderViewModel.SetRowNumber(sheet.RowCount);
+            rowHeaderViewModel.SetRowNumber(sheet.Rows.Count);
 
             // column header 움직이기
-            view.UpdateColumnHeaders();
-        }
-
-        #region Draft
-
-        public void Sort(Model.Column column, Boolean isDescending)
-        {
-            Int32 sortIndex = sheet.Columns.IndexOf(column);
-
-            IOrderedEnumerable<Model.Row> sorted = null;
-            if (isDescending)
-            {
-                sorted = sheet.Rows.ToList().OrderByDescending(r => r.Cells[sortIndex].Content);
-            }
-            else
-            {
-                sorted = sheet.Rows.ToList().OrderBy(r => r.Cells[sortIndex].Content);
-            }
-            Int32 index = 0;
-
-            foreach (Model.Row row in sorted)
-            {
-                row.Index = index++;
-            }
-
-            foreach (Model.Row row in sheet.Rows)
-            {
-                row.OnPropertyChanged("Y");
-            }
-
-            foreach (View.RowPresenter rowPresenter in rowPresenters)
-            {
-                rowPresenter.Update();
-            }
-        }
-
-        public void MarkColumnDisabled(Model.Column movingColumn)
-        {
-            if (!movingColumn.Enabled) return;
-
-            movingColumn.Enabled = false;
-            IEnumerable<Model.Column> nexts = sheet.Columns.Where(c => c.Index > movingColumn.Index);
-
-            foreach (Model.Column column in nexts)
-            {
-                column.Index--;
-            }
-            movingColumn.Index = sheet.ColumnCount - 1;
-
-            sheet.UpdateColumnX();
-
-            foreach (View.RowPresenter rowPresenter in rowPresenters)
-            {
-                rowPresenter.UpdateCells();
-            }
-
-            view.UpdateColumnHeaders();
-        }
-
-        public void MarkColumnEnabled(Model.Column movingColumn)
-        {
-            if (movingColumn.Enabled) return;
-            
-            Int32 index = sheet.Columns.Count(c => c.Enabled);
-            IEnumerable<Model.Column> nexts = sheet.Columns.Where(c => c.Index <= index && !c.Enabled);
-
-            foreach (Model.Column column in nexts)
-            {
-                column.Index++;
-            }
-            movingColumn.Index = index;
-            movingColumn.Enabled = true;
-
-            sheet.UpdateColumnX();
-
-            foreach (View.RowPresenter rowPresenter in rowPresenters)
-            {
-                rowPresenter.UpdateCells();
-            }
-
-            view.UpdateColumnHeaders();
+            view.UpdateColumnHeaders();*/
         }
 
 
@@ -406,12 +134,12 @@ namespace FlexTable.ViewModel
 
         public void IndexColumn(uint id, Double y)
         {
-            if (ignoredPointerId == id) return;
+            /*if (ignoredPointerId == id) return;
 
             Double totalHeight = SheetViewHeight;
-            Int32 columnIndex = (Int32)Math.Floor(y / totalHeight * sheet.ColumnCount);
+            Int32 columnIndex = (Int32)Math.Floor(y / totalHeight * sheet.Columns.Count);
 
-            if (columnIndex < 0 || columnIndex >= sheet.ColumnCount) return;
+            if (columnIndex < 0 || columnIndex >= sheet.Columns.Count) return;
 
             if (indexedColumnIndex != columnIndex)
             {
@@ -419,21 +147,18 @@ namespace FlexTable.ViewModel
                 view.ScrollToColumn(indexedColumn);
 
                 IsIndexTooltipVisible = true;
-                IndexTooltipY = (columnIndex + 0.5) * (totalHeight / sheet.ColumnCount) - 15;
+                IndexTooltipY = (columnIndex + 0.5) * (totalHeight / sheet.Columns.Count) - 15;
                 IndexTooltipContent = indexedColumn.Name;
-                OnPropertyChanged("IsIndexTooltipVisible");
-                OnPropertyChanged("IndexTooltipY");
-                OnPropertyChanged("IndexTooltipContent");
 
                 HighlightColumn(indexedColumn);
             }
             indexedColumnIndex = columnIndex;
-            activatedPointerId = id;
+            activatedPointerId = id;*/
         }
 
         public void CancelIndexing()
         {
-            foreach (Model.Column column in sheet.Columns) column.Highlighted = false;
+            /*foreach (Model.Column column in sheet.Columns) column.Highlighted = false;
 
             IsIndexTooltipVisible = false;
             OnPropertyChanged("IsIndexTooltipVisible");
@@ -441,30 +166,30 @@ namespace FlexTable.ViewModel
             indexedColumnIndex = -1;
             summaryViewModel.Hide();
 
-            ignoredPointerId = activatedPointerId;
+            ignoredPointerId = activatedPointerId;*/
         }
 
         public void HighlightColumn(Model.Column column)
         {
-            foreach (Model.Column c in sheet.Columns) c.Highlighted = false;
+            /*foreach (Model.Column c in sheet.Columns) c.Highlighted = false;
             column.Highlighted = true;
 
             summaryViewModel.IsSelected = false; // reset selected because the selected column changed
             summaryViewModel.ShowSummary(column);
-            HighlightedColumn = column;
+            HighlightedColumn = column;*/
         }
 
         public void UnhighlightColumn(Model.Column column)
         {
-            column.Highlighted = false;
+            /*column.Highlighted = false;
             indexedColumnIndex = -1;
             summaryViewModel.Hide();
-            HighlightedColumn = null;
+            HighlightedColumn = null;*/
         }
 
         public void UpdateFiltering()
         {
-            foreach (Model.Row row in sheet.Rows)
+            /*foreach (Model.Row row in sheet.Rows)
             {
                 row.IsFilteredOut = false;
             }
@@ -498,9 +223,7 @@ namespace FlexTable.ViewModel
             foreach (View.RowPresenter rowPresenter in rowPresenters)
             {
                 rowPresenter.Update();
-            }
+            }*/
         }
-
-        #endregion
     }
 }

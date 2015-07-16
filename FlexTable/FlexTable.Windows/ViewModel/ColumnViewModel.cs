@@ -12,14 +12,17 @@ namespace FlexTable.ViewModel
         private ViewModel.MainPageViewModel mainPageViewModel;
 
         private Model.Column column;
-        public Model.Column Column { get { return column; } set { column = value; OnPropertyChanged("Column"); } }        
-        
+        public Model.Column Column { get { return column; } set { column = value; OnPropertyChanged("Column"); } }
+
+        private Int32 index;
+        public Int32 Index { get { return index; } set { index = value; OnPropertyChanged("Index"); } }
+
         public ColumnViewModel(ViewModel.MainPageViewModel mainPageViewModel)
         {
             this.mainPageViewModel = mainPageViewModel;
         }
 
-        public void Highlight()
+        /*public void Highlight()
         {
             mainPageViewModel.HighlightColumn(column);
         }
@@ -37,9 +40,9 @@ namespace FlexTable.ViewModel
         public void MarkDisabled()
         {
             mainPageViewModel.MarkColumnDisabled(column);
-        }
+        }*/
 
-        public void SortAscending()
+        /*public void SortAscending()
         {
             mainPageViewModel.Sort(column, false);
         }
@@ -47,6 +50,6 @@ namespace FlexTable.ViewModel
         public void SortDescending()
         {
             mainPageViewModel.Sort(column, true);
-        }
+        }*/
     }
 }

@@ -38,7 +38,6 @@ namespace FlexTable.Util
                 });
             }
 
-            Int32 rowIndex = 0;
             while (true) // body
             {
                 var cellValues = parser.Read();
@@ -46,10 +45,7 @@ namespace FlexTable.Util
                 if (cellValues == null)
                     break;
 
-                Model.Row row = new Model.Row()
-                {
-                    Index = rowIndex++
-                };
+                Model.Row row = new Model.Row();
 
                 sheet.Rows.Add(row);
 
