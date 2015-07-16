@@ -16,16 +16,16 @@ using Windows.UI.Xaml.Navigation;
 
 // 사용자 정의 컨트롤 항목 템플릿에 대한 설명은 http://go.microsoft.com/fwlink/?LinkId=234236에 나와 있습니다.
 
-namespace d3.View
+namespace d3.Component
 {
     public sealed partial class Texts : UserControl
     {
         public static readonly DependencyProperty DataProperty =
-            DependencyProperty.Register("Data", typeof(Selection.Data), typeof(Texts), new PropertyMetadata(null, new PropertyChangedCallback(DataChanged)));
+            DependencyProperty.Register("Data", typeof(Data), typeof(Texts), new PropertyMetadata(null, new PropertyChangedCallback(DataChanged)));
 
-        public Selection.Data Data
+        public Data Data
         {
-            get { return (Selection.Data)GetValue(DataProperty); }
+            get { return (Data)GetValue(DataProperty); }
             set { SetValue(DataProperty, value); }
         }
 
@@ -106,7 +106,7 @@ namespace d3.View
             previousBorders.Clear();
 
             Int32 index = 0;
-            foreach (Object datum in Data.Real)
+            foreach (Object datum in Data.List)
             {
                 Border border = new Border();
 

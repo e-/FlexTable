@@ -108,7 +108,8 @@ namespace FlexTable.ViewModel
                 IndexTooltipY = (columnIndex + 0.5) * (totalHeight / SheetViewModel.ColumnViewModels.Count) - 15;
                 IndexTooltipContent = columnViewModel.Column.Name;
 
-                //summaryViewModel.ShowSummary(column);
+
+                mainPageViewModel.SummaryViewModel.ShowSummary(columnViewModel);
             }
 
             activatedPointerId = id;
@@ -118,7 +119,7 @@ namespace FlexTable.ViewModel
         {
             IsIndexTooltipVisible = false;
             IndexedColumnViewModel = null;
-            //summaryViewModel.Hide();
+            mainPageViewModel.SummaryViewModel.Hide();
 
             ignoredPointerId = activatedPointerId;
         }

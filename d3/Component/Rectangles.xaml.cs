@@ -19,7 +19,7 @@ using System.Diagnostics;
 
 // 빈 페이지 항목 템플릿에 대한 설명은 http://go.microsoft.com/fwlink/?LinkId=234238에 나와 있습니다.
 
-namespace d3.View
+namespace d3.Component
 {
     /// <summary>
     /// 자체에서 사용하거나 프레임 내에서 탐색할 수 있는 빈 페이지입니다.
@@ -27,11 +27,11 @@ namespace d3.View
     public sealed partial class Rectangles : UserControl
     {
         public static readonly DependencyProperty DataProperty =
-            DependencyProperty.Register("Data", typeof(Selection.Data), typeof(Rectangles), new PropertyMetadata(null, new PropertyChangedCallback(DataChanged)));
+            DependencyProperty.Register("Data", typeof(Data), typeof(Rectangles), new PropertyMetadata(null, new PropertyChangedCallback(DataChanged)));
 
-        public Selection.Data Data
+        public Data Data
         {
-            get { return (Selection.Data)GetValue(DataProperty); }
+            get { return (Data)GetValue(DataProperty); }
             set { SetValue(DataProperty, value); }
         }
 
@@ -103,7 +103,7 @@ namespace d3.View
             previousRectangles.Clear();
 
             Int32 index = 0;
-            foreach (Object datum in Data.Real)
+            foreach (Object datum in Data.List)
             {
                 Rectangle rect = new Rectangle()
                 {

@@ -39,7 +39,7 @@ namespace FlexTable.ViewModel
         {
             this.view = view;
 
-            SummaryViewModel = new SummaryViewModel(this);            
+            SummaryViewModel = new SummaryViewModel(this, view);            
             ChartViewModel = new ChartViewModel(this);
             SheetViewModel = new SheetViewModel(this, view);
             TableViewModel = new TableViewModel(this, view);
@@ -50,6 +50,8 @@ namespace FlexTable.ViewModel
             sheetViewModel.Initialize(sheet);
             tableViewModel.UpdateRows();
             view.TableView.AddGuidelines(sheet.Rows.Count);
+
+            SummaryViewModel.ShowSummary(sheetViewModel.ColumnViewModels[2]);
         }
      
 

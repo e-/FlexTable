@@ -48,22 +48,22 @@ namespace FlexTable.ViewModel
         public Func<Object, Int32, Double> HeightGetter { get { return (d, index) => ChartHeight - yScale.Map((d as Tuple<String, Double>).Item2); } }
         public Func<Object, Int32, Double> XGetter { get { return (d, index) => xScale.Map((d as Tuple<String, Double>).Item1) - 25; } }
         public Func<Object, Int32, Double> YGetter { get { return (d, index) => yScale.Map((d as Tuple<String, Double>).Item2); } }
-        private d3.Selection.Data data;
-        public d3.Selection.Data Data { get { return data; } set { data = value; OnPropertyChanged("Data"); } }
+        private d3.Data data;
+        public d3.Data Data { get { return data; } set { data = value; OnPropertyChanged("Data"); } }
 
         public Func<Object, Int32, Double> LegendPatchWidthGetter { get { return (d, index) => 20; } }
         public Func<Object, Int32, Double> LegendPatchHeightGetter { get { return (d, index) => 20; } }
         public Func<Object, Int32, Double> LegendPatchXGetter { get { return (d, index) => 0; } }
         public Func<Object, Int32, Double> LegendPatchYGetter { get { 
-            return (d, index) => (ChartHeight - LegendData.Real.Count * 20 - (LegendData.Real.Count - 1) * 10) / 2 + index * 30; 
+            return (d, index) => (ChartHeight - LegendData.List.Count * 20 - (LegendData.List.Count - 1) * 10) / 2 + index * 30; 
         } }
 
         public Func<Object, Int32, Double> LegendTextXGetter { get { return (d, index) => 25; } }
         public Func<Object, Int32, String> LegendTextGetter { get { return (d, index) => (d as Model.Bin).Name; } }
         public Func<Object, Int32, Color> LegendTextColorGetter { get { return (d, index) => (d as Model.Bin).IsFilteredOut ? Colors.LightGray : Colors.Black; } }
 
-        private d3.Selection.Data legendData;
-        public d3.Selection.Data LegendData { get { return legendData; } set { legendData = value; OnPropertyChanged("LegendData"); } }
+        private d3.Data legendData;
+        public d3.Data LegendData { get { return legendData; } set { legendData = value; OnPropertyChanged("LegendData"); } }
         
         public List<Color> CategoricalColors = new List<Color>()
         {

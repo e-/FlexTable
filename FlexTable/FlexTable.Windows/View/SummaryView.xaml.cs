@@ -54,5 +54,10 @@ namespace FlexTable.View
             }
             return;
         }
+
+        public void AddToCarousel(UIElement element)
+        {
+            Carousel.Children.Add(element);
+        }
     }
 }

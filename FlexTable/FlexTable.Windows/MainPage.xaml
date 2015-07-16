@@ -25,7 +25,7 @@
                
         <view:TableView Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" x:Name="TableViewElement" DataContext="{Binding TableViewModel}"></view:TableView>
         
-        <view:SummaryView Grid.Column="1" Grid.Row="0" DataContext="{Binding SummaryViewModel}"></view:SummaryView>
+        <view:SummaryView Grid.Column="1" Grid.Row="0" x:Name="SummaryViewElement" DataContext="{Binding SummaryViewModel}"></view:SummaryView>
         
         <Button Tapped="Button_Tapped" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Bottom">Cancel Grouping</Button>
 

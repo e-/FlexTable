@@ -43,15 +43,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Axis.xaml">
+    <Page Include="Component\Axis.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Rectangles.xaml">
+    <Page Include="Component\Rectangles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Texts.xaml">
+    <Page Include="Component\Texts.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\BarChart.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -61,20 +65,24 @@
     <TargetPlatform Include="Windows, Version=8.1" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Notifiable.cs" />
     <Compile Include="Scale\Ordinal.cs" />
-    <Compile Include="Selection\Data.cs" />
-    <Compile Include="View\Axis.xaml.cs">
+    <Compile Include="Data.cs" />
+    <Compile Include="Component\Axis.xaml.cs">
       <DependentUpon>Axis.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Interpolate\NumberInterpolater.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scale\ScaleBase.cs" />
     <Compile Include="Scale\Linear.cs" />
-    <Compile Include="View\Rectangles.xaml.cs">
+    <Compile Include="Component\Rectangles.xaml.cs">
       <DependentUpon>Rectangles.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Texts.xaml.cs">
+    <Compile Include="Component\Texts.xaml.cs">
       <DependentUpon>Texts.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ViewModel\BarChartViewModel.cs" />
+    <Compile Include="View\BarChart.xaml.cs">
+      <DependentUpon>BarChart.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />

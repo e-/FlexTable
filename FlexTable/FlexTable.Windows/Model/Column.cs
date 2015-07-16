@@ -41,16 +41,16 @@ namespace FlexTable.Model
             return ColumnType.Numerical;
         }
 
-        public static List<Bin> GetFrequencyBins(ObservableCollection<Row> rows, Int32 cellIndex)
+        public static List<Bin> GetFrequencyBins(IEnumerable<ViewModel.RowViewModel> rows, Int32 cellIndex)
         {
-            Dictionary<String, List<Row>> dictionary = new Dictionary<String, List<Row>>();
+            Dictionary<String, List<ViewModel.RowViewModel>> dictionary = new Dictionary<String, List<ViewModel.RowViewModel>>();
 
-            foreach (Row row in rows)
+            foreach (ViewModel.RowViewModel row in rows)
             {
                 String value = row.Cells[cellIndex].RawContent;
                 if (!dictionary.ContainsKey(value))
                 {
-                    dictionary[value] = new List<Row>();
+                    dictionary[value] = new List<ViewModel.RowViewModel>();
                 }
                 dictionary[value].Add(row);
             }
@@ -62,7 +62,7 @@ namespace FlexTable.Model
             Int32 index = 0;
             foreach (String key in sorted)
             {
-                bins.Add(new Bin() { Name = key, Count = dictionary[key].Count, Index = index++, Rows = dictionary[key]});
+                bins.Add(new Bin() { Name = key, Count = dictionary[key].Count, Index = index++, RowViewModels = dictionary[key]});
             }
 
             return bins;

@@ -13,6 +13,6 @@ namespace FlexTable.Model
         public Boolean IsFilteredOut { get; set; }
         public Int32 Index { get; set; }
 
-        public List<Row> Rows { get; set; }
+        public List<ViewModel.RowViewModel> RowViewModels { get; set; }
     }
 }

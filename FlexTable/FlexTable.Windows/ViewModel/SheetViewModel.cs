@@ -298,25 +298,25 @@ namespace FlexTable.ViewModel
 
         public void CreateColumnSummary()
         {
-            /*for (Int32 i = 0; i < columnViewModels.Count; ++i)
+            for (Int32 i = 0; i < columnViewModels.Count; ++i)
             {
-                ColumnViewModel column = columnViewModels[i];
-                if (column.Type == ColumnType.Categorical) // bar chart
+                ColumnViewModel columnViewModel = columnViewModels[i];
+                if (columnViewModel.Type == ColumnType.Categorical) // bar chart
                 {
-                    column.Bins = Column.GetFrequencyBins(rows, i);
+                    columnViewModel.Bins = Column.GetFrequencyBins(rowViewModels, i);
                 }
                 else // histogram
                 {
-                    column.Bins = new List<Bin>();
+                    columnViewModel.Bins = new List<Bin>();
 
                     IEnumerable<Double> cellValues = rowViewModels.Select(r => (Double)r.Cells[i].Content).OrderBy(v => v);
 
-                    column.MinValue = cellValues.Min();
-                    column.MaxValue = cellValues.Max();
-                    column.MeanValue = cellValues.Sum() / cellValues.Count();
-                    column.MedianValue = cellValues.ElementAt(cellValues.Count() / 2);
+                    columnViewModel.MinValue = cellValues.Min();
+                    columnViewModel.MaxValue = cellValues.Max();
+                    columnViewModel.MeanValue = cellValues.Sum() / cellValues.Count();
+                    columnViewModel.MedianValue = cellValues.ElementAt(cellValues.Count() / 2);
                 }
-            }*/
+            }
         }
     }
 }

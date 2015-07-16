@@ -18,7 +18,7 @@ using Windows.UI.Xaml.Media.Animation;
 
 // 사용자 정의 컨트롤 항목 템플릿에 대한 설명은 http://go.microsoft.com/fwlink/?LinkId=234236에 나와 있습니다.
 
-namespace d3.View
+namespace d3.Component
 {
     public sealed partial class Axis : UserControl
     {

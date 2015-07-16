@@ -5,7 +5,7 @@
     xmlns:local="using:FlexTable.View"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:d3="using:d3.View"
+    xmlns:d3="using:d3.Component"
     xmlns:util="using:FlexTable.Util"
     mc:Ignorable="d"
     d:DesignHeight="300"
@@ -34,33 +34,20 @@
         <util:SummarySelectedConverter x:Name="SummarySelectedConverter" />
     </UserControl.Resources>
     
-    <Grid x:Name="Wrapper" Background="{Binding IsSelected, Converter={StaticResource SummarySelectedConverter}}" Tapped="Grid_Tapped">        
-        <Grid Margin="10" Visibility="{Binding IsHistogramVisible,Converter={StaticResource BooleanToVisibilityConverter}}">
+    <Grid x:Name="Wrapper" Background="{Binding IsSelected, Converter={StaticResource SummarySelectedConverter}}" Tapped="Grid_Tapped">
+        <Grid Margin="10" >
+            <!-- Visibility="{Binding IsHistogramVisible,Converter={StaticResource BooleanToVisibilityConverter}}"-->
             <StackPanel>
                 <TextBlock Style="{StaticResource DescriptionStyle}" FontSize="30">
                     Frequency of <Run Text="{Binding Column.Name}" FontWeight="Bold"/>
                 </TextBlock>
                 <TextBlock Style="{StaticResource DescriptionStyle}" Text="{Binding Column.TypeString}" />
             </StackPanel>
-            <Canvas>
-                <d3:Rectangles Data="{Binding Data}" WidthGetter="{Binding WidthGetter}" HeightGetter="{Binding HeightGetter}" 
-                               XGetter="{Binding XGetter}" YGetter="{Binding YGetter}" ColorGetter="{Binding ColorGetter}"/>
-                <d3:Axis Orientation="Horizontal" Scale="{Binding XScale}" Transition="False" Canvas.Top="400" Canvas.Left="0"/>
-                <d3:Axis Orientation="Vertical" Scale="{Binding YScale}" Transition="False" Canvas.Top="0" Canvas.Left="50"/>
-
-                <d3:Rectangles Data="{Binding LegendData}" WidthGetter="{Binding LegendPatchWidthGetter}" 
-                               HeightGetter="{Binding LegendPatchHeightGetter}" XGetter="{Binding LegendPatchXGetter}" 
-                               YGetter="{Binding LegendPatchYGetter}" ColorGetter="{Binding ColorGetter}"
-                               Canvas.Left="{Binding ChartWidth}"/>
+            <StackPanel x:Name="Carousel">
                 
-                <d3:Texts Data="{Binding LegendData}" TextGetter="{Binding LegendTextGetter}"
-                          HeightGetter="{Binding LegendPatchHeightGetter}"
-                          XGetter="{Binding LegendTextXGetter}" YGetter="{Binding LegendPatchYGetter}" 
-                          ColorGetter="{Binding LegendTextColorGetter}"
-                          Canvas.Left="{Binding ChartWidth}"/>
-            </Canvas>
+            </StackPanel>
         </Grid>
-        <Grid Margin="10" Visibility="{Binding IsStatisticalSummaryVisible,Converter={StaticResource BooleanToVisibilityConverter}}">
+        <!--<Grid Margin="10" Visibility="{Binding IsStatisticalSummaryVisible,Converter={StaticResource BooleanToVisibilityConverter}}">
             <StackPanel>
                 <TextBlock Style="{StaticResource DescriptionStyle}" FontSize="30">
                 Summary of <Run Text="{Binding Column.Name}" FontWeight="Bold"/>
@@ -89,7 +76,7 @@
                     <TextBlock Grid.Column="1" Grid.Row="3" Style="{StaticResource SummaryValueStyle}" Text="{Binding Column.MaxValueString}"></TextBlock>
                 </Grid>
             </StackPanel>
-        </Grid>
+        </Grid>-->
         <Grid x:Name="StrokeGrid" IsHitTestVisible="False"></Grid>
         <Grid x:Name="NewStrokeGrid" IsHitTestVisible="False"></Grid>
     </Grid>

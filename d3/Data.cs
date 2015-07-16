@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace d3.Selection
+namespace d3
 {
     public class Data
     {
-        public List<Object> Real { get; set; }
+        public List<Object> List { get; set; }
     }
 }

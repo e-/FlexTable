@@ -10,6 +10,7 @@ namespace FlexTable
     public interface IMainPage
     {
         View.TableView TableView { get; }
+        View.SummaryView SummaryView { get; }
         TextBlock DummyTextBlock { get; }
     }
 }

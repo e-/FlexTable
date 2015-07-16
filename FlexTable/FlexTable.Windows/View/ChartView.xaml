@@ -5,7 +5,7 @@
     xmlns:local="using:FlexTable.View"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:d3="using:d3.View"
+    xmlns:d3="using:d3.Component"
     xmlns:util="using:FlexTable.Util"
     mc:Ignorable="d"
     d:DesignHeight="300"
@@ -41,7 +41,7 @@
                 </TextBlock>
             </StackPanel>
             <Canvas>
-                <d3:Rectangles Data="{Binding Data}" WidthGetter="{Binding WidthGetter}" HeightGetter="{Binding HeightGetter}" 
+                <!--<d3:Rectangles Data="{Binding Data}" WidthGetter="{Binding WidthGetter}" HeightGetter="{Binding HeightGetter}" 
                                XGetter="{Binding XGetter}" YGetter="{Binding YGetter}" ColorGetter="{Binding ColorGetter}"/>
                 <d3:Axis Orientation="Horizontal" Scale="{Binding XScale}" Canvas.Top="400" Canvas.Left="0"/>
                 <d3:Axis Orientation="Vertical" Scale="{Binding YScale}" Canvas.Top="0" Canvas.Left="50"/>
@@ -55,7 +55,7 @@
                           HeightGetter="{Binding LegendPatchHeightGetter}"
                           XGetter="{Binding LegendTextXGetter}" YGetter="{Binding LegendPatchYGetter}" 
                           ColorGetter="{Binding LegendTextColorGetter}"
-                          Canvas.Left="{Binding ChartWidth}"/>
+                          Canvas.Left="{Binding ChartWidth}"/>-->
             </Canvas>
         </Grid>
     </Grid>

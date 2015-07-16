@@ -27,6 +27,7 @@ namespace FlexTable
         Util.CsvLoader csvLoader = new Util.CsvLoader();
 
         public View.TableView TableView { get { return TableViewElement; } }
+        public View.SummaryView SummaryView { get { return SummaryViewElement; } }
         public TextBlock DummyTextBlock { get { return DummyCell; } }
 
         public MainPage()
