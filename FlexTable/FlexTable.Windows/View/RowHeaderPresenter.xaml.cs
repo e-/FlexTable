@@ -27,6 +27,14 @@ namespace FlexTable.View
             }
         }
 
+        public ViewModel.SheetViewModel SheetViewModel
+        {
+            get
+            {
+                return (this.DataContext as ViewModel.TableViewModel).SheetViewModel;
+            }
+        }
+
         public RowHeaderPresenter()
         {
             this.InitializeComponent();

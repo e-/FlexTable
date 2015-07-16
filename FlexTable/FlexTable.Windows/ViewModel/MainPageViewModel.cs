@@ -45,7 +45,6 @@ namespace FlexTable.ViewModel
             ChartViewModel = new ChartViewModel(this);
             SheetViewModel = new SheetViewModel(this);
             TableViewModel = new TableViewModel(this, view);
-
         }
 
         public void Initialize()

@@ -167,6 +167,7 @@ namespace FlexTable.View
         {
             ViewModel.TableViewModel tableViewModel = this.DataContext as ViewModel.TableViewModel;
             ScrollViewer sv = sender as ScrollViewer;
+
             RowHeader.VerticalOffset = sv.VerticalOffset;
             TopColumnHeader.HorizontalOffset = sv.HorizontalOffset;
             BottomColumnHeader.HorizontalOffset = sv.HorizontalOffset;
@@ -174,7 +175,5 @@ namespace FlexTable.View
             tableViewModel.ScrollTop = sv.VerticalOffset;
             tableViewModel.ScrollLeft = sv.HorizontalOffset;
         }
-
-
     }
 }
