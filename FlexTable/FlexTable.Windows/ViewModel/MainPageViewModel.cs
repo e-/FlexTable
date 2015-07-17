@@ -51,7 +51,7 @@ namespace FlexTable.ViewModel
             tableViewModel.UpdateRows();
             view.TableView.AddGuidelines(sheet.Rows.Count);
 
-            SummaryViewModel.ShowSummary(sheetViewModel.ColumnViewModels[2]);
+            SummaryViewModel.ShowSummary(sheetViewModel.ColumnViewModels[0]);
         }
      
 

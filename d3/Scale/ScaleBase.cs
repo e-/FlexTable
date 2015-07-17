@@ -20,10 +20,10 @@ namespace d3.Scale
     {
         public abstract Double RangeStart { get; set; }
         public abstract Double RangeEnd { get; set; }
+        public abstract Int32 TickCount { get; set; }
 
         public abstract Double Invert(Double y);
-        public abstract Int32 SuggestTickCount(Int32 suggested);
-        public abstract List<Tick> GetTicks(Int32 suggestedTickCount);
+        public abstract List<Tick> GetTicks();
         public abstract Double Map(Object x);
         public abstract Double ClampedMap(Object x);
     }

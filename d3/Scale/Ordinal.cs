@@ -14,6 +14,7 @@ namespace d3.Scale
 
         private List<Object> domain = new List<Object>();
         public List<Object> Domain { get { return domain; } }
+        public override Int32 TickCount { get { return domain.Count; } set { } }
 
         override public Double Map(Object key)
         {
@@ -30,17 +31,12 @@ namespace d3.Scale
             return Map(key);
         }
 
-        override public Int32 SuggestTickCount(Int32 suggested)
-        {
-            return domain.Count;
-        }
-
         override public Double Invert(Double y)
         {
             throw new Exception("Invert is not supported for ordinal scales");
         }
 
-        override public List<Tick> GetTicks(Int32 suggestedTickCount)
+        override public List<Tick> GetTicks()
         {
             List<Tick> ticks = new List<Tick>();
             Int32 index = 0;

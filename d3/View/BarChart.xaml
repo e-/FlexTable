@@ -14,8 +14,8 @@
     <Canvas>
         <com:Rectangles Data="{Binding ChartData}" WidthGetter="{Binding WidthGetter}" HeightGetter="{Binding HeightGetter}" 
                                XGetter="{Binding XGetter}" YGetter="{Binding YGetter}" ColorGetter="{Binding ColorGetter}"/>
-        <com:Axis Orientation="Horizontal" Scale="{Binding XScale}" Transition="False" Canvas.Top="400" Canvas.Left="0"/>
-        <com:Axis Orientation="Vertical" Scale="{Binding YScale}" Transition="False" Canvas.Top="0" Canvas.Left="50"/>
+        <com:Axis Orientation="Horizontal" Scale="{Binding XScale}" Canvas.Top="400" Canvas.Left="0"/>
+        <com:Axis Orientation="Vertical" Scale="{Binding YScale}" Canvas.Top="0" Canvas.Left="50"/>
 
         <com:Rectangles Data="{Binding ChartData}" WidthGetter="{Binding LegendPatchWidthGetter}" 
                                HeightGetter="{Binding LegendPatchHeightGetter}" XGetter="{Binding LegendPatchXGetter}" 
@@ -27,5 +27,11 @@
                           XGetter="{Binding LegendTextXGetter}" YGetter="{Binding LegendPatchYGetter}" 
                           ColorGetter="{Binding LegendTextColorGetter}"
                           Canvas.Left="{Binding ChartWidth}"/>
+
+        <com:Texts Data="{Binding ChartData}" TextGetter="{Binding IndicatorTextGetter}"
+                         WidthGetter="{Binding IndicatorWidthGetter}"
+                         XGetter="{Binding IndicatorXGetter}" YGetter="{Binding IndicatorYGetter}" 
+                         Foreground="Black" FontSize="14"
+                   />
     </Canvas>
 </UserControl>

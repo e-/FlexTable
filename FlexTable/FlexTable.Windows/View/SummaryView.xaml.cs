@@ -21,6 +21,9 @@ namespace FlexTable.View
 {
     public sealed partial class SummaryView : UserControl
     {
+        public d3.View.BoxPlot BoxPlot { get { return BoxPlotElement; } }
+        public d3.View.BarChart BarChart { get { return BarChartElement; } }
+
         public SummaryView()
         {
             this.InitializeComponent();

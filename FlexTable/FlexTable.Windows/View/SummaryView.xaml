@@ -5,7 +5,7 @@
     xmlns:local="using:FlexTable.View"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:d3="using:d3.Component"
+    xmlns:d3view="using:d3.View"
     xmlns:util="using:FlexTable.Util"
     mc:Ignorable="d"
     d:DesignHeight="300"
@@ -45,6 +45,11 @@
             </StackPanel>
             <StackPanel x:Name="Carousel">
                 
+                <d3view:BoxPlot Margin="0 50 0 0" x:Name="BoxPlotElement" Min="{Binding BoxPlotViewModel.Min}" Max="{Binding BoxPlotViewModel.Max}"
+                                FirstQuartile="{Binding BoxPlotViewModel.FirstQuartile}" ThirdQuartile="{Binding BoxPlotViewModel.ThirdQuartile}"
+                                Mean="{Binding BoxPlotViewModel.Mean}" Median="{Binding BoxPlotViewModel.Median}"
+                                ></d3view:BoxPlot>
+                <d3view:BarChart x:Name="BarChartElement"></d3view:BarChart>
             </StackPanel>
         </Grid>
         <!--<Grid Margin="10" Visibility="{Binding IsStatisticalSummaryVisible,Converter={StaticResource BooleanToVisibilityConverter}}">

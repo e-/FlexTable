@@ -50,13 +50,17 @@ namespace d3.ViewModel
                     List = data.Select(d => d as Object).ToList()
                 };
 
-                YScale = new d3.Scale.Linear()
+                yScale = new d3.Scale.Linear()
                 {
                     DomainStart = 0,
-                    DomainEnd = Math.Round(data.Select(d => d.Item2).Max() * 1.2),
+                    DomainEnd = data.Select(d => d.Item2).Max(),
                     RangeStart = ChartHeight,
                     RangeEnd = 50
                 };
+
+                yScale.Nice();
+
+                YScale = yScale;
 
                 xScale = new d3.Scale.Ordinal()
                 {
@@ -109,5 +113,10 @@ namespace d3.ViewModel
                 return (bin, index) => CategoricalColors[index % CategoricalColors.Count]; //(bin as Model.Bin).Index % CategoricalColors.Count];
             }
         }
+
+        public Func<Object, Int32, Double> IndicatorWidthGetter { get { return (d, index) => 50; } }
+        public Func<Object, Int32, String> IndicatorTextGetter { get { return (d, index) => (d as Tuple<Object, Double>).Item2.ToString(); } }
+        public Func<Object, Int32, Double> IndicatorXGetter { get { return (d, index) => xScale.Map((d as Tuple<Object, Double>).Item1) - 25; } }
+        public Func<Object, Int32, Double> IndicatorYGetter { get { return (d, index) => yScale.Map((d as Tuple<Object, Double>).Item2) - 18; } }
     }
 }

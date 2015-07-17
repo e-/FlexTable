@@ -59,6 +59,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\BoxPlot.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <TargetPlatform Include="WindowsPhoneApp, Version=8.1" />
@@ -80,9 +84,14 @@
     <Compile Include="Component\Texts.xaml.cs">
       <DependentUpon>Texts.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Util.cs" />
     <Compile Include="ViewModel\BarChartViewModel.cs" />
+    <Compile Include="ViewModel\BoxPlotViewModel.cs" />
     <Compile Include="View\BarChart.xaml.cs">
       <DependentUpon>BarChart.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\BoxPlot.xaml.cs">
+      <DependentUpon>BoxPlot.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />

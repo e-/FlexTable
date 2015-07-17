@@ -60,9 +60,6 @@ namespace d3.Component
             set { SetValue(TransitionProperty, value); }
         }
 
-        private Int32 tickCount = 5;
-        public Int32 TickCount { get { return tickCount; } set { tickCount = value; } }
-
         private DependencyProperty linePrimary1, linePrimary2, lineSecondary1, lineSecondary2;
         private DependencyProperty canvasPrimary, canvasSecondary;
         private DependencyProperty tickLabelSizeProperty;
@@ -122,7 +119,7 @@ namespace d3.Component
 
         public void Update()
         {
-            Int32 suggestedTickCount = Scale.SuggestTickCount(tickCount);
+            Int32 tickCount = Scale.TickCount;
 
             AxisLine.SetValue(linePrimary1, Scale.RangeStart);
             AxisLine.SetValue(linePrimary2, Scale.RangeEnd);
@@ -137,7 +134,7 @@ namespace d3.Component
                 if (previousTickLabels != null)
                 {
                     Int32 index = 0;
-                    List<Tick> ticks = previousScale.GetTicks(tickCount);
+                    List<Tick> ticks = previousScale.GetTicks();
                     foreach (TextBlock tickLabel in previousTickLabels)
                     {
                         Tick tick = ticks[index];
@@ -150,6 +147,11 @@ namespace d3.Component
                         Storyboard.SetTarget(positionAnimation, tickLabel);
                         Storyboard.SetTargetProperty(positionAnimation, canvasPrimaryString);
 
+                        if (previousScale.GetType() == Scale.GetType() && !(Scale is Scale.Ordinal)) // 같고 ordinal이 아니어야 (linear)야 position animation 가능
+                        {
+                            tickLabelsStoryboard.Children.Add(positionAnimation);
+                        }
+
                         DoubleAnimation opacityAnimation = new DoubleAnimation()
                         {
                             To = 0,
@@ -161,7 +163,6 @@ namespace d3.Component
 
                         tickLabel.SetValue(canvasSecondary, Orientation == Orientations.Horizontal ? 3 : -tickLabel.ActualWidth - 10);
 
-                        tickLabelsStoryboard.Children.Add(positionAnimation);
                         tickLabelsStoryboard.Children.Add(opacityAnimation);
                         index++;
                     }
@@ -170,7 +171,7 @@ namespace d3.Component
 
                 //add new ticks
                 tickLabels = new List<TextBlock>();
-                foreach (Tick tick in Scale.GetTicks(tickCount))
+                foreach (Tick tick in Scale.GetTicks())
                 {
                     TextBlock tickLabel = new TextBlock()
                     {
@@ -193,6 +194,11 @@ namespace d3.Component
                     };
                     Storyboard.SetTarget(positionAnimation, tickLabel);
                     Storyboard.SetTargetProperty(positionAnimation, canvasPrimaryString);
+
+                    if (previousScale.GetType() != Scale.GetType() || Scale is Scale.Ordinal) // position animation disabled because two scales have different types
+                    {
+                        tickLabel.SetValue(canvasPrimary, positionAnimation.To);
+                    }
 
                     DoubleAnimation opacityAnimation = new DoubleAnimation()
                     {
@@ -234,7 +240,7 @@ namespace d3.Component
 
                 //add new ticks
                 tickLabels = new List<TextBlock>();
-                foreach (Tick tick in Scale.GetTicks(tickCount))
+                foreach (Tick tick in Scale.GetTicks())
                 {
                     TextBlock tickLabel = new TextBlock()
                     {

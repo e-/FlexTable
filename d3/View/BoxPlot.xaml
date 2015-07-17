@@ -1,0 +1,68 @@
+﻿<UserControl
+    x:Class="d3.View.BoxPlot"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:d3.View"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:com="using:d3.Component"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400">
+    
+    <UserControl.Resources>
+        <Style x:Name="WhiskerStyle" TargetType="Line">
+            <Setter Property="Stroke" Value="Black" />
+            <Setter Property="StrokeThickness" Value="3" />
+        </Style>
+    </UserControl.Resources>
+    
+    <Canvas x:Name="Canvas">
+        <Canvas.Resources>
+            <QuadraticEase x:Name="EasingFunction" EasingMode="EaseInOut" />
+
+            <Storyboard x:Name="UpdateStoryboard">
+                <DoubleAnimation Storyboard.TargetName="Box" Storyboard.TargetProperty="Width" To="{Binding BoxWidth}"
+                             EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2" EnableDependentAnimation="True"></DoubleAnimation>
+
+                <DoubleAnimation Storyboard.TargetName="BoxTransform" Storyboard.TargetProperty="X" To="{Binding BoxX}" 
+                             EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2"></DoubleAnimation>
+
+                <DoubleAnimation Storyboard.TargetName="Whisker1Transform" Storyboard.TargetProperty="X" To="{Binding Whisker1X}" 
+                             EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2"></DoubleAnimation>
+
+                <DoubleAnimation Storyboard.TargetName="Whisker2Transform" Storyboard.TargetProperty="X" To="{Binding Whisker2X}" 
+                             EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2"></DoubleAnimation>
+
+                <DoubleAnimation Storyboard.TargetName="WhiskerSpine" Storyboard.TargetProperty="X1" To="{Binding Whisker1X}" 
+                             EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2" EnableDependentAnimation="True"></DoubleAnimation>
+
+                <DoubleAnimation Storyboard.TargetName="WhiskerSpine" Storyboard.TargetProperty="X2" To="{Binding Whisker2X}" 
+                             EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2" EnableDependentAnimation="True"></DoubleAnimation>
+            </Storyboard>
+        </Canvas.Resources>
+        
+        <Rectangle x:Name="Box" Height="50" Fill="#66000000" Width="0">
+            <Rectangle.RenderTransform>
+                <TranslateTransform x:Name="BoxTransform"></TranslateTransform>
+            </Rectangle.RenderTransform>
+        </Rectangle>
+        <Line X1="0" X2="0" Y1="0" Y2="50" Style="{StaticResource WhiskerStyle}">
+            <Line.RenderTransform>
+                <TranslateTransform x:Name="Whisker1Transform" />
+            </Line.RenderTransform>
+        </Line>
+        <Line X1="0" X2="0" Y1="0" Y2="50" Style="{StaticResource WhiskerStyle}">
+            <Line.RenderTransform>
+                <TranslateTransform x:Name="Whisker2Transform" />
+            </Line.RenderTransform>
+        </Line>
+        <Line X1="0" X2="0" Y1="25" Y2="25" Style="{StaticResource WhiskerStyle}" x:Name="WhiskerSpine">
+            <Line.RenderTransform>
+                <TranslateTransform x:Name="WhiskerSpineTransform" />
+            </Line.RenderTransform>
+        </Line>
+
+        <com:Axis Orientation="Horizontal" Scale="{Binding Scale}" Canvas.Top="70" Canvas.Left="0" x:Name="BoxPlotAxis"/>
+    </Canvas>
+</UserControl>

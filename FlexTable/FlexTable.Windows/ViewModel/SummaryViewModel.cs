@@ -10,6 +10,7 @@ using Windows.UI;
 using System.Diagnostics;
 using Windows.Foundation;
 using Windows.UI.Input.Inking;
+using FlexTable.Model;
 
 namespace FlexTable.ViewModel
 {
@@ -18,9 +19,12 @@ namespace FlexTable.ViewModel
         private ColumnViewModel columnViewModel;
         public ColumnViewModel ColumnViewModel { get { return columnViewModel; } set { columnViewModel = value; OnPropertyChanged("ColumnViewModel"); } }
 
+        private DescriptiveStatisticsResult boxPlotViewModel;
+        public DescriptiveStatisticsResult BoxPlotViewModel { get { return boxPlotViewModel; } set { boxPlotViewModel = value; OnPropertyChanged("BoxPlotViewModel"); } }
+
         MainPageViewModel mainPageViewModel;
         public MainPageViewModel MainPageViewModel { get { return mainPageViewModel; } }     
-
+       
         IMainPage view;
 
         public SummaryViewModel(MainPageViewModel mainPageViewModel, IMainPage view)
@@ -36,15 +40,13 @@ namespace FlexTable.ViewModel
             if (columnViewModel.Type == Model.ColumnType.Categorical)
             {
                 // bar and pie
-                d3.View.BarChart barChart = new d3.View.BarChart()
-                {
-                    Data = columnViewModel.Bins.Select(b => new Tuple<Object, Double>(b.Name, b.Count))
-                };
-                view.SummaryView.AddToCarousel(barChart);                
+                view.SummaryView.BarChart.Data = columnViewModel.Bins.Select(b => new Tuple<Object, Double>(b.Name, b.Count));
             }
             else
             {
-
+                BoxPlotViewModel = DescriptiveStatistics.Analyze(
+                    mainPageViewModel.SheetViewModel.RowViewModels.Select(r => (Double)r.Cells[columnViewModel.Index].Content)
+                    );
             }
         }
 

@@ -107,6 +107,7 @@
     <Compile Include="Model\AggregationType.cs" />
     <Compile Include="Model\Bin.cs" />
     <Compile Include="Model\ColumnType.cs" />
+    <Compile Include="Model\DescriptiveStatistics.cs" />
     <Compile Include="Model\NotifyModel.cs" />
     <Compile Include="Model\RowHeader.cs" />
     <Compile Include="Util\BooleanConverter.cs" />
