@@ -117,6 +117,7 @@ namespace d3.Component
         }
 
         private List<TextBlock> tickLabels;
+  //      private List<Line> tickMarkers;
 
         public void Update()
         {
@@ -130,6 +131,8 @@ namespace d3.Component
             if (Transition)
             {
                 List<TextBlock> previousTickLabels = tickLabels;
+//                List<Line> previousTickMarkers = tickMarkers;
+
                 Storyboard tickLabelsStoryboard = new Storyboard();
                 //remove previous ticks
                 if (previousTickLabels != null)
@@ -139,6 +142,8 @@ namespace d3.Component
                     foreach (TextBlock tickLabel in previousTickLabels)
                     {
                         Tick tick = ticks[index];
+//                        Line tickMarker = previousTickMarkers[index];
+
                         DoubleAnimation positionAnimation = new DoubleAnimation()
                         {
                             To = Scale.ClampedMap(tick.DomainValue) - (Double)tickLabel.GetValue(tickLabelSizeProperty) / 2,

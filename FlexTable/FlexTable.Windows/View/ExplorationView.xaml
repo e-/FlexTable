@@ -34,25 +34,8 @@
         </Style>
     </UserControl.Resources>
     
-    <Grid x:Name="Wrapper">
-        <Canvas Margin="10">
-            <!--<StackPanel>
-                <TextBlock Style="{StaticResource DescriptionStyle}" FontSize="30">
-                Frequency of <Run Text="{Binding Column.Name}" FontWeight="Bold"/>
-                </TextBlock>
-
-            </StackPanel>
-            <StackPanel x:Name="Carousel">
-                <Image Source="ms-appx:///Assets/horizontal-separator.png" Width="700" Height="8"></Image>
-                <d3view:BoxPlot Margin="0 50 0 0" x:Name="BoxPlotElement" Min="{Binding BoxPlotViewModel.Min}" Max="{Binding BoxPlotViewModel.Max}"
-                            FirstQuartile="{Binding BoxPlotViewModel.FirstQuartile}" ThirdQuartile="{Binding BoxPlotViewModel.ThirdQuartile}"
-                            Mean="{Binding BoxPlotViewModel.Mean}" Median="{Binding BoxPlotViewModel.Median}"
-                            ></d3view:BoxPlot>
-                <d3view:BarChart x:Name="BarChartElement"></d3view:BarChart>
-                
-            </StackPanel>-->
-            
-            <!--<TextBlock Style="{StaticResource DescriptionStyle}" Text="{Binding Column.TypeString}" />-->
+    <Grid x:Name="Wrapper" Tapped="Wrapper_Tapped">
+        <Canvas Margin="10" x:Name="PageViewsElement">
             <StackPanel Canvas.Top="520" Margin="20">
                 <TextBlock Style="{StaticResource HeaderStyle}">Metadata</TextBlock>
                 <TextBlock Style="{StaticResource DescriptionStyle}">The data has 99 rows and 15 columns.</TextBlock>
@@ -60,36 +43,6 @@
 
             <local:PageView x:Name="InitialPageViewElement"></local:PageView>
         </Canvas>
-        <!--<Grid Margin="10" Visibility="{Binding IsStatisticalSummaryVisible,Converter={StaticResource BooleanToVisibilityConverter}}">
-        <StackPanel>
-            <TextBlock Style="{StaticResource DescriptionStyle}" FontSize="30">
-            Summary of <Run Text="{Binding Column.Name}" FontWeight="Bold"/>
-            </TextBlock>
-            <TextBlock Style="{StaticResource DescriptionStyle}" Text="{Binding Column.TypeString}" />
-            <Grid Margin="0 20 0 0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition></ColumnDefinition>
-                    <ColumnDefinition></ColumnDefinition>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                </Grid.RowDefinitions>
-                    
-                <TextBlock Grid.Column="0" Grid.Row="0" Style="{StaticResource SummaryHeaderStyle}">Min</TextBlock>
-                <TextBlock Grid.Column="0" Grid.Row="1" Style="{StaticResource SummaryHeaderStyle}">Mean</TextBlock>
-                <TextBlock Grid.Column="0" Grid.Row="2" Style="{StaticResource SummaryHeaderStyle}">Median</TextBlock>
-                <TextBlock Grid.Column="0" Grid.Row="3" Style="{StaticResource SummaryHeaderStyle}">Max</TextBlock>
-
-                <TextBlock Grid.Column="1" Grid.Row="0" Style="{StaticResource SummaryValueStyle}" Text="{Binding Column.MinValueString}"></TextBlock>
-                <TextBlock Grid.Column="1" Grid.Row="1" Style="{StaticResource SummaryValueStyle}" Text="{Binding Column.MeanValueString}"></TextBlock>
-                <TextBlock Grid.Column="1" Grid.Row="2" Style="{StaticResource SummaryValueStyle}" Text="{Binding Column.MedianValueString}"></TextBlock>
-                <TextBlock Grid.Column="1" Grid.Row="3" Style="{StaticResource SummaryValueStyle}" Text="{Binding Column.MaxValueString}"></TextBlock>
-            </Grid>
-        </StackPanel>
-    </Grid>-->
         <Grid x:Name="StrokeGrid" IsHitTestVisible="False"></Grid>
         <Grid x:Name="NewStrokeGrid" IsHitTestVisible="False"></Grid>
     </Grid>

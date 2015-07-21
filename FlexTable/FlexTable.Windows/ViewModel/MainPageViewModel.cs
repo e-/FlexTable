@@ -55,57 +55,16 @@ namespace FlexTable.ViewModel
             tableViewModel.UpdateRows();
             view.TableView.AddGuidelines(sheet.Rows.Count);
 
+
+            ViewModel.PageViewModel pageViewModel = new ViewModel.PageViewModel(
+                this,
+                view.ExplorationView.TopPageView
+                );
+            view.ExplorationView.TopPageView.DataContext = pageViewModel;
+
             //SummaryViewModel.ShowSummary(sheetViewModel.ColumnViewModels[0]);
         }  
 
-        public void CancelGroupBy()
-        {
-            /*GroupedColumn.IsGroupedBy = false;
-            GroupedColumn = null;
-
-            // 먼저 column의 순서를 원래대로 
-
-            for (Int32 i = 0; i < sheet.Columns.Count; ++i)
-            {
-                sheet.Columns[i].Index = i;
-            }
-            
-            // index에 따라 컬럼 X 다시 계산
-            sheet.UpdateColumnX();
-
-            // 원래 있던 row들은 다 fadeout 시켜버림
-            foreach (View.RowPresenter rowPresenter in rowPresenters)
-            {
-                rowPresenter.UpdateAndDestroy(delegate
-                {
-                    view.RemoveRow(rowPresenter);
-                });
-            }
-
-            rowViewModels.Clear();
-            rowPresenters.Clear();
-            
-            Int32 index = 0;
-            foreach (Model.Row row in sheet.Rows)
-            {
-                row.Index = index++;
-                ViewModel.RowViewModel rowViewModel = new ViewModel.RowViewModel(this) { Row = row };
-                rowViewModels.Add(rowViewModel);
-
-                View.RowPresenter rowPresenter = new View.RowPresenter(rowViewModel);
-                rowPresenters.Add(rowPresenter);
-
-                view.AddRow(rowPresenter);
-
-                rowPresenter.Y = row.Y;
-                //rowPresenter.Update();
-            }
-            
-            rowHeaderViewModel.SetRowNumber(sheet.Rows.Count);
-
-            // column header 움직이기
-            view.UpdateColumnHeaders();*/
-        }        
 
      
 

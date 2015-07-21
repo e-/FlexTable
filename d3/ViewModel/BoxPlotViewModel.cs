@@ -47,8 +47,8 @@ namespace d3.ViewModel
 
         private Scale.Linear scale = new Scale.Linear()
         {
-            RangeStart = 50,
-            RangeEnd = 600        
+            RangeStart = 20,
+            RangeEnd = 690        
         };
         public Scale.Linear Scale { get { return scale; } set { scale = value; OnPropertyChanged("Scale"); } }
 

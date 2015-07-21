@@ -27,5 +27,23 @@ namespace FlexTable.View
             this.InitializeComponent();
             topPageView = InitialPageViewElement;
         }
+
+        private void Wrapper_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            (this.DataContext as ViewModel.ExplorationViewModel).DummyGroup();
+        }
+
+        public void AddNewPage()
+        {
+            PageView page = new PageView();
+            ViewModel.MainPageViewModel mainPageViewModel = (this.DataContext as ViewModel.ExplorationViewModel).MainPageViewModel;
+            ViewModel.PageViewModel pageViewModel = new ViewModel.PageViewModel(
+                mainPageViewModel,
+                page
+                );
+            topPageView = page;
+            page.DataContext = pageViewModel;
+            PageViewsElement.Children.Add(page);
+        }
     }
 }

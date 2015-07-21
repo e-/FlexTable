@@ -13,14 +13,14 @@
     <UserControl.Resources>
         <Style x:Name="WhiskerStyle" TargetType="Line">
             <Setter Property="Stroke" Value="Black" />
-            <Setter Property="StrokeThickness" Value="3" />
+            <Setter Property="StrokeThickness" Value="1.5" />
         </Style>
         <Style x:Name="MedianStyle" TargetType="Line">
-            <Setter Property="Stroke" Value="Red" />
+            <Setter Property="Stroke" Value="#a91e23" />
             <Setter Property="StrokeThickness" Value="3" />
         </Style>
         <Style x:Name="MeanStyle" TargetType="Line">
-            <Setter Property="Stroke" Value="Blue" />
+            <Setter Property="Stroke" Value="#026699" />
             <Setter Property="StrokeThickness" Value="3" />
             <Setter Property="StrokeDashArray" Value="2,2" />
             <Setter Property="StrokeDashOffset" Value="0" />
@@ -59,40 +59,42 @@
             </Storyboard>
         </Canvas.Resources>
         
-        <Rectangle x:Name="Box" Height="50" Fill="#66000000" Width="0">
-            <Rectangle.RenderTransform>
-                <TranslateTransform x:Name="BoxTransform"></TranslateTransform>
-            </Rectangle.RenderTransform>
-        </Rectangle>
-        <Line X1="0" X2="0" Y1="0" Y2="50" Style="{StaticResource WhiskerStyle}">
+        
+        <Line X1="0" X2="0" Y1="0" Y2="30" Style="{StaticResource WhiskerStyle}">
             <Line.RenderTransform>
                 <TranslateTransform x:Name="Whisker1Transform" />
             </Line.RenderTransform>
         </Line>
-        <Line X1="0" X2="0" Y1="0" Y2="50" Style="{StaticResource WhiskerStyle}">
+        <Line X1="0" X2="0" Y1="0" Y2="30" Style="{StaticResource WhiskerStyle}">
             <Line.RenderTransform>
                 <TranslateTransform x:Name="Whisker2Transform" />
             </Line.RenderTransform>
         </Line>
-        <Line X1="0" X2="0" Y1="25" Y2="25" Style="{StaticResource WhiskerStyle}" x:Name="WhiskerSpine">
+        <Line X1="0" X2="0" Y1="15" Y2="15" Style="{StaticResource WhiskerStyle}" x:Name="WhiskerSpine">
             <Line.RenderTransform>
                 <TranslateTransform x:Name="WhiskerSpineTransform" />
             </Line.RenderTransform>
         </Line>
         
-        <Line X1="0" X2="0" Y1="0" Y2="50" Style="{StaticResource MedianStyle}">
+        <Rectangle x:Name="Box" Height="30" Fill="#33888888" Width="0">
+            <Rectangle.RenderTransform>
+                <TranslateTransform x:Name="BoxTransform"></TranslateTransform>
+            </Rectangle.RenderTransform>
+        </Rectangle>
+        
+        <Line X1="0" X2="0" Y1="0" Y2="30" Style="{StaticResource MedianStyle}">
             <Line.RenderTransform>
                 <TranslateTransform x:Name="MedianTransform" />
             </Line.RenderTransform>
         </Line>
         
-        <Line X1="0" X2="0" Y1="0" Y2="50" Style="{StaticResource MeanStyle}">
+        <Line X1="0" X2="0" Y1="0" Y2="30" Style="{StaticResource MeanStyle}">
             <Line.RenderTransform>
                 <TranslateTransform x:Name="MeanTransform" />
             </Line.RenderTransform>
         </Line>
 
-
-        <com:Axis Orientation="Horizontal" Scale="{Binding Scale}" Canvas.Top="70" Canvas.Left="0" x:Name="BoxPlotAxis"/>
+        
+        <com:Axis Orientation="Horizontal" Scale="{Binding Scale}" Canvas.Top="40" x:Name="BoxPlotAxis"/>
     </Canvas>
 </UserControl>

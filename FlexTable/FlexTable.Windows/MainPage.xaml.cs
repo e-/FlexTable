@@ -30,7 +30,6 @@ namespace FlexTable
         public View.ExplorationView ExplorationView { get { return ExplorationViewElement; } }
         public TextBlock DummyTextBlock { get { return DummyCell; } }
 
-
         public MainPage()
         {
             mainPageViewModel = new ViewModel.MainPageViewModel(this);
@@ -44,12 +43,6 @@ namespace FlexTable
             mainPageViewModel.Sheet = sheet;
 
             mainPageViewModel.Initialize();
-        }
-       
-        private void Button_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
-        {
-            mainPageViewModel.CancelGroupBy();
-            mainPageViewModel.ChartViewModel.Hide();
         }
     }
 }

@@ -49,7 +49,7 @@ namespace FlexTable.Model
 
         public String Format(Double value)
         {
-            return value.ToString("#,#");
+            return value.ToString("#,0");
         }
     }
 

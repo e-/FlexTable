@@ -31,8 +31,8 @@ namespace d3.ViewModel
             }
         }
 
-        public Double ChartHeight { get { return 400; } }
-        public Double ChartWidth { get { return 600; } }
+        public Double ChartHeight { get { return 350; } }
+        public Double ChartWidth { get { return 580; } }
 
         public Func<Object, Int32, Double> WidthGetter { get { return (d, index) => 50; } }
         public Func<Object, Int32, Double> HeightGetter { get { return (d, index) => ChartHeight - yScale.Map((d as Tuple<Object, Double>).Item2); } }

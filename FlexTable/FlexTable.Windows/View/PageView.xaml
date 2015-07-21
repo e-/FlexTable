@@ -6,9 +6,11 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:d3view="using:d3.View"
+    xmlns:util="using:FlexTable.Util"
     mc:Ignorable="d"
     d:DesignHeight="300"
-    d:DesignWidth="400">
+    d:DesignWidth="400"
+    >
 
     <UserControl.Resources>
         <Style TargetType="TextBlock" x:Name="TitleStyle">
@@ -19,10 +21,12 @@
             <Setter Property="FontSize" Value="18" />
             <Setter Property="TextAlignment" Value="Center"></Setter>
         </Style>
+        
+        <util:BooleanToVisibilityConverter x:Name="BooleanToVisibilityConverter" />
     </UserControl.Resources>
     
-    <StackPanel Margin="20">
-        <StackPanel Height="480">
+    <StackPanel Margin="20" Background="White">
+        <StackPanel Height="480" Visibility="{Binding IsSummaryVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
             <TextBlock Style="{StaticResource TitleStyle}">
                 <Run Text="{Binding ColumnViewModel.Column.Name}" />
             </TextBlock>
@@ -30,13 +34,31 @@
                 <Run Text="{Binding ColumnViewModel.TypeString}" />
             </TextBlock>
             
-            <local:NumericalDescriptiveStatisticsView DataContext="{Binding BoxPlotViewModel}"></local:NumericalDescriptiveStatisticsView>
+            <ScrollViewer HorizontalScrollBarVisibility="Auto" HorizontalScrollMode="Auto" 
+                          VerticalScrollMode="Disabled" VerticalScrollBarVisibility="Hidden"
+                          Width="710">
+                <Grid>
+                    <StackPanel Orientation="Horizontal" Margin="0 0 0 15" Visibility="{Binding IsNumericalColumn, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <local:NumericalDescriptiveStatisticsView DataContext="{Binding BoxPlotViewModel}" Width="715">
+                        </local:NumericalDescriptiveStatisticsView>
 
-            <d3view:BoxPlot Margin="0 50 0 0" x:Name="BoxPlotElement" Min="{Binding BoxPlotViewModel.Min}" Max="{Binding BoxPlotViewModel.Max}"
-                                FirstQuartile="{Binding BoxPlotViewModel.FirstQuartile}" ThirdQuartile="{Binding BoxPlotViewModel.ThirdQuartile}"
-                                Mean="{Binding BoxPlotViewModel.Mean}" Median="{Binding BoxPlotViewModel.Median}" Visibility="Collapsed"
-                                ></d3view:BoxPlot>
-            <d3view:BarChart x:Name="BarChartElement" Visibility="Collapsed"></d3view:BarChart>
+                        <StackPanel Width="710" Margin="0 20 0 0">
+                            <Image Source="ms-appx:///Assets/dummy-histogram.jpg" Width="690" Height="265" Stretch="Fill" Margin="10 0 0 0"></Image>
+
+                            <d3view:BoxPlot Margin="0 10 0 0" x:Name="BoxPlotElement" Min="{Binding BoxPlotViewModel.Min}" Max="{Binding BoxPlotViewModel.Max}"
+                                    FirstQuartile="{Binding BoxPlotViewModel.FirstQuartile}" ThirdQuartile="{Binding BoxPlotViewModel.ThirdQuartile}"
+                                    Mean="{Binding BoxPlotViewModel.Mean}" Median="{Binding BoxPlotViewModel.Median}" 
+                                        Width="710"
+                                    ></d3view:BoxPlot>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Margin="0 0 0 15" Visibility="{Binding IsCategoricalColumn, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <d3view:BarChart x:Name="BarChartElement" Width="710"></d3view:BarChart>
+                    </StackPanel>
+                </Grid>
+            </ScrollViewer>
+            
         </StackPanel>
         <Image Source="ms-appx:///Assets/horizontal-separator.png" Width="700" Height="8"></Image>
     </StackPanel>

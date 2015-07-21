@@ -15,7 +15,7 @@ using Windows.UI.Xaml.Media.Animation;
 
 namespace FlexTable.ViewModel
 {
-    public class ExplorationViewModel : NotifyViewModel
+    public class PageViewModel : NotifyViewModel
     {
         private ColumnViewModel columnViewModel;
         public ColumnViewModel ColumnViewModel { get { return columnViewModel; } set { columnViewModel = value; OnPropertyChanged("ColumnViewModel"); } }
@@ -35,53 +35,44 @@ namespace FlexTable.ViewModel
         private Boolean isNumericalColumn;
         public Boolean IsNumericalColumn { get { return isNumericalColumn; } set { isNumericalColumn = value; OnPropertyChanged("IsNumericalColumn"); } }
 
-        IMainPage view;
+        View.PageView pageView;
 
-        public ExplorationViewModel(MainPageViewModel mainPageViewModel, IMainPage view)
+        public PageViewModel(MainPageViewModel mainPageViewModel, View.PageView pageView)
         {
             this.mainPageViewModel = mainPageViewModel;
-            this.view = view;
+            this.pageView = pageView;
         }
 
         public void ShowSummary(ColumnViewModel columnViewModel)
         {
-            PageViewModel pageViewModel = view.ExplorationView.TopPageView.PageViewModel;
+            IsSummaryVisible = true;
+
             ColumnViewModel = columnViewModel;
 
-            pageViewModel.ShowSummary(columnViewModel);
+            if (columnViewModel.Type == Model.ColumnType.Categorical)
+            {
+                IsCategoricalColumn = true;
+                IsNumericalColumn = false;
+                // bar and pie
+                pageView.BarChart.Data = columnViewModel.Bins.Select(b => new Tuple<Object, Double>(b.Name, b.Count));
+            }
+            else
+            {
+                IsNumericalColumn = true;
+                IsCategoricalColumn = false;
+
+                BoxPlotViewModel = DescriptiveStatistics.Analyze(
+                    mainPageViewModel.SheetViewModel.RowViewModels.Select(r => (Double)r.Cells[columnViewModel.Index].Content)
+                    );
+
+                pageView.BoxPlot.Update();
+            }
         }
 
         public void Hide()
         {
             IsSummaryVisible = false;
             ColumnViewModel = null;
-        }
-
-        public void DummyGroup()
-        {
-            if (columnViewModel != null && columnViewModel.Type == ColumnType.Categorical)
-            {
-                View.PageView page = view.ExplorationView.TopPageView;
-
-                Storyboard sb = new Storyboard()
-                {
-                };
-
-                DoubleAnimation ani = new DoubleAnimation()
-                {
-                    To = 530,
-                    EasingFunction = new QuarticEase() { EasingMode = EasingMode.EaseInOut },
-                    Duration = TimeSpan.FromMilliseconds(500),
-                };
-
-                Storyboard.SetTarget(ani, page);
-                Storyboard.SetTargetProperty(ani, "(Canvas.Top)");
-
-                sb.Children.Add(ani);
-                sb.Begin();
-
-                view.ExplorationView.AddNewPage();
-            }
         }
 
         public void StrokeAdded(InkStroke stroke)

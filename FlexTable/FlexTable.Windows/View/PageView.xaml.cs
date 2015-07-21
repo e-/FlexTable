@@ -22,6 +22,8 @@ namespace FlexTable.View
         public d3.View.BoxPlot BoxPlot { get { return BoxPlotElement; } }
         public d3.View.BarChart BarChart { get { return BarChartElement; } }
 
+        public ViewModel.PageViewModel PageViewModel { get { return this.DataContext as ViewModel.PageViewModel; } }
+
         public PageView()
         {
             this.InitializeComponent();

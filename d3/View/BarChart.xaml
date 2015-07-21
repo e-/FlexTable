@@ -11,10 +11,10 @@
     d:DesignWidth="400"
     >
     
-    <Canvas>
+    <Canvas Width="710" Height="400">
         <com:Rectangles Data="{Binding ChartData}" WidthGetter="{Binding WidthGetter}" HeightGetter="{Binding HeightGetter}" 
                                XGetter="{Binding XGetter}" YGetter="{Binding YGetter}" ColorGetter="{Binding ColorGetter}"/>
-        <com:Axis Orientation="Horizontal" Scale="{Binding XScale}" Canvas.Top="400" Canvas.Left="0"/>
+        <com:Axis Orientation="Horizontal" Scale="{Binding XScale}" Canvas.Top="350" Canvas.Left="0"/>
         <com:Axis Orientation="Vertical" Scale="{Binding YScale}" Canvas.Top="0" Canvas.Left="50"/>
 
         <com:Rectangles Data="{Binding ChartData}" WidthGetter="{Binding LegendPatchWidthGetter}" 
