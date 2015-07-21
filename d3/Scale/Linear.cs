@@ -92,23 +92,34 @@ namespace d3.Scale
         override public List<Tick> GetTicks()
         {
             List<Tick> ticks = new List<Tick>();
-            for (Int32 i = 0; i < TickCount; ++i)
+            for (Int32 i = 0; i < 20; ++i)
             {
-                Double domainValue = domainStart + (i+1) * Step;
+                Double domainValue = domainStart + i * Step;
                 Double rangeValue = this.Map(domainValue);
 
-                if (domainValue >= domainEnd + Step)
+                if (domainValue >= domainEnd + Step / 2)
                     break;
 
                 ticks.Add(new Tick()
                 {
-                    Label = domainValue.ToString(),
+                    Label = Format.SIPrefix.Format(domainValue),
                     DomainValue = domainValue,
                     RangeValue = rangeValue
                 });
             }
 
             return ticks;
+        }
+
+        override public ScaleBase Clone()
+        {
+            return new Linear()
+            {
+                DomainStart = domainStart,
+                DomainEnd = domainEnd,
+                RangeStart = rangeStart,
+                RangeEnd = rangeEnd
+            };
         }
 
         public void Nice()

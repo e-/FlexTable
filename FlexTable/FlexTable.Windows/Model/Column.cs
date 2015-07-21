@@ -13,7 +13,6 @@ namespace FlexTable.Model
         private String name;
         public String Name { get { return name; } set { name = value; } }
        
-
         public static ColumnType GuessColumnType(IEnumerable<String> cellValues)
         {
             Boolean allDouble = true;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
@@ -67,7 +68,7 @@ namespace d3.View
         private static void PropertyChanged(DependencyObject source, DependencyPropertyChangedEventArgs e)
         {
             BoxPlot boxPlot = source as BoxPlot;
-            boxPlot.Update();
+            //boxPlot.Update();
         }
 
         public BoxPlot()

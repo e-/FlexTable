@@ -54,5 +54,19 @@ namespace d3.Scale
             }
             return ticks;
         }
+
+        public override ScaleBase Clone()
+        {
+            Ordinal cloned = new Ordinal(){
+                RangeStart = rangeStart,
+                RangeEnd = rangeEnd
+            };
+
+            foreach(var item in domain){
+                cloned.domain.Add(item);
+            }
+
+            return cloned;
+        }
     }
 }

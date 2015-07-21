@@ -109,7 +109,7 @@ namespace FlexTable.ViewModel
                 IndexTooltipContent = columnViewModel.Column.Name;
 
 
-                mainPageViewModel.SummaryViewModel.ShowSummary(columnViewModel);
+                mainPageViewModel.ExplorationViewModel.ShowSummary(columnViewModel);
             }
 
             activatedPointerId = id;
@@ -119,7 +119,7 @@ namespace FlexTable.ViewModel
         {
             IsIndexTooltipVisible = false;
             IndexedColumnViewModel = null;
-            mainPageViewModel.SummaryViewModel.Hide();
+            mainPageViewModel.ExplorationViewModel.Hide();
 
             ignoredPointerId = activatedPointerId;
         }

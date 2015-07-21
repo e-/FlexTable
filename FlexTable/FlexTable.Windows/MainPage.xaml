@@ -16,19 +16,17 @@
             <ColumnDefinition Width="*"></ColumnDefinition>
             <ColumnDefinition Width="*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"></RowDefinition>
-            <RowDefinition Height="*"></RowDefinition>
-        </Grid.RowDefinitions>
+        
         <TextBlock Grid.Column="0" Grid.Row="0" Name="DummyCell" Style="{StaticResource CellStyle}" Foreground="Blue"  IsHitTestVisible="False"></TextBlock>
-        
-               
+                       
         <view:TableView Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" x:Name="TableViewElement" DataContext="{Binding TableViewModel}"></view:TableView>
-        
+        <view:ExplorationView Grid.Row="0" Grid.Column="1" x:Name="ExplorationViewElement" DataContext="{Binding ExplorationViewModel}"></view:ExplorationView>
+        <!--
         <view:SummaryView Grid.Column="1" Grid.Row="0" x:Name="SummaryViewElement" DataContext="{Binding SummaryViewModel}"></view:SummaryView>
         
         <Button Tapped="Button_Tapped" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Bottom">Cancel Grouping</Button>
 
         <view:ChartView Grid.Column="1" Grid.Row="1" DataContext="{Binding ChartViewModel}"></view:ChartView>
+        -->
     </Grid>
 </Page>

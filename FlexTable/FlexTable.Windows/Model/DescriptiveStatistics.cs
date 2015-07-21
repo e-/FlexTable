@@ -11,17 +11,46 @@ namespace FlexTable.Model
     public class DescriptiveStatisticsResult
     {
         public Double Min { get; set; }
+        public String MinString { get { return Format(Min); } }
+
         public Double Max { get; set; }
+        public String MaxString { get { return Format(Max); } }
+
         public Double Mean { get; set; }
+        public String MeanString { get { return Format(Mean); } }
+
         public Double MeanDeviation { get; set; }
+        public String MeanDeviationString { get { return Format(MeanDeviation); } }
+
         public Double FirstQuartile { get; set; }
+        public String FirstQuartileString { get { return Format(FirstQuartile); } }
+
         public Double Median { get; set; }
+        public String MedianString { get { return Format(Median); } }
+
         public Double ThirdQuartile { get; set; }
+        public String ThirdQuartileString { get { return Format(ThirdQuartile); } }
+
         public Double Range { get; set; }
+        public String RangeString { get { return Format(Range); } }
+
         public Double SampleVariance { get; set; }
+        public String SampleVarianceString { get { return Format(SampleVariance); } }
+
         public Double SampleStandardDeviation { get; set; }
+        public String SampleStandardDeviationString { get { return Format(SampleStandardDeviation); } }
+
         public Double SampleSkewness { get; set; }
+        public String SampleSkewnessString { get { return Format(SampleSkewness); } }
+
         public Double SampleKurtosis { get; set; }
+        public String SampleKurtosisString { get { return Format(SampleKurtosis); } }
+
+
+        public String Format(Double value)
+        {
+            return value.ToString("#,#");
+        }
     }
 
     public class DescriptiveStatistics
@@ -126,15 +155,17 @@ namespace FlexTable.Model
             return new DescriptiveStatisticsResult()
             {
                 Min = Min(values),
-                Mean = Mean(values),
-                Max = Max(values),
-                MeanDeviation = MeanDeviation(values),
-                FirstQuartile = FirstQuartile(values),
                 Median = Median(values),
+                Max = Max(values),
+                FirstQuartile = FirstQuartile(values),
                 ThirdQuartile = ThirdQuartile(values),
-                Range = Range(values),
+
+                Mean = Mean(values),
                 SampleVariance = SampleVariance(values),
                 SampleStandardDeviation = SampleStandardDeviation(values),
+
+                MeanDeviation = MeanDeviation(values),
+                Range = Range(values),
                 SampleSkewness = SampleSkewness(values),
                 SampleKurtosis = SampleKurtosis(values)
             };

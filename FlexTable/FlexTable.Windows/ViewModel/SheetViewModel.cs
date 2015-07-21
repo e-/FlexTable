@@ -308,13 +308,6 @@ namespace FlexTable.ViewModel
                 else // histogram
                 {
                     columnViewModel.Bins = new List<Bin>();
-
-                    IEnumerable<Double> cellValues = rowViewModels.Select(r => (Double)r.Cells[i].Content).OrderBy(v => v);
-
-                    columnViewModel.MinValue = cellValues.Min();
-                    columnViewModel.MaxValue = cellValues.Max();
-                    columnViewModel.MeanValue = cellValues.Sum() / cellValues.Count();
-                    columnViewModel.MedianValue = cellValues.ElementAt(cellValues.Count() / 2);
                 }
             }
         }

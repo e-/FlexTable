@@ -26,5 +26,6 @@ namespace d3.Scale
         public abstract List<Tick> GetTicks();
         public abstract Double Map(Object x);
         public abstract Double ClampedMap(Object x);
+        public abstract ScaleBase Clone();
     }
 }

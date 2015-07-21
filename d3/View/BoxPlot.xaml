@@ -15,6 +15,17 @@
             <Setter Property="Stroke" Value="Black" />
             <Setter Property="StrokeThickness" Value="3" />
         </Style>
+        <Style x:Name="MedianStyle" TargetType="Line">
+            <Setter Property="Stroke" Value="Red" />
+            <Setter Property="StrokeThickness" Value="3" />
+        </Style>
+        <Style x:Name="MeanStyle" TargetType="Line">
+            <Setter Property="Stroke" Value="Blue" />
+            <Setter Property="StrokeThickness" Value="3" />
+            <Setter Property="StrokeDashArray" Value="2,2" />
+            <Setter Property="StrokeDashOffset" Value="0" />
+            <Setter Property="StrokeDashCap" Value="Round" />
+        </Style>
     </UserControl.Resources>
     
     <Canvas x:Name="Canvas">
@@ -39,6 +50,12 @@
 
                 <DoubleAnimation Storyboard.TargetName="WhiskerSpine" Storyboard.TargetProperty="X2" To="{Binding Whisker2X}" 
                              EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2" EnableDependentAnimation="True"></DoubleAnimation>
+
+                <DoubleAnimation Storyboard.TargetName="MedianTransform" Storyboard.TargetProperty="X" To="{Binding MedianX}" 
+                             EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2"></DoubleAnimation>
+
+                <DoubleAnimation Storyboard.TargetName="MeanTransform" Storyboard.TargetProperty="X" To="{Binding MeanX}" 
+                             EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2"></DoubleAnimation>
             </Storyboard>
         </Canvas.Resources>
         
@@ -62,6 +79,19 @@
                 <TranslateTransform x:Name="WhiskerSpineTransform" />
             </Line.RenderTransform>
         </Line>
+        
+        <Line X1="0" X2="0" Y1="0" Y2="50" Style="{StaticResource MedianStyle}">
+            <Line.RenderTransform>
+                <TranslateTransform x:Name="MedianTransform" />
+            </Line.RenderTransform>
+        </Line>
+        
+        <Line X1="0" X2="0" Y1="0" Y2="50" Style="{StaticResource MeanStyle}">
+            <Line.RenderTransform>
+                <TranslateTransform x:Name="MeanTransform" />
+            </Line.RenderTransform>
+        </Line>
+
 
         <com:Axis Orientation="Horizontal" Scale="{Binding Scale}" Canvas.Top="70" Canvas.Left="0" x:Name="BoxPlotAxis"/>
     </Canvas>

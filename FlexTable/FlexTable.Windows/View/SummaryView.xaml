@@ -41,7 +41,7 @@
                 <TextBlock Style="{StaticResource DescriptionStyle}" FontSize="30">
                     Frequency of <Run Text="{Binding Column.Name}" FontWeight="Bold"/>
                 </TextBlock>
-                <TextBlock Style="{StaticResource DescriptionStyle}" Text="{Binding Column.TypeString}" />
+                
             </StackPanel>
             <StackPanel x:Name="Carousel">
                 
@@ -50,7 +50,9 @@
                                 Mean="{Binding BoxPlotViewModel.Mean}" Median="{Binding BoxPlotViewModel.Median}"
                                 ></d3view:BoxPlot>
                 <d3view:BarChart x:Name="BarChartElement"></d3view:BarChart>
+                <Image Source="ms-appx:///Assets/horizontal-separator.png" Width="700" Height="8"></Image>
             </StackPanel>
+            <TextBlock Style="{StaticResource DescriptionStyle}" Text="{Binding Column.TypeString}" />
         </Grid>
         <!--<Grid Margin="10" Visibility="{Binding IsStatisticalSummaryVisible,Converter={StaticResource BooleanToVisibilityConverter}}">
             <StackPanel>

@@ -39,6 +39,12 @@ namespace d3.ViewModel
         private Double whisker2X;
         public Double Whisker2X { get { return whisker2X; } set { whisker2X = value; OnPropertyChanged("Whisker2X"); } }
 
+        private Double medianX;
+        public Double MedianX { get { return medianX; } set { medianX = value; OnPropertyChanged("MedianX"); } }
+
+        private Double meanX;
+        public Double MeanX { get { return meanX; } set { meanX = value; OnPropertyChanged("MeanX"); } }
+
         private Scale.Linear scale = new Scale.Linear()
         {
             RangeStart = 50,
@@ -58,6 +64,8 @@ namespace d3.ViewModel
             BoxX = scale.Map(firstQuartile);
             Whisker1X = scale.Map(min);
             Whisker2X = scale.Map(max);
+            MedianX = scale.Map(median);
+            MeanX = scale.Map(mean);
         }
     }
 }

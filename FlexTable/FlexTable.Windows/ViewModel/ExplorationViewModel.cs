@@ -14,7 +14,7 @@ using FlexTable.Model;
 
 namespace FlexTable.ViewModel
 {
-    public class SummaryViewModel : NotifyViewModel
+    public class ExplorationViewModel : NotifyViewModel
     {
         private ColumnViewModel columnViewModel;
         public ColumnViewModel ColumnViewModel { get { return columnViewModel; } set { columnViewModel = value; OnPropertyChanged("ColumnViewModel"); } }
@@ -27,7 +27,7 @@ namespace FlexTable.ViewModel
        
         IMainPage view;
 
-        public SummaryViewModel(MainPageViewModel mainPageViewModel, IMainPage view)
+        public ExplorationViewModel(MainPageViewModel mainPageViewModel, IMainPage view)
         {
             this.mainPageViewModel = mainPageViewModel;
             this.view = view;
@@ -47,7 +47,7 @@ namespace FlexTable.ViewModel
                 BoxPlotViewModel = DescriptiveStatistics.Analyze(
                     mainPageViewModel.SheetViewModel.RowViewModels.Select(r => (Double)r.Cells[columnViewModel.Index].Content)
                     );
-                
+
                 view.ExplorationView.TopPageView.BoxPlot.Update();
             }
         }

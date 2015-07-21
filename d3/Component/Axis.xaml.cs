@@ -47,6 +47,7 @@ namespace d3.Component
         {
             get { return (ScaleBase)GetValue(ScaleProperty); }
             set {
+                //previousScale = Scale;
                 SetValue(ScaleProperty, value); 
             }
         }
@@ -258,6 +259,8 @@ namespace d3.Component
                     tickLabels.Add(tickLabel);
                 }
             }
+
+            previousScale = Scale.Clone();
         }
     }
 }

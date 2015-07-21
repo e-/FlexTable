@@ -34,7 +34,10 @@ namespace FlexTable.ViewModel
 
         private TableViewModel tableViewModel;
         public TableViewModel TableViewModel { get { return tableViewModel; } set { tableViewModel = value; OnPropertyChanged("TableViewModel"); } }
-       
+
+        private ExplorationViewModel explorationViewModel;
+        public ExplorationViewModel ExplorationViewModel { get { return explorationViewModel; } set { explorationViewModel = value; OnPropertyChanged("ExplorationViewModel"); } }
+
         public MainPageViewModel(IMainPage view)
         {
             this.view = view;
@@ -43,6 +46,7 @@ namespace FlexTable.ViewModel
             ChartViewModel = new ChartViewModel(this);
             SheetViewModel = new SheetViewModel(this, view);
             TableViewModel = new TableViewModel(this, view);
+            ExplorationViewModel = new ExplorationViewModel(this, view);
         }
 
         public void Initialize()
@@ -51,32 +55,8 @@ namespace FlexTable.ViewModel
             tableViewModel.UpdateRows();
             view.TableView.AddGuidelines(sheet.Rows.Count);
 
-            SummaryViewModel.ShowSummary(sheetViewModel.ColumnViewModels[0]);
-        }
-     
-
-        private Model.Column chartedColumn;
-        private Int32 chartedColumnIndex;
-
-        public void DrawChart(Int32 columnIndex)
-        {
-            /*Model.Column column = sheet.Columns[columnIndex];
-
-            if(column.Type != Model.ColumnType.Numerical) return;
-
-            if (chartedColumn != null) chartedColumn.IsDrawnOnChart = false;
-            column.IsDrawnOnChart = true;
-            chartedColumn = column;
-            chartedColumnIndex = columnIndex;
-
-            chartViewModel.Draw(
-                groupedColumn, 
-                rowViewModels.Select((rvm, index) => 
-                    new Tuple<String, Double>(groupedColumn.Bins[index].Name, (Double)rvm.Row.Cells[columnIndex].Content)
-                    ),
-                column
-            );*/
-        }
+            //SummaryViewModel.ShowSummary(sheetViewModel.ColumnViewModels[0]);
+        }  
 
         public void CancelGroupBy()
         {
