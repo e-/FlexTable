@@ -88,8 +88,8 @@ namespace d3.Component
 
         private static void DataChanged(DependencyObject source, DependencyPropertyChangedEventArgs e)
         {
-            Rectangles rectangles = source as Rectangles;
-            rectangles.Update();
+            //Rectangles rectangles = source as Rectangles;
+            //rectangles.Update();
         }
 
         List<Rectangle> previousRectangles = new List<Rectangle>();

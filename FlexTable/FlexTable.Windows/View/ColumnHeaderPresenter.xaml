@@ -12,19 +12,23 @@
 
     <Border Background="{StaticResource GridLineBrush}">
         <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden" IsEnabled="False"
-                        HorizontalScrollMode="Disabled" VerticalScrollMode="Disabled" Name="HeaderScrollViewer">
-            <ItemsControl ItemsSource="{Binding SheetViewModel.ColumnViewModels}" Width="{Binding SheetViewModel.SheetWidth}" x:Name="Items">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <Canvas />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <local:ColumnHeaderCellPresenter x:Name="ColumnHeaderCell"></local:ColumnHeaderCellPresenter>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+                        HorizontalScrollMode="Disabled" VerticalScrollMode="Disabled" Name="HeaderScrollViewer"
+                      Width="{Binding SheetViewWidth}"
+                      >
+            <Grid x:Name="ScrollViewerContentWrapperElement">
+                <ItemsControl ItemsSource="{Binding SheetViewModel.ColumnViewModels}" x:Name="Items">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Canvas />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <local:ColumnHeaderCellPresenter x:Name="ColumnHeaderCell"></local:ColumnHeaderCellPresenter>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Grid>
         </ScrollViewer>
     </Border>
 </UserControl>

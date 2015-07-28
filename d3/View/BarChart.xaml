@@ -13,25 +13,27 @@
     
     <Canvas Width="710" Height="400">
         <com:Rectangles Data="{Binding ChartData}" WidthGetter="{Binding WidthGetter}" HeightGetter="{Binding HeightGetter}" 
-                               XGetter="{Binding XGetter}" YGetter="{Binding YGetter}" ColorGetter="{Binding ColorGetter}"/>
-        <com:Axis Orientation="Horizontal" Scale="{Binding XScale}" Canvas.Top="350" Canvas.Left="0"/>
-        <com:Axis Orientation="Vertical" Scale="{Binding YScale}" Canvas.Top="0" Canvas.Left="50"/>
+                               XGetter="{Binding XGetter}" YGetter="{Binding YGetter}" ColorGetter="{Binding ColorGetter}"
+                        x:Name="RectangleElement"/>
+        
+        <com:Axis Orientation="Horizontal" Scale="{Binding XScale}" Canvas.Top="350" Canvas.Left="0" x:Name="HorizontalAxis"/>
+        <com:Axis Orientation="Vertical" Scale="{Binding YScale}" Canvas.Top="0" Canvas.Left="50" x:Name="VerticalAxis"/>
 
         <com:Rectangles Data="{Binding ChartData}" WidthGetter="{Binding LegendPatchWidthGetter}" 
                                HeightGetter="{Binding LegendPatchHeightGetter}" XGetter="{Binding LegendPatchXGetter}" 
                                YGetter="{Binding LegendPatchYGetter}" ColorGetter="{Binding ColorGetter}"
-                               Canvas.Left="{Binding ChartWidth}"/>
+                               Canvas.Left="{Binding ChartWidth}" x:Name="LegendRectangleElement"/>
 
         <com:Texts Data="{Binding ChartData}" TextGetter="{Binding LegendTextGetter}"
                           HeightGetter="{Binding LegendPatchHeightGetter}"
                           XGetter="{Binding LegendTextXGetter}" YGetter="{Binding LegendPatchYGetter}" 
                           ColorGetter="{Binding LegendTextColorGetter}"
-                          Canvas.Left="{Binding ChartWidth}"/>
+                          Canvas.Left="{Binding ChartWidth}" x:Name="LegendTextElement"/>
 
         <com:Texts Data="{Binding ChartData}" TextGetter="{Binding IndicatorTextGetter}"
                          WidthGetter="{Binding IndicatorWidthGetter}"
                          XGetter="{Binding IndicatorXGetter}" YGetter="{Binding IndicatorYGetter}" 
-                         Foreground="Black" FontSize="14"
+                         Foreground="Black" FontSize="14" x:Name="IndicatorTextElement"
                    />
     </Canvas>
 </UserControl>

@@ -21,6 +21,7 @@ namespace FlexTable.View
     {
         private PageView topPageView;
         public PageView TopPageView { get { return topPageView; } }
+        public ViewModel.PageViewModel TopPageViewModel { get { return topPageView.PageViewModel; } }
 
         public ExplorationView()
         {

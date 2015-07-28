@@ -26,39 +26,40 @@ namespace FlexTable.View
     {
         Drawable drawable = new Drawable();
 
+        public Canvas TableCanvas { get { return TableCanvasElement; } }
+        public Grid ScrollViewerContententWrapper { get { return ScrollViewerContentWrapperElement; } }
+        public ColumnHeaderPresenter TopColumnHeader { get { return TopColumnHeaderElement; } }
+        public ColumnHeaderPresenter BottomColumnHeader { get { return BottomColumnHeaderElement; } }
+
         public TableView()
         {
             this.InitializeComponent();
-
+            
             drawable.Attach(SheetView, StrokeGrid, NewStrokeGrid);
             drawable.StrokeAdded += RecognizeStrokes;
         }
 
-        public void UpdateColumnHeaders()
-        {
-            TopColumnHeader.Update();
-            BottomColumnHeader.Update();
-        }
-
         public void AddRow(View.RowPresenter rowPresenter)
         {
-            TableCanvas.Children.Add(rowPresenter);
+            TableCanvasElement.Children.Add(rowPresenter);
         }
 
         public void RemoveRow(View.RowPresenter rowPresenter)
         {
-            TableCanvas.Children.Remove(rowPresenter);
+            TableCanvasElement.Children.Remove(rowPresenter);
         }
 
         public void AddGuidelines(Int32 count)
         {
+            if (count < 50) count = 50;
+
             for (Int32 i = 0; i < count - 1; ++i)
             {
-                RowDefinition rd = new RowDefinition()
+         /*       RowDefinition rd = new RowDefinition()
                 {
                     Height = new GridLength((Double)App.Current.Resources["RowHeight"])
                 };
-                GuidelineGrid.RowDefinitions.Add(rd);
+                GuidelineGridElement.RowDefinitions.Add(rd);
 
                 Rectangle rectangle = new Rectangle()
                 {
@@ -66,7 +67,13 @@ namespace FlexTable.View
                 };
                 Grid.SetRow(rectangle, i);
 
-                GuidelineGrid.Children.Add(rectangle);
+                GuidelineGridElement.Children.Add(rectangle);*/
+
+                Rectangle rectangle = new Rectangle()
+                {
+                    Style = (Style)App.Current.Resources["RowGuidelineStyle" + (i % 2).ToString()]
+                };
+                GuildlineElement.Children.Add(rectangle);
             }
         }
 

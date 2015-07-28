@@ -10,6 +10,7 @@
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400"
+    Loaded="UserControl_Loaded"
     >
 
     <UserControl.Resources>
@@ -23,10 +24,17 @@
         </Style>
         
         <util:BooleanToVisibilityConverter x:Name="BooleanToVisibilityConverter" />
+        <util:BooleanToInvertedVisibilityConverter x:Name="BooleanToInvertedVisibilityConverter" />
+        
+        <Storyboard x:Name="Show">
+            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.3"
+                             Storyboard.TargetName="Wrapper" Storyboard.TargetProperty="Opacity" To="1" EnableDependentAnimation="True"
+                             BeginTime="00:00:00.5"/>
+        </Storyboard>
     </UserControl.Resources>
     
-    <StackPanel Margin="20" Background="White">
-        <StackPanel Height="480" Visibility="{Binding IsSummaryVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+    <StackPanel Margin="20" Opacity="0" x:Name="Wrapper">
+        <StackPanel Height="480" Visibility="{Binding IsSummaryVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Background="White">
             <TextBlock Style="{StaticResource TitleStyle}">
                 <Run Text="{Binding ColumnViewModel.Column.Name}" />
             </TextBlock>
@@ -57,9 +65,11 @@
                         <d3view:BarChart x:Name="BarChartElement" Width="710"></d3view:BarChart>
                     </StackPanel>
                 </Grid>
-            </ScrollViewer>
-            
+            </ScrollViewer>            
         </StackPanel>
+        <Border Height="480" Visibility="{Binding IsSummaryVisible, Converter={StaticResource BooleanToInvertedVisibilityConverter}}">
+            <TextBlock FontSize="25" TextAlignment="Center" VerticalAlignment="Center">Please select a column on the left side.</TextBlock>
+        </Border>
         <Image Source="ms-appx:///Assets/horizontal-separator.png" Width="700" Height="8"></Image>
     </StackPanel>
 </UserControl>

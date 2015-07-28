@@ -71,6 +71,16 @@ namespace FlexTable.ViewModel
 
         public void UpdateRows()
         {
+            rowPresenters.Clear();
+            view.TableView.TableCanvas.Width = SheetViewModel.SheetWidth > SheetViewWidth ? SheetViewModel.SheetWidth : SheetViewWidth;
+            view.TableView.TableCanvas.Height = SheetViewModel.SheetHeight > SheetViewHeight ? SheetViewModel.SheetHeight : SheetViewHeight;
+
+            view.TableView.ScrollViewerContententWrapper.Width = SheetViewModel.SheetWidth > SheetViewWidth ? SheetViewModel.SheetWidth : SheetViewWidth;
+            view.TableView.ScrollViewerContententWrapper.Height = SheetViewModel.SheetHeight > SheetViewHeight ? SheetViewModel.SheetHeight : SheetViewHeight;
+
+            view.TableView.TopColumnHeader.ScrollViewerContentWrapper.Width = SheetViewModel.SheetWidth > SheetViewWidth ? SheetViewModel.SheetWidth : SheetViewWidth;
+            view.TableView.BottomColumnHeader.ScrollViewerContentWrapper.Width = SheetViewModel.SheetWidth > SheetViewWidth ? SheetViewModel.SheetWidth : SheetViewWidth;
+
             foreach (ViewModel.RowViewModel rowViewModel in SheetViewModel.RowViewModels)
             {
                 View.RowPresenter rowPresenter = new View.RowPresenter(rowViewModel);
@@ -80,8 +90,12 @@ namespace FlexTable.ViewModel
                 rowPresenter.Y = rowViewModel.Y;
                 rowPresenter.Update();
             }
-
+            
             RowHeaderViewModel.SetMaximumRowNumber(SheetViewModel.RowViewModels.Count);
+
+            ;
+            view.TableView.AddGuidelines(SheetViewModel.Sheet.Rows.Count);
+
         }
 
         uint ignoredPointerId;
@@ -119,7 +133,7 @@ namespace FlexTable.ViewModel
         {
             IsIndexTooltipVisible = false;
             IndexedColumnViewModel = null;
-            mainPageViewModel.ExplorationViewModel.Hide();
+            view.ExplorationView.TopPageViewModel.Hide();
 
             ignoredPointerId = activatedPointerId;
         }

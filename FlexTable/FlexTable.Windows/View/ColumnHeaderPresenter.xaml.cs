@@ -18,9 +18,12 @@ namespace FlexTable.View
             }
         }
 
+        public Grid ScrollViewerContentWrapper { get { return ScrollViewerContentWrapperElement; } }
+
         public ColumnHeaderPresenter()
         {
             this.InitializeComponent();
+
         }
 
         public void Update()

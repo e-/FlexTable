@@ -36,6 +36,17 @@ namespace d3.View
             this.DataContext = viewModel;
         }
 
+        public void Update()
+        {
+            RectangleElement.Update();
+            IndicatorTextElement.Update();
+            HorizontalAxis.Update();
+            VerticalAxis.Update();
+
+            LegendRectangleElement.Update();
+            LegendTextElement.Update();
+        }
+
         /*private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             Double maxCount = columnViewModel.Bins.Select(b => b.Count).Max();

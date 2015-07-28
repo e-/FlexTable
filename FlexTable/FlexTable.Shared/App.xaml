@@ -17,15 +17,15 @@
             <GridLength x:Key="ColumnHeaderHeightInGridLength">50</GridLength>
             
             <Style TargetType="TextBlock" x:Key="CellStyle">
-                <Setter Property="Padding" Value="10 2" />
+                <Setter Property="Padding" Value="10 4" />
                 <Setter Property="Height" Value="24" />
                 <Setter Property="TextAlignment" Value="Center" />
                 <Setter Property="FontFamily" Value="Roboto" />
             </Style>
 
             <Style TargetType="TextBlock" x:Key="RowHeaderStyle">
-                <Setter Property="Padding" Value="10 2" />
-                <Setter Property="Height" Value="24" />
+                <Setter Property="Padding" Value="10 4" />
+                <Setter Property="Height" Value="20" />
                 <Setter Property="TextAlignment" Value="Center" />
                 <Setter Property="Width" Value="{StaticResource RowHeaderWidth}" />
                 <!--<Setter Property="FontWeight" Value="Bold" />-->

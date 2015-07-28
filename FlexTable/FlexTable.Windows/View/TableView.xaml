@@ -28,7 +28,7 @@
             </Grid.RowDefinitions>
             <Border Grid.Row="0" Grid.Column="0" Background="LightGray"></Border>
 
-            <view:ColumnHeaderPresenter Grid.Row="0" Grid.Column="1" x:Name="TopColumnHeader"></view:ColumnHeaderPresenter>
+            <view:ColumnHeaderPresenter Grid.Row="0" Grid.Column="1" x:Name="TopColumnHeaderElement"></view:ColumnHeaderPresenter>
 
             <view:RowHeaderPresenter Grid.Row="1" Grid.Column="0" x:Name="RowHeader"></view:RowHeaderPresenter>
             <view:ColumnIndexer Grid.Row="1" Grid.Column="0" x:Name="ColumnIndex"></view:ColumnIndexer>
@@ -39,17 +39,19 @@
                               ManipulationMode="All"
                               x:Name="TableScrollViewer"
                               >
-                <Grid>
-                    <Grid Name="GuidelineGrid" Width="{Binding SheetViewModel.SheetWidth}" Height="{Binding SheetViewModel.SheetHeight}" IsHitTestVisible="False">
-                    </Grid>
-                    <Canvas x:Name="TableCanvas" Width="{Binding SheetViewModel.SheetWidth}" Height="{Binding SheetViewModel.SheetHeight}">
+                <Grid x:Name="ScrollViewerContentWrapperElement">
+                    <StackPanel x:Name="GuildlineElement" IsHitTestVisible="False">
+                    </StackPanel>
+                    <Canvas x:Name="TableCanvasElement"
+                            VirtualizingStackPanel.VirtualizationMode="Recycling"
+                            >
                     </Canvas>
                 </Grid>
             </ScrollViewer>
        
 
             <Border Grid.Row="2" Grid.Column="0" Background="LightGray"></Border>
-            <view:ColumnHeaderPresenter Grid.Row="2" Grid.Column="1" x:Name="BottomColumnHeader"></view:ColumnHeaderPresenter>
+            <view:ColumnHeaderPresenter Grid.Row="2" Grid.Column="1" x:Name="BottomColumnHeaderElement"></view:ColumnHeaderPresenter>
 
             <view:ColumnHighlighter Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" ColumnViewModel="{Binding IndexedColumnViewModel}"></view:ColumnHighlighter>
             

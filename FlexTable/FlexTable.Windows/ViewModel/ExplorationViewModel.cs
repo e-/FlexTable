@@ -20,20 +20,8 @@ namespace FlexTable.ViewModel
         private ColumnViewModel columnViewModel;
         public ColumnViewModel ColumnViewModel { get { return columnViewModel; } set { columnViewModel = value; OnPropertyChanged("ColumnViewModel"); } }
 
-        private DescriptiveStatisticsResult boxPlotViewModel;
-        public DescriptiveStatisticsResult BoxPlotViewModel { get { return boxPlotViewModel; } set { boxPlotViewModel = value; OnPropertyChanged("BoxPlotViewModel"); } }
-
         MainPageViewModel mainPageViewModel;
         public MainPageViewModel MainPageViewModel { get { return mainPageViewModel; } }
-
-        private Boolean isSummaryVisible = false;
-        public Boolean IsSummaryVisible { get { return isSummaryVisible; } set { isSummaryVisible = value; OnPropertyChanged("IsSummaryVisible"); } }
-
-        private Boolean isCategoricalColumn;
-        public Boolean IsCategoricalColumn { get { return isCategoricalColumn; } set { isCategoricalColumn = value; OnPropertyChanged("IsCategoricalColumn"); } }
-
-        private Boolean isNumericalColumn;
-        public Boolean IsNumericalColumn { get { return isNumericalColumn; } set { isNumericalColumn = value; OnPropertyChanged("IsNumericalColumn"); } }
 
         IMainPage view;
 
@@ -49,12 +37,6 @@ namespace FlexTable.ViewModel
             ColumnViewModel = columnViewModel;
 
             pageViewModel.ShowSummary(columnViewModel);
-        }
-
-        public void Hide()
-        {
-            IsSummaryVisible = false;
-            ColumnViewModel = null;
         }
 
         public void DummyGroup()

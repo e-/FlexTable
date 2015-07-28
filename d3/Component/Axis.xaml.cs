@@ -85,7 +85,7 @@ namespace d3.Component
         {
             Axis axis = source as Axis;
             axis.PreviousScale = e.OldValue as ScaleBase;
-            axis.Update();
+            //axis.Update();
         }
 
         public void UpdateOrientation()

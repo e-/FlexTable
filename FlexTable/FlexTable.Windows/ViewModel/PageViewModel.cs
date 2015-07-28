@@ -55,6 +55,7 @@ namespace FlexTable.ViewModel
                 IsNumericalColumn = false;
                 // bar and pie
                 pageView.BarChart.Data = columnViewModel.Bins.Select(b => new Tuple<Object, Double>(b.Name, b.Count));
+                pageView.BarChart.Update();
             }
             else
             {

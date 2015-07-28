@@ -21,12 +21,16 @@ namespace FlexTable.ViewModel
 
         public void SetMaximumRowNumber(Int32 n)
         {
-            for (Int32 i = 0; i < n; ++i)
+            Int32 maxN = n;
+
+            if (maxN < 50) maxN = 50;
+
+            for (Int32 i = 0; i < maxN; ++i)
             {
                 rowHeaderItems.Add(new Model.RowHeader()
                 {
                     Index = i + 1,
-                    Opacity = 1
+                    Opacity = i < n ? 1 : 0
                 });
             }
         }

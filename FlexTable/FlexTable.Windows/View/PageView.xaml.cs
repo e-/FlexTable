@@ -28,5 +28,10 @@ namespace FlexTable.View
         {
             this.InitializeComponent();
         }
+
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            Show.Begin();
+        }
     }
 }
