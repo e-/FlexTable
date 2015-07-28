@@ -29,6 +29,9 @@ namespace FlexTable.ViewModel
         private Boolean isSummaryVisible = false;
         public Boolean IsSummaryVisible { get { return isSummaryVisible; } set { isSummaryVisible = value; OnPropertyChanged("IsSummaryVisible"); } }
 
+        private Boolean isGroupedBarChartVisible = false;
+        public Boolean IsGroupedBarChartVisible { get { return isGroupedBarChartVisible; } set { isGroupedBarChartVisible = value; OnPropertyChanged("IsGroupedBarChartVisible"); } }                                                                                                                                                     
+
         private Boolean isCategoricalColumn;
         public Boolean IsCategoricalColumn { get { return isCategoricalColumn; } set { isCategoricalColumn = value; OnPropertyChanged("IsCategoricalColumn"); } }
 
@@ -58,6 +61,19 @@ namespace FlexTable.ViewModel
                 // grouped bar chart가 될 수도 있음.
                 pageView.BarChart.Data = mainPageViewModel.SheetViewModel.CountByColumnViewModel(columnViewModel).Select(t => new Tuple<Object, Double>(t.Item1.Value, t.Item2));
                 pageView.BarChart.Update();
+
+                if (mainPageViewModel.SheetViewModel.GroupedColumnViewModels.Count > 0)
+                {
+                    //IsGroupedBarChartVisible = true;
+
+                    pageView.GroupedBarChart.Data = mainPageViewModel.SheetViewModel.CountByDoubleColumnViewModel(columnViewModel)
+                        .Select(tp => new Tuple<Object, Object, Double>(tp.Item1.ToString(), tp.Item2.ToString(), tp.Item3));
+                    pageView.GroupedBarChart.Update();
+                }
+                else
+                {
+                    IsGroupedBarChartVisible = false;
+                }
             }
             else
             {

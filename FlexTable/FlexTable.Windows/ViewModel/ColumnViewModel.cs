@@ -35,7 +35,7 @@ namespace FlexTable.ViewModel
         /*private List<Model.Bin> bins;
         public List<Model.Bin> Bins { get { return bins; } set { bins = value; } }*/
 
-        private Boolean isGroupedBy;
+        private Boolean isGroupedBy = false;
         public Boolean IsGroupedBy { get { return isGroupedBy; } set { isGroupedBy = value; OnPropertyChanged("IsGroupedBy"); } }
 
         private Boolean isDrawnOnChart;

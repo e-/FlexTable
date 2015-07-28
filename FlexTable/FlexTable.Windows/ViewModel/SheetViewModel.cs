@@ -28,6 +28,7 @@ namespace FlexTable.ViewModel
         public List<ViewModel.RowViewModel> RowViewModels { get { return rowViewModels; } }
 
         private List<ViewModel.ColumnViewModel> groupedColumnViewModels = new List<ViewModel.ColumnViewModel>();
+        public List<ViewModel.ColumnViewModel> GroupedColumnViewModels { get { return groupedColumnViewModels; } }
 
         ViewModel.MainPageViewModel mainPageViewModel;
         IMainPage view;
@@ -41,7 +42,6 @@ namespace FlexTable.ViewModel
         public void Initialize(Model.Sheet sheet)
         {
             Sheet = sheet;
-
 
             Int32 index;
 
@@ -156,7 +156,7 @@ namespace FlexTable.ViewModel
         {
             groupedColumnViewModels.Remove(pivotColumnViewModel);
             pivotColumnViewModel.IsGroupedBy = false;
-
+            Debug.WriteLine("Ungrouped by " + pivotColumnViewModel.Column.Name);
             GroupUpdate();
         }
 
@@ -167,7 +167,7 @@ namespace FlexTable.ViewModel
                 Debug.WriteLine("Grouping rows by a numerical column is not supported now.");
                 return;
             }
-
+            Debug.WriteLine("Grouped by " + pivotColumnViewModel.Column.Name);
             groupedColumnViewModels.Add(pivotColumnViewModel);
             pivotColumnViewModel.IsGroupedBy = true;
 
@@ -260,9 +260,11 @@ namespace FlexTable.ViewModel
 
         public List<GroupedRows> GroupRecursive(List<Row> rows, Int32 pivotIndex)
         {
-            Dictionary<Category, List<Row>> dict = new Dictionary<Category, List<Row>>();
+            
             ColumnViewModel pivot = groupedColumnViewModels[pivotIndex];
-
+            Dictionary<Category, List<Row>> dict = GetRowsByColumnViewModel(rows, pivot);
+            
+            /*new Dictionary<Category, List<Row>>();
             foreach (Row row in rows)
             {
                 Category category = row.Cells[pivot.Index].Content as Category;
@@ -272,6 +274,7 @@ namespace FlexTable.ViewModel
                 }
                 dict[category].Add(row);
             }
+            */
 
             if (pivotIndex < groupedColumnViewModels.Count - 1) // 그루핑을 더 해야함.
             {
@@ -322,18 +325,37 @@ namespace FlexTable.ViewModel
 
         public List<Tuple<Category, Int32>> CountByColumnViewModel(ColumnViewModel columnViewModel)
         {
-            Dictionary<Category, Int32> dict = new Dictionary<Category, int>();
-            foreach (Category category in columnViewModel.Categories)
+            return GetRowsByColumnViewModel(sheet.Rows, columnViewModel).Select(kv => new Tuple<Category, Int32>(kv.Key, kv.Value.Count)).ToList();
+        }
+
+        public Dictionary<Category, List<Model.Row>> GetRowsByColumnViewModel(IEnumerable<Row> rows, ColumnViewModel columnViewModel)
+        {
+            Dictionary<Category, List<Model.Row>> dict = new Dictionary<Category, List<Model.Row>>();
+            
+            foreach (Model.Row row in rows)
             {
-                dict.Add(category, 0);
+                Category category = row.Cells[columnViewModel.Index].Content as Category;
+                if(!dict.ContainsKey(category)) {
+                    dict[category] = new List<Model.Row>();
+                }
+
+                dict[category].Add(row);
             }
 
-            foreach (Model.Row row in sheet.Rows)
-            {
-                dict[row.Cells[columnViewModel.Index].Content as Category]++;
-            }
+            return dict;
+        }
 
-            return dict.Select(kv => new Tuple<Category, Int32>(kv.Key, kv.Value)).ToList();
+        public List<Tuple<Category, Category, Int32>> CountByDoubleColumnViewModel(ColumnViewModel secondary)
+        {
+            ColumnViewModel primary = groupedColumnViewModels.Last();
+            Dictionary<Category, List<Model.Row>> dict = GetRowsByColumnViewModel(sheet.Rows, primary);
+            List<Tuple<Category, Category, Int32>> result = new List<Tuple<Category, Category, Int32>>();
+
+            foreach (KeyValuePair<Category, List<Model.Row>> kv in dict)
+            {
+                result.AddRange(GetRowsByColumnViewModel(kv.Value, secondary).Select(kv2 => new Tuple<Category, Category, Int32>(kv.Key, kv2.Key, kv2.Value.Count)));
+            }
+            return result;
         }
 
         public void CancelGroupBy()

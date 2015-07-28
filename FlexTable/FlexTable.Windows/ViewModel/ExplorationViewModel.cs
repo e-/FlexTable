@@ -46,7 +46,7 @@ namespace FlexTable.ViewModel
             if (pageView == TopPageView)
             {
                 // grouping
-                if (columnViewModel != null && columnViewModel.Type == ColumnType.Categorical)
+                if (columnViewModel != null && columnViewModel.Type == ColumnType.Categorical && !columnViewModel.IsGroupedBy)
                 {
                     // Page View 아래로 보내기                    
                     pageView.GoDown();
@@ -82,7 +82,7 @@ namespace FlexTable.ViewModel
                     view.ExplorationView.RemoveTopPage(pageView);
 
                     // SheetViewModel 에서 grouping 하기, 이건 rowViewModels를 업데이트함
-                    mainPageViewModel.SheetViewModel.Ungroup(columnViewModel);
+                    mainPageViewModel.SheetViewModel.Ungroup(pageViewModel.ColumnViewModel);
 
                     // Table View 업데이트
                     mainPageViewModel.TableViewModel.UpdateRows();

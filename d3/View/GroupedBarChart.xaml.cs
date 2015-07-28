@@ -18,11 +18,11 @@ using Windows.UI.Xaml.Navigation;
 
 namespace d3.View
 {
-    public sealed partial class BarChart : UserControl
+    public sealed partial class GroupedBarChart : UserControl
     {
-        ViewModel.BarChartViewModel viewModel = new ViewModel.BarChartViewModel();
+        ViewModel.GroupedBarChartViewModel viewModel = new ViewModel.GroupedBarChartViewModel();
 
-        public IEnumerable<Tuple<Object, Double>> Data
+        public IEnumerable<Tuple<Object, Object, Double>> Data
         {
             set
             {
@@ -30,7 +30,7 @@ namespace d3.View
             }
         }
 
-        public BarChart()
+        public GroupedBarChart()
         {
             this.InitializeComponent();
             this.DataContext = viewModel;

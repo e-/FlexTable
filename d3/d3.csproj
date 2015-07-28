@@ -55,6 +55,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\GroupedBarChart.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="View\BarChart.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -86,8 +90,12 @@
       <DependentUpon>Texts.xaml</DependentUpon>
     </Compile>
     <Compile Include="Util.cs" />
+    <Compile Include="ViewModel\GroupedBarChartViewModel.cs" />
     <Compile Include="ViewModel\BarChartViewModel.cs" />
     <Compile Include="ViewModel\BoxPlotViewModel.cs" />
+    <Compile Include="View\GroupedBarChart.xaml.cs">
+      <DependentUpon>GroupedBarChart.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\BarChart.xaml.cs">
       <DependentUpon>BarChart.xaml</DependentUpon>
     </Compile>

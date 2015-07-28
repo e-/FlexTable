@@ -15,6 +15,7 @@ namespace d3.Scale
         private List<Object> domain = new List<Object>();
         public List<Object> Domain { get { return domain; } }
         public override Int32 TickCount { get { return domain.Count; } set { } }
+        public Double RangeBand { get { return (rangeEnd - rangeStart) / domain.Count; } }
 
         override public Double Map(Object key)
         {

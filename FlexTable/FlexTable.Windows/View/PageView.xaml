@@ -81,6 +81,9 @@
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" Margin="0 0 0 15" Visibility="{Binding IsCategoricalColumn, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <d3view:GroupedBarChart x:Name="GroupedBarChartElement"  
+                                                Visibility="{Binding IsGroupedBarChartVisible, Converter={StaticResource BooleanToVisibilityConverter}}" 
+                                                Width="710"></d3view:GroupedBarChart>
                         <d3view:BarChart x:Name="BarChartElement" Width="710"></d3view:BarChart>
                     </StackPanel>
                 </Grid>
