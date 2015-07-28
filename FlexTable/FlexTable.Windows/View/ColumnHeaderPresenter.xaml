@@ -15,7 +15,7 @@
                         HorizontalScrollMode="Disabled" VerticalScrollMode="Disabled" Name="HeaderScrollViewer"
                       Width="{Binding SheetViewWidth}"
                       >
-            <Grid x:Name="ScrollViewerContentWrapperElement">
+            <Grid x:Name="ScrollViewerContentWrapperElement" Width="{Binding PaddedSheetWidth}">
                 <ItemsControl ItemsSource="{Binding SheetViewModel.ColumnViewModels}" x:Name="Items">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>

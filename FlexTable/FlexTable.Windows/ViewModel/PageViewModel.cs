@@ -54,7 +54,9 @@ namespace FlexTable.ViewModel
                 IsCategoricalColumn = true;
                 IsNumericalColumn = false;
                 // bar and pie
-                pageView.BarChart.Data = columnViewModel.Bins.Select(b => new Tuple<Object, Double>(b.Name, b.Count));
+
+                // grouped bar chart가 될 수도 있음.
+                pageView.BarChart.Data = mainPageViewModel.SheetViewModel.CountByColumnViewModel(columnViewModel).Select(t => new Tuple<Object, Double>(t.Item1.Value, t.Item2));
                 pageView.BarChart.Update();
             }
             else
@@ -74,6 +76,11 @@ namespace FlexTable.ViewModel
         {
             IsSummaryVisible = false;
             ColumnViewModel = null;
+        }
+
+        public void Tapped(View.PageView pageView)
+        {
+            mainPageViewModel.ExplorationViewModel.PageViewTapped(this, pageView);
         }
 
         public void StrokeAdded(InkStroke stroke)

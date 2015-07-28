@@ -41,6 +41,12 @@ namespace FlexTable.ViewModel
         public Double SheetViewWidth { get { return bounds.Width / 2 - (Double)App.Current.Resources["RowHeaderWidth"]; } }
         public Double SheetViewHeight { get { return bounds.Height - (Double)App.Current.Resources["ColumnHeaderHeight"] * 2; } }
 
+        private Double paddedSheetWidth;
+        public Double PaddedSheetWidth { get { return paddedSheetWidth; } set { paddedSheetWidth = value; OnPropertyChanged("PaddedSheetWidth"); } }
+
+        private Double paddedSheetHeight;
+        public Double PaddedSheetHeight { get { return paddedSheetHeight; } set { paddedSheetHeight = value; OnPropertyChanged("PaddedSheetHeight"); } }
+
         private List<View.RowPresenter> rowPresenters = new List<View.RowPresenter>();
         public List<View.RowPresenter> RowPresenters { get { return rowPresenters; } }
 
@@ -69,33 +75,34 @@ namespace FlexTable.ViewModel
             OnPropertyChanged("SheetViewHeight");
         }
 
+        public void Initialize()
+        {
+            // guideline 추가
+            view.TableView.AddGuidelines(SheetViewModel.Sheet.Rows.Count);
+
+            // 최대 row header 추가
+            RowHeaderViewModel.SetMaximumRowNumber(SheetViewModel.RowViewModels.Count);
+        }
+
         public void UpdateRows()
         {
             rowPresenters.Clear();
-            view.TableView.TableCanvas.Width = SheetViewModel.SheetWidth > SheetViewWidth ? SheetViewModel.SheetWidth : SheetViewWidth;
-            view.TableView.TableCanvas.Height = SheetViewModel.SheetHeight > SheetViewHeight ? SheetViewModel.SheetHeight : SheetViewHeight;
+            view.TableView.TableCanvas.Children.Clear();
 
-            view.TableView.ScrollViewerContententWrapper.Width = SheetViewModel.SheetWidth > SheetViewWidth ? SheetViewModel.SheetWidth : SheetViewWidth;
-            view.TableView.ScrollViewerContententWrapper.Height = SheetViewModel.SheetHeight > SheetViewHeight ? SheetViewModel.SheetHeight : SheetViewHeight;
-
-            view.TableView.TopColumnHeader.ScrollViewerContentWrapper.Width = SheetViewModel.SheetWidth > SheetViewWidth ? SheetViewModel.SheetWidth : SheetViewWidth;
-            view.TableView.BottomColumnHeader.ScrollViewerContentWrapper.Width = SheetViewModel.SheetWidth > SheetViewWidth ? SheetViewModel.SheetWidth : SheetViewWidth;
+            PaddedSheetHeight = SheetViewModel.SheetHeight > SheetViewHeight ? SheetViewModel.SheetHeight : SheetViewHeight;
+            PaddedSheetWidth = SheetViewModel.SheetWidth > SheetViewWidth ? SheetViewModel.SheetWidth : SheetViewWidth;
 
             foreach (ViewModel.RowViewModel rowViewModel in SheetViewModel.RowViewModels)
             {
                 View.RowPresenter rowPresenter = new View.RowPresenter(rowViewModel);
                 rowPresenters.Add(rowPresenter);
 
-                view.TableView.AddRow(rowPresenter);
+                view.TableView.TableCanvas.Children.Add(rowPresenter);
                 rowPresenter.Y = rowViewModel.Y;
                 rowPresenter.Update();
             }
-            
-            RowHeaderViewModel.SetMaximumRowNumber(SheetViewModel.RowViewModels.Count);
 
-            ;
-            view.TableView.AddGuidelines(SheetViewModel.Sheet.Rows.Count);
-
+            RowHeaderViewModel.SetRowNumber(SheetViewModel.RowViewModels.Count);
         }
 
         uint ignoredPointerId;

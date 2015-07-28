@@ -32,16 +32,20 @@ namespace FlexTable.ViewModel
         public Model.ColumnType Type { get; set; }
         public String TypeString { get { return Type.ToString(); } }
 
-        private List<Model.Bin> bins;
-        public List<Model.Bin> Bins { get { return bins; } set { bins = value; } }
+        /*private List<Model.Bin> bins;
+        public List<Model.Bin> Bins { get { return bins; } set { bins = value; } }*/
 
         private Boolean isGroupedBy;
         public Boolean IsGroupedBy { get { return isGroupedBy; } set { isGroupedBy = value; OnPropertyChanged("IsGroupedBy"); } }
 
         private Boolean isDrawnOnChart;
         public Boolean IsDrawnOnChart { get { return isDrawnOnChart; } set { isDrawnOnChart = value; OnPropertyChanged("IsDrawnOnChart"); } }
-        
-        public Model.AggregationType AggregationType { get; set; }
+
+        private List<Model.Category> categories;
+        public List<Model.Category> Categories { get { return categories; } set { categories = value; } }
+
+        private Model.AggregationType aggregationType = Model.AggregationType.Average;
+        public Model.AggregationType AggregationType { get { return aggregationType; } set { aggregationType = value; } }
 
         public ColumnViewModel(ViewModel.MainPageViewModel mainPageViewModel)
         {

@@ -73,7 +73,7 @@
                               ManipulationMode="All"
                               x:Name="TableScrollViewer"
                               >
-                    <Canvas x:Name="TableCanvas" Height="{Binding SheetViewModel.SheetHeight}">
+                    <Canvas x:Name="TableCanvas" Height="{Binding PaddedSheetHeight}">
                     </Canvas>
                 </ScrollViewer>
                 <Border Height="1000" Background="White" />

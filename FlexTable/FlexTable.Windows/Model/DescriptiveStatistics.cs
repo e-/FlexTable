@@ -41,15 +41,20 @@ namespace FlexTable.Model
         public String SampleStandardDeviationString { get { return Format(SampleStandardDeviation); } }
 
         public Double SampleSkewness { get; set; }
-        public String SampleSkewnessString { get { return Format(SampleSkewness); } }
+        public String SampleSkewnessString { get { return FormatPoints(SampleSkewness); } }
 
         public Double SampleKurtosis { get; set; }
-        public String SampleKurtosisString { get { return Format(SampleKurtosis); } }
+        public String SampleKurtosisString { get { return FormatPoints(SampleKurtosis); } }
 
 
         public String Format(Double value)
         {
             return value.ToString("#,0");
+        }
+
+        public String FormatPoints(Double value)
+        {
+            return value.ToString("#,0.###");
         }
     }
 

@@ -11,6 +11,7 @@
     d:DesignHeight="300"
     d:DesignWidth="400"
     Loaded="UserControl_Loaded"
+    x:Name="UserControl"
     >
 
     <UserControl.Resources>
@@ -31,9 +32,27 @@
                              Storyboard.TargetName="Wrapper" Storyboard.TargetProperty="Opacity" To="1" EnableDependentAnimation="True"
                              BeginTime="00:00:00.5"/>
         </Storyboard>
+
+        <Storyboard x:Name="HideStoryboardElement">
+            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.3"
+                             Storyboard.TargetName="Wrapper" Storyboard.TargetProperty="Opacity" To="0" EnableDependentAnimation="True"
+                             />
+        </Storyboard>
+
+        <Storyboard x:Name="GoDownStoryboard">
+            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.5"
+                             Storyboard.TargetName="UserControl" Storyboard.TargetProperty="(Canvas.Top)" To="530">
+            </DoubleAnimation>
+        </Storyboard>
+
+        <Storyboard x:Name="GoUpStoryboard" Completed="GoUpStoryboard_Completed">
+            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.5"
+                             Storyboard.TargetName="UserControl" Storyboard.TargetProperty="(Canvas.Top)" To="0">
+            </DoubleAnimation>
+        </Storyboard>
     </UserControl.Resources>
     
-    <StackPanel Margin="20" Opacity="0" x:Name="Wrapper">
+    <StackPanel Margin="20" Opacity="0" x:Name="Wrapper" Tapped="Wrapper_Tapped">
         <StackPanel Height="480" Visibility="{Binding IsSummaryVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Background="White">
             <TextBlock Style="{StaticResource TitleStyle}">
                 <Run Text="{Binding ColumnViewModel.Column.Name}" />
@@ -68,7 +87,7 @@
             </ScrollViewer>            
         </StackPanel>
         <Border Height="480" Visibility="{Binding IsSummaryVisible, Converter={StaticResource BooleanToInvertedVisibilityConverter}}">
-            <TextBlock FontSize="25" TextAlignment="Center" VerticalAlignment="Center">Please select a column on the left side.</TextBlock>
+            <TextBlock FontSize="25" TextAlignment="Center" VerticalAlignment="Center">Please select a column to preview.</TextBlock>
         </Border>
         <Image Source="ms-appx:///Assets/horizontal-separator.png" Width="700" Height="8"></Image>
     </StackPanel>

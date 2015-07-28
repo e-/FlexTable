@@ -29,11 +29,6 @@ namespace FlexTable.View
             topPageView = InitialPageViewElement;
         }
 
-        private void Wrapper_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            (this.DataContext as ViewModel.ExplorationViewModel).DummyGroup();
-        }
-
         public void AddNewPage()
         {
             PageView page = new PageView();
@@ -45,6 +40,18 @@ namespace FlexTable.View
             topPageView = page;
             page.DataContext = pageViewModel;
             PageViewsElement.Children.Add(page);
+        }
+
+        public void RemoveTopPage(PageView nextTopPageView)
+        {
+            PageView currentTopPageView = topPageView;
+            currentTopPageView.HideStoryboard.Completed += delegate
+            {
+                PageViewsElement.Children.Remove(currentTopPageView);
+            };
+            currentTopPageView.HideStoryboard.Begin();
+
+            topPageView = nextTopPageView;
         }
     }
 }

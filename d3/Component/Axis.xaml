@@ -17,6 +17,10 @@
         <Style x:Name="AxisLineStyle" TargetType="Line">
             <Setter Property="Stroke" Value="Gray" />
         </Style>
+        <Style x:Name="TickMarkerStyle" TargetType="Line">
+            <Setter Property="Stroke" Value="Gray" />
+        </Style>
+        
     </UserControl.Resources>
     
     <Canvas Background="LightGray" x:Name="AxisCanvas">

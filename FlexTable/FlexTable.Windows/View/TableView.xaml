@@ -39,7 +39,7 @@
                               ManipulationMode="All"
                               x:Name="TableScrollViewer"
                               >
-                <Grid x:Name="ScrollViewerContentWrapperElement">
+                <Grid x:Name="ScrollViewerContentWrapperElement" Width="{Binding PaddedSheetWidth}" Height="{Binding PaddedSheetHeight}">
                     <StackPanel x:Name="GuildlineElement" IsHitTestVisible="False">
                     </StackPanel>
                     <Canvas x:Name="TableCanvasElement"

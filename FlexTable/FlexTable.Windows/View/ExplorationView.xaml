@@ -34,7 +34,7 @@
         </Style>
     </UserControl.Resources>
     
-    <Grid x:Name="Wrapper" Tapped="Wrapper_Tapped">
+    <Grid x:Name="Wrapper">
         <Canvas Margin="10" x:Name="PageViewsElement">
             <StackPanel Canvas.Top="520" Margin="20">
                 <TextBlock Style="{StaticResource HeaderStyle}">Metadata</TextBlock>

@@ -40,7 +40,7 @@ namespace FlexTable.Model
             return ColumnType.Numerical;
         }
 
-        public static List<Bin> GetFrequencyBins(IEnumerable<ViewModel.RowViewModel> rows, Int32 cellIndex)
+        /*public static List<Bin> GetFrequencyBins(IEnumerable<ViewModel.RowViewModel> rows, Int32 cellIndex)
         {
             Dictionary<String, List<ViewModel.RowViewModel>> dictionary = new Dictionary<String, List<ViewModel.RowViewModel>>();
 
@@ -99,6 +99,6 @@ namespace FlexTable.Model
             }
 
             return bins;
-        }
+        }*/
     }
 }

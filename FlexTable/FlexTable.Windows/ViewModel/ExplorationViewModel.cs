@@ -23,6 +23,8 @@ namespace FlexTable.ViewModel
         MainPageViewModel mainPageViewModel;
         public MainPageViewModel MainPageViewModel { get { return mainPageViewModel; } }
 
+        public View.PageView TopPageView { get { return view.ExplorationView.TopPageView; } }
+
         IMainPage view;
 
         public ExplorationViewModel(MainPageViewModel mainPageViewModel, IMainPage view)
@@ -33,36 +35,62 @@ namespace FlexTable.ViewModel
 
         public void ShowSummary(ColumnViewModel columnViewModel)
         {
-            PageViewModel pageViewModel = view.ExplorationView.TopPageView.PageViewModel;
+            PageViewModel pageViewModel = TopPageView.PageViewModel;
             ColumnViewModel = columnViewModel;
 
             pageViewModel.ShowSummary(columnViewModel);
         }
 
-        public void DummyGroup()
+        public void PageViewTapped(PageViewModel pageViewModel, View.PageView pageView)
         {
-            if (columnViewModel != null && columnViewModel.Type == ColumnType.Categorical)
+            if (pageView == TopPageView)
             {
-                View.PageView page = view.ExplorationView.TopPageView;
-
-                Storyboard sb = new Storyboard()
+                // grouping
+                if (columnViewModel != null && columnViewModel.Type == ColumnType.Categorical)
                 {
-                };
+                    // Page View 아래로 보내기                    
+                    pageView.GoDown();
 
-                DoubleAnimation ani = new DoubleAnimation()
+                    // 새로운 page 만들기
+                    view.ExplorationView.AddNewPage();
+
+                    // Preview 풀기
+                    mainPageViewModel.TableViewModel.CancelIndexing();
+
+                    // SheetViewModel 에서 grouping 하기, 이건 rowViewModels를 업데이트함
+                    mainPageViewModel.SheetViewModel.Group(columnViewModel);
+
+                    // Table View 업데이트
+                    mainPageViewModel.TableViewModel.UpdateRows();
+
+                    view.TableView.TopColumnHeader.Update();
+                    view.TableView.BottomColumnHeader.Update();
+                    view.TableView.ScrollToColumnViewModel(mainPageViewModel.SheetViewModel.ColumnViewModels.OrderBy(c => c.Order).First());
+                }
+            }
+            else
+            {
+                if (pageViewModel.ColumnViewModel != null && pageViewModel.ColumnViewModel.IsGroupedBy) // 그룹핑 취소
                 {
-                    To = 530,
-                    EasingFunction = new QuarticEase() { EasingMode = EasingMode.EaseInOut },
-                    Duration = TimeSpan.FromMilliseconds(500),
-                };
+                    // Page View 위로 올리기
+                    pageView.GoUp();
 
-                Storyboard.SetTarget(ani, page);
-                Storyboard.SetTargetProperty(ani, "(Canvas.Top)");
+                    // Preview 풀기 (만약 되어있다면)
+                    mainPageViewModel.TableViewModel.CancelIndexing();
 
-                sb.Children.Add(ani);
-                sb.Begin();
+                    // 기존 탑 페이지 지우고 이걸 탑 페이지로 지정
+                    view.ExplorationView.RemoveTopPage(pageView);
 
-                view.ExplorationView.AddNewPage();
+                    // SheetViewModel 에서 grouping 하기, 이건 rowViewModels를 업데이트함
+                    mainPageViewModel.SheetViewModel.Ungroup(columnViewModel);
+
+                    // Table View 업데이트
+                    mainPageViewModel.TableViewModel.UpdateRows();
+
+                    view.TableView.TopColumnHeader.Update();
+                    view.TableView.BottomColumnHeader.Update();
+                    view.TableView.ScrollToColumnViewModel(mainPageViewModel.SheetViewModel.ColumnViewModels.OrderBy(c => c.Order).First());
+                }
             }
         }
 

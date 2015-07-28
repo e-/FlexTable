@@ -43,7 +43,13 @@ namespace FlexTable.ViewModel
 
         public void Initialize()
         {
+            // rowViewModels 계산
             sheetViewModel.Initialize(sheet);
+
+            // 가이드라인 및 헤더 컬럼 추가
+            tableViewModel.Initialize();
+
+            // rowViewModels 추가된 것 반영
             tableViewModel.UpdateRows();
 
             ViewModel.PageViewModel pageViewModel = new ViewModel.PageViewModel(

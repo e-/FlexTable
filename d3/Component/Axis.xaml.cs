@@ -65,6 +65,8 @@ namespace d3.Component
         private DependencyProperty canvasPrimary, canvasSecondary;
         private DependencyProperty tickLabelSizeProperty;
         private String canvasPrimaryString;
+        private String linePrimary1String;
+        private String linePrimary2String;
 
         private readonly TimeSpan Duration = TimeSpan.FromMilliseconds(500);
         private readonly EasingFunctionBase EasingFunction = new QuadraticEase() { EasingMode = EasingMode.EaseInOut };
@@ -101,6 +103,8 @@ namespace d3.Component
                     canvasSecondary = Canvas.TopProperty;
                     tickLabelSizeProperty = TextBlock.ActualWidthProperty;
                     canvasPrimaryString = "(Canvas.Left)";
+                    linePrimary1String = "X1";
+                    linePrimary2String = "X2";
                     break;
 
                 case Orientations.Vertical:
@@ -112,12 +116,14 @@ namespace d3.Component
                     canvasSecondary = Canvas.LeftProperty;
                     tickLabelSizeProperty = TextBlock.ActualHeightProperty;
                     canvasPrimaryString = "(Canvas.Top)";
+                    linePrimary1String = "Y1";
+                    linePrimary2String = "Y2";
                     break;
             }
         }
 
         private List<TextBlock> tickLabels;
-  //      private List<Line> tickMarkers;
+        private List<Line> tickMarkers;
 
         public void Update()
         {
@@ -131,7 +137,7 @@ namespace d3.Component
             if (Transition)
             {
                 List<TextBlock> previousTickLabels = tickLabels;
-//                List<Line> previousTickMarkers = tickMarkers;
+                List<Line> previousTickMarkers = tickMarkers;
 
                 Storyboard tickLabelsStoryboard = new Storyboard();
                 //remove previous ticks
@@ -142,7 +148,7 @@ namespace d3.Component
                     foreach (TextBlock tickLabel in previousTickLabels)
                     {
                         Tick tick = ticks[index];
-//                        Line tickMarker = previousTickMarkers[index];
+                        Line tickMarker = previousTickMarkers[index];
 
                         DoubleAnimation positionAnimation = new DoubleAnimation()
                         {
@@ -153,9 +159,32 @@ namespace d3.Component
                         Storyboard.SetTarget(positionAnimation, tickLabel);
                         Storyboard.SetTargetProperty(positionAnimation, canvasPrimaryString);
 
+                        DoubleAnimation positionAnimation1 = new DoubleAnimation()
+                        {
+                            To = Scale.ClampedMap(tick.DomainValue),
+                            Duration = Duration,
+                            EasingFunction = EasingFunction,
+                            EnableDependentAnimation = true
+                        };
+                        Storyboard.SetTarget(positionAnimation1, tickMarker);
+                        Storyboard.SetTargetProperty(positionAnimation1, linePrimary1String);
+
+                        DoubleAnimation positionAnimation2 = new DoubleAnimation()
+                        {
+                            To = Scale.ClampedMap(tick.DomainValue),
+                            Duration = Duration,
+                            EasingFunction = EasingFunction,
+                            EnableDependentAnimation = true
+                        };
+                        Storyboard.SetTarget(positionAnimation2, tickMarker);
+                        Storyboard.SetTargetProperty(positionAnimation2, linePrimary2String);
+
+
                         if (previousScale.GetType() == Scale.GetType() && !(Scale is Scale.Ordinal)) // 같고 ordinal이 아니어야 (linear)야 position animation 가능
                         {
                             tickLabelsStoryboard.Children.Add(positionAnimation);
+                            tickLabelsStoryboard.Children.Add(positionAnimation1);
+                            tickLabelsStoryboard.Children.Add(positionAnimation2);
                         }
 
                         DoubleAnimation opacityAnimation = new DoubleAnimation()
@@ -167,9 +196,19 @@ namespace d3.Component
                         Storyboard.SetTarget(opacityAnimation, tickLabel);
                         Storyboard.SetTargetProperty(opacityAnimation, "Opacity");
 
+                        DoubleAnimation opacityAnimation2 = new DoubleAnimation()
+                        {
+                            To = 0,
+                            Duration = Duration,
+                            EasingFunction = EasingFunction
+                        };
+                        Storyboard.SetTarget(opacityAnimation2, tickMarker);
+                        Storyboard.SetTargetProperty(opacityAnimation2, "Opacity");
+
                         tickLabel.SetValue(canvasSecondary, Orientation == Orientations.Horizontal ? 3 : -tickLabel.ActualWidth - 10);
 
                         tickLabelsStoryboard.Children.Add(opacityAnimation);
+                        tickLabelsStoryboard.Children.Add(opacityAnimation2);
                         index++;
                     }
                 }
@@ -177,6 +216,7 @@ namespace d3.Component
 
                 //add new ticks
                 tickLabels = new List<TextBlock>();
+                tickMarkers = new List<Line>();
                 foreach (Tick tick in Scale.GetTicks())
                 {
                     TextBlock tickLabel = new TextBlock()
@@ -186,11 +226,23 @@ namespace d3.Component
                         Opacity = 0
                     };
 
+                    Line tickMarker = new Line()
+                    {
+                        Style = Resources["TickMarkerStyle"] as Style,
+                        Opacity = 0
+                    };
+
                     AxisCanvas.Children.Add(tickLabel);
                     tickLabel.Measure(new Size(Double.MaxValue, Double.MaxValue));
 
-                    tickLabel.SetValue(canvasPrimary, previousScale.ClampedMap(tick.DomainValue) - (Double)tickLabel.GetValue(tickLabelSizeProperty) / 2);
+                    tickLabel.SetValue(canvasPrimary, previousScale.ClampedMap(tick.DomainValue) - (Double)tickLabel.GetValue(tickLabelSizeProperty) / 2); // excpetion 발생함 왜이렇지? TODO
                     tickLabel.SetValue(canvasSecondary, Orientation == Orientations.Horizontal ? 3 : -tickLabel.ActualWidth - 10);
+
+                    AxisCanvas.Children.Add(tickMarker);
+                    tickMarker.SetValue(linePrimary1, previousScale.ClampedMap(tick.DomainValue));
+                    tickMarker.SetValue(linePrimary2, previousScale.ClampedMap(tick.DomainValue));
+                    tickMarker.SetValue(lineSecondary1, 0);
+                    tickMarker.SetValue(lineSecondary2, Orientation == Orientations.Horizontal ? 3 : -3);
 
                     DoubleAnimation positionAnimation = new DoubleAnimation()
                     {
@@ -201,9 +253,31 @@ namespace d3.Component
                     Storyboard.SetTarget(positionAnimation, tickLabel);
                     Storyboard.SetTargetProperty(positionAnimation, canvasPrimaryString);
 
+                    DoubleAnimation positionAnimation1 = new DoubleAnimation()
+                    {
+                        To = tick.RangeValue,
+                        Duration = Duration,
+                        EasingFunction = EasingFunction,
+                        EnableDependentAnimation = true
+                    };
+                    Storyboard.SetTarget(positionAnimation1, tickMarker);
+                    Storyboard.SetTargetProperty(positionAnimation1, linePrimary1String);
+
+                    DoubleAnimation positionAnimation2 = new DoubleAnimation()
+                    {
+                        To = tick.RangeValue,
+                        Duration = Duration,
+                        EasingFunction = EasingFunction,
+                        EnableDependentAnimation = true
+                    };
+                    Storyboard.SetTarget(positionAnimation2, tickMarker);
+                    Storyboard.SetTargetProperty(positionAnimation2, linePrimary2String);
+
                     if (previousScale.GetType() != Scale.GetType() || Scale is Scale.Ordinal) // position animation disabled because two scales have different types
                     {
                         tickLabel.SetValue(canvasPrimary, positionAnimation.To);
+                        tickMarker.SetValue(linePrimary1, positionAnimation1.To);
+                        tickMarker.SetValue(linePrimary2, positionAnimation2.To);
                     }
 
                     DoubleAnimation opacityAnimation = new DoubleAnimation()
@@ -215,10 +289,23 @@ namespace d3.Component
                     Storyboard.SetTarget(opacityAnimation, tickLabel);
                     Storyboard.SetTargetProperty(opacityAnimation, "Opacity");
 
+                    DoubleAnimation opacityAnimation2 = new DoubleAnimation()
+                    {
+                        To = 1,
+                        Duration = Duration,
+                        EasingFunction = EasingFunction
+                    };
+                    Storyboard.SetTarget(opacityAnimation2, tickMarker);
+                    Storyboard.SetTargetProperty(opacityAnimation2, "Opacity");
+
                     tickLabelsStoryboard.Children.Add(positionAnimation);
+                    tickLabelsStoryboard.Children.Add(positionAnimation1);
+                    tickLabelsStoryboard.Children.Add(positionAnimation2);
                     tickLabelsStoryboard.Children.Add(opacityAnimation);
+                    tickLabelsStoryboard.Children.Add(opacityAnimation2);
 
                     tickLabels.Add(tickLabel);
+                    tickMarkers.Add(tickMarker);
                 }
 
                 tickLabelsStoryboard.Completed += delegate
@@ -228,6 +315,11 @@ namespace d3.Component
                         foreach (TextBlock tickLabel in previousTickLabels)
                         {
                             AxisCanvas.Children.Remove(tickLabel);
+                        }
+
+                        foreach (Line tickMarker in previousTickMarkers)
+                        {
+                            AxisCanvas.Children.Remove(tickMarker);
                         }
                     }
                 };

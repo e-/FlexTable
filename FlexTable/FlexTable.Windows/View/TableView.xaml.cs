@@ -39,16 +39,6 @@ namespace FlexTable.View
             drawable.StrokeAdded += RecognizeStrokes;
         }
 
-        public void AddRow(View.RowPresenter rowPresenter)
-        {
-            TableCanvasElement.Children.Add(rowPresenter);
-        }
-
-        public void RemoveRow(View.RowPresenter rowPresenter)
-        {
-            TableCanvasElement.Children.Remove(rowPresenter);
-        }
-
         public void AddGuidelines(Int32 count)
         {
             if (count < 50) count = 50;
