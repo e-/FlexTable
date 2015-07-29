@@ -10,31 +10,16 @@ namespace d3.ViewModel
 {
     class GroupedBarChartViewModel : Notifiable
     {
-        private d3.Scale.Ordinal xScale;
-        public d3.Scale.Ordinal XScale
-        {
-            get { return xScale; }
-            set
-            {
-                xScale = value;
-                OnPropertyChanged("XScale");
-            }
-        }
+        private d3.Scale.Ordinal xScale = new Ordinal();
+        public d3.Scale.Ordinal XScale { get { return xScale; } set { xScale = value; OnPropertyChanged("XScale"); } }
 
-        private d3.Scale.Linear yScale;
-        public d3.Scale.Linear YScale
-        {
-            get { return yScale; }
-            set
-            {
-                yScale = value;
-                OnPropertyChanged("YScale");
-            }
-        }
+        private d3.Scale.Linear yScale = new Linear();
+        public d3.Scale.Linear YScale { get { return yScale; } set { yScale = value; OnPropertyChanged("YScale"); } }
 
         public Double ChartHeight { get { return 350; } }
         public Double ChartWidth { get { return 580; } }
-        public Double BarWidth { get { return 30; } }
+        public Double BarWidth { get { return Math.Min(60, xScale.RangeBand * 0.8 / MaxCountInGroup); } }
+        public Int32 MaxCountInGroup { get; set; }
 
         public Func<Object, Int32, Double> WidthGetter { get { return (d, index) => BarWidth; } }
         public Func<Object, Int32, Double> HeightGetter { get { return (d, index) => ChartHeight - yScale.Map((d as Tuple<Object, Object, Double>).Item3); } }
@@ -49,6 +34,10 @@ namespace d3.ViewModel
         private d3.Data legendData;
         public d3.Data LegendData { get { return legendData; } }
 
+        private d3.Data chartData;
+        public d3.Data ChartData { get { return chartData; } }
+
+
         private IEnumerable<Tuple<Object, Object, Double>> data;
         public IEnumerable<Tuple<Object, Object, Double>> Data
         {
@@ -61,7 +50,7 @@ namespace d3.ViewModel
                     List = data.Select(d => d as Object).ToList()
                 };
 
-                yScale = new d3.Scale.Linear()
+                Linear yScale = new d3.Scale.Linear()
                 {
                     DomainStart = 0,
                     DomainEnd = data.Select(d => d.Item3).Max(),
@@ -73,13 +62,11 @@ namespace d3.ViewModel
 
                 YScale = yScale;
 
-                xScale = new d3.Scale.Ordinal()
+                Ordinal xScale = new d3.Scale.Ordinal()
                 {
                     RangeStart = 50,
                     RangeEnd = ChartWidth
                 };
-
-                xDictionary.Clear();
 
                 foreach (String category1 in data.Select(d => d.Item1).Distinct())
                 {
@@ -88,16 +75,25 @@ namespace d3.ViewModel
 
                 XScale = xScale;
 
+                MaxCountInGroup = 0;
+                xDictionary.Clear();
                 secondaryKeys.Clear();
+
                 foreach (String category2 in data.Select(d => d.Item2).Distinct())
                 {
                     secondaryKeys.Add(category2);
                 }
-                
+
                 foreach (String category1 in xScale.Domain)
                 {
                     Int32 count = data.Where(d => d.Item1.ToString() == category1).Select(d => d.Item2).Distinct().Count();
+                    if (count > MaxCountInGroup)
+                        MaxCountInGroup = count;
+                }
 
+                foreach (String category1 in xScale.Domain)
+                {
+                    Int32 count = data.Where(d => d.Item1.ToString() == category1).Select(d => d.Item2).Distinct().Count();
                     Ordinal ordinal = new Ordinal()
                     {
                         RangeStart = xScale.Map(category1) - BarWidth * count / 2,
@@ -116,14 +112,10 @@ namespace d3.ViewModel
                     List = secondaryKeys
                 };
 
-                OnPropertyChanged("Data");
                 OnPropertyChanged("ChartData");
                 OnPropertyChanged("LegendData");
             }
         }
-
-        private d3.Data chartData;
-        public d3.Data ChartData { get { return chartData; } }
 
         public Func<Object, Int32, Double> LegendPatchWidthGetter { get { return (d, index) => 20; } }
         public Func<Object, Int32, Double> LegendPatchHeightGetter { get { return (d, index) => 20; } }

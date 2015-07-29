@@ -54,7 +54,7 @@ namespace FlexTable.View
 
         private void GoUpStoryboard_Completed(object sender, object e)
         {
-            //PageViewModel.Hide();
+            PageViewModel.Hide();
         }
     }
 }

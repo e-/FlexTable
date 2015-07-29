@@ -62,9 +62,9 @@ namespace FlexTable.ViewModel
                 pageView.BarChart.Data = mainPageViewModel.SheetViewModel.CountByColumnViewModel(columnViewModel).Select(t => new Tuple<Object, Double>(t.Item1.Value, t.Item2));
                 pageView.BarChart.Update();
 
-                if (mainPageViewModel.SheetViewModel.GroupedColumnViewModels.Count > 0)
+                if (mainPageViewModel.SheetViewModel.GroupedColumnViewModels.Count > 0 && !columnViewModel.IsGroupedBy)
                 {
-                    //IsGroupedBarChartVisible = true;
+                    IsGroupedBarChartVisible = true;
 
                     pageView.GroupedBarChart.Data = mainPageViewModel.SheetViewModel.CountByDoubleColumnViewModel(columnViewModel)
                         .Select(tp => new Tuple<Object, Object, Double>(tp.Item1.ToString(), tp.Item2.ToString(), tp.Item3));

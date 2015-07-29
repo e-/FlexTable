@@ -34,9 +34,11 @@ namespace d3.ViewModel
         public Double ChartHeight { get { return 350; } }
         public Double ChartWidth { get { return 580; } }
 
-        public Func<Object, Int32, Double> WidthGetter { get { return (d, index) => 50; } }
+        private Double BarWidth { get { return Math.Min(60, xScale.RangeBand / 2); } }
+
+        public Func<Object, Int32, Double> WidthGetter { get { return (d, index) => BarWidth; } }
         public Func<Object, Int32, Double> HeightGetter { get { return (d, index) => ChartHeight - yScale.Map((d as Tuple<Object, Double>).Item2); } }
-        public Func<Object, Int32, Double> XGetter { get { return (d, index) => xScale.Map((d as Tuple<Object, Double>).Item1) - 25; } }
+        public Func<Object, Int32, Double> XGetter { get { return (d, index) => xScale.Map((d as Tuple<Object, Double>).Item1) - BarWidth / 2; } }
         public Func<Object, Int32, Double> YGetter { get { return (d, index) => yScale.Map((d as Tuple<Object, Double>).Item2); } }
         private IEnumerable<Tuple<Object, Double>> data;
         public IEnumerable<Tuple<Object, Double>> Data
@@ -114,9 +116,9 @@ namespace d3.ViewModel
             }
         }
 
-        public Func<Object, Int32, Double> IndicatorWidthGetter { get { return (d, index) => 50; } }
+        public Func<Object, Int32, Double> IndicatorWidthGetter { get { return (d, index) => xScale.RangeBand; } }
         public Func<Object, Int32, String> IndicatorTextGetter { get { return (d, index) => (d as Tuple<Object, Double>).Item2.ToString(); } }
-        public Func<Object, Int32, Double> IndicatorXGetter { get { return (d, index) => xScale.Map((d as Tuple<Object, Double>).Item1) - 25; } }
+        public Func<Object, Int32, Double> IndicatorXGetter { get { return (d, index) => xScale.Map((d as Tuple<Object, Double>).Item1) - xScale.RangeBand / 2; } }
         public Func<Object, Int32, Double> IndicatorYGetter { get { return (d, index) => yScale.Map((d as Tuple<Object, Double>).Item2) - 18; } }
     }
 }
