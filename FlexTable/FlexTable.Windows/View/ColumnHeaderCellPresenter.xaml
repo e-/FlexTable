@@ -197,8 +197,9 @@
             BorderBrush="{Binding IsGroupedBy, Converter={StaticResource ColumnHeaderHighlightConverter}}" 
             BorderThickness="{Binding IsGroupedBy, Converter={StaticResource ColumnHeaderHighlightThicknessConverter}}">
             <Border Background="{Binding IsDrawnOnChart, Converter={StaticResource ColumnHeaderBackgroundConverter}}">
+                <!--Opacity="{Binding Enabled, Converter={StaticResource BooleanToEnabledOpacityConverter}}"-->
                 <TextBlock Text="{Binding Column.Name}" Width="{Binding Width}" 
-                       Opacity="{Binding Enabled, Converter={StaticResource BooleanToEnabledOpacityConverter}}"
+                       
                        Style="{StaticResource ColumnHeaderStyle}" VerticalAlignment="Center" IsHitTestVisible="False">
                 </TextBlock>
             </Border>

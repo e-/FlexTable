@@ -82,7 +82,7 @@ namespace FlexTable.View
             Down.IsOpen = true;
             Up.IsOpen = true;
 
-            if (columnViewModel.Enabled)
+            /*if (columnViewModel.Enabled)
             {
                 Right.IsOpen = true;
                 Left.IsOpen = false;
@@ -91,7 +91,7 @@ namespace FlexTable.View
             {
                 Left.IsOpen = true;
                 Right.IsOpen = false;
-            }
+            }*/
             
 
             /* initialize animation*/

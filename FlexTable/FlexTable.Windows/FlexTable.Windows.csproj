@@ -122,6 +122,7 @@
     <Compile Include="Util\Drawable.cs" />
     <Compile Include="Util\ColumnHeaderHighlightConverter.cs" />
     <Compile Include="ViewModel\PageViewModel.cs" />
+    <Compile Include="ViewModel\PivotTableViewModel.cs" />
     <Compile Include="ViewModel\SheetViewModel.cs" />
     <Compile Include="ViewModel\ExplorationViewModel.cs" />
     <Compile Include="ViewModel\TableViewModel.cs" />
@@ -160,6 +161,9 @@
     </Compile>
     <Compile Include="View\PageView.xaml.cs">
       <DependentUpon>PageView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\PivotTableView.xaml.cs">
+      <DependentUpon>PivotTableView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\RowHeaderPresenter.xaml.cs">
       <DependentUpon>RowHeaderPresenter.xaml</DependentUpon>
@@ -235,6 +239,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\PageView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\PivotTableView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

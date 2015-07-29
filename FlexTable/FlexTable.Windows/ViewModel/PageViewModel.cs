@@ -26,11 +26,17 @@ namespace FlexTable.ViewModel
         MainPageViewModel mainPageViewModel;
         public MainPageViewModel MainPageViewModel { get { return mainPageViewModel; } }
 
+        PivotTableViewModel pivotTableViewModel;
+        public PivotTableViewModel PivotTableViewModel { get { return pivotTableViewModel; } }
+
         private Boolean isSummaryVisible = false;
         public Boolean IsSummaryVisible { get { return isSummaryVisible; } set { isSummaryVisible = value; OnPropertyChanged("IsSummaryVisible"); } }
 
         private Boolean isGroupedBarChartVisible = false;
-        public Boolean IsGroupedBarChartVisible { get { return isGroupedBarChartVisible; } set { isGroupedBarChartVisible = value; OnPropertyChanged("IsGroupedBarChartVisible"); } }                                                                                                                                                     
+        public Boolean IsGroupedBarChartVisible { get { return isGroupedBarChartVisible; } set { isGroupedBarChartVisible = value; OnPropertyChanged("IsGroupedBarChartVisible"); } }
+
+        private Boolean isPivotTableVisible = false;
+        public Boolean IsPivotTableVisible { get { return isPivotTableVisible; } set { isPivotTableVisible = value; OnPropertyChanged("IsPivotTableVisible"); } }                                                                                                                                                     
 
         private Boolean isCategoricalColumn;
         public Boolean IsCategoricalColumn { get { return isCategoricalColumn; } set { isCategoricalColumn = value; OnPropertyChanged("IsCategoricalColumn"); } }
@@ -38,12 +44,16 @@ namespace FlexTable.ViewModel
         private Boolean isNumericalColumn;
         public Boolean IsNumericalColumn { get { return isNumericalColumn; } set { isNumericalColumn = value; OnPropertyChanged("IsNumericalColumn"); } }
 
+        private Boolean isGroupedBy = false;
+        public Boolean IsGroupedBy { get { return isGroupedBy; } set { isGroupedBy = value; OnPropertyChanged("IsGroupedBy"); } }
+
         View.PageView pageView;
 
         public PageViewModel(MainPageViewModel mainPageViewModel, View.PageView pageView)
         {
             this.mainPageViewModel = mainPageViewModel;
             this.pageView = pageView;
+            this.pivotTableViewModel = new PivotTableViewModel(mainPageViewModel, pageView.PivotTableView);
         }
 
         public void ShowSummary(ColumnViewModel columnViewModel)
@@ -61,6 +71,16 @@ namespace FlexTable.ViewModel
                 // grouped bar chart가 될 수도 있음.
                 pageView.BarChart.Data = mainPageViewModel.SheetViewModel.CountByColumnViewModel(columnViewModel).Select(t => new Tuple<Object, Double>(t.Item1.Value, t.Item2));
                 pageView.BarChart.Update();
+
+                if (mainPageViewModel.SheetViewModel.GroupedColumnViewModels.Count > 1 && !columnViewModel.IsGroupedBy)
+                {
+                    IsPivotTableVisible = true;
+                    pivotTableViewModel.Preview(mainPageViewModel.SheetViewModel.GroupedColumnViewModels, columnViewModel);
+                }
+                else
+                {
+                    IsPivotTableVisible = false;
+                }
 
                 if (mainPageViewModel.SheetViewModel.GroupedColumnViewModels.Count > 0 && !columnViewModel.IsGroupedBy)
                 {
@@ -97,6 +117,18 @@ namespace FlexTable.ViewModel
         public void Tapped(View.PageView pageView)
         {
             mainPageViewModel.ExplorationViewModel.PageViewTapped(this, pageView);
+        }
+
+        public void GoUp()
+        {
+            pageView.GoUp();
+            IsGroupedBy = false;
+        }
+
+        public void GoDown()
+        {
+            pageView.GoDown();
+            IsGroupedBy = true;
         }
 
         public void StrokeAdded(InkStroke stroke)

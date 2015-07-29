@@ -23,6 +23,7 @@ namespace FlexTable.View
         public d3.View.BoxPlot BoxPlot { get { return BoxPlotElement; } }
         public d3.View.BarChart BarChart { get { return BarChartElement; } }
         public d3.View.GroupedBarChart GroupedBarChart { get { return GroupedBarChartElement; } }
+        public PivotTableView PivotTableView { get { return PivotTableViewElement; } }
 
         public ViewModel.PageViewModel PageViewModel { get { return this.DataContext as ViewModel.PageViewModel; } }
         public Storyboard HideStoryboard { get { return HideStoryboardElement; } }

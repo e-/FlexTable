@@ -4,32 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
+using d3.Scale;
 
 namespace d3.ViewModel
 {
     class BarChartViewModel : Notifiable
     {
-        private d3.Scale.Ordinal xScale;
-        public d3.Scale.Ordinal XScale
-        {
-            get { return xScale; }
-            set
-            {
-                xScale = value;
-                OnPropertyChanged("XScale");
-            }
-        }
+        private Ordinal xScale = new Ordinal();
+        public Ordinal XScale { get { return xScale; } set { xScale = value; OnPropertyChanged("XScale"); } }
 
-        private d3.Scale.Linear yScale;
-        public d3.Scale.Linear YScale
-        {
-            get { return yScale; }
-            set
-            {
-                yScale = value;
-                OnPropertyChanged("YScale");
-            }
-        }
+        private Linear yScale = new Linear();
+        public Linear YScale { get { return yScale; } set { yScale = value; OnPropertyChanged("YScale"); } }
 
         public Double ChartHeight { get { return 350; } }
         public Double ChartWidth { get { return 580; } }
@@ -40,6 +25,10 @@ namespace d3.ViewModel
         public Func<Object, Int32, Double> HeightGetter { get { return (d, index) => ChartHeight - yScale.Map((d as Tuple<Object, Double>).Item2); } }
         public Func<Object, Int32, Double> XGetter { get { return (d, index) => xScale.Map((d as Tuple<Object, Double>).Item1) - BarWidth / 2; } }
         public Func<Object, Int32, Double> YGetter { get { return (d, index) => yScale.Map((d as Tuple<Object, Double>).Item2); } }
+
+        private d3.Data chartData;
+        public d3.Data ChartData { get { return chartData; } }
+
         private IEnumerable<Tuple<Object, Double>> data;
         public IEnumerable<Tuple<Object, Double>> Data
         {
@@ -52,7 +41,7 @@ namespace d3.ViewModel
                     List = data.Select(d => d as Object).ToList()
                 };
 
-                yScale = new d3.Scale.Linear()
+                yScale = new Linear()
                 {
                     DomainStart = 0,
                     DomainEnd = data.Select(d => d.Item2).Max(),
@@ -64,7 +53,7 @@ namespace d3.ViewModel
 
                 YScale = yScale;
 
-                xScale = new d3.Scale.Ordinal()
+                xScale = new Ordinal()
                 {
                     RangeStart = 50,
                     RangeEnd = ChartWidth
@@ -75,14 +64,11 @@ namespace d3.ViewModel
                 }
                 XScale = xScale;
 
-                OnPropertyChanged("Data");
                 OnPropertyChanged("ChartData");
             }
         }
 
-        private d3.Data chartData;
-        public d3.Data ChartData { get { return chartData; } }
-
+        
         public Func<Object, Int32, Double> LegendPatchWidthGetter { get { return (d, index) => 20; } }
         public Func<Object, Int32, Double> LegendPatchHeightGetter { get { return (d, index) => 20; } }
         public Func<Object, Int32, Double> LegendPatchXGetter { get { return (d, index) => 0; } }

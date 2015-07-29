@@ -49,7 +49,7 @@ namespace FlexTable.ViewModel
                 if (columnViewModel != null && columnViewModel.Type == ColumnType.Categorical && !columnViewModel.IsGroupedBy)
                 {
                     // Page View 아래로 보내기                    
-                    pageView.GoDown();
+                    pageViewModel.GoDown();
 
                     // 새로운 page 만들기
                     view.ExplorationView.AddNewPage();
@@ -73,7 +73,7 @@ namespace FlexTable.ViewModel
                 if (pageViewModel.ColumnViewModel != null && pageViewModel.ColumnViewModel.IsGroupedBy) // 그룹핑 취소
                 {
                     // Page View 위로 올리기
-                    pageView.GoUp();
+                    pageViewModel.GoUp();
 
                     // Preview 풀기 (만약 되어있다면)
                     mainPageViewModel.TableViewModel.CancelIndexing();

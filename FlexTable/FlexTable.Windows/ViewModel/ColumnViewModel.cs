@@ -26,14 +26,11 @@ namespace FlexTable.ViewModel
         private Double x;
         public Double X { get { return x; } set { x = value; OnPropertyChanged("X"); } }
 
-        private Boolean enabled = true;
-        public Boolean Enabled { get { return enabled; } set { enabled = value; OnPropertyChanged("Enabled"); } }      
+        /*private Boolean enabled = true;
+        public Boolean Enabled { get { return enabled; } set { enabled = value; OnPropertyChanged("Enabled"); } }      */
 
         public Model.ColumnType Type { get; set; }
         public String TypeString { get { return Type.ToString(); } }
-
-        /*private List<Model.Bin> bins;
-        public List<Model.Bin> Bins { get { return bins; } set { bins = value; } }*/
 
         private Boolean isGroupedBy = false;
         public Boolean IsGroupedBy { get { return isGroupedBy; } set { isGroupedBy = value; OnPropertyChanged("IsGroupedBy"); } }

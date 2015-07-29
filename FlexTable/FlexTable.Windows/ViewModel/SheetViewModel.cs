@@ -30,6 +30,9 @@ namespace FlexTable.ViewModel
         private List<ViewModel.ColumnViewModel> groupedColumnViewModels = new List<ViewModel.ColumnViewModel>();
         public List<ViewModel.ColumnViewModel> GroupedColumnViewModels { get { return groupedColumnViewModels; } }
 
+        private List<GroupedRows> groupingResult;
+        public List<GroupedRows> GroupingResult { get { return groupingResult; } }
+
         ViewModel.MainPageViewModel mainPageViewModel;
         IMainPage view;
 
@@ -52,12 +55,12 @@ namespace FlexTable.ViewModel
             {
                 columnViewModels.Add(new ViewModel.ColumnViewModel(mainPageViewModel) { 
                     Column = column,
-                    Index = index,
-                    Order = index
+                    Index = index
                 });
                 index++;
             }
 
+            // 컬럼 타입 추측
             foreach (ColumnViewModel columnViewModel in columnViewModels)
             {
                 index = columnViewModel.Index;
@@ -94,6 +97,17 @@ namespace FlexTable.ViewModel
                         row.Cells[index].Content = Double.Parse(row.Cells[index].RawContent);
                     }
                 }
+            }
+
+            // 추측한 컬럼 타입에 대해 순서 정함 (카테고리컬을 먼저 보여줌)
+            index = 0;
+            foreach (ColumnViewModel columnViewModel in columnViewModels.Where(c => c.Type == ColumnType.Categorical))
+            {
+                columnViewModel.Order = index++;
+            }
+            foreach (ColumnViewModel columnViewModel in columnViewModels.Where(c => c.Type == ColumnType.Numerical))
+            {
+                columnViewModel.Order = index++;
             }
 
             /* 기본 row 추가 */
@@ -216,7 +230,7 @@ namespace FlexTable.ViewModel
             }
             else
             {
-                List<GroupedRows> groupingResult = GroupRecursive(sheet.Rows.ToList(), 0);
+                groupingResult = GroupRecursive(sheet.Rows.ToList(), 0);
                 
                 foreach (GroupedRows groupedRows in groupingResult)
                 {
@@ -357,55 +371,6 @@ namespace FlexTable.ViewModel
             }
             return result;
         }
-
-        public void CancelGroupBy()
-        {
-            /*GroupedColumn.IsGroupedBy = false;
-            GroupedColumn = null;
-
-            // 먼저 column의 순서를 원래대로 
-
-            for (Int32 i = 0; i < sheet.Columns.Count; ++i)
-            {
-                sheet.Columns[i].Index = i;
-            }
-            
-            // index에 따라 컬럼 X 다시 계산
-            sheet.UpdateColumnX();
-
-            // 원래 있던 row들은 다 fadeout 시켜버림
-            foreach (View.RowPresenter rowPresenter in rowPresenters)
-            {
-                rowPresenter.UpdateAndDestroy(delegate
-                {
-                    view.RemoveRow(rowPresenter);
-                });
-            }
-
-            rowViewModels.Clear();
-            rowPresenters.Clear();
-            
-            Int32 index = 0;
-            foreach (Model.Row row in sheet.Rows)
-            {
-                row.Index = index++;
-                ViewModel.RowViewModel rowViewModel = new ViewModel.RowViewModel(this) { Row = row };
-                rowViewModels.Add(rowViewModel);
-
-                View.RowPresenter rowPresenter = new View.RowPresenter(rowViewModel);
-                rowPresenters.Add(rowPresenter);
-
-                view.AddRow(rowPresenter);
-
-                rowPresenter.Y = row.Y;
-                //rowPresenter.Update();
-            }
-            
-            rowHeaderViewModel.SetRowNumber(sheet.Rows.Count);
-
-            // column header 움직이기
-            view.UpdateColumnHeaders();*/
-        }        
 
         public void ChangeAggregationType(Int32 columnIndex, Model.AggregationType aggregationType)
         {
