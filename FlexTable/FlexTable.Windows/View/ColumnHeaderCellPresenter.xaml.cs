@@ -19,14 +19,9 @@ using Windows.UI.Xaml.Navigation;
 
 namespace FlexTable.View
 {
-    class ColumnHeaderBackgroundConverter : Util.BooleanConverter<SolidColorBrush>
+    class ColumnHeaderHighlightConverter : Util.BooleanConverter<SolidColorBrush>
     {
-        public ColumnHeaderBackgroundConverter() : base(new SolidColorBrush(Color.FromArgb(255, 107, 193, 166)), new SolidColorBrush(Colors.Transparent)) { }
-    }
-
-    class ColumnHeaderHighlightThicknessConverter : Util.BooleanConverter<Thickness>
-    {
-        public ColumnHeaderHighlightThicknessConverter() : base(new Thickness(5), new Thickness(0)) { }
+        public ColumnHeaderHighlightConverter() : base(new SolidColorBrush(Colors.LightGray), new SolidColorBrush(Color.FromArgb(255, 236, 236, 236))) { }
     }
 
     public sealed partial class ColumnHeaderCellPresenter : UserControl

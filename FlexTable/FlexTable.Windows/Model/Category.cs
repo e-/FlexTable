@@ -11,6 +11,8 @@ namespace FlexTable.Model
         private String value;
         public String Value { get { return value; } set { this.value = value; OnPropertyChanged("Value"); } }
 
+        public Int32 Order { get; set; }
+
         public override String ToString()
         {
             return value;

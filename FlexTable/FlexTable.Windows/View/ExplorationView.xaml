@@ -36,10 +36,7 @@
     
     <Grid x:Name="Wrapper">
         <Canvas Margin="10" x:Name="PageViewsElement">
-            <StackPanel Canvas.Top="520" Margin="20">
-                <TextBlock Style="{StaticResource HeaderStyle}">Metadata</TextBlock>
-                <TextBlock Style="{StaticResource DescriptionStyle}">The data has 99 rows and 15 columns.</TextBlock>
-            </StackPanel>
+            <local:MetedataView Canvas.Top="520" Margin="20" DataContext="{Binding MetadataViewModel}" Width="700"></local:MetedataView>
 
             <local:PageView x:Name="InitialPageViewElement"></local:PageView>
         </Canvas>

@@ -93,7 +93,10 @@
             </ScrollViewer>            
         </StackPanel>
         <Border Height="480" Visibility="{Binding IsSummaryVisible, Converter={StaticResource BooleanToInvertedVisibilityConverter}}">
-            <TextBlock FontSize="25" TextAlignment="Center" VerticalAlignment="Center">Please select a column to preview.</TextBlock>
+            <StackPanel VerticalAlignment="Center">
+                <!--<local:StatusView />-->
+                <TextBlock FontSize="25" TextAlignment="Center">Please select a column to preview.</TextBlock>
+            </StackPanel>
         </Border>
         <Image Source="ms-appx:///Assets/horizontal-separator.png" Width="700" Height="8"></Image>
     </StackPanel>

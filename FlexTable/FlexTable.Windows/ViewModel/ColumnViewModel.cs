@@ -32,6 +32,8 @@ namespace FlexTable.ViewModel
         public Model.ColumnType Type { get; set; }
         public String TypeString { get { return Type.ToString(); } }
 
+        public Boolean ContainsString { get; set; }
+
         private Boolean isGroupedBy = false;
         public Boolean IsGroupedBy { get { return isGroupedBy; } set { isGroupedBy = value; OnPropertyChanged("IsGroupedBy"); } }
 

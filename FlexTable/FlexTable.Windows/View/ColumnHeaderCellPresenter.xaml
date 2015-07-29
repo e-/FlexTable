@@ -169,9 +169,8 @@
         </Storyboard>
         
         <util:BooleanToEnabledOpacityConverter x:Key="BooleanToEnabledOpacityConverter" />
-        <util:ColumnHeaderHighlightConverter x:Key="ColumnHeaderHighlightConverter" />
-        <local:ColumnHeaderBackgroundConverter x:Key="ColumnHeaderBackgroundConverter" />
-        <local:ColumnHeaderHighlightThicknessConverter x:Key="ColumnHeaderHighlightThicknessConverter" />
+        
+        <local:ColumnHeaderHighlightConverter x:Key="ColumnHeaderHighlightConverter" />
     </UserControl.Resources>
 
     <Grid Height="{StaticResource ColumnHeaderHeight}" 
@@ -185,7 +184,6 @@
           d:PointerReleased="Border_PointerCaptureLost"
           d:PointerMoved="Border_PointerMoved"
           Background="Transparent"
-
           >
         <!--PointerCaptureLost="Border_PointerCaptureLost"-->
         <!--ManipulationMode="All"
@@ -193,16 +191,10 @@
         <Grid.RenderTransform>
             <CompositeTransform x:Name="CompositeTransform" />
         </Grid.RenderTransform>
-        <Border 
-            BorderBrush="{Binding IsGroupedBy, Converter={StaticResource ColumnHeaderHighlightConverter}}" 
-            BorderThickness="{Binding IsGroupedBy, Converter={StaticResource ColumnHeaderHighlightThicknessConverter}}">
-            <Border Background="{Binding IsDrawnOnChart, Converter={StaticResource ColumnHeaderBackgroundConverter}}">
-                <!--Opacity="{Binding Enabled, Converter={StaticResource BooleanToEnabledOpacityConverter}}"-->
-                <TextBlock Text="{Binding Column.Name}" Width="{Binding Width}" 
-                       
-                       Style="{StaticResource ColumnHeaderStyle}" VerticalAlignment="Center" IsHitTestVisible="False">
-                </TextBlock>
-            </Border>
+        
+        <Border Background="{Binding IsGroupedBy, Converter={StaticResource ColumnHeaderHighlightConverter}}">
+            <TextBlock Text="{Binding Column.Name}" Width="{Binding Width}" 
+                       Style="{StaticResource ColumnHeaderStyle}" VerticalAlignment="Center" IsHitTestVisible="False" />
         </Border>
         
         <Canvas HorizontalAlignment="Center" VerticalAlignment="Bottom" IsHitTestVisible="False">

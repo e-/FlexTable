@@ -23,6 +23,9 @@ namespace FlexTable.ViewModel
         MainPageViewModel mainPageViewModel;
         public MainPageViewModel MainPageViewModel { get { return mainPageViewModel; } }
 
+        MetadataViewModel metadataViewModel;
+        public MetadataViewModel MetadataViewModel { get { return metadataViewModel; } set { metadataViewModel = value; OnPropertyChanged("MetadataViewModel"); } }
+
         public View.PageView TopPageView { get { return view.ExplorationView.TopPageView; } }
 
         IMainPage view;
@@ -30,6 +33,7 @@ namespace FlexTable.ViewModel
         public ExplorationViewModel(MainPageViewModel mainPageViewModel, IMainPage view)
         {
             this.mainPageViewModel = mainPageViewModel;
+            MetadataViewModel = new MetadataViewModel(mainPageViewModel);
             this.view = view;
         }
 

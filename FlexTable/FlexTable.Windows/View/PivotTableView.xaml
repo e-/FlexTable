@@ -26,7 +26,7 @@
         </Style>
         
         <Style TargetType="Border" x:Name="BorderStyle">
-            <Setter Property="Padding" Value="5 5" />
+            <Setter Property="Padding" Value="5 2" />
             <Setter Property="BorderBrush" Value="#ddd" />
             <Setter Property="BorderThickness" Value="1" />
         </Style>
@@ -39,12 +39,12 @@
         </Style>
     </UserControl.Resources>
 
-    <Grid Margin="0 20 0 20">
+    <!--<Grid >
         <ScrollViewer HorizontalScrollBarVisibility="Hidden" HorizontalScrollMode="Disabled"
-                      VerticalScrollBarVisibility="Auto" VerticalScrollMode="Auto">
-            <Grid x:Name="PivotTableElement">
+                      VerticalScrollBarVisibility="Auto" VerticalScrollMode="Auto">-->
+            <Grid x:Name="PivotTableElement" Margin="0 20 0 20" Height="480">
             </Grid>
-        </ScrollViewer>
-    </Grid>
+        <!--</ScrollViewer>
+    </Grid>-->
     
 </UserControl>

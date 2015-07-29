@@ -69,7 +69,9 @@ namespace FlexTable.ViewModel
                 // bar and pie
 
                 // grouped bar chart가 될 수도 있음.
-                pageView.BarChart.Data = mainPageViewModel.SheetViewModel.CountByColumnViewModel(columnViewModel).Select(t => new Tuple<Object, Double>(t.Item1.Value, t.Item2));
+                pageView.BarChart.Data = mainPageViewModel.SheetViewModel.CountByColumnViewModel(columnViewModel)
+                    .OrderBy(t => t.Item1.Order)
+                    .Select(t => new Tuple<Object, Double>(t.Item1.Value, t.Item2));
                 pageView.BarChart.Update();
 
                 if (mainPageViewModel.SheetViewModel.GroupedColumnViewModels.Count > 1 && !columnViewModel.IsGroupedBy)
@@ -87,6 +89,7 @@ namespace FlexTable.ViewModel
                     IsGroupedBarChartVisible = true;
 
                     pageView.GroupedBarChart.Data = mainPageViewModel.SheetViewModel.CountByDoubleColumnViewModel(columnViewModel)
+                        .OrderBy(t => t.Item1.Order * 10000 + t.Item2.Order)
                         .Select(tp => new Tuple<Object, Object, Double>(tp.Item1.ToString(), tp.Item2.ToString(), tp.Item3));
                     pageView.GroupedBarChart.Update();
                 }

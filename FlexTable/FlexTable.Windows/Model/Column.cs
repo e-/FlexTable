@@ -40,65 +40,21 @@ namespace FlexTable.Model
             return ColumnType.Numerical;
         }
 
-        /*public static List<Bin> GetFrequencyBins(IEnumerable<ViewModel.RowViewModel> rows, Int32 cellIndex)
+        public static Boolean CheckStringValue(IEnumerable<String> cellValues)
         {
-            Dictionary<String, List<ViewModel.RowViewModel>> dictionary = new Dictionary<String, List<ViewModel.RowViewModel>>();
+            Boolean allDouble = true;
+            Double result;
 
-            foreach (ViewModel.RowViewModel row in rows)
+            foreach (String value in cellValues)
             {
-                String value = row.Cells[cellIndex].RawContent;
-                if (!dictionary.ContainsKey(value))
+                if (!Double.TryParse(value, out result))
                 {
-                    dictionary[value] = new List<ViewModel.RowViewModel>();
+                    allDouble = false;
+                    break;
                 }
-                dictionary[value].Add(row);
             }
 
-            var sorted = dictionary.Keys.ToList();
-            sorted.Sort();
-
-            List<Bin> bins = new List<Bin>();
-            Int32 index = 0;
-            foreach (String key in sorted)
-            {
-                bins.Add(new Bin() { Name = key, Count = dictionary[key].Count, Index = index++, RowViewModels = dictionary[key]});
-            }
-
-            return bins;
+            return !allDouble;
         }
-
-        public static List<Bin> GetHistogramBins(IEnumerable<Double> cellValues)
-        {
-            Double min = cellValues.Min(),
-                   max = cellValues.Max();
-
-            if (min == max) max = min + 1;
-
-            Int32 binCount = 8;
-            Double interval = (max - min) / binCount;
-            
-            List<Bin> bins = new List<Bin>();
-            for (Int32 i = 0; i < binCount; ++i)
-            {
-                Double start = Math.Round(min + interval * i),
-                       end = Math.Round(min + interval * (i+1))
-                       ;
-
-                bins.Add(new Bin(){
-                    Name = String.Format("{0}-{1}", start, end),
-                    Count = 0,
-                    Index = i
-                });
-            }
-
-            foreach (Double value in cellValues)
-            {
-                Int32 index = (Int32)Math.Floor((value - min) * binCount / (max - min));
-                if (index >= binCount) index = binCount - 1;
-                bins[index].Count++;
-            }
-
-            return bins;
-        }*/
     }
 }

@@ -43,6 +43,7 @@ namespace FlexTable.ViewModel
             for (i = 0; i < rowN; ++i)
             {
                 RowDefinition rowDefinition = new RowDefinition();
+                rowDefinition.Height = GridLength.Auto;
                 pivotTableView.PivotTable.RowDefinitions.Add(rowDefinition);
             }
 

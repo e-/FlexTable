@@ -120,7 +120,7 @@
     <Compile Include="Util\BooleanToInvertedVisibilityConverter.cs" />
     <Compile Include="Util\BooleanToVisibilityConverter.cs" />
     <Compile Include="Util\Drawable.cs" />
-    <Compile Include="Util\ColumnHeaderHighlightConverter.cs" />
+    <Compile Include="ViewModel\MetadataViewModel.cs" />
     <Compile Include="ViewModel\PageViewModel.cs" />
     <Compile Include="ViewModel\PivotTableViewModel.cs" />
     <Compile Include="ViewModel\SheetViewModel.cs" />
@@ -156,6 +156,9 @@
     <Compile Include="View\ExplorationView.xaml.cs">
       <DependentUpon>ExplorationView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\MetedataView.xaml.cs">
+      <DependentUpon>MetedataView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\NumericalDescriptiveStatisticsView.xaml.cs">
       <DependentUpon>NumericalDescriptiveStatisticsView.xaml</DependentUpon>
     </Compile>
@@ -173,6 +176,9 @@
     </Compile>
     <Compile Include="Util\CsvLoader.cs" />
     <Compile Include="ViewModel\MainPageViewModel.cs" />
+    <Compile Include="View\StatusView.xaml.cs">
+      <DependentUpon>StatusView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\TableView.xaml.cs">
       <DependentUpon>TableView.xaml</DependentUpon>
     </Compile>
@@ -194,6 +200,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Data\Population-small.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\Koeun.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="FlexTable.Windows_TemporaryKey.pfx" />
@@ -234,6 +243,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\MetedataView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\NumericalDescriptiveStatisticsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -251,6 +264,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\RowPresenter.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\StatusView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

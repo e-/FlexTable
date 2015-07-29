@@ -57,6 +57,9 @@ namespace FlexTable.ViewModel
                 view.ExplorationView.TopPageView
                 );
             view.ExplorationView.TopPageView.DataContext = pageViewModel;
+            
+            // 메타데이터 쵝화
+            ExplorationViewModel.MetadataViewModel.Initialize();
         }  
 
 

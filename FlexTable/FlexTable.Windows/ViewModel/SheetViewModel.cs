@@ -65,6 +65,8 @@ namespace FlexTable.ViewModel
             {
                 index = columnViewModel.Index;
                 columnViewModel.Type = Column.GuessColumnType(sheet.Rows.Select(r => r.Cells[index].RawContent));
+                columnViewModel.ContainsString = Column.CheckStringValue(sheet.Rows.Select(r => r.Cells[index].RawContent));
+
                 if (columnViewModel.Type == ColumnType.Categorical)
                 {
                     List<String> uniqueValues = new List<String>();
@@ -78,8 +80,25 @@ namespace FlexTable.ViewModel
                         }
                     }
 
+                    // uniqueValues의 순서 정해야 함.
+                    if (columnViewModel.ContainsString)
+                    {
+                        uniqueValues = uniqueValues.OrderBy(u => u).ToList();
+                    }
+                    else
+                    {
+                        uniqueValues = uniqueValues.OrderBy(u => Double.Parse(u)).ToList();
+                    }
+
                     // 카테고리 추가 후
                     List<Category> categories = uniqueValues.Select(u => new Category() { Value = u }).ToList();
+
+                    Int32 categoryIndex = 0;
+                    foreach (Category category in categories)
+                    {
+                        category.Order = categoryIndex++;
+                    }
+
                     columnViewModel.Categories = categories;
                     
                     // 원래 cateogorical의 content는 string이 들어있을 텐데 이를 Category로 바꾼다. 즉 content는 Category 아니면 Double임
