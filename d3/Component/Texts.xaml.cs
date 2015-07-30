@@ -47,7 +47,6 @@ namespace d3.Component
             set { SetValue(HeightGetterProperty, value); }
         }
 
-
         public static readonly DependencyProperty XGetterProperty =
             DependencyProperty.Register("XGetter", typeof(Func<Object, Int32, Double>), typeof(Texts), new PropertyMetadata(default(Func<Object, Double>)));
 

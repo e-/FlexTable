@@ -59,7 +59,7 @@
             </Storyboard>
         </Canvas.Resources>
         
-        
+        <Canvas Canvas.Top="30">
         <Line X1="0" X2="0" Y1="0" Y2="30" Style="{StaticResource WhiskerStyle}">
             <Line.RenderTransform>
                 <TranslateTransform x:Name="Whisker1Transform" />
@@ -93,8 +93,9 @@
                 <TranslateTransform x:Name="MeanTransform" />
             </Line.RenderTransform>
         </Line>
+        </Canvas>
 
-        
-        <com:Axis Orientation="Horizontal" Scale="{Binding Scale}" Canvas.Top="40" x:Name="BoxPlotAxis"/>
+
+        <com:Axis Orientation="Horizontal" Scale="{Binding Scale}" Canvas.Top="0" x:Name="BoxPlotAxis"/>
     </Canvas>
 </UserControl>

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace d3.ViewModel
 {
-    class BoxPlotViewModel : Notifiable
+    public class BoxPlotViewModel : Notifiable
     {
         private Double min;
         public Double Min { get { return min; } set { min = value; OnPropertyChanged("Min"); } }
@@ -53,20 +53,21 @@ namespace d3.ViewModel
 
         public void Update()
         {
-            scale.RangeStart = 50;
-            scale.RangeEnd = width - 20;
+            Double domainStart = min, domainEnd = max;
 
             if (min == max)
             {
                 scale.DomainStart = min * 0.9;
                 scale.DomainEnd = max * 1.1;
             }
-            else
-            {
-                scale.DomainStart = min;
-                scale.DomainEnd = max;
-            }
 
+            scale = new Scale.Linear()
+            {
+                RangeStart = 0,
+                RangeEnd = width,
+                DomainStart = domainStart,
+                DomainEnd = domainEnd
+            };
 
             scale.Nice();
             Scale = scale;

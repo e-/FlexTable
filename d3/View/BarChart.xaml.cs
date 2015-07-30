@@ -30,6 +30,34 @@ namespace d3.View
             }
         }
 
+        public static readonly DependencyProperty LegendVisibilityProperty =
+            DependencyProperty.Register("LegendVisibility", typeof(Visibility), typeof(BarChart), new PropertyMetadata(Visibility.Visible));
+
+        public Visibility LegendVisibility
+        {
+            get { return (Visibility)GetValue(LegendVisibilityProperty); }
+            set { SetValue(LegendVisibilityProperty, value); }
+        }
+
+        public static readonly DependencyProperty HorizontalAxisVisibilityProperty =
+            DependencyProperty.Register("HorizontalAxisVisibility", typeof(Visibility), typeof(BarChart), new PropertyMetadata(Visibility.Visible));
+
+        public Visibility HorizontalAxisVisibility
+        {
+            get { return (Visibility)GetValue(HorizontalAxisVisibilityProperty); }
+            set { SetValue(HorizontalAxisVisibilityProperty, value); }
+        }
+
+        public static readonly DependencyProperty AutoColorProperty =
+            DependencyProperty.Register("AutoColor", typeof(Boolean), typeof(BarChart), new PropertyMetadata(true));
+
+        public Boolean AutoColor
+        {
+            get { return (Boolean)GetValue(AutoColorProperty); }
+            set { SetValue(AutoColorProperty, value); }
+        }
+
+
         public BarChart()
         {
             this.InitializeComponent();
@@ -38,6 +66,9 @@ namespace d3.View
 
         public void Update()
         {
+            viewModel.HorizontalAxisVisibility = HorizontalAxisVisibility;
+            viewModel.LegendVisibility = LegendVisibility;
+            viewModel.AutoColor = AutoColor;
             viewModel.Width = this.Width;
             viewModel.Height = this.Height;
             viewModel.Update();

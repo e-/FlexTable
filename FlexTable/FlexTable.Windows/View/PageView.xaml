@@ -101,12 +101,15 @@
                     </Grid>
                     
                     <StackPanel Width="710" Visibility="{Binding IsNumericalColumn, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Distribution">
-                        <Image Source="ms-appx:///Assets/dummy-histogram.jpg" Width="690" Height="265" Stretch="Fill" Margin="10 0 0 0"></Image>
+                        <d3view:BarChart x:Name="NumericalHistogramElement" HorizontalAxisVisibility="Collapsed" LegendVisibility="Collapsed"
+                                         Width="670" Height="265" AutoColor="False"
+                                         ></d3view:BarChart>
+                        <!--<Image Source="ms-appx:///Assets/dummy-histogram.jpg" Width="690" Height="265" Stretch="Fill" Margin="10 0 0 0"></Image>-->
 
-                        <d3view:BoxPlot Margin="0 10 0 0" x:Name="BoxPlotElement" Min="{Binding BoxPlotViewModel.Min}" Max="{Binding BoxPlotViewModel.Max}"
+                        <d3view:BoxPlot Margin="50 0 0 0" x:Name="BoxPlotElement" Min="{Binding BoxPlotViewModel.Min}" Max="{Binding BoxPlotViewModel.Max}"
                                     FirstQuartile="{Binding BoxPlotViewModel.FirstQuartile}" ThirdQuartile="{Binding BoxPlotViewModel.ThirdQuartile}"
                                     Mean="{Binding BoxPlotViewModel.Mean}" Median="{Binding BoxPlotViewModel.Median}" 
-                                        Width="710"
+                                        Width="620"
                                     ></d3view:BoxPlot>
                     </StackPanel>
                     

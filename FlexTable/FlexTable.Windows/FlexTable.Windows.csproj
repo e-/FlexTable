@@ -120,6 +120,7 @@
     <Compile Include="Util\BooleanToInvertedVisibilityConverter.cs" />
     <Compile Include="Util\BooleanToVisibilityConverter.cs" />
     <Compile Include="Util\Drawable.cs" />
+    <Compile Include="Util\HistogramCalculator.cs" />
     <Compile Include="ViewModel\MetadataViewModel.cs" />
     <Compile Include="ViewModel\PageViewModel.cs" />
     <Compile Include="ViewModel\PivotTableViewModel.cs" />

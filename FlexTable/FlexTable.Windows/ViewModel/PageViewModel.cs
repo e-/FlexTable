@@ -118,6 +118,20 @@ namespace FlexTable.ViewModel
 
                 pageView.BoxPlot.Update();
 
+                
+
+                /*List<Tuple<Object, Double>> temp = new List<Tuple<Object, Double>>();
+                temp.Add(new Tuple<Object, Double>("123", 5.0));*/
+                pageView.NumericalHistogram.Data = Util.HistogramCalculator.Bin(
+                        pageView.BoxPlot.BoxPlotViewModel.Scale.DomainStart,
+                        pageView.BoxPlot.BoxPlotViewModel.Scale.DomainEnd,
+                        pageView.BoxPlot.BoxPlotViewModel.Scale.Step,
+                        mainPageViewModel.SheetViewModel.RowViewModels.Select(r => (Double)r.Cells[columnViewModel.Index].Content)
+                    )
+                    .Select(d => new Tuple<Object, Double>(d.Item1, d.Item3));
+
+                pageView.NumericalHistogram.Update();
+
                 if (mainPageViewModel.SheetViewModel.GroupedColumnViewModels.Count > 1)
                 {
                     Int32 count = mainPageViewModel.SheetViewModel.GroupedColumnViewModels.Count;

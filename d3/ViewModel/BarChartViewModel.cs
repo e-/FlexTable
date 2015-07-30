@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
 using d3.Scale;
+using Windows.UI.Xaml;
 
 namespace d3.ViewModel
 {
@@ -23,7 +24,10 @@ namespace d3.ViewModel
             set
             {
                 height = value;
-                HorizontalAxisCanvasTop = value - 30;
+                if (IsHorizontalAxisVisible)
+                    HorizontalAxisCanvasTop = value - 30;
+                else
+                    HorizontalAxisCanvasTop = value;
                 OnPropertyChanged("Height");
             }
         }
@@ -35,7 +39,15 @@ namespace d3.ViewModel
             set
             {
                 width = value;
-                LegendAreaWidth = 140;
+                if (IsLegendVisible)
+                {
+                    LegendAreaWidth = 140;
+                }
+                else
+                {
+                    LegendAreaWidth = 0;
+                }
+
                 ChartAreaWidth = width - LegendAreaWidth;
                 OnPropertyChanged("Width");
             }
@@ -83,7 +95,9 @@ namespace d3.ViewModel
         {
             get
             {
-                return (bin, index) => ColorScheme.Category10.Colors[index % ColorScheme.Category10.Colors.Count]; //(bin as Model.Bin).Index % CategoricalColors.Count];
+                if(AutoColor)
+                    return (bin, index) => ColorScheme.Category10.Colors[index % ColorScheme.Category10.Colors.Count];
+                return (bin, index) => ColorScheme.Category10.Colors.First();
             }
         }
 
@@ -91,6 +105,16 @@ namespace d3.ViewModel
         public Func<Object, Int32, String> IndicatorTextGetter { get { return (d, index) => (d as Tuple<Object, Double>).Item2.ToString("0.##"); } }
         public Func<Object, Int32, Double> IndicatorXGetter { get { return (d, index) => xScale.Map((d as Tuple<Object, Double>).Item1) - xScale.RangeBand / 2; } }
         public Func<Object, Int32, Double> IndicatorYGetter { get { return (d, index) => yScale.Map((d as Tuple<Object, Double>).Item2) - 18; } }
+
+        private Visibility horizontalAxisVisibility;
+        public Visibility HorizontalAxisVisibility { get { return horizontalAxisVisibility; } set { horizontalAxisVisibility = value; OnPropertyChanged("HorizontalAxisVisibility"); } }
+        public Boolean IsHorizontalAxisVisible { get { return horizontalAxisVisibility == Visibility.Visible; } }
+
+        private Visibility legendVisibility;
+        public Visibility LegendVisibility { get { return legendVisibility; } set { legendVisibility = value; OnPropertyChanged("LegendVisibility"); } }
+        public Boolean IsLegendVisible { get { return legendVisibility == Visibility.Visible; } }
+
+        public Boolean AutoColor { get; set; }
 
         public void Update()
         {
@@ -122,6 +146,7 @@ namespace d3.ViewModel
             }
             XScale = xScale;
 
+            OnPropertyChanged("ColorGetter");
             OnPropertyChanged("ChartData");
         }
 

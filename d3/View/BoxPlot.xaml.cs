@@ -71,6 +71,8 @@ namespace d3.View
             //boxPlot.Update();
         }
 
+        public ViewModel.BoxPlotViewModel BoxPlotViewModel { get { return viewModel; } }
+
         public BoxPlot()
         {
             this.InitializeComponent();
