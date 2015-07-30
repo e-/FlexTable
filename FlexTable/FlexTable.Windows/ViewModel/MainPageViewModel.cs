@@ -49,8 +49,14 @@ namespace FlexTable.ViewModel
             // 가이드라인 및 헤더 컬럼 추가
             tableViewModel.Initialize();
 
-            // rowViewModels 추가된 것 반영
+            var watch = Stopwatch.StartNew();
+            
+            // rowViewModels 추가된 것 반영 여기가 시간 많이 듬
             tableViewModel.UpdateRows();
+
+            watch.Stop();
+            var elapsedMs = watch.ElapsedMilliseconds;
+            Debug.WriteLine("elapsed " + elapsedMs);
 
             ViewModel.PageViewModel pageViewModel = new ViewModel.PageViewModel(
                 this,
