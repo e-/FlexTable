@@ -27,7 +27,7 @@
         <Style TargetType="Border" x:Key="ParagraphLabelBorderStyle">
             <Setter Property="CornerRadius" Value="14" />
             <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="Padding" Value="7 3" />
+            <Setter Property="Padding" Value="9 5" />
             <Setter Property="Margin" Value="5 0" />
             <Setter Property="HorizontalAlignment" Value="Center" />
             <Setter Property="VerticalAlignment" Value="Center" />
@@ -55,13 +55,16 @@
 
         <Storyboard x:Name="GoDownStoryboard">
             <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.5"
-                             Storyboard.TargetName="UserControl" Storyboard.TargetProperty="(Canvas.Top)" To="530">
+                             Storyboard.TargetName="UserControl" Storyboard.TargetProperty="(Canvas.Top)" To="520">
             </DoubleAnimation>
         </Storyboard>
 
         <Storyboard x:Name="GoUpStoryboard" Completed="GoUpStoryboard_Completed">
             <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.5"
                              Storyboard.TargetName="UserControl" Storyboard.TargetProperty="(Canvas.Top)" To="0">
+            </DoubleAnimation>
+            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.2" BeginTime="00:00:00.2"
+                             Storyboard.TargetName="ChartWrapper" Storyboard.TargetProperty="Opacity" To="0">
             </DoubleAnimation>
         </Storyboard>              
         
@@ -72,7 +75,8 @@
     </UserControl.Resources>
     
     <StackPanel Margin="20" Opacity="0" x:Name="Wrapper" Tapped="Wrapper_Tapped">
-        <StackPanel Height="480" Visibility="{Binding IsSummaryVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Background="White">
+        <StackPanel Height="480" Visibility="{Binding IsSummaryVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Background="White" 
+                    x:Name="ChartWrapper">
             <TextBlock Style="{StaticResource TitleStyle}">
                 <Run Text="{Binding ColumnViewModel.Column.Name}" />
             </TextBlock>
@@ -99,15 +103,15 @@
                     </StackPanel>
                     
                     <Grid Visibility="{Binding IsPivotTableVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Pivot Table">
-                        <local:PivotTableView x:Name="PivotTableViewElement" Width="710"></local:PivotTableView>
+                        <local:PivotTableView x:Name="PivotTableViewElement" Width="710" Height="365"></local:PivotTableView>
                     </Grid>
                     
                     <Grid Visibility="{Binding IsGroupedBarChartVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Grouped Histogram">
-                        <d3view:GroupedBarChart x:Name="GroupedBarChartElement" Width="710"></d3view:GroupedBarChart>
+                        <d3view:GroupedBarChart x:Name="GroupedBarChartElement" Width="710" Height="365"></d3view:GroupedBarChart>
                     </Grid>
 
                     <Grid Visibility="{Binding IsCategoricalColumn, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Histogram">
-                        <d3view:BarChart x:Name="BarChartElement" Width="710" />
+                        <d3view:BarChart x:Name="BarChartElement" Width="710" Height="365" />
                     </Grid>
                 </StackPanel>
             </ScrollViewer>

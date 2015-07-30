@@ -38,6 +38,10 @@ namespace d3.View
 
         public void Update()
         {
+            viewModel.Width = this.Width;
+            viewModel.Height = this.Height;
+            viewModel.Update();
+
             RectangleElement.Update();
             IndicatorTextElement.Update();
             HorizontalAxis.Update();

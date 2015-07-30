@@ -45,15 +45,16 @@ namespace d3.ViewModel
         private Double meanX;
         public Double MeanX { get { return meanX; } set { meanX = value; OnPropertyChanged("MeanX"); } }
 
-        private Scale.Linear scale = new Scale.Linear()
-        {
-            RangeStart = 20,
-            RangeEnd = 690        
-        };
+        private Double width;
+        public Double Width { get { return width; } set { width = value; OnPropertyChanged("Width"); } }
+
+        private Scale.Linear scale = new Scale.Linear();
         public Scale.Linear Scale { get { return scale; } set { scale = value; OnPropertyChanged("Scale"); } }
 
         public void Update()
         {
+            scale.RangeStart = 20;
+            scale.RangeEnd = width - 20;
             scale.DomainStart = min;
             scale.DomainEnd = max;
 

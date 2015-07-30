@@ -59,6 +59,7 @@ namespace FlexTable.View
 
         private void GoUpStoryboard_Completed(object sender, object e)
         {
+            ChartWrapper.Opacity = 1;
             PageViewModel.Hide();
         }
 

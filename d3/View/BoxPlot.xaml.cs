@@ -85,6 +85,7 @@ namespace d3.View
             viewModel.Median = Median;
             viewModel.FirstQuartile = FirstQuartile;
             viewModel.ThirdQuartile = ThirdQuartile;
+            viewModel.Width = this.ActualWidth;
             viewModel.Update();
 
             BoxPlotAxis.Update();

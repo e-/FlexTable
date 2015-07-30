@@ -10,13 +10,13 @@
     d:DesignHeight="300"
     d:DesignWidth="400"
     >
-    
-    <Canvas Width="710" Height="400">
+
+    <Canvas Width="{Binding Width}" Height="{Binding Height}">
         <com:Rectangles Data="{Binding ChartData}" WidthGetter="{Binding WidthGetter}" HeightGetter="{Binding HeightGetter}" 
                                XGetter="{Binding XGetter}" YGetter="{Binding YGetter}" ColorGetter="{Binding ColorGetter}"
                         x:Name="RectangleElement"/>
-        
-        <com:Axis Orientation="Horizontal" Scale="{Binding XScale}" Canvas.Top="350" Canvas.Left="0" x:Name="HorizontalAxis"/>
+
+        <com:Axis Orientation="Horizontal" Scale="{Binding XScale}" Canvas.Top="{Binding HorizontalAxisCanvasTop}" Canvas.Left="0" x:Name="HorizontalAxis"/>
         
         <com:Axis Orientation="Vertical" Scale="{Binding YScale}" Canvas.Top="0" Canvas.Left="50" x:Name="VerticalAxis"/>
 
@@ -29,13 +29,13 @@
         <com:Rectangles Data="{Binding LegendData}" WidthGetter="{Binding LegendPatchWidthGetter}" 
                                HeightGetter="{Binding LegendPatchHeightGetter}" XGetter="{Binding LegendPatchXGetter}" 
                                YGetter="{Binding LegendPatchYGetter}" ColorGetter="{Binding LegendColorGetter}"
-                               Canvas.Left="{Binding ChartWidth}" x:Name="LegendRectangleElement"/>
+                               Canvas.Left="{Binding ChartAreaWidth}" x:Name="LegendRectangleElement"/>
 
         <com:Texts Data="{Binding LegendData}" TextGetter="{Binding LegendTextGetter}"
                           HeightGetter="{Binding LegendPatchHeightGetter}"
                           XGetter="{Binding LegendTextXGetter}" YGetter="{Binding LegendPatchYGetter}" 
                           ColorGetter="{Binding LegendTextColorGetter}"
-                          Canvas.Left="{Binding ChartWidth}" x:Name="LegendTextElement"/>
+                          Canvas.Left="{Binding ChartAreaWidth}" x:Name="LegendTextElement"/>
 
     </Canvas>
 </UserControl>
