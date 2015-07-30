@@ -102,9 +102,11 @@
                                     ></d3view:BoxPlot>
                     </StackPanel>
                     
-                    <Grid Visibility="{Binding IsPivotTableVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Pivot Table">
-                        <local:PivotTableView x:Name="PivotTableViewElement" Width="710" Height="365"></local:PivotTableView>
-                    </Grid>
+                    <Border Visibility="{Binding IsPivotTableVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Pivot Table"
+                           Width="710" Height="365"
+                          >
+                        <local:PivotTableView x:Name="PivotTableViewElement" VerticalAlignment="Center"></local:PivotTableView>
+                    </Border>
                     
                     <Grid Visibility="{Binding IsGroupedBarChartVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Grouped Histogram">
                         <d3view:GroupedBarChart x:Name="GroupedBarChartElement" Width="710" Height="365"></d3view:GroupedBarChart>

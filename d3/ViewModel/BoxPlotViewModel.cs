@@ -53,7 +53,7 @@ namespace d3.ViewModel
 
         public void Update()
         {
-            scale.RangeStart = 20;
+            scale.RangeStart = 50;
             scale.RangeEnd = width - 20;
             scale.DomainStart = min;
             scale.DomainEnd = max;

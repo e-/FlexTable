@@ -30,6 +30,12 @@
             <Setter Property="BorderBrush" Value="#ddd" />
             <Setter Property="BorderThickness" Value="1" />
         </Style>
+        <Style TargetType="Border" x:Key="SeparatingBorderStyle">
+            <Setter Property="Padding" Value="5 2" />
+            <Setter Property="BorderBrush" Value="#ddd" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Background" Value="#ddd" />
+        </Style>
         <Style TargetType="TextBlock" x:Name="ValueTextStyle">
             <Setter Property="FontSize" Value="12" />
             <Setter Property="TextAlignment" Value="Center" />
@@ -42,7 +48,7 @@
     <!--<Grid >
         <ScrollViewer HorizontalScrollBarVisibility="Hidden" HorizontalScrollMode="Disabled"
                       VerticalScrollBarVisibility="Auto" VerticalScrollMode="Auto">-->
-            <Grid x:Name="PivotTableElement" Margin="0 20 0 20" Height="480">
+            <Grid x:Name="PivotTableElement">
             </Grid>
         <!--</ScrollViewer>
     </Grid>-->

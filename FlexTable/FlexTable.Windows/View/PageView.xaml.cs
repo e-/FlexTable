@@ -67,6 +67,8 @@ namespace FlexTable.View
         {
             ParagraphLabelContainer.Children.Clear();
             paragraphLabels.Clear();
+            Carousel.UpdateLayout();
+
 
             Int32 index = 0;
             foreach (UIElement child in ParagraphContainer.Children)
@@ -100,7 +102,6 @@ namespace FlexTable.View
                 }
             }
 
-            Carousel.UpdateLayout();
             Double offset = Carousel.HorizontalOffset;
             Double width = Carousel.ActualWidth;
 

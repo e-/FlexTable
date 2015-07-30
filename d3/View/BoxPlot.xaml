@@ -28,7 +28,7 @@
         </Style>
     </UserControl.Resources>
     
-    <Canvas x:Name="Canvas">
+    <Canvas x:Name="Canvas" Width="{Binding Width}">
         <Canvas.Resources>
             <QuadraticEase x:Name="EasingFunction" EasingMode="EaseInOut" />
 

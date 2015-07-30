@@ -31,7 +31,7 @@ namespace FlexTable.ViewModel
             Int32 rowN = 1, columnN;
             Int32 i, index;
 
-            columnN = groupedColumnViewModels.Count + previewingColumnViewModel.Categories.Count;
+            columnN = groupedColumnViewModels.Count + previewingColumnViewModel.Categories.Count + 1;
 
             foreach (ColumnViewModel columnViewModel in groupedColumnViewModels)
             {
@@ -50,6 +50,10 @@ namespace FlexTable.ViewModel
             for (i = 0; i < columnN; ++i)
             {
                 ColumnDefinition columnDefinition = new ColumnDefinition();
+                if (i == groupedColumnViewModels.Count) // 이중선
+                { 
+                    columnDefinition.Width = new GridLength(3);
+                }
                 pivotTableView.PivotTable.ColumnDefinitions.Add(columnDefinition);
             }
 
@@ -90,7 +94,7 @@ namespace FlexTable.ViewModel
 
                 children.Add(border);
                 Grid.SetRow(border, 0);
-                Grid.SetColumn(border, groupedColumnViewModels.Count + index++);
+                Grid.SetColumn(border, groupedColumnViewModels.Count + 1 + index++);
             }
            
             // 로우 헤더
@@ -127,6 +131,18 @@ namespace FlexTable.ViewModel
                 }
                 repeat *= count;
                 index++;
+            }
+
+            // 이중선
+            for (i = 0; i < rowN; ++i)
+            {
+                Border border = new Border()
+                {
+                    Style = pivotTableView.Resources["SeparatingBorderStyle"] as Style
+                };
+                children.Add(border);
+                Grid.SetRow(border, i);
+                Grid.SetColumn(border, groupedColumnViewModels.Count);
             }
 
             // 값
@@ -196,7 +212,7 @@ namespace FlexTable.ViewModel
 
                     children.Add(border);
                     Grid.SetRow(border, offset);
-                    Grid.SetColumn(border, index + groupedColumnViewModels.Count);
+                    Grid.SetColumn(border, index + groupedColumnViewModels.Count + 1);
                     index++;
                 }
             }

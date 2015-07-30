@@ -84,7 +84,7 @@ namespace FlexTable.ViewModel
                     IsPivotTableVisible = false;
                 }
 
-                if (mainPageViewModel.SheetViewModel.GroupedColumnViewModels.Count > 0 && !columnViewModel.IsGroupedBy)
+                if (mainPageViewModel.SheetViewModel.GroupedColumnViewModels.Count == 1 && !columnViewModel.IsGroupedBy)
                 {
                     IsGroupedBarChartVisible = true;
 
