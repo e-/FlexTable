@@ -28,6 +28,8 @@ namespace FlexTable.ViewModel
 
         public View.PageView TopPageView { get { return view.ExplorationView.TopPageView; } }
 
+        public ViewModel.PageViewModel DummyPageViewModel { get; set; } // for supress initial pageview binding warnings
+
         IMainPage view;
 
         public ExplorationViewModel(MainPageViewModel mainPageViewModel, IMainPage view)

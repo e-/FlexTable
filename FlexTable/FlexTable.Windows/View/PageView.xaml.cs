@@ -26,6 +26,8 @@ namespace FlexTable.View
         public d3.View.BarChart BarChart { get { return BarChartElement; } }
         public d3.View.GroupedBarChart GroupedBarChart { get { return GroupedBarChartElement; } }
         public PivotTableView PivotTableView { get { return PivotTableViewElement; } }
+        public d3.View.BarChart PivotBarChart { get { return PivotBarChartElement; } }
+        public d3.View.GroupedBarChart PivotGroupedBarChart { get { return PivotGroupedBarChartElement; } }
 
         public ViewModel.PageViewModel PageViewModel { get { return this.DataContext as ViewModel.PageViewModel; } }
         public Storyboard HideStoryboard { get { return HideStoryboardElement; } }

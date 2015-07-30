@@ -88,6 +88,14 @@
                           VerticalScrollMode="Disabled" VerticalScrollBarVisibility="Hidden"
                           x:Name="Carousel" Height="365" Width="710" ViewChanged="Carousel_ViewChanged" ViewChanging="Carousel_ViewChanging">
                 <StackPanel Orientation="Horizontal" x:Name="ParagraphContainer">
+                    <Grid Visibility="{Binding IsPivotBarChartVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Pivot Chart">
+                        <d3view:BarChart x:Name="PivotBarChartElement" Width="710" Height="365" />
+                    </Grid>
+                    
+                    <Grid Visibility="{Binding IsPivotGroupedBarChartVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Pivot Grouped Chart">
+                        <d3view:GroupedBarChart x:Name="PivotGroupedBarChartElement" Width="710" Height="365" />
+                    </Grid>
+                    
                     <Grid Visibility="{Binding IsNumericalColumn, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Statistics">
                         <local:NumericalDescriptiveStatisticsView DataContext="{Binding BoxPlotViewModel}" Width="710" />
                     </Grid>
@@ -105,7 +113,7 @@
                     <Border Visibility="{Binding IsPivotTableVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Pivot Table"
                            Width="710" Height="365"
                           >
-                        <local:PivotTableView x:Name="PivotTableViewElement" VerticalAlignment="Center"></local:PivotTableView>
+                        <local:PivotTableView x:Name="PivotTableViewElement" VerticalAlignment="Center" Margin="0 10 0 0"></local:PivotTableView>
                     </Border>
                     
                     <Grid Visibility="{Binding IsGroupedBarChartVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Grouped Histogram">

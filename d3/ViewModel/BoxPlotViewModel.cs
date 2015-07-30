@@ -55,8 +55,18 @@ namespace d3.ViewModel
         {
             scale.RangeStart = 50;
             scale.RangeEnd = width - 20;
-            scale.DomainStart = min;
-            scale.DomainEnd = max;
+
+            if (min == max)
+            {
+                scale.DomainStart = min * 0.9;
+                scale.DomainEnd = max * 1.1;
+            }
+            else
+            {
+                scale.DomainStart = min;
+                scale.DomainEnd = max;
+            }
+
 
             scale.Nice();
             Scale = scale;

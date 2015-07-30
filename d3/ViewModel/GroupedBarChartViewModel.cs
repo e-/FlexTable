@@ -22,11 +22,11 @@ namespace d3.ViewModel
         public Func<Object, Int32, Double> WidthGetter { get { return (d, index) => BarWidth; } }
         public Func<Object, Int32, Double> HeightGetter { get { return (d, index) => horizontalAxisCanvasTop - yScale.Map((d as Tuple<Object, Object, Double>).Item3); } }
         public Func<Object, Int32, Double> XGetter { get { return (d, index) => 
-            xDictionary[(d as Tuple<Object, Object, Double>).Item1 as String].Map((d as Tuple<Object, Object, Double>).Item2 as String) - BarWidth / 2; 
+            xDictionary[(d as Tuple<Object, Object, Double>).Item1].Map((d as Tuple<Object, Object, Double>).Item2) - BarWidth / 2; 
         } }
         public Func<Object, Int32, Double> YGetter { get { return (d, index) => yScale.Map((d as Tuple<Object, Object, Double>).Item3); } }
 
-        private Dictionary<String, Scale.Ordinal> xDictionary = new Dictionary<String, Scale.Ordinal>();
+        private Dictionary<Object, Scale.Ordinal> xDictionary = new Dictionary<Object, Scale.Ordinal>();
         private List<Object> secondaryKeys = new List<Object>();
 
         private d3.Data legendData;
@@ -104,10 +104,10 @@ namespace d3.ViewModel
             }
         }
 
-        public Func<Object, Int32, Double> IndicatorWidthGetter { get { return (d, index) => BarWidth; } }
-        public Func<Object, Int32, String> IndicatorTextGetter { get { return (d, index) => (d as Tuple<Object, Object, Double>).Item3.ToString(); } }
+        public Func<Object, Int32, Double> IndicatorWidthGetter { get { return (d, index) => 100; /* BarWidth;*/ } }
+        public Func<Object, Int32, String> IndicatorTextGetter { get { return (d, index) => (d as Tuple<Object, Object, Double>).Item3.ToString("0.##"); } }
         public Func<Object, Int32, Double> IndicatorXGetter { get { return (d, index) =>
-            xDictionary[(d as Tuple<Object, Object, Double>).Item1 as String].Map((d as Tuple<Object, Object, Double>).Item2 as String) - BarWidth / 2; 
+            xDictionary[(d as Tuple<Object, Object, Double>).Item1].Map((d as Tuple<Object, Object, Double>).Item2) - 50 /*BarWidth / 2*/; 
         } }
         public Func<Object, Int32, Double> IndicatorYGetter { get { return (d, index) => yScale.Map((d as Tuple<Object, Object, Double>).Item3) - 18; } }
 
@@ -136,7 +136,7 @@ namespace d3.ViewModel
                 RangeEnd = ChartAreaWidth
             };
 
-            foreach (String category1 in data.Select(d => d.Item1).Distinct())
+            foreach (Object category1 in data.Select(d => d.Item1).Distinct())
             {
                 xScale.Domain.Add(category1);
             }
@@ -147,28 +147,28 @@ namespace d3.ViewModel
             xDictionary.Clear();
             secondaryKeys.Clear();
 
-            foreach (String category2 in data.Select(d => d.Item2).Distinct())
+            foreach (Object category2 in data.Select(d => d.Item2).Distinct())
             {
                 secondaryKeys.Add(category2);
             }
 
-            foreach (String category1 in xScale.Domain)
+            foreach (Object category1 in xScale.Domain)
             {
-                Int32 count = data.Where(d => d.Item1.ToString() == category1).Select(d => d.Item2).Distinct().Count();
+                Int32 count = data.Where(d => d.Item1 == category1).Select(d => d.Item2).Distinct().Count();
                 if (count > MaxCountInGroup)
                     MaxCountInGroup = count;
             }
 
-            foreach (String category1 in xScale.Domain)
+            foreach (Object category1 in xScale.Domain)
             {
-                Int32 count = data.Where(d => d.Item1.ToString() == category1).Select(d => d.Item2).Distinct().Count();
+                Int32 count = data.Where(d => d.Item1 == category1).Select(d => d.Item2).Distinct().Count();
                 Ordinal ordinal = new Ordinal()
                 {
                     RangeStart = xScale.Map(category1) - BarWidth * count / 2,
                     RangeEnd = xScale.Map(category1) + BarWidth * count / 2
                 };
 
-                foreach (String category2 in data.Where(d => d.Item1.ToString() == category1).Select(d => d.Item2).Distinct())
+                foreach (Object category2 in data.Where(d => d.Item1 == category1).Select(d => d.Item2).Distinct())
                 {
                     ordinal.Domain.Add(category2);
                 }
