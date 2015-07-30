@@ -102,6 +102,8 @@ namespace FlexTable.ViewModel
             {
                 IsNumericalColumn = true;
                 IsCategoricalColumn = false;
+                IsPivotTableVisible = false;
+                IsGroupedBarChartVisible = false;
 
                 BoxPlotViewModel = DescriptiveStatistics.Analyze(
                     mainPageViewModel.SheetViewModel.RowViewModels.Select(r => (Double)r.Cells[columnViewModel.Index].Content)
@@ -109,6 +111,8 @@ namespace FlexTable.ViewModel
 
                 pageView.BoxPlot.Update();
             }
+
+            pageView.UpdateCarousel();
         }
 
         public void Hide()
