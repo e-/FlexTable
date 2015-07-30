@@ -37,6 +37,7 @@ namespace FlexTable.View
             {
                 CellPresenter cellPresenter = new CellPresenter(cell);
                 CellCanvas.Children.Add(cellPresenter);
+                
                 cellPresenters.Add(cellPresenter);
                 cellPresenter.Update();
             }

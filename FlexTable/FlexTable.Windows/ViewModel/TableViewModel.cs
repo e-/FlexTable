@@ -11,6 +11,7 @@ using System.Diagnostics;
 using Windows.Foundation;
 using Windows.UI.Input.Inking;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 
 namespace FlexTable.ViewModel
 {
@@ -92,14 +93,33 @@ namespace FlexTable.ViewModel
             PaddedSheetHeight = SheetViewModel.SheetHeight > SheetViewHeight ? SheetViewModel.SheetHeight : SheetViewHeight;
             PaddedSheetWidth = SheetViewModel.SheetWidth > SheetViewWidth ? SheetViewModel.SheetWidth : SheetViewWidth;
 
+            Int32 index = 0;
+            Canvas childCanvas = null;
+            List<Canvas> childCanvases = new List<Canvas>();
+
             foreach (ViewModel.RowViewModel rowViewModel in SheetViewModel.RowViewModels)
             {
+                if (index % 200 == 0)
+                {
+                    childCanvas = new Canvas();
+                    childCanvas.Visibility = Visibility.Collapsed;
+                    childCanvases.Add(childCanvas);
+                }
+
                 View.RowPresenter rowPresenter = new View.RowPresenter(rowViewModel);
                 rowPresenters.Add(rowPresenter);
 
-                view.TableView.TableCanvas.Children.Add(rowPresenter);
                 rowPresenter.Y = rowViewModel.Y;
                 rowPresenter.Update();
+
+                childCanvas.Children.Add(rowPresenter);
+                index++;
+            }
+
+            foreach (Canvas canvas in childCanvases)
+            {
+                view.TableView.TableCanvas.Children.Add(canvas);
+                canvas.Visibility = Visibility.Visible;
             }
 
             RowHeaderViewModel.SetRowNumber(SheetViewModel.RowViewModels.Count);
