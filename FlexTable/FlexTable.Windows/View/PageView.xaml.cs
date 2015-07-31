@@ -92,9 +92,10 @@ namespace FlexTable.View
                     };
 
                     Int32 copiedIndex = index;
-                    border.Tapped += delegate
+                    border.Tapped += delegate (object sender, TappedRoutedEventArgs e)
                     {
                         GoToParagraph(copiedIndex);
+                        e.Handled = true;
                     };
 
                     border.Child = textBlock;

@@ -112,7 +112,7 @@ namespace FlexTable.ViewModel
                     {
                         Border border = new Border()
                         {
-                            Style = pivotTableView.Resources["BorderStyle"] as Style
+                            Style = pivotTableView.Resources["RowHeaderBorderStyle"] as Style,
                         };
                         TextBlock textBlock = new TextBlock()
                         {

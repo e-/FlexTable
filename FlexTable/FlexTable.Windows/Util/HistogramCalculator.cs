@@ -11,7 +11,15 @@ namespace FlexTable.Util
         public static List<Tuple<Double, Double, Int32>> Bin(Double min, Double max, Double step, IEnumerable<Double> values)
         {
             //List<Tuple<Double, Double, Int32>> result = new List<Tuple<double, double, int>>();
-            Int32[] array = new Int32[(Int32)Math.Ceiling((max - min) / step)];
+            Int32[] array;
+            if (min == max)
+            {
+                array = new Int32[1];
+                step = 10;
+            }
+            else {
+                array = new Int32[(Int32)Math.Ceiling((max - min) / step)];
+            }
 
             Int32 i = 0;
             for (i = 0; i < array.Length; ++i) array[i] = 0;

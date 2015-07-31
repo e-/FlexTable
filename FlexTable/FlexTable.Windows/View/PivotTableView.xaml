@@ -30,6 +30,12 @@
             <Setter Property="BorderBrush" Value="#ddd" />
             <Setter Property="BorderThickness" Value="1" />
         </Style>
+        <Style TargetType="Border" x:Name="RowHeaderBorderStyle">
+            <Setter Property="Padding" Value="5 2" />
+            <Setter Property="BorderBrush" Value="#ddd" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Background" Value="#eee" />
+        </Style>
         <Style TargetType="Border" x:Key="SeparatingBorderStyle">
             <Setter Property="Padding" Value="5 2" />
             <Setter Property="BorderBrush" Value="#ddd" />

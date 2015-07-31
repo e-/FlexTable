@@ -57,8 +57,8 @@ namespace d3.ViewModel
 
             if (min == max)
             {
-                scale.DomainStart = min * 0.9;
-                scale.DomainEnd = max * 1.1;
+                domainStart = min * 0.9;
+                domainEnd = max * 1.1;
             }
 
             scale = new Scale.Linear()
