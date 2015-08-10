@@ -52,7 +52,11 @@ namespace FlexTable.ViewModel
             var watch = Stopwatch.StartNew();
             
             // rowViewModels 추가된 것 반영 여기가 시간 많이 듬
-            tableViewModel.UpdateRows();
+            // 전체 컬럼을 가지고 있는 것으로 이분화 하기로 했으므로 updateRows대신 CreateAllRows를 함
+
+            tableViewModel.CreateAllRows();
+
+            // tableViewModel.UpdateRows();
 
             watch.Stop();
             var elapsedMs = watch.ElapsedMilliseconds;
@@ -64,7 +68,7 @@ namespace FlexTable.ViewModel
                 );
             view.ExplorationView.TopPageView.DataContext = pageViewModel;
             
-            // 메타데이터 쵝화
+            // 메타데이터 초기화
             ExplorationViewModel.MetadataViewModel.Initialize();
         }  
 

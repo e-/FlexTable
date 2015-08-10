@@ -78,7 +78,7 @@ namespace FlexTable.ViewModel
                 // grouped bar chart가 될 수도 있음.
                 pageView.BarChart.Data = mainPageViewModel.SheetViewModel.CountByColumnViewModel(columnViewModel)
                     .OrderBy(t => t.Item1.Order)
-                    .Select(t => new Tuple<Object, Double>(t.Item1.Value, t.Item2));
+                    .Select(t => new Tuple<Object, Double>(t.Item1, t.Item2));
                 pageView.BarChart.Update();
 
                 if (mainPageViewModel.SheetViewModel.GroupedColumnViewModels.Count > 1 && !columnViewModel.IsGroupedBy)
@@ -113,7 +113,7 @@ namespace FlexTable.ViewModel
                 IsGroupedBarChartVisible = false;
 
                 BoxPlotViewModel = DescriptiveStatistics.Analyze(
-                    mainPageViewModel.SheetViewModel.RowViewModels.Select(r => (Double)r.Cells[columnViewModel.Index].Content)
+                    mainPageViewModel.TableViewModel.RowViewModels.Select(r => (Double)r.Cells[columnViewModel.Index].Content)
                     );
 
                 pageView.BoxPlot.Update();
@@ -126,7 +126,7 @@ namespace FlexTable.ViewModel
                         pageView.BoxPlot.BoxPlotViewModel.Scale.DomainStart,
                         pageView.BoxPlot.BoxPlotViewModel.Scale.DomainEnd,
                         pageView.BoxPlot.BoxPlotViewModel.Scale.Step,
-                        mainPageViewModel.SheetViewModel.RowViewModels.Select(r => (Double)r.Cells[columnViewModel.Index].Content)
+                        mainPageViewModel.TableViewModel.RowViewModels.Select(r => (Double)r.Cells[columnViewModel.Index].Content)
                     )
                     .Select(d => new Tuple<Object, Double>(d.Item1, d.Item3));
 
@@ -245,5 +245,7 @@ namespace FlexTable.ViewModel
 
             mainPageViewModel.UpdateFiltering();*/
         }
+
+        
     }
 }

@@ -20,6 +20,8 @@ namespace FlexTable.View
     public sealed partial class RowPresenter : UserControl
     {
         private ViewModel.RowViewModel rowViewModel;
+        public ViewModel.RowViewModel RowViewModel { get { return rowViewModel; } }
+
         private List<CellPresenter> cellPresenters = new List<CellPresenter>();
 
         public Double Y

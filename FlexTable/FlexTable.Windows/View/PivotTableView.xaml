@@ -30,6 +30,7 @@
             <Setter Property="BorderBrush" Value="#ddd" />
             <Setter Property="BorderThickness" Value="1" />
         </Style>
+        
         <Style TargetType="Border" x:Name="RowHeaderBorderStyle">
             <Setter Property="Padding" Value="5 2" />
             <Setter Property="BorderBrush" Value="#ddd" />
@@ -49,14 +50,25 @@
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="TextWrapping" Value="WrapWholeWords" />
         </Style>
+        <Style TargetType="TextBlock" BasedOn="{StaticResource ValueTextStyle}" x:Key="ZeroValueTextStyle">
+            <Setter Property="Foreground" Value="#ddd" />
+        </Style>
+        <Style TargetType="Border" x:Key="MaxBorderStyle" BasedOn="{StaticResource BorderStyle}">
+            <Setter Property="Background" Value="#dff0d8" />
+        </Style>
+        <Style TargetType="TextBlock" x:Key="MaxValueTextStyle" BasedOn="{StaticResource ValueTextStyle}">
+            <Setter Property="Foreground" Value="#468847" />
+        </Style>
     </UserControl.Resources>
 
-    <!--<Grid >
-        <ScrollViewer HorizontalScrollBarVisibility="Hidden" HorizontalScrollMode="Disabled"
-                      VerticalScrollBarVisibility="Auto" VerticalScrollMode="Auto">-->
-            <Grid x:Name="PivotTableElement">
-            </Grid>
-        <!--</ScrollViewer>
-    </Grid>-->
-    
+    <!--<Canvas Width="{StaticResource ParagraphWidth}"> -->
+    <ScrollViewer IsHorizontalRailEnabled="False" IsHorizontalScrollChainingEnabled="False"
+                  HorizontalScrollBarVisibility="Hidden" HorizontalScrollMode="Disabled"
+                  VerticalScrollBarVisibility="Auto" VerticalScrollMode="Auto" 
+                  Margin="0 20 0 0"
+                  >        
+        <Grid x:Name="PivotTableElement">
+        </Grid>
+    </ScrollViewer>
+    <!--</Canvas>-->
 </UserControl>

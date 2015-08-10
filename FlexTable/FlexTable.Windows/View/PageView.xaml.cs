@@ -38,8 +38,36 @@ namespace FlexTable.View
         public PageView()
         {
             this.InitializeComponent();
+
+            BarChartElement.BarPointerPressed += BarChartElement_BarPointerPressed;
+            BarChartElement.BarPointerReleased += BarChartElement_BarPointerReleased;
         }
 
+        void BarChartElement_BarPointerPressed(object sender, object d)
+        {
+            ViewModel.PageViewModel pvm = this.DataContext as ViewModel.PageViewModel;
+
+            if (pvm.ColumnViewModel.IsGroupedBy) 
+            {
+                Tuple<Object, Double> datum = d as Tuple<Object, Double>;
+
+                pvm.MainPageViewModel.TableViewModel.PreviewRows(pvm.ColumnViewModel, datum.Item1 as Model.Category);
+            }
+        }
+
+        void BarChartElement_BarPointerReleased(object sender, object d)
+        {
+            ViewModel.PageViewModel pvm = this.DataContext as ViewModel.PageViewModel;
+
+            if (pvm.ColumnViewModel.IsGroupedBy)
+            {
+                Tuple<Object, Double> datum = d as Tuple<Object, Double>;
+
+                pvm.MainPageViewModel.TableViewModel.CancelPreviewRows();
+            }
+        }
+
+        
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             Show.Begin();
@@ -190,6 +218,11 @@ namespace FlexTable.View
             }
 
             paragraphLabelStoryboard.Begin();
+        }
+
+        public void BarPointerPressed(Object sender, Object datum)
+        {
+
         }
     }
 }

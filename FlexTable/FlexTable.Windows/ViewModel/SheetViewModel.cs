@@ -21,14 +21,25 @@ namespace FlexTable.ViewModel
         private Double sheetHeight;
         public Double SheetHeight { get { return sheetHeight; } private set { sheetHeight = value; OnPropertyChanged("SheetHeight"); } }
 
+        public Double AllRowsSheetHeight { get { return allRowViewModels.Count * (Double)App.Current.Resources["RowHeight"]; } }
+
         private ObservableCollection<ViewModel.ColumnViewModel> columnViewModels = new ObservableCollection<ColumnViewModel>();
         public ObservableCollection<ViewModel.ColumnViewModel> ColumnViewModels { get { return columnViewModels; } }
 
-        private List<ViewModel.RowViewModel> rowViewModels = new List<ViewModel.RowViewModel>();
-        public List<ViewModel.RowViewModel> RowViewModels { get { return rowViewModels; } }
+        // 모든 로우에 대한 정보 가지고 있음 속도 위함
+        private List<ViewModel.RowViewModel> allRowViewModels = new List<ViewModel.RowViewModel>();
+        public List<ViewModel.RowViewModel> AllRowViewModels { get { return allRowViewModels; } }
+
+        // group된 일시적인 테이블
+        private List<ViewModel.RowViewModel> temporaryRowViewModels = new List<ViewModel.RowViewModel>();
+        public List<ViewModel.RowViewModel> TemporaryRowViewModels { get { return temporaryRowViewModels; } }
+
+        /*private List<ViewModel.RowViewModel> rowViewModels;
+        public List<ViewModel.RowViewModel> RowViewModels { get { return rowViewModels; } }*/
 
         private List<ViewModel.ColumnViewModel> groupedColumnViewModels = new List<ViewModel.ColumnViewModel>();
         public List<ViewModel.ColumnViewModel> GroupedColumnViewModels { get { return groupedColumnViewModels; } }
+
 
         private List<GroupedRows> groupingResult;
         public List<GroupedRows> GroupingResult { get { return groupingResult; } }
@@ -130,7 +141,7 @@ namespace FlexTable.ViewModel
             }
 
             /* 기본 row 추가 */
-            rowViewModels.Clear();
+            allRowViewModels.Clear();
             index = 0;
             foreach (Model.Row row in sheet.Rows)
             {
@@ -143,15 +154,18 @@ namespace FlexTable.ViewModel
                     cell.ColumnViewModel = columnViewModels[index2++];
                     rowViewModel.Cells.Add(cell);
                 }
-                rowViewModels.Add(rowViewModel);
+                allRowViewModels.Add(rowViewModel);
+
                 index++;
             }
+
+            //rowViewModels = allRowViewModels;
 
             MeasureColumnWidth();
             UpdateColumnX();
 
             SheetWidth = columnViewModels.Select(c => c.Width).Sum() + (Double)App.Current.Resources["RowHeaderWidth"];
-            SheetHeight = rowViewModels.Count * (Double)App.Current.Resources["RowHeight"];
+            SheetHeight = allRowViewModels.Count * (Double)App.Current.Resources["RowHeight"];
         }
         
         public void Sort(Model.Column column, Boolean isDescending)
@@ -189,7 +203,24 @@ namespace FlexTable.ViewModel
         {
             groupedColumnViewModels.Remove(pivotColumnViewModel);
             pivotColumnViewModel.IsGroupedBy = false;
-            Debug.WriteLine("Ungrouped by " + pivotColumnViewModel.Column.Name);
+            GroupUpdate();
+        }
+
+        public void Ungroup()
+        {
+            if (groupedColumnViewModels.Count > 0)
+            {
+                throw new Exception("Calling Ungroup method is permitted only when no column has been grouped");
+            }
+            GroupUpdate();
+        }
+
+        public void Group()
+        {
+            if (groupedColumnViewModels.Count > 0)
+            {
+                throw new Exception("Calling Group method is permitted only when no column has been grouped");
+            }
             GroupUpdate();
         }
 
@@ -197,10 +228,9 @@ namespace FlexTable.ViewModel
         {
             if (pivotColumnViewModel.Type != Model.ColumnType.Categorical)
             {
-                Debug.WriteLine("Grouping rows by a numerical column is not supported now.");
-                return;
+                throw new Exception("Grouping rows by a numerical column is not supported.");
             }
-            Debug.WriteLine("Grouped by " + pivotColumnViewModel.Column.Name);
+
             groupedColumnViewModels.Add(pivotColumnViewModel);
             pivotColumnViewModel.IsGroupedBy = true;
 
@@ -228,24 +258,40 @@ namespace FlexTable.ViewModel
             UpdateColumnX();
 
             // table에 추가하는 것은 tableViewModel이 할 것이고 여기는 rowViewModels만 만들어주면 됨
+            temporaryRowViewModels.Clear();
 
-            rowViewModels.Clear();
             Int32 index = 0;
 
             if (groupedColumnViewModels.Count == 0)
             {
-                foreach (Model.Row row in sheet.Rows)
+                RowViewModel rowViewModel = new RowViewModel(mainPageViewModel)
                 {
-                    ViewModel.RowViewModel rowViewModel = new ViewModel.RowViewModel(mainPageViewModel)
+                    Index = 0
+                };
+
+                foreach (ColumnViewModel columnViewModel in columnViewModels)
+                {
+                    Model.Cell cell = new Model.Cell();
+
+                    cell.ColumnViewModel = columnViewModel;
+
+                    if (columnViewModel.Type == ColumnType.Categorical)
                     {
-                        Index = index ++
-                    };
-                    foreach (Cell cell in row.Cells)
-                    {
-                        rowViewModel.Cells.Add(cell);
+                        Int32 uniqueCount = GetUniqueList(Sheet.Rows.Select(r => r.Cells[columnViewModel.Index].Content as Category)).Count;
+                        cell.Content = String.Format("({0})", uniqueCount);
+                        cell.RawContent = String.Format("({0})", uniqueCount);
                     }
-                    rowViewModels.Add(rowViewModel);
+                    else //numerical
+                    {
+                        Object aggregated = Aggregate(Sheet.Rows.Select(r => r.Cells[columnViewModel.Index].Content), columnViewModel.AggregationType);
+                        cell.RawContent = aggregated.ToString();
+                        cell.Content = aggregated;
+                    }
+
+                    rowViewModel.Cells.Add(cell);
                 }
+
+                temporaryRowViewModels.Add(rowViewModel);
             }
             else
             {
@@ -285,30 +331,17 @@ namespace FlexTable.ViewModel
                         rowViewModel.Cells.Add(cell);
                     }
 
-                    rowViewModels.Add(rowViewModel);
+                    temporaryRowViewModels.Add(rowViewModel);
                 }
             }
-            SheetHeight = rowViewModels.Count * (Double)App.Current.Resources["RowHeight"];
+            SheetHeight = temporaryRowViewModels.Count * (Double)App.Current.Resources["RowHeight"];
         }
 
         public List<GroupedRows> GroupRecursive(List<Row> rows, Int32 pivotIndex)
-        {
-            
+        {            
             ColumnViewModel pivot = groupedColumnViewModels[pivotIndex];
             Dictionary<Category, List<Row>> dict = GetRowsByColumnViewModel(rows, pivot);
             
-            /*new Dictionary<Category, List<Row>>();
-            foreach (Row row in rows)
-            {
-                Category category = row.Cells[pivot.Index].Content as Category;
-                if (!dict.ContainsKey(category))
-                {
-                    dict.Add(category, new List<Row>());
-                }
-                dict[category].Add(row);
-            }
-            */
-
             if (pivotIndex < groupedColumnViewModels.Count - 1) // 그루핑을 더 해야함.
             {
                 List<GroupedRows> groupedRowsList = new List<GroupedRows>();
@@ -431,7 +464,7 @@ namespace FlexTable.ViewModel
         {
             foreach (ColumnViewModel columnViewModel in columnViewModels)
             {
-                String maxValue = (from rowViewModel in RowViewModels
+                String maxValue = (from rowViewModel in allRowViewModels
                                    orderby rowViewModel.Cells[columnViewModel.Index].RawContent.Count() descending
                                    select rowViewModel.Cells[columnViewModel.Index].RawContent).First();
 

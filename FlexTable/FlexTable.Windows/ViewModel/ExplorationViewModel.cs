@@ -26,6 +26,9 @@ namespace FlexTable.ViewModel
         MetadataViewModel metadataViewModel;
         public MetadataViewModel MetadataViewModel { get { return metadataViewModel; } set { metadataViewModel = value; OnPropertyChanged("MetadataViewModel"); } }
 
+        private List<ViewModel.ColumnViewModel> selectedColumnViewModels = new List<ViewModel.ColumnViewModel>();
+        public List<ViewModel.ColumnViewModel> SelectedColumnViewModels { get { return selectedColumnViewModels; } }
+
         public View.PageView TopPageView { get { return view.ExplorationView.TopPageView; } }
 
         public ViewModel.PageViewModel DummyPageViewModel { get; set; } // for supress initial pageview binding warnings
@@ -49,55 +52,78 @@ namespace FlexTable.ViewModel
 
         public void PageViewTapped(PageViewModel pageViewModel, View.PageView pageView)
         {
-            if (pageView == TopPageView)
+            if (pageView == TopPageView && columnViewModel != null && selectedColumnViewModels.IndexOf(columnViewModel) < 0)
             {
-                // grouping
-                if (columnViewModel != null && columnViewModel.Type == ColumnType.Categorical && !columnViewModel.IsGroupedBy)
+                // 선택되었다고 표시
+                selectedColumnViewModels.Add(columnViewModel);
+
+                // Page View 아래로 보내기                    
+                pageViewModel.GoDown();
+
+                // 새로운 page 만들기
+                view.ExplorationView.AddNewPage();
+
+                // Preview 풀기
+                mainPageViewModel.TableViewModel.CancelIndexing();
+
+                if (columnViewModel.Type == ColumnType.Categorical) // grouping
                 {
-                    // Page View 아래로 보내기                    
-                    pageViewModel.GoDown();
-
-                    // 새로운 page 만들기
-                    view.ExplorationView.AddNewPage();
-
-                    // Preview 풀기
-                    mainPageViewModel.TableViewModel.CancelIndexing();
-
                     // SheetViewModel 에서 grouping 하기, 이건 rowViewModels를 업데이트함
                     mainPageViewModel.SheetViewModel.Group(columnViewModel);
 
                     // Table View 업데이트
                     mainPageViewModel.TableViewModel.UpdateRows();
-
-                    view.TableView.TopColumnHeader.Update();
-                    view.TableView.BottomColumnHeader.Update();
-                    view.TableView.ScrollToColumnViewModel(mainPageViewModel.SheetViewModel.ColumnViewModels.OrderBy(c => c.Order).First());
                 }
-            }
-            else
-            {
-                if (pageViewModel.ColumnViewModel != null && pageViewModel.ColumnViewModel.IsGroupedBy) // 그룹핑 취소
+                else if (columnViewModel.Type == ColumnType.Numerical)
                 {
-                    // Page View 위로 올리기
-                    pageViewModel.GoUp();
+                    if (selectedColumnViewModels.Count == 1)
+                    {
+                        // 초기상태에서 numerical을 내리는 경우에는 모든 로우가 하나로 가야 함
+                        mainPageViewModel.SheetViewModel.Group();
+                        mainPageViewModel.TableViewModel.UpdateRows();
+                    }
+                }
 
-                    // Preview 풀기 (만약 되어있다면)
-                    mainPageViewModel.TableViewModel.CancelIndexing();
+                view.TableView.TopColumnHeader.Update();
+                view.TableView.BottomColumnHeader.Update();
+                view.TableView.ScrollToColumnViewModel(mainPageViewModel.SheetViewModel.ColumnViewModels.OrderBy(c => c.Order).First());
+            }
+            else if (pageViewModel.ColumnViewModel != null && selectedColumnViewModels.IndexOf(pageViewModel.ColumnViewModel) >= 0)
+            {
+                // 선택해제 
+                selectedColumnViewModels.Remove(pageViewModel.ColumnViewModel);
 
-                    // 기존 탑 페이지 지우고 이걸 탑 페이지로 지정
-                    view.ExplorationView.RemoveTopPage(pageView);
+                // Page View 위로 올리기
+                pageViewModel.GoUp();
 
-                    // SheetViewModel 에서 grouping 하기, 이건 rowViewModels를 업데이트함
+                // Preview 풀기 (만약 되어있다면)
+                mainPageViewModel.TableViewModel.CancelIndexing();
+
+                // 기존 탑 페이지 지우고 이걸 탑 페이지로 지정
+                view.ExplorationView.RemoveTopPage(pageView);
+
+                if (pageViewModel.ColumnViewModel.Type == ColumnType.Categorical) // grouping 해제해야함
+                {
+                    // SheetViewModel 에서 ungrouping 하기, 이건 rowViewModels를 업데이트함
                     mainPageViewModel.SheetViewModel.Ungroup(pageViewModel.ColumnViewModel);
 
                     // Table View 업데이트
                     mainPageViewModel.TableViewModel.UpdateRows();
-
-                    view.TableView.TopColumnHeader.Update();
-                    view.TableView.BottomColumnHeader.Update();
-                    view.TableView.ScrollToColumnViewModel(mainPageViewModel.SheetViewModel.ColumnViewModels.OrderBy(c => c.Order).First());
                 }
-            }
+                else if (pageViewModel.ColumnViewModel.Type == ColumnType.Numerical)
+                {
+                    if (selectedColumnViewModels.Count == 0)
+                    {
+                        // 초기상태에서 numerical을 내리는 경우에는 모든 로우가 하나로 가야 함
+                        mainPageViewModel.SheetViewModel.Ungroup();
+                        mainPageViewModel.TableViewModel.UpdateRows();
+                    }
+                }
+
+                view.TableView.TopColumnHeader.Update();
+                view.TableView.BottomColumnHeader.Update();
+                view.TableView.ScrollToColumnViewModel(mainPageViewModel.SheetViewModel.ColumnViewModels.OrderBy(c => c.Order).First());
+            }            
         }
 
         public void StrokeAdded(InkStroke stroke)

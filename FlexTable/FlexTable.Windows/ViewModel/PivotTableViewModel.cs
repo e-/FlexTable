@@ -15,6 +15,8 @@ namespace FlexTable.ViewModel
         private MainPageViewModel mainPageViewModel;
 
         private PivotTableView pivotTableView;
+        private Int32 maxValue = 0;
+
         public PivotTableViewModel(MainPageViewModel mainPageViewModel, PivotTableView pivotTableView)
         {
             this.mainPageViewModel = mainPageViewModel;
@@ -150,6 +152,7 @@ namespace FlexTable.ViewModel
 
             Dictionary<Category, Object> classified = ConstructKeyDictionary(groupedColumnViewModels, 0);
 
+            maxValue = 0;
             foreach(Row row in mainPageViewModel.Sheet.Rows.ToList())
             {
                 Dictionary<Category, Object> dict = classified;
@@ -169,6 +172,7 @@ namespace FlexTable.ViewModel
                         dict[category] = 0;
                     }
                     dict[category] = (Int32)dict[category] + 1;
+                    if (maxValue < (Int32)dict[category]) maxValue = (Int32)dict[category];
                 }
             }
 
@@ -195,18 +199,23 @@ namespace FlexTable.ViewModel
                 Int32 index = 0;
                 foreach (Category category in previewingColumnViewModel.Categories)
                 {
-                    Border border = new Border()
-                    {
-                        Style = pivotTableView.Resources["BorderStyle"] as Style
-                    };
                     Int32 value;
                     if (classified.ContainsKey(category)) value = (Int32)classified[category];
                     else value = 0;
 
+                    Border border = new Border()
+                    {
+                        Style = pivotTableView.Resources[
+                            value == 0 ? "BorderStyle" : (value == maxValue ? "MaxBorderStyle" : "BorderStyle")
+                        ] as Style
+                    };
+
                     TextBlock textBlock = new TextBlock()
                     {
                         Text = value.ToString(),
-                        Style = pivotTableView.Resources["ValueTextStyle"] as Style
+                        Style = pivotTableView.Resources[
+                            value == 0 ? "ZeroValueTextStyle" : (value == maxValue ? "MaxValueTextStyle" : "ValueTextStyle")
+                        ] as Style
                     };
                     border.Child = textBlock;
 

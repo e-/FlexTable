@@ -25,5 +25,17 @@ namespace FlexTable.View
         {
             this.InitializeComponent();
         }
+
+        Double startY;
+
+        private void PivotTableElement_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
+        {
+            startY = Canvas.GetTop(PivotTableElement);    
+        }
+
+        private void PivotTableElement_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            Canvas.SetTop(PivotTableElement, startY + e.Cumulative.Translation.Y);
+        }
     }
 }

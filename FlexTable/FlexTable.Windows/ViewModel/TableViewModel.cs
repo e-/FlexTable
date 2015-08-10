@@ -47,8 +47,9 @@ namespace FlexTable.ViewModel
         private Double paddedSheetHeight;
         public Double PaddedSheetHeight { get { return paddedSheetHeight; } set { paddedSheetHeight = value; OnPropertyChanged("PaddedSheetHeight"); } }
 
+        private List<View.RowPresenter> allRowPresenters = new List<View.RowPresenter>();
         private List<View.RowPresenter> rowPresenters = new List<View.RowPresenter>();
-        public List<View.RowPresenter> RowPresenters { get { return rowPresenters; } }
+        //public List<View.RowPresenter> RowPresenters { get { return rowPresenters; } }
 
         private Boolean isIndexTooltipVisible;
         public Boolean IsIndexTooltipVisible { get { return isIndexTooltipVisible; } set { isIndexTooltipVisible = value; OnPropertyChanged("IsIndexTooltipVisible"); } }
@@ -61,6 +62,9 @@ namespace FlexTable.ViewModel
 
         private ColumnViewModel indexedColumnViewModel;
         public ColumnViewModel IndexedColumnViewModel { get { return indexedColumnViewModel; } set { indexedColumnViewModel = value; OnPropertyChanged("IndexedColumnViewModel"); } }
+
+        private List<ViewModel.RowViewModel> rowViewModels;
+        public List<ViewModel.RowViewModel> RowViewModels { get { return rowViewModels; } }
 
         public TableViewModel(ViewModel.MainPageViewModel mainPageViewModel, IMainPage view)
         {
@@ -81,28 +85,71 @@ namespace FlexTable.ViewModel
             view.TableView.AddGuidelines(SheetViewModel.Sheet.Rows.Count);
 
             // 최대 row header 추가
-            RowHeaderViewModel.SetMaximumRowNumber(SheetViewModel.RowViewModels.Count);
+            RowHeaderViewModel.SetMaximumRowNumber(SheetViewModel.AllRowViewModels.Count);
+        }
+
+        public void CreateAllRows()
+        {
+            PaddedSheetHeight = SheetViewModel.AllRowsSheetHeight > SheetViewHeight ? SheetViewModel.AllRowsSheetHeight : SheetViewHeight;
+            PaddedSheetWidth = SheetViewModel.SheetWidth > SheetViewWidth ? SheetViewModel.SheetWidth : SheetViewWidth;
+
+            foreach (ViewModel.RowViewModel rowViewModel in SheetViewModel.AllRowViewModels)
+            {
+                View.RowPresenter rowPresenter = new View.RowPresenter(rowViewModel);
+
+                view.TableView.AllRowsTableCanvas.Children.Add(rowPresenter);
+                rowPresenter.Y = rowViewModel.Y;
+                rowPresenter.Update();
+
+                allRowPresenters.Add(rowPresenter);
+            }
+
+            rowViewModels = SheetViewModel.AllRowViewModels;
+
+            RowHeaderViewModel.SetRowNumber(SheetViewModel.AllRowViewModels.Count);
         }
 
         public void UpdateRows()
         {
-            rowPresenters.Clear();
-            view.TableView.TableCanvas.Children.Clear();
-
-            PaddedSheetHeight = SheetViewModel.SheetHeight > SheetViewHeight ? SheetViewModel.SheetHeight : SheetViewHeight;
-            PaddedSheetWidth = SheetViewModel.SheetWidth > SheetViewWidth ? SheetViewModel.SheetWidth : SheetViewWidth;
-
-            foreach (ViewModel.RowViewModel rowViewModel in SheetViewModel.RowViewModels)
+            if (mainPageViewModel.ExplorationViewModel.SelectedColumnViewModels.Count == 0) // 아무 것도 선택되지 않으면 모든 로우 보여줘야함.
             {
-                View.RowPresenter rowPresenter = new View.RowPresenter(rowViewModel);
-                rowPresenters.Add(rowPresenter);
+                rowViewModels = SheetViewModel.AllRowViewModels;
 
-                view.TableView.TableCanvas.Children.Add(rowPresenter);
-                rowPresenter.Y = rowViewModel.Y;
-                rowPresenter.Update();
+                foreach (View.RowPresenter rowPresenter in allRowPresenters)
+                {
+                    rowPresenter.Visibility = Visibility.Visible;
+                    rowPresenter.Y = rowPresenter.RowViewModel.Y;
+                }
+
+                view.TableView.ShowAllRowsCanvas();
+                
+                PaddedSheetHeight = SheetViewModel.AllRowsSheetHeight > SheetViewHeight ? SheetViewModel.AllRowsSheetHeight : SheetViewHeight;
+
+                RowHeaderViewModel.SetRowNumber(rowViewModels.Count);
             }
+            else
+            {
+                rowViewModels = SheetViewModel.TemporaryRowViewModels;
 
-            RowHeaderViewModel.SetRowNumber(SheetViewModel.RowViewModels.Count);
+                view.TableView.ShowTableCanvas();
+
+                rowPresenters.Clear();
+                view.TableView.TableCanvas.Children.Clear();
+
+                PaddedSheetHeight = SheetViewModel.SheetHeight > SheetViewHeight ? SheetViewModel.SheetHeight : SheetViewHeight;
+
+                foreach (ViewModel.RowViewModel rowViewModel in SheetViewModel.TemporaryRowViewModels)
+                {
+                    View.RowPresenter rowPresenter = new View.RowPresenter(rowViewModel);
+                    rowPresenters.Add(rowPresenter);
+
+                    view.TableView.TableCanvas.Children.Add(rowPresenter);
+                    rowPresenter.Y = rowViewModel.Y;
+                    rowPresenter.Update();
+                }
+
+                RowHeaderViewModel.SetRowNumber(rowViewModels.Count);
+            }
         }
 
         uint ignoredPointerId;
@@ -129,7 +176,6 @@ namespace FlexTable.ViewModel
                 IndexTooltipY = (columnIndex + 0.5) * (totalHeight / SheetViewModel.ColumnViewModels.Count) - 15;
                 IndexTooltipContent = columnViewModel.Column.Name;
 
-
                 mainPageViewModel.ExplorationViewModel.ShowSummary(columnViewModel);
             }
 
@@ -143,6 +189,38 @@ namespace FlexTable.ViewModel
             view.ExplorationView.TopPageViewModel.Hide();
 
             ignoredPointerId = activatedPointerId;
+        }
+
+        public void PreviewRows(ColumnViewModel columnViewModel, Model.Category category)
+        {
+            Int32 index = 0;
+            Double rowHeight = (Double)App.Current.Resources["RowHeight"];
+            foreach (View.RowPresenter rowPresenter in allRowPresenters)
+            {
+                if (rowPresenter.RowViewModel.Cells[columnViewModel.Index].Content == category)
+                {
+                    rowPresenter.Visibility = Visibility.Visible;
+                    rowPresenter.Y = (index++) * rowHeight;
+                }
+                else
+                {
+                    rowPresenter.Visibility = Visibility.Collapsed;
+                }
+            }
+
+            Double sheetHeight = index * rowHeight;
+            PaddedSheetHeight = sheetHeight > SheetViewHeight ? sheetHeight : SheetViewHeight;
+            RowHeaderViewModel.SetRowNumber(index);
+            view.TableView.ShowAllRowsCanvas();
+            view.TableView.RowHeaderPresenter.Show();
+        }
+
+        public void CancelPreviewRows()
+        {
+            PaddedSheetHeight = SheetViewModel.SheetHeight > SheetViewHeight ? SheetViewModel.SheetHeight : SheetViewHeight;
+            RowHeaderViewModel.SetRowNumber(rowViewModels.Count);
+            view.TableView.ShowTableCanvas();
+            view.TableView.RowHeaderPresenter.Show();
         }
 
 /*        public void MarkColumnDisabled(Model.Column movingColumn)

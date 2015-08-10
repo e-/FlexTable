@@ -26,10 +26,12 @@ namespace FlexTable.View
     {
         Drawable drawable = new Drawable();
 
+        public Canvas AllRowsTableCanvas { get { return AllRowsCanvasElement; } }
         public Canvas TableCanvas { get { return TableCanvasElement; } }
         public Grid ScrollViewerContententWrapper { get { return ScrollViewerContentWrapperElement; } }
         public ColumnHeaderPresenter TopColumnHeader { get { return TopColumnHeaderElement; } }
         public ColumnHeaderPresenter BottomColumnHeader { get { return BottomColumnHeaderElement; } }
+        public RowHeaderPresenter RowHeaderPresenter { get { return RowHeaderPresenterElement; } }
 
         public TableView()
         {
@@ -45,20 +47,6 @@ namespace FlexTable.View
 
             for (Int32 i = 0; i < count - 1; ++i)
             {
-         /*       RowDefinition rd = new RowDefinition()
-                {
-                    Height = new GridLength((Double)App.Current.Resources["RowHeight"])
-                };
-                GuidelineGridElement.RowDefinitions.Add(rd);
-
-                Rectangle rectangle = new Rectangle()
-                {
-                    Style = (Style)App.Current.Resources["RowGuidelineStyle" + (i % 2).ToString()]
-                };
-                Grid.SetRow(rectangle, i);
-
-                GuidelineGridElement.Children.Add(rectangle);*/
-
                 Rectangle rectangle = new Rectangle()
                 {
                     Style = (Style)App.Current.Resources["RowGuidelineStyle" + (i % 2).ToString()]
@@ -67,7 +55,7 @@ namespace FlexTable.View
             }
         }
 
-        async void RecognizeStrokes(InkManager inkManager)
+        /*async*/ void RecognizeStrokes(InkManager inkManager)
         {
             /*try
             {
@@ -166,12 +154,40 @@ namespace FlexTable.View
             ViewModel.TableViewModel tableViewModel = this.DataContext as ViewModel.TableViewModel;
             ScrollViewer sv = sender as ScrollViewer;
 
-            RowHeader.VerticalOffset = sv.VerticalOffset;
+            RowHeaderPresenterElement.VerticalOffset = sv.VerticalOffset;
             TopColumnHeader.HorizontalOffset = sv.HorizontalOffset;
             BottomColumnHeader.HorizontalOffset = sv.HorizontalOffset;
 
             tableViewModel.ScrollTop = sv.VerticalOffset;
             tableViewModel.ScrollLeft = sv.HorizontalOffset;
         }
+
+        
+        public void ShowAllRowsCanvas()
+        {
+            AllRowsCanvasElement.Visibility = Visibility.Visible;
+
+            ShowAllRowsCanvasStoryboard.Begin();
+            HideTableCanvasStoryboard.Begin();
+        }
+
+        public void ShowTableCanvas()
+        {
+            TableCanvasElement.Visibility = Visibility.Visible;
+
+            ShowTableCanvasStoryboard.Begin();
+            HideAllRowsCanvasStoryboard.Begin();            
+        }
+
+        private void HideAllRowsCanvasStoryboard_Completed(object sender, object e)
+        {
+            AllRowsCanvasElement.Visibility = Visibility.Collapsed;
+        }
+
+        private void HideTableCanvasStoryboard_Completed(object sender, object e)
+        {
+            TableCanvas.Visibility = Visibility.Collapsed;
+        }
+
     }
 }

@@ -13,6 +13,26 @@
 
     <UserControl.Resources>
         <util:BooleanToOpacityConverter x:Key="BooleanToOpacityConverter" />
+        
+        <Storyboard x:Name="ShowAllRowsCanvasStoryboard">
+            <DoubleAnimation Storyboard.TargetName="AllRowsCanvasElement" Storyboard.TargetProperty="Opacity"
+                             To="1" Duration="0:0:0.3" EasingFunction="{StaticResource QuarticEaseInOut}"></DoubleAnimation>
+        </Storyboard>
+
+        <Storyboard x:Name="HideAllRowsCanvasStoryboard" Completed="HideAllRowsCanvasStoryboard_Completed">
+            <DoubleAnimation Storyboard.TargetName="AllRowsCanvasElement" Storyboard.TargetProperty="Opacity"
+                             To="0" Duration="0:0:0.3" EasingFunction="{StaticResource QuarticEaseInOut}"></DoubleAnimation>
+        </Storyboard>
+
+        <Storyboard x:Name="ShowTableCanvasStoryboard">
+            <DoubleAnimation Storyboard.TargetName="TableCanvasElement" Storyboard.TargetProperty="Opacity"
+                             To="1" Duration="0:0:0.3" EasingFunction="{StaticResource QuarticEaseInOut}"></DoubleAnimation>
+        </Storyboard>
+
+        <Storyboard x:Name="HideTableCanvasStoryboard" Completed="HideTableCanvasStoryboard_Completed">
+            <DoubleAnimation Storyboard.TargetName="TableCanvasElement" Storyboard.TargetProperty="Opacity"
+                             To="0" Duration="0:0:0.3" EasingFunction="{StaticResource QuarticEaseInOut}"></DoubleAnimation>
+        </Storyboard>
     </UserControl.Resources>
     
     <Grid>
@@ -30,7 +50,7 @@
 
             <view:ColumnHeaderPresenter Grid.Row="0" Grid.Column="1" x:Name="TopColumnHeaderElement"></view:ColumnHeaderPresenter>
 
-            <view:RowHeaderPresenter Grid.Row="1" Grid.Column="0" x:Name="RowHeader"></view:RowHeaderPresenter>
+            <view:RowHeaderPresenter Grid.Row="1" Grid.Column="0" x:Name="RowHeaderPresenterElement"></view:RowHeaderPresenter>
             <view:ColumnIndexer Grid.Row="1" Grid.Column="0" x:Name="ColumnIndex"></view:ColumnIndexer>
         
             <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" 
@@ -40,11 +60,10 @@
                               x:Name="TableScrollViewer"
                               >
                 <Grid x:Name="ScrollViewerContentWrapperElement" Width="{Binding PaddedSheetWidth}" Height="{Binding PaddedSheetHeight}">
-                    <StackPanel x:Name="GuildlineElement" IsHitTestVisible="False">
-                    </StackPanel>
-                    <Canvas x:Name="TableCanvasElement"
-                            VirtualizingStackPanel.VirtualizationMode="Recycling"
-                            >
+                    <StackPanel x:Name="GuildlineElement" IsHitTestVisible="False"></StackPanel>
+                    <Canvas x:Name="AllRowsCanvasElement" Opacity="1">
+                    </Canvas>
+                    <Canvas x:Name="TableCanvasElement" Visibility="Collapsed" Opacity="0">
                     </Canvas>
                 </Grid>
             </ScrollViewer>

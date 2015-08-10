@@ -25,12 +25,6 @@
                              To="2" EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2"></DoubleAnimation>
             <DoubleAnimation Storyboard.TargetProperty="ScaleY" Storyboard.TargetName="LowerCompositeTransform"
                              To="2" EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2"></DoubleAnimation>
-
-            <!--<DoubleAnimation Storyboard.TargetProperty="Height" Storyboard.TargetName="TableScrollViewer"
-                             To="2" EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2"></DoubleAnimation>-->
-            
-            <!--<DoubleAnimation Storyboard.TargetProperty="Opacity" Storyboard.TargetName="MagnifiedColumn"
-                             To="1" EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2"></DoubleAnimation>-->
         </Storyboard>
         <Storyboard x:Name="Brighten" Completed="Brighten_Completed">
             <ColorAnimation Storyboard.TargetProperty="(Canvas.Background).(SolidColorBrush.Color)" To="#00000000"
@@ -48,9 +42,6 @@
 
             <DoubleAnimation Storyboard.TargetProperty="Height" Storyboard.TargetName="TableScrollViewer"
                              To="3000" EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2"></DoubleAnimation>
-            
-            <!--<DoubleAnimation Storyboard.TargetProperty="Opacity" Storyboard.TargetName="MagnifiedColumn"
-                             To="0" EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2"></DoubleAnimation>-->
         </Storyboard>        
     </UserControl.Resources>
     

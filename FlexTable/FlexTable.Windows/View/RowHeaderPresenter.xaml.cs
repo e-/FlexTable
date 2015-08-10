@@ -39,5 +39,11 @@ namespace FlexTable.View
         {
             this.InitializeComponent();
         }
+
+        public void Show()
+        {
+            ShowWrapperStoryboard.Pause();
+            ShowWrapperStoryboard.Begin();
+        }
     }
 }

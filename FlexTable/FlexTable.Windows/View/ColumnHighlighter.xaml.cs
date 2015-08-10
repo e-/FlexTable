@@ -56,7 +56,7 @@ namespace FlexTable.View
 
                 TableCanvas.Children.Clear();
 
-                foreach (ViewModel.RowViewModel rowViewModel in tvm.SheetViewModel.RowViewModels)
+                foreach (ViewModel.RowViewModel rowViewModel in tvm.RowViewModels)
                 {
                     TextBlock cell = new TextBlock()
                     {
@@ -71,7 +71,6 @@ namespace FlexTable.View
 
                 
                 Double left = columnViewModel.X - tvm.ScrollLeft;
-                //Debug.WriteLine("left {0}", left);
 
                 if (left - columnViewModel.Width / 2 <= 0)
                 {
@@ -90,8 +89,6 @@ namespace FlexTable.View
                 }
 
                 Canvas.SetLeft(MagnifiedColumn, left);
-
-                //Debug.WriteLine(left);
 
                 UpperColumnHeader.Width = LowerColumnHeader.Width = MagnifiedColumn.Width = columnViewModel.Width;
                 UpperColumnHeader.Text = LowerColumnHeader.Text = columnViewModel.Column.Name;

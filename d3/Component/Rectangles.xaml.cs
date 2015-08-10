@@ -28,6 +28,9 @@ namespace d3.Component
     {
         public static readonly DependencyProperty DataProperty =
             DependencyProperty.Register("Data", typeof(Data), typeof(Rectangles), new PropertyMetadata(null, new PropertyChangedCallback(DataChanged)));
+        
+        public event d3.Event.EventHandler RectanglePointerPressed;
+        public event d3.Event.EventHandler RectanglePointerReleased;
 
         public Data Data
         {
@@ -112,12 +115,38 @@ namespace d3.Component
                     Fill = ColorGetter == null ? new SolidColorBrush(Colors.LightGray) : new SolidColorBrush(ColorGetter(datum, index))
                 };
 
+                rect.PointerPressed += delegate(object sender, PointerRoutedEventArgs e)
+                {
+                    if (RectanglePointerPressed != null)
+                    {
+                        RectanglePointerPressed(rect, datum);
+                        e.Handled = true;
+                    }
+                };
+
+                rect.PointerReleased += delegate(object sender, PointerRoutedEventArgs e)
+                {
+                    if (RectanglePointerReleased != null)
+                    {
+                        RectanglePointerReleased(rect, datum);
+                        e.Handled = true;
+                    }
+                };
+
+                rect.Tapped += rect_Tapped;
+
+
                 Canvas.SetLeft(rect, XGetter(datum, index));
                 Canvas.SetTop(rect, YGetter(datum, index));
                 index++;
                 RectanglesCanvas.Children.Add(rect);
                 previousRectangles.Add(rect);
             }
+        }
+
+        void rect_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            e.Handled = true;
         }
     }
 }

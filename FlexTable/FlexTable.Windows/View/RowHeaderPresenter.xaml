@@ -11,28 +11,35 @@
     IsHitTestVisible="False"
     >
     
+    <UserControl.Resources>
+        <Storyboard x:Name="ShowWrapperStoryboard">
+            <DoubleAnimation Storyboard.TargetName="Numbers" Storyboard.TargetProperty="Opacity"
+                             From="0" To="1" Duration="0:0:0.3" EasingFunction="{StaticResource QuarticEaseInOut}">
+            </DoubleAnimation>
+        </Storyboard>
+    </UserControl.Resources>
+    
     <Canvas>
-        <Border Width="{StaticResource RowHeaderWidth}" Height="{Binding SheetViewHeight}">
+        <Border Width="{StaticResource RowHeaderWidth}" Height="{Binding SheetViewHeight}" x:Name="Wrapper">
             <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden" 
                             VerticalScrollMode="Enabled" Height="{Binding SheetViewHeight}" Name="HeaderScrollViewer">
-                <ItemsControl ItemsSource="{Binding RowHeaderViewModel.RowHeaderItems}">
-                    <!--<ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <Canvas />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>-->
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Border Background="{Binding Background}">
-                                <!--<Border.RenderTransform>
-                                    <TranslateTransform Y="{Binding Top}" />
-                                </Border.RenderTransform>-->
-                                <TextBlock Text="{Binding IndexString}" Style="{StaticResource RowHeaderStyle}" Opacity="{Binding Opacity}">
-                                </TextBlock>
-                            </Border>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
+                <Grid>
+                    <ItemsControl ItemsSource="{Binding RowHeaderViewModel.RowHeaderItems}" VirtualizingStackPanel.VirtualizationMode="Recycling">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Background="{Binding Background}" Height="{StaticResource RowHeight}"></Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <ItemsControl ItemsSource="{Binding RowHeaderViewModel.RowHeaderItems}" VirtualizingStackPanel.VirtualizationMode="Recycling"
+                                  x:Name="Numbers">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding IndexString}" Style="{StaticResource RowHeaderStyle}" Opacity="{Binding Opacity}"></TextBlock>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Grid>                
             </ScrollViewer>
         </Border>
         <Line X1="{StaticResource RowHeaderWidth}" Y1="0" X2="{StaticResource RowHeaderWidth}" Y2="2000"

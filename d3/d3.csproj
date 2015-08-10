@@ -74,6 +74,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ColorScheme\Category10.cs" />
+    <Compile Include="Event.cs" />
     <Compile Include="Format\SIPrefix.cs" />
     <Compile Include="Notifiable.cs" />
     <Compile Include="Scale\Ordinal.cs" />
