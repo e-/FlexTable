@@ -113,6 +113,7 @@
     <Compile Include="Model\MetadataStatistics.cs" />
     <Compile Include="Model\NotifyModel.cs" />
     <Compile Include="Model\RowHeader.cs" />
+    <Compile Include="Util\Animator.cs" />
     <Compile Include="Util\BooleanConverter.cs" />
     <Compile Include="Util\BooleanToEnabledOpacityConverter.cs" />
     <Compile Include="Util\BooleanToInvertedOpacityConverter.cs" />
@@ -129,7 +130,6 @@
     <Compile Include="ViewModel\TableViewModel.cs" />
     <Compile Include="ViewModel\ColumnViewModel.cs" />
     <Compile Include="ViewModel\NotifyViewModel.cs" />
-    <Compile Include="ViewModel\RowHeaderViewModel.cs" />
     <Compile Include="ViewModel\RowViewModel.cs" />
     <Compile Include="View\CellPresenter.xaml.cs">
       <DependentUpon>CellPresenter.xaml</DependentUpon>

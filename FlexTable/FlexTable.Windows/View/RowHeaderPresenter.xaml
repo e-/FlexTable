@@ -11,34 +11,14 @@
     IsHitTestVisible="False"
     >
     
-    <UserControl.Resources>
-        <Storyboard x:Name="ShowWrapperStoryboard">
-            <DoubleAnimation Storyboard.TargetName="Numbers" Storyboard.TargetProperty="Opacity"
-                             From="0" To="1" Duration="0:0:0.3" EasingFunction="{StaticResource QuarticEaseInOut}">
-            </DoubleAnimation>
-        </Storyboard>
-    </UserControl.Resources>
-    
     <Canvas>
         <Border Width="{StaticResource RowHeaderWidth}" Height="{Binding SheetViewHeight}" x:Name="Wrapper">
             <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden" 
                             VerticalScrollMode="Enabled" Height="{Binding SheetViewHeight}" Name="HeaderScrollViewer">
                 <Grid>
-                    <ItemsControl ItemsSource="{Binding RowHeaderViewModel.RowHeaderItems}" VirtualizingStackPanel.VirtualizationMode="Recycling">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Border Background="{Binding Background}" Height="{StaticResource RowHeight}"></Border>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                    <ItemsControl ItemsSource="{Binding RowHeaderViewModel.RowHeaderItems}" VirtualizingStackPanel.VirtualizationMode="Recycling"
-                                  x:Name="Numbers">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding IndexString}" Style="{StaticResource RowHeaderStyle}" Opacity="{Binding Opacity}"></TextBlock>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
+                    <StackPanel x:Name="GuidelineElement"></StackPanel>
+                    <StackPanel x:Name="NumberElement0"></StackPanel>
+                    <StackPanel x:Name="NumberElement1" Visibility="Collapsed"></StackPanel>
                 </Grid>                
             </ScrollViewer>
         </Border>

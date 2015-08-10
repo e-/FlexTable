@@ -57,19 +57,12 @@ namespace FlexTable.View
             }
         }
 
-        public void UpdateAndDestroy(Action callback)
+        public void UpdateCellsWithoutAnimation()
         {
-            UpdateAndDestroyStoryboard.Completed += delegate
+            foreach (CellPresenter cellPresenter in cellPresenters)
             {
-                callback();
-            };
-
-            UpdateAndDestroyStoryboard.Begin();
-        }
-
-        public void FadeIn()
-        {
-            FadeInStoryboard.Begin();
+                cellPresenter.UpdateWithoutAnimation();
+            }
         }
     }
 }

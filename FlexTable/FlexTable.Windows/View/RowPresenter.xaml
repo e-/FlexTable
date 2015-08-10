@@ -23,22 +23,6 @@
                              Duration="00:00:00.3" EasingFunction="{StaticResource QuarticEaseInOut}">
             </DoubleAnimation>
         </Storyboard>
-
-        <Storyboard x:Name="UpdateAndDestroyStoryboard">
-            <DoubleAnimation Storyboard.TargetName="CompositeTransform" Storyboard.TargetProperty="TranslateY" 
-                             To="{Binding Y}" Duration="00:00:00.3" EasingFunction="{StaticResource QuarticEaseInOut}">
-
-            </DoubleAnimation>
-            <DoubleAnimation Storyboard.TargetName="Wrapper" Storyboard.TargetProperty="Opacity" 
-                             To="0" Duration="00:00:00.3" EasingFunction="{StaticResource QuarticEaseInOut}">
-            </DoubleAnimation>
-        </Storyboard>
-
-        <Storyboard x:Name="FadeInStoryboard">
-            <DoubleAnimation Storyboard.TargetName="Wrapper" Storyboard.TargetProperty="Opacity" From="0"
-                             To="1" Duration="00:00:00.3" EasingFunction="{StaticResource QuarticEaseInOut}">
-            </DoubleAnimation>
-        </Storyboard>
     </UserControl.Resources>
     <StackPanel Orientation="Horizontal" x:Name="Wrapper">
         <StackPanel.RenderTransform>

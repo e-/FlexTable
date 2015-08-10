@@ -32,5 +32,10 @@ namespace FlexTable.View
         {
             XAnimation.Begin();
         }
+
+        public void UpdateWithoutAnimation()
+        {
+            CompositeTransform.TranslateX = (this.DataContext as Model.Cell).ColumnViewModel.X;
+        }
     }
 }

@@ -28,9 +28,6 @@ namespace FlexTable.ViewModel
 
         private IMainPage view;
 
-        private RowHeaderViewModel rowHeaderViewModel;
-        public RowHeaderViewModel RowHeaderViewModel { get { return rowHeaderViewModel; } set { rowHeaderViewModel = value; OnPropertyChanged("RowHeaderViewModel"); } }
-
         public Double ScrollLeft { get; set; }
         public Double ScrollTop { get; set; }
 
@@ -70,7 +67,6 @@ namespace FlexTable.ViewModel
         {
             this.mainPageViewModel = mainPageViewModel;
             this.view = view;
-            RowHeaderViewModel = new ViewModel.RowHeaderViewModel(mainPageViewModel);
 
             bounds = Window.Current.Bounds;
             OnPropertyChanged("Width");
@@ -85,7 +81,7 @@ namespace FlexTable.ViewModel
             view.TableView.AddGuidelines(SheetViewModel.Sheet.Rows.Count);
 
             // 최대 row header 추가
-            RowHeaderViewModel.SetMaximumRowNumber(SheetViewModel.AllRowViewModels.Count);
+            view.TableView.RowHeaderPresenter.SetMaximumRowNumber(SheetViewModel.AllRowViewModels.Count);
         }
 
         public void CreateAllRows()
@@ -106,7 +102,7 @@ namespace FlexTable.ViewModel
 
             rowViewModels = SheetViewModel.AllRowViewModels;
 
-            RowHeaderViewModel.SetRowNumber(SheetViewModel.AllRowViewModels.Count);
+            view.TableView.RowHeaderPresenter.SetRowNumber(SheetViewModel.AllRowViewModels.Count);
         }
 
         public void UpdateRows()
@@ -119,13 +115,14 @@ namespace FlexTable.ViewModel
                 {
                     rowPresenter.Visibility = Visibility.Visible;
                     rowPresenter.Y = rowPresenter.RowViewModel.Y;
+                    rowPresenter.UpdateCellsWithoutAnimation();
                 }
 
                 view.TableView.ShowAllRowsCanvas();
                 
                 PaddedSheetHeight = SheetViewModel.AllRowsSheetHeight > SheetViewHeight ? SheetViewModel.AllRowsSheetHeight : SheetViewHeight;
 
-                RowHeaderViewModel.SetRowNumber(rowViewModels.Count);
+                view.TableView.RowHeaderPresenter.SetRowNumber(rowViewModels.Count);
             }
             else
             {
@@ -148,7 +145,7 @@ namespace FlexTable.ViewModel
                     rowPresenter.Update();
                 }
 
-                RowHeaderViewModel.SetRowNumber(rowViewModels.Count);
+                view.TableView.RowHeaderPresenter.SetRowNumber(rowViewModels.Count);
             }
         }
 
@@ -201,6 +198,7 @@ namespace FlexTable.ViewModel
                 {
                     rowPresenter.Visibility = Visibility.Visible;
                     rowPresenter.Y = (index++) * rowHeight;
+                    rowPresenter.UpdateCellsWithoutAnimation();
                 }
                 else
                 {
@@ -210,17 +208,15 @@ namespace FlexTable.ViewModel
 
             Double sheetHeight = index * rowHeight;
             PaddedSheetHeight = sheetHeight > SheetViewHeight ? sheetHeight : SheetViewHeight;
-            RowHeaderViewModel.SetRowNumber(index);
+            view.TableView.RowHeaderPresenter.SetRowNumber(index);
             view.TableView.ShowAllRowsCanvas();
-            view.TableView.RowHeaderPresenter.Show();
         }
 
         public void CancelPreviewRows()
         {
             PaddedSheetHeight = SheetViewModel.SheetHeight > SheetViewHeight ? SheetViewModel.SheetHeight : SheetViewHeight;
-            RowHeaderViewModel.SetRowNumber(rowViewModels.Count);
+            view.TableView.RowHeaderPresenter.SetRowNumber(rowViewModels.Count);
             view.TableView.ShowTableCanvas();
-            view.TableView.RowHeaderPresenter.Show();
         }
 
 /*        public void MarkColumnDisabled(Model.Column movingColumn)
