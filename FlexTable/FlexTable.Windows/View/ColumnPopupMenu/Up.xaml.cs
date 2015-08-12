@@ -15,27 +15,32 @@ using Windows.UI.Xaml.Navigation;
 
 // 사용자 정의 컨트롤 항목 템플릿에 대한 설명은 http://go.microsoft.com/fwlink/?LinkId=234236에 나와 있습니다.
 
-namespace FlexTable.View
+namespace FlexTable.View.ColumnPopupMenu
 {
-    public sealed partial class CellPresenter : UserControl
+    public sealed partial class Up : UserControl
     {
-        private Model.Cell cell;
-
-        public CellPresenter(Model.Cell cell)
+        public Up()
         {
-            this.cell = cell;
-            this.DataContext = cell;
             this.InitializeComponent();
         }
 
-        public void Update()
+        public void Show()
         {
-            XAnimation.Begin();
+            ShowStoryboard.Begin();
         }
 
-        public void UpdateWithoutAnimation()
+        public void Hide()
         {
-            CompositeTransform.TranslateX = (this.DataContext as Model.Cell).ColumnViewModel.X;
+            HideStoryboard.Begin();
+        }
+        public void Highlight()
+        {
+            HighlightStoryboard.Begin();
+        }
+
+        public void Unhighlight()
+        {
+            UnHighlightStoryboard.Begin();
         }
     }
 }

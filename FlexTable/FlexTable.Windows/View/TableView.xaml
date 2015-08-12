@@ -57,7 +57,7 @@
                               ZoomMode="Disabled" Grid.Row="1" Grid.Column="1"
                               ViewChanged="ScrollViewer_ViewChanged"
                               ManipulationMode="All"
-                              x:Name="TableScrollViewer"
+                              x:Name="TableScrollViewerElement"
                               >
                 <Grid x:Name="ScrollViewerContentWrapperElement" Width="{Binding PaddedSheetWidth}" Height="{Binding PaddedSheetHeight}">
                     <StackPanel x:Name="GuildlineElement" IsHitTestVisible="False"></StackPanel>
@@ -75,7 +75,7 @@
             <view:ColumnHighlighter Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" ColumnViewModel="{Binding IndexedColumnViewModel}"></view:ColumnHighlighter>
             
             <Canvas Grid.Row="1" Grid.Column="1">
-                <Border Opacity="{Binding IsIndexTooltipVisible,Converter={StaticResource BooleanToOpacityConverter}}"
+                <Border Opacity="{Binding IsIndexing,Converter={StaticResource BooleanToOpacityConverter}}"
                            Background="#CC000000" CornerRadius="3">
                     <Border.RenderTransform>
                         <TranslateTransform X="5" Y="{Binding IndexTooltipY}" />

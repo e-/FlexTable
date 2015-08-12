@@ -107,6 +107,7 @@
     <Compile Include="Model\AggregationType.cs" />
     <Compile Include="Model\Bin.cs" />
     <Compile Include="Model\Category.cs" />
+    <Compile Include="Model\SortOption.cs" />
     <Compile Include="Model\ColumnType.cs" />
     <Compile Include="Model\DescriptiveStatistics.cs" />
     <Compile Include="Model\GroupedRows.cs" />
@@ -115,7 +116,6 @@
     <Compile Include="Model\RowHeader.cs" />
     <Compile Include="Util\Animator.cs" />
     <Compile Include="Util\BooleanConverter.cs" />
-    <Compile Include="Util\BooleanToEnabledOpacityConverter.cs" />
     <Compile Include="Util\BooleanToInvertedOpacityConverter.cs" />
     <Compile Include="Util\BooleanToOpacityConverter.cs" />
     <Compile Include="Util\BooleanToInvertedVisibilityConverter.cs" />
@@ -131,9 +131,6 @@
     <Compile Include="ViewModel\ColumnViewModel.cs" />
     <Compile Include="ViewModel\NotifyViewModel.cs" />
     <Compile Include="ViewModel\RowViewModel.cs" />
-    <Compile Include="View\CellPresenter.xaml.cs">
-      <DependentUpon>CellPresenter.xaml</DependentUpon>
-    </Compile>
     <Compile Include="View\ColumnHeaderCellPresenter.xaml.cs">
       <DependentUpon>ColumnHeaderCellPresenter.xaml</DependentUpon>
     </Compile>
@@ -153,6 +150,18 @@
     </Compile>
     <Compile Include="View\ColumnIndexer.xaml.cs">
       <DependentUpon>ColumnIndexer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\ColumnPopupMenu\Up.xaml.cs">
+      <DependentUpon>Up.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\ColumnPopupMenu\Down.xaml.cs">
+      <DependentUpon>Down.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\ColumnPopupMenu\Left.xaml.cs">
+      <DependentUpon>Left.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\ColumnPopupMenu\Right.xaml.cs">
+      <DependentUpon>Right.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\ExplorationView.xaml.cs">
       <DependentUpon>ExplorationView.xaml</DependentUpon>
@@ -216,10 +225,6 @@
     <Content Include="Assets\StoreLogo.scale-100.png" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="View\CellPresenter.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="View\ColumnHeaderCellPresenter.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -237,6 +242,22 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\ColumnIndexer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\ColumnPopupMenu\Up.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\ColumnPopupMenu\Down.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\ColumnPopupMenu\Left.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\ColumnPopupMenu\Right.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

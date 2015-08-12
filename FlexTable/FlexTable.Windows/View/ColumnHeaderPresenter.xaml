@@ -11,8 +11,8 @@
     >
 
     <Border Background="{StaticResource GridLineBrush}">
-        <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden" IsEnabled="False"
-                        HorizontalScrollMode="Disabled" VerticalScrollMode="Disabled" Name="HeaderScrollViewer"
+        <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden"
+                      HorizontalScrollMode="Disabled" VerticalScrollMode="Disabled" Name="HeaderScrollViewer" IsHitTestVisible="True"
                       Width="{Binding SheetViewWidth}"
                       >
             <Grid x:Name="ScrollViewerContentWrapperElement" Width="{Binding PaddedSheetWidth}">

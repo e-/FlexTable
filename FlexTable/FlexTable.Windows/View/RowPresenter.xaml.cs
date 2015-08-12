@@ -22,7 +22,8 @@ namespace FlexTable.View
         private ViewModel.RowViewModel rowViewModel;
         public ViewModel.RowViewModel RowViewModel { get { return rowViewModel; } }
 
-        private List<CellPresenter> cellPresenters = new List<CellPresenter>();
+        private List<TextBlock> cellPresenters = new List<TextBlock>();
+        public List<TextBlock> CellPresenters { get { return cellPresenters; } }
 
         public Double Y
         {
@@ -35,12 +36,23 @@ namespace FlexTable.View
             this.DataContext = rowViewModel;
             this.InitializeComponent();
 
+            Style style = App.Current.Resources["CellStyle"] as Style;
+
             foreach (Model.Cell cell in rowViewModel.Cells)
             {
-                CellPresenter cellPresenter = new CellPresenter(cell);
+                TextBlock cellPresenter = new TextBlock(){
+                    Text = cell.RawContent,
+                    Width = cell.ColumnViewModel.Width,
+                    Style = style
+                };
+
                 CellCanvas.Children.Add(cellPresenter);
                 cellPresenters.Add(cellPresenter);
-                cellPresenter.Update();
+
+                Canvas.SetLeft(cellPresenter, cell.ColumnViewModel.X);
+
+                if (cell.ColumnViewModel.IsHidden)
+                    cellPresenter.Opacity = 0.15;
             }
         }
 
@@ -49,19 +61,13 @@ namespace FlexTable.View
             UpdateStoryboard.Begin();
         }
 
-        public void UpdateCells()
-        {
-            foreach (CellPresenter cellPresenter in cellPresenters)
-            {
-                cellPresenter.Update();
-            }
-        }
-
         public void UpdateCellsWithoutAnimation()
         {
-            foreach (CellPresenter cellPresenter in cellPresenters)
+            Int32 index = 0;
+            foreach (Model.Cell cell in rowViewModel.Cells)
             {
-                cellPresenter.UpdateWithoutAnimation();
+                Canvas.SetLeft(cellPresenters[index], cell.ColumnViewModel.X);
+                index++;
             }
         }
     }

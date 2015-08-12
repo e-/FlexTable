@@ -28,10 +28,11 @@ namespace FlexTable.View
 
         public Canvas AllRowsTableCanvas { get { return AllRowsCanvasElement; } }
         public Canvas TableCanvas { get { return TableCanvasElement; } }
-        public Grid ScrollViewerContententWrapper { get { return ScrollViewerContentWrapperElement; } }
+        public Grid ScrollViewerContentWrapper { get { return ScrollViewerContentWrapperElement; } }
         public ColumnHeaderPresenter TopColumnHeader { get { return TopColumnHeaderElement; } }
         public ColumnHeaderPresenter BottomColumnHeader { get { return BottomColumnHeaderElement; } }
         public RowHeaderPresenter RowHeaderPresenter { get { return RowHeaderPresenterElement; } }
+        public ScrollViewer TableScrollViewer { get { return TableScrollViewerElement; } }
 
         public TableView()
         {
@@ -118,7 +119,7 @@ namespace FlexTable.View
         public void ScrollToColumnViewModel(ViewModel.ColumnViewModel columnViewModel)
         {
             TableViewModel tableViewModel = this.DataContext as TableViewModel;
-            Double offset = TableScrollViewer.HorizontalOffset,
+            Double offset = TableScrollViewerElement.HorizontalOffset,
                    width = tableViewModel.SheetViewWidth,
                    x1 = columnViewModel.X,
                    x2 = columnViewModel.X + columnViewModel.Width;
@@ -136,11 +137,11 @@ namespace FlexTable.View
 
             if (to < 0) to = 0;
 
-            TableScrollViewer.ChangeView(to, null, null);
+            TableScrollViewerElement.ChangeView(to, null, null);
 
             if (to == null)
             {
-                tableViewModel.ScrollLeft = TableScrollViewer.HorizontalOffset;
+                tableViewModel.ScrollLeft = TableScrollViewerElement.HorizontalOffset;
             }
             else
             {
@@ -188,6 +189,5 @@ namespace FlexTable.View
         {
             TableCanvas.Visibility = Visibility.Collapsed;
         }
-
     }
 }

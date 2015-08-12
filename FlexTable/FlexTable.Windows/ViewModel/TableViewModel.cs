@@ -11,6 +11,7 @@ using System.Diagnostics;
 using Windows.Foundation;
 using Windows.UI.Input.Inking;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Media.Animation;
 
 namespace FlexTable.ViewModel
 {
@@ -45,11 +46,16 @@ namespace FlexTable.ViewModel
         public Double PaddedSheetHeight { get { return paddedSheetHeight; } set { paddedSheetHeight = value; OnPropertyChanged("PaddedSheetHeight"); } }
 
         private List<View.RowPresenter> allRowPresenters = new List<View.RowPresenter>();
-        private List<View.RowPresenter> rowPresenters = new List<View.RowPresenter>();
-        //public List<View.RowPresenter> RowPresenters { get { return rowPresenters; } }
+        public List<View.RowPresenter> AllRowPresenters { get { return allRowPresenters; } }
 
-        private Boolean isIndexTooltipVisible;
-        public Boolean IsIndexTooltipVisible { get { return isIndexTooltipVisible; } set { isIndexTooltipVisible = value; OnPropertyChanged("IsIndexTooltipVisible"); } }
+        private List<View.RowPresenter> temporaryRowPresenters = new List<View.RowPresenter>();
+        public List<View.RowPresenter> TemporaryRowPresenters { get { return temporaryRowPresenters; } }
+
+        private List<View.RowPresenter> rowPresenters;
+        public List<View.RowPresenter> RowPresenters { get { return rowPresenters; } }
+
+        private Boolean isIndexing;
+        public Boolean IsIndexing { get { return isIndexing; } set { isIndexing = value; OnPropertyChanged("IsIndexing"); } }
 
         private Double indexTooltipY;
         public Double IndexTooltipY { get { return indexTooltipY; } set { indexTooltipY = value; OnPropertyChanged("IndexTooltipY"); } }
@@ -60,14 +66,23 @@ namespace FlexTable.ViewModel
         private ColumnViewModel indexedColumnViewModel;
         public ColumnViewModel IndexedColumnViewModel { get { return indexedColumnViewModel; } set { indexedColumnViewModel = value; OnPropertyChanged("IndexedColumnViewModel"); } }
 
+        private Boolean isPreviewing = false;
+
         private List<ViewModel.RowViewModel> rowViewModels;
         public List<ViewModel.RowViewModel> RowViewModels { get { return rowViewModels; } }
+
+        private ColumnViewModel sortBy;
+        public ColumnViewModel SortBy { get { return sortBy; } set { sortBy = value; } }
+
+        private Model.SortOption sortOption;
+        public Model.SortOption SortOption { get { return sortOption; } set { sortOption = value; } }
 
         public TableViewModel(ViewModel.MainPageViewModel mainPageViewModel, IMainPage view)
         {
             this.mainPageViewModel = mainPageViewModel;
             this.view = view;
 
+            
             bounds = Window.Current.Bounds;
             OnPropertyChanged("Width");
             OnPropertyChanged("Height");
@@ -100,6 +115,7 @@ namespace FlexTable.ViewModel
                 allRowPresenters.Add(rowPresenter);
             }
 
+            rowPresenters = allRowPresenters;
             rowViewModels = SheetViewModel.AllRowViewModels;
 
             view.TableView.RowHeaderPresenter.SetRowNumber(SheetViewModel.AllRowViewModels.Count);
@@ -110,6 +126,48 @@ namespace FlexTable.ViewModel
             if (mainPageViewModel.ExplorationViewModel.SelectedColumnViewModels.Count == 0) // 아무 것도 선택되지 않으면 모든 로우 보여줘야함.
             {
                 rowViewModels = SheetViewModel.AllRowViewModels;
+            }
+            else
+            {
+                rowViewModels = SheetViewModel.TemporaryRowViewModels;
+            }
+
+            if (sortBy != null)
+            {
+                IOrderedEnumerable<RowViewModel> sorted = null;
+                switch (sortOption)
+                {
+                    case Model.SortOption.Ascending:
+                        sorted = rowViewModels.OrderBy(
+                            r => r.Cells[sortBy.Index].Content is Model.Category ? r.Cells[sortBy.Index].Content.ToString() : r.Cells[sortBy.Index].Content
+                            );
+                        break;
+                    case Model.SortOption.Descending:
+                        sorted = rowViewModels.OrderByDescending(
+                            r => r.Cells[sortBy.Index].Content is Model.Category ? r.Cells[sortBy.Index].Content.ToString() : r.Cells[sortBy.Index].Content
+                            );
+                        break;
+                }
+
+                Int32 index = 0;
+                foreach (RowViewModel rowViewModel in sorted)
+                {
+                    rowViewModel.Index = index++;
+                }
+            }
+            else
+            {
+                Int32 index = 0;
+                foreach (RowViewModel rowViewModel in rowViewModels)
+                {
+                    rowViewModel.Index = index++;
+                }
+            }
+
+
+            if (mainPageViewModel.ExplorationViewModel.SelectedColumnViewModels.Count == 0) // 아무 것도 선택되지 않으면 모든 로우 보여줘야함.
+            {
+                rowPresenters = allRowPresenters;
 
                 foreach (View.RowPresenter rowPresenter in allRowPresenters)
                 {
@@ -126,11 +184,9 @@ namespace FlexTable.ViewModel
             }
             else
             {
-                rowViewModels = SheetViewModel.TemporaryRowViewModels;
-
                 view.TableView.ShowTableCanvas();
-
-                rowPresenters.Clear();
+                rowPresenters = temporaryRowPresenters;
+                temporaryRowPresenters.Clear();
                 view.TableView.TableCanvas.Children.Clear();
 
                 PaddedSheetHeight = SheetViewModel.SheetHeight > SheetViewHeight ? SheetViewModel.SheetHeight : SheetViewHeight;
@@ -138,7 +194,7 @@ namespace FlexTable.ViewModel
                 foreach (ViewModel.RowViewModel rowViewModel in SheetViewModel.TemporaryRowViewModels)
                 {
                     View.RowPresenter rowPresenter = new View.RowPresenter(rowViewModel);
-                    rowPresenters.Add(rowPresenter);
+                    temporaryRowPresenters.Add(rowPresenter);
 
                     view.TableView.TableCanvas.Children.Add(rowPresenter);
                     rowPresenter.Y = rowViewModel.Y;
@@ -154,6 +210,7 @@ namespace FlexTable.ViewModel
 
         public void IndexColumn(uint id, Double y)
         {
+            if (isPreviewing) return;
             if (ignoredPointerId == id) return;
 
             Double totalHeight = SheetViewHeight;
@@ -169,7 +226,7 @@ namespace FlexTable.ViewModel
 
                 IndexedColumnViewModel = columnViewModel;
 
-                IsIndexTooltipVisible = true;
+                IsIndexing = true;
                 IndexTooltipY = (columnIndex + 0.5) * (totalHeight / SheetViewModel.ColumnViewModels.Count) - 15;
                 IndexTooltipContent = columnViewModel.Column.Name;
 
@@ -181,7 +238,7 @@ namespace FlexTable.ViewModel
 
         public void CancelIndexing()
         {
-            IsIndexTooltipVisible = false;
+            IsIndexing = false;
             IndexedColumnViewModel = null;
             view.ExplorationView.TopPageViewModel.Hide();
 
@@ -190,6 +247,8 @@ namespace FlexTable.ViewModel
 
         public void PreviewRows(ColumnViewModel columnViewModel, Model.Category category)
         {
+            isPreviewing = true;
+
             Int32 index = 0;
             Double rowHeight = (Double)App.Current.Resources["RowHeight"];
             foreach (View.RowPresenter rowPresenter in allRowPresenters)
@@ -214,57 +273,41 @@ namespace FlexTable.ViewModel
 
         public void CancelPreviewRows()
         {
+            isPreviewing = false;
             PaddedSheetHeight = SheetViewModel.SheetHeight > SheetViewHeight ? SheetViewModel.SheetHeight : SheetViewHeight;
             view.TableView.RowHeaderPresenter.SetRowNumber(rowViewModels.Count);
             view.TableView.ShowTableCanvas();
+            view.TableView.TableScrollViewer.ChangeView(null, 0, null);
         }
 
-/*        public void MarkColumnDisabled(Model.Column movingColumn)
+        public void UpdateCellXPosition()
         {
-            if (!movingColumn.Enabled) return;
+            Storyboard sb = new Storyboard();
 
-            movingColumn.Enabled = false;
-            IEnumerable<Model.Column> nexts = sheet.Columns.Where(c => c.Index > movingColumn.Index);
-
-            foreach (Model.Column column in nexts)
+            foreach (ColumnViewModel columnViewModel in SheetViewModel.ColumnViewModels)
             {
-                column.Index--;
+                if (columnViewModel.IsXDirty)
+                {
+                    columnViewModel.IsXDirty = false;
+
+                    foreach(View.RowPresenter rowPresenter in rowPresenters) {
+                        
+                        sb.Children.Add(
+                            Util.Animator.Generate(rowPresenter.CellPresenters[columnViewModel.Index], "(Canvas.Left)", columnViewModel.X)
+                            );
+                    }
+                }
             }
-            movingColumn.Index = sheet.Columns.Count - 1;
 
-            sheet.UpdateColumnX();
-
-            foreach (View.RowPresenter rowPresenter in rowPresenters)
-            {
-                rowPresenter.UpdateCells();
-            }
-
-            view.UpdateColumnHeaders();
+            sb.Begin();
         }
 
-        public void MarkColumnEnabled(Model.Column movingColumn)
+        public void Sort(ColumnViewModel columnViewModel, Model.SortOption sortOption)
         {
-            if (movingColumn.Enabled) return;
+            sortBy = columnViewModel;
+            this.sortOption = sortOption;
 
-            Int32 index = sheet.Columns.Count(c => c.Enabled);
-            IEnumerable<Model.Column> nexts = sheet.Columns.Where(c => c.Index <= index && !c.Enabled);
-
-            foreach (Model.Column column in nexts)
-            {
-                column.Index++;
-            }
-            movingColumn.Index = index;
-            movingColumn.Enabled = true;
-
-            sheet.UpdateColumnX();
-
-            foreach (View.RowPresenter rowPresenter in rowPresenters)
-            {
-                rowPresenter.UpdateCells();
-            }
-
-            view.UpdateColumnHeaders();
+            UpdateRows();
         }
-        */
     }
 }

@@ -14,6 +14,8 @@ namespace FlexTable.ViewModel
     public class MainPageViewModel : NotifyViewModel
     {
         private IMainPage view;
+        public IMainPage View { get { return view; } }
+
         private Model.Sheet sheet;
         public Model.Sheet Sheet {
             get { return sheet; }
@@ -31,7 +33,7 @@ namespace FlexTable.ViewModel
 
         private ExplorationViewModel explorationViewModel;
         public ExplorationViewModel ExplorationViewModel { get { return explorationViewModel; } set { explorationViewModel = value; OnPropertyChanged("ExplorationViewModel"); } }
-
+        
         public MainPageViewModel(IMainPage view)
         {
             this.view = view;

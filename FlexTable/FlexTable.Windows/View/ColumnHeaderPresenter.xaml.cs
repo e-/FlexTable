@@ -23,7 +23,6 @@ namespace FlexTable.View
         public ColumnHeaderPresenter()
         {
             this.InitializeComponent();
-
         }
 
         public void Update()

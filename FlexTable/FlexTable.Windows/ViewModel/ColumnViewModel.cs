@@ -10,6 +10,7 @@ namespace FlexTable.ViewModel
     public class ColumnViewModel : NotifyViewModel
     {
         private ViewModel.MainPageViewModel mainPageViewModel;
+        public ViewModel.MainPageViewModel MainPageViewModel { get { return mainPageViewModel; } }
 
         private Model.Column column;
         public Model.Column Column { get { return column; } set { column = value; OnPropertyChanged("ColumnViewModel"); } }
@@ -26,8 +27,8 @@ namespace FlexTable.ViewModel
         private Double x;
         public Double X { get { return x; } set { x = value; OnPropertyChanged("X"); } }
 
-        /*private Boolean enabled = true;
-        public Boolean Enabled { get { return enabled; } set { enabled = value; OnPropertyChanged("Enabled"); } }      */
+        private Boolean isHidden;
+        public Boolean IsHidden { get { return isHidden; } set { isHidden = value; OnPropertyChanged("IsHidden"); } }
 
         public Model.ColumnType Type { get; set; }
         public String TypeString { get { return Type.ToString(); } }
@@ -40,6 +41,8 @@ namespace FlexTable.ViewModel
         private Boolean isDrawnOnChart;
         public Boolean IsDrawnOnChart { get { return isDrawnOnChart; } set { isDrawnOnChart = value; OnPropertyChanged("IsDrawnOnChart"); } }
 
+        public Boolean IsXDirty { get; set; }
+
         private List<Model.Category> categories;
         public List<Model.Category> Categories { get { return categories; } set { categories = value; } }
 
@@ -49,6 +52,32 @@ namespace FlexTable.ViewModel
         public ColumnViewModel(ViewModel.MainPageViewModel mainPageViewModel)
         {
             this.mainPageViewModel = mainPageViewModel;
+        }
+
+        public void Hide()
+        {
+            isHidden = true;
+            foreach (View.RowPresenter rowPresenter in mainPageViewModel.TableViewModel.AllRowPresenters)
+            {
+                rowPresenter.CellPresenters[index].Opacity = 0.15;
+            }
+            foreach (View.RowPresenter rowPresenter in mainPageViewModel.TableViewModel.TemporaryRowPresenters)
+            {
+                rowPresenter.CellPresenters[index].Opacity = 0.15;
+            }
+        }
+
+        public void Show()
+        {
+            isHidden = false;
+            foreach (View.RowPresenter rowPresenter in mainPageViewModel.TableViewModel.AllRowPresenters)
+            {
+                rowPresenter.CellPresenters[index].Opacity = 1;
+            }
+            foreach (View.RowPresenter rowPresenter in mainPageViewModel.TableViewModel.TemporaryRowPresenters)
+            {
+                rowPresenter.CellPresenters[index].Opacity = 1;
+            }
         }
     }
 }

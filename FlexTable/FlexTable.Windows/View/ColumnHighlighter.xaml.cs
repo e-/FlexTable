@@ -48,25 +48,39 @@ namespace FlexTable.View
             ColumnViewModel columnViewModel = ColumnViewModel;
             TableViewModel tvm = (this.DataContext as TableViewModel);
 
-            Canvas.SetTop(LowerColumn, tvm.Height - (Double)App.Current.Resources["ColumnHeaderHeight"]);
+            Canvas.SetTop(LowerColumnHeaderWrapperElement, tvm.Height - (Double)App.Current.Resources["ColumnHeaderHeight"]);
 
             if (columnViewModel != null)
             {
                 Int32 columnIndex = columnViewModel.Index;
-
-                TableCanvas.Children.Clear();
+                Int32 index = 0;
 
                 foreach (ViewModel.RowViewModel rowViewModel in tvm.RowViewModels)
                 {
-                    TextBlock cell = new TextBlock()
+                    TextBlock cell;
+                    if (index < TableCanvas.Children.Count)
                     {
-                        Text = rowViewModel.Cells[columnIndex].Content.ToString(),
-                        Style = App.Current.Resources["CellStyle"] as Style,
-                        Width = columnViewModel.Width
-                    };
+                        cell = TableCanvas.Children[index] as TextBlock;
+                        cell.Visibility = Visibility.Visible;
+                    }
+                    else
+                    {
+                        cell = new TextBlock()
+                        {
+                            Style = App.Current.Resources["CellStyle"] as Style
+                        };
+                        TableCanvas.Children.Add(cell);
+                    }
 
+                    cell.Text = rowViewModel.Cells[columnIndex].Content.ToString();
+                    cell.Width = columnViewModel.Width;
                     Canvas.SetTop(cell, rowViewModel.Y);
-                    TableCanvas.Children.Add(cell);
+                    index++;
+                }
+
+                for (Int32 i = index; i < TableCanvas.Children.Count; ++i)
+                {
+                    TableCanvas.Children[i].Visibility = Visibility.Collapsed;
                 }
 
                 
@@ -75,17 +89,17 @@ namespace FlexTable.View
                 if (left - columnViewModel.Width / 2 <= 0)
                 {
                     UpperColumn.RenderTransformOrigin = new Point(0, 0);
-                    LowerColumn.RenderTransformOrigin = new Point(0, 1);
+                    LowerColumnHeaderWrapperElement.RenderTransformOrigin = new Point(0, 1);
                 }
                 else if(left + columnViewModel.Width * 3 / 2 >= tvm.SheetViewWidth)
                 {
                     UpperColumn.RenderTransformOrigin = new Point(1, 0);
-                    LowerColumn.RenderTransformOrigin = new Point(1, 1);
+                    LowerColumnHeaderWrapperElement.RenderTransformOrigin = new Point(1, 1);
                 }
                 else
                 {
                     UpperColumn.RenderTransformOrigin = new Point(0.5, 0);
-                    LowerColumn.RenderTransformOrigin = new Point(0.5, 1);
+                    LowerColumnHeaderWrapperElement.RenderTransformOrigin = new Point(0.5, 1);
                 }
 
                 Canvas.SetLeft(MagnifiedColumn, left);
@@ -98,6 +112,24 @@ namespace FlexTable.View
                 TableScrollViewer.Height = tvm.SheetViewHeight;
                 TableScrollViewer.UpdateLayout();
                 TableScrollViewer.ChangeView(null, tvm.ScrollTop, null, true);
+
+                Canvas.SetLeft(UpperPopupElement, columnViewModel.Width / 2);
+                Canvas.SetLeft(LowerPopupElement, columnViewModel.Width / 2);
+
+                if (columnViewModel.IsHidden)
+                {
+                    UpperRightMenuElement.Visibility = Visibility.Collapsed;
+                    UpperLeftMenuElement.Visibility = Visibility.Visible;
+                    LowerRightMenuElement.Visibility = Visibility.Collapsed;
+                    LowerLeftMenuElement.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    UpperRightMenuElement.Visibility = Visibility.Visible;
+                    UpperLeftMenuElement.Visibility = Visibility.Collapsed;
+                    LowerRightMenuElement.Visibility = Visibility.Visible;
+                    LowerLeftMenuElement.Visibility = Visibility.Collapsed;
+                }
 
                 Brighten.Pause();
                 Darken.Pause();
@@ -125,9 +157,289 @@ namespace FlexTable.View
             Wrapper.Visibility = Visibility.Collapsed;
         }
 
-        private void Border_Tapped(object sender, TappedRoutedEventArgs e)
+        enum Command { Left, Right, Up, Down, None };
+
+        private void UpperColumnHeaderWrapperElement_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
-            // grouping 시작되어야 함
+            UpperDownMenuElement.Show();
+            UpperLeftMenuElement.Show();
+            UpperRightMenuElement.Show();
+        }
+        
+        Command upperSelected = Command.None;
+
+        private void UpperColumnHeaderWrapperElement_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            if (ColumnViewModel == null) return;
+
+            Double x = e.Position.X,
+                   y = e.Position.Y,
+                   height = (Double)App.Current.Resources["ColumnHeaderHeight"];
+
+            Command newSelected = Command.None;
+
+            if(x < 10 && 0 < y && y < height) {
+                newSelected = Command.Left;
+            }
+            else if (x > ColumnViewModel.Width - 10 && 0 < y && y < height)
+            {
+                newSelected = Command.Right;
+            }
+            else if (0 <= x && x < ColumnViewModel.Width && y < 10)
+            {
+                newSelected = Command.Up;
+            }
+            else if (0 <= x && x < ColumnViewModel.Width && y > height - 10)
+            {
+                newSelected = Command.Down;
+            }
+            else
+            {
+                newSelected = Command.None;
+            }
+
+            if (upperSelected != newSelected)
+            {
+                UnhighlightUpperMenu(upperSelected);
+                HighlightUpperMenu(newSelected);
+
+                upperSelected = newSelected;
+            }
+        }
+
+        private void UpperColumnHeaderWrapperElement_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
+        {
+            TableViewModel tvm = (this.DataContext as TableViewModel);
+
+            if (ColumnViewModel != null)
+                ProcessUpperCommand();
+
+            if (!tvm.IsIndexing)
+            {
+                tvm.MainPageViewModel.TableViewModel.IndexedColumnViewModel = null;
+                tvm.MainPageViewModel.View.ExplorationView.TopPageViewModel.Hide();
+            }
+        }
+
+        private void UpperColumnHeaderWrapperElement_PointerReleased(object sender, PointerRoutedEventArgs e)
+        {
+            TableViewModel tvm = (this.DataContext as TableViewModel);
+
+            if (ColumnViewModel != null)
+                ProcessUpperCommand();
+
+            if (!tvm.IsIndexing)
+            {
+                tvm.MainPageViewModel.TableViewModel.IndexedColumnViewModel = null;
+                tvm.MainPageViewModel.View.ExplorationView.TopPageViewModel.Hide();
+            }
+        }
+
+        public void ProcessUpperCommand()
+        {
+            TableViewModel tvm = (this.DataContext as TableViewModel);
+            switch (upperSelected)
+            {
+                case(Command.Left):
+                    tvm.MainPageViewModel.SheetViewModel.BringFront(ColumnViewModel);
+                    UpperLeftMenuElement.Unhighlight();
+                    tvm.CancelIndexing();
+                    break;
+                case(Command.Right):
+                    tvm.MainPageViewModel.SheetViewModel.SetAside(ColumnViewModel);
+                    UpperRightMenuElement.Unhighlight();
+                    tvm.CancelIndexing();
+                    break;
+                case(Command.Down):
+                    tvm.MainPageViewModel.TableViewModel.Sort(ColumnViewModel, Model.SortOption.Descending);
+                    UpperDownMenuElement.Unhighlight();
+                    tvm.CancelIndexing();
+                    break;
+            }
+
+            upperSelected = Command.None;
+            UpperDownMenuElement.Hide();
+            UpperLeftMenuElement.Hide();
+            UpperRightMenuElement.Hide();
+        }
+        
+        void HighlightUpperMenu(Command command)
+        {
+            switch (command)
+            {
+                case Command.Down:
+                    UpperDownMenuElement.Highlight();
+                    break;
+                case Command.Left:
+                    UpperLeftMenuElement.Highlight();
+                    break;
+                case Command.Right:
+                    UpperRightMenuElement.Highlight();
+                    break;
+            }
+        }
+
+        void UnhighlightUpperMenu(Command command)
+        {
+            switch (command)
+            {
+                case Command.Down:
+                    UpperDownMenuElement.Unhighlight();
+                    break;
+                case Command.Left:
+                    UpperLeftMenuElement.Unhighlight();
+                    break;
+                case Command.Right:
+                    UpperRightMenuElement.Unhighlight();
+                    break;
+                case Command.None:
+                    UpperDownMenuElement.Unhighlight();
+                    UpperLeftMenuElement.Unhighlight();
+                    UpperRightMenuElement.Unhighlight();
+                    break;
+            }
+        }
+
+        private void LowerColumnHeaderWrapperElement_PointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            LowerUpMenuElement.Show();
+            LowerRightMenuElement.Show();
+            LowerLeftMenuElement.Show();
+        }
+
+        Command lowerSelected = Command.None;
+
+        private void LowerColumnHeaderWrapperElement_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            if (ColumnViewModel == null) return;
+
+            Double x = e.Position.X,
+                   y = e.Position.Y,
+                   height = (Double)App.Current.Resources["ColumnHeaderHeight"];
+
+            Command newSelected = Command.None;
+
+            if (x < 10 && 0 < y && y < height)
+            {
+                newSelected = Command.Left;
+            }
+            else if (x > ColumnViewModel.Width - 10 && 0 < y && y < height)
+            {
+                newSelected = Command.Right;
+            }
+            else if (0 <= x && x < ColumnViewModel.Width && y < 10)
+            {
+                newSelected = Command.Up;
+            }
+            else if (0 <= x && x < ColumnViewModel.Width && y > height - 10)
+            {
+                newSelected = Command.Down;
+            }
+            else
+            {
+                newSelected = Command.None;
+            }
+
+            if (lowerSelected != newSelected)
+            {
+                UnhighlightLowerMenu(lowerSelected);
+                HighlightLowerMenu(newSelected);
+
+                lowerSelected = newSelected;
+            }
+        }
+
+        private void LowerColumnHeaderWrapperElement_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
+        {
+            TableViewModel tvm = (this.DataContext as TableViewModel);
+
+            if (ColumnViewModel != null)
+                ProcessLowerCommand();
+
+            if (!tvm.IsIndexing)
+            {
+                tvm.MainPageViewModel.TableViewModel.IndexedColumnViewModel = null;
+                tvm.MainPageViewModel.View.ExplorationView.TopPageViewModel.Hide();
+            }
+        }
+
+        private void LowerColumnHeaderWrapperElement_PointerReleased(object sender, PointerRoutedEventArgs e)
+        {
+            TableViewModel tvm = (this.DataContext as TableViewModel);
+
+            if (ColumnViewModel != null)
+                ProcessLowerCommand();
+
+            if (!tvm.IsIndexing)
+            {
+                tvm.MainPageViewModel.TableViewModel.IndexedColumnViewModel = null;
+                tvm.MainPageViewModel.View.ExplorationView.TopPageViewModel.Hide();
+            }
+        }
+
+        public void ProcessLowerCommand()
+        {
+            TableViewModel tvm = (this.DataContext as TableViewModel);
+            switch (lowerSelected)
+            {
+                case (Command.Left):
+                    tvm.MainPageViewModel.SheetViewModel.BringFront(ColumnViewModel);
+                    LowerLeftMenuElement.Unhighlight();
+                    tvm.CancelIndexing();
+                    break;
+                case (Command.Right):
+                    tvm.MainPageViewModel.SheetViewModel.SetAside(ColumnViewModel);
+                    LowerRightMenuElement.Unhighlight();
+                    tvm.CancelIndexing();
+                    break;
+                case (Command.Up):
+                    tvm.MainPageViewModel.TableViewModel.Sort(ColumnViewModel, Model.SortOption.Ascending);
+                    LowerUpMenuElement.Unhighlight();
+                    tvm.CancelIndexing();
+                    break;
+            }
+
+            lowerSelected = Command.None;
+            LowerUpMenuElement.Hide();
+            LowerLeftMenuElement.Hide();
+            LowerRightMenuElement.Hide();
+        }
+
+        void HighlightLowerMenu(Command command)
+        {
+            switch (command)
+            {
+                case Command.Up:
+                    LowerUpMenuElement.Highlight();
+                    break;
+                case Command.Left:
+                    LowerLeftMenuElement.Highlight();
+                    break;
+                case Command.Right:
+                    LowerRightMenuElement.Highlight();
+                    break;
+            }
+        }
+
+        void UnhighlightLowerMenu(Command command)
+        {
+            switch (command)
+            {
+                case Command.Up:
+                    LowerUpMenuElement.Unhighlight();
+                    break;
+                case Command.Left:
+                    LowerLeftMenuElement.Unhighlight();
+                    break;
+                case Command.Right:
+                    LowerRightMenuElement.Unhighlight();
+                    break;
+                case Command.None:
+                    LowerUpMenuElement.Unhighlight();
+                    LowerLeftMenuElement.Unhighlight();
+                    LowerRightMenuElement.Unhighlight();
+                    break;
+            }
         }
     }
 }

@@ -116,12 +116,9 @@ namespace FlexTable.ViewModel
                     mainPageViewModel.TableViewModel.RowViewModels.Select(r => (Double)r.Cells[columnViewModel.Index].Content)
                     );
 
+                pageView.BoxPlot.UpdateLayout();
                 pageView.BoxPlot.Update();
 
-                
-
-                /*List<Tuple<Object, Double>> temp = new List<Tuple<Object, Double>>();
-                temp.Add(new Tuple<Object, Double>("123", 5.0));*/
                 pageView.NumericalHistogram.Data = Util.HistogramCalculator.Bin(
                         pageView.BoxPlot.BoxPlotViewModel.Scale.DomainStart,
                         pageView.BoxPlot.BoxPlotViewModel.Scale.DomainEnd,

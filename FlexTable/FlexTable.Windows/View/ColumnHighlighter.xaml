@@ -5,6 +5,7 @@
     xmlns:local="using:FlexTable.View"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:menu="using:FlexTable.View.ColumnPopupMenu"
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400"
@@ -46,17 +47,20 @@
     </UserControl.Resources>
     
     <Canvas Background="#00000000" x:Name="Wrapper" Visibility="Collapsed">
-        <Canvas x:Name="MagnifiedColumn"> <!-- x position -->
+        <Canvas x:Name="MagnifiedColumn"> <!-- x position -->            
             <StackPanel Background="White" x:Name="UpperColumn">
                 <StackPanel.RenderTransformOrigin>0.5 0</StackPanel.RenderTransformOrigin>
                 <StackPanel.RenderTransform>
                     <CompositeTransform ScaleX="1" ScaleY="1" x:Name="UpperCompositeTransform"></CompositeTransform>
                 </StackPanel.RenderTransform>
-                <Border Background="{StaticResource GridLineBrush}" Height="{StaticResource ColumnHeaderHeight}"
-                        IsHitTestVisible="False" Tapped="Border_Tapped"
+                <Border Background="{StaticResource GridLineBrush}" Height="{StaticResource ColumnHeaderHeight}" 
+                        x:Name="UpperColumnHeaderWrapperElement" PointerPressed="UpperColumnHeaderWrapperElement_PointerPressed"
+                        PointerReleased="UpperColumnHeaderWrapperElement_PointerReleased"
+                        ManipulationMode="All"
+                        ManipulationCompleted="UpperColumnHeaderWrapperElement_ManipulationCompleted"
+                        ManipulationDelta="UpperColumnHeaderWrapperElement_ManipulationDelta"
                         >
-                    <TextBlock Style="{StaticResource ColumnHeaderStyle}" VerticalAlignment="Center" x:Name="UpperColumnHeader"
-                           />
+                        <TextBlock Style="{StaticResource ColumnHeaderStyle}" VerticalAlignment="Center" x:Name="UpperColumnHeader" />
                 </Border>
 
                 <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" 
@@ -70,8 +74,13 @@
                 <Border Height="1000" Background="White" />
             </StackPanel>
 
-            <Border Background="{StaticResource GridLineBrush}" Height="{StaticResource ColumnHeaderHeight}" x:Name="LowerColumn"
-                    IsHitTestVisible="False" Tapped="Border_Tapped">
+            <Border Background="{StaticResource GridLineBrush}" Height="{StaticResource ColumnHeaderHeight}" 
+                    x:Name="LowerColumnHeaderWrapperElement" PointerPressed="LowerColumnHeaderWrapperElement_PointerPressed"
+                    PointerReleased="LowerColumnHeaderWrapperElement_PointerReleased"
+                    ManipulationMode="All"
+                    ManipulationCompleted="LowerColumnHeaderWrapperElement_ManipulationCompleted"
+                    ManipulationDelta="LowerColumnHeaderWrapperElement_ManipulationDelta"
+                    >
                 <Border.RenderTransformOrigin>0.5 1</Border.RenderTransformOrigin>
                 <Border.RenderTransform>
                     <CompositeTransform ScaleX="1" ScaleY="1" x:Name="LowerCompositeTransform"></CompositeTransform>
@@ -80,6 +89,18 @@
                            x:Name="LowerColumnHeader"
                        />
             </Border>
+
+            <Grid x:Name="UpperPopupElement">
+                <menu:Down x:Name="UpperDownMenuElement"></menu:Down>
+                <menu:Right x:Name="UpperRightMenuElement"></menu:Right>
+                <menu:Left x:Name="UpperLeftMenuElement"></menu:Left>
+            </Grid>
+
+            <Grid x:Name="LowerPopupElement" Canvas.Top="930">
+                <menu:Up x:Name="LowerUpMenuElement"></menu:Up>
+                <menu:Right x:Name="LowerRightMenuElement"></menu:Right>
+                <menu:Left x:Name="LowerLeftMenuElement"></menu:Left>
+            </Grid>
         </Canvas>
     </Canvas>
     

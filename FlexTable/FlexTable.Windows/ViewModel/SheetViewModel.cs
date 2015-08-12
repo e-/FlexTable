@@ -167,36 +167,63 @@ namespace FlexTable.ViewModel
             SheetWidth = columnViewModels.Select(c => c.Width).Sum() + (Double)App.Current.Resources["RowHeaderWidth"];
             SheetHeight = allRowViewModels.Count * (Double)App.Current.Resources["RowHeight"];
         }
-        
-        public void Sort(Model.Column column, Boolean isDescending)
+
+        public void SetAside(ColumnViewModel columnViewModel)
         {
-            Int32 sortIndex = sheet.Columns.IndexOf(column);
+            if (columnViewModel.IsHidden) return;
 
-            IOrderedEnumerable<Model.Row> sorted = null;
-            if (isDescending)
-            {
-                sorted = sheet.Rows.ToList().OrderByDescending(r => r.Cells[sortIndex].Content);
-            }
-            else
-            {
-                sorted = sheet.Rows.ToList().OrderBy(r => r.Cells[sortIndex].Content);
-            }
-            //Int32 index = 0;
+            columnViewModel.Hide();
+            IEnumerable<ColumnViewModel> nexts = columnViewModels.Where(c => c.Order > columnViewModel.Order);
 
-            /*foreach (Model.Row row in sorted)
+            foreach (ColumnViewModel cvm in nexts)
             {
-                row.Index = index++;
+                cvm.Order--;
+                cvm.IsXDirty = true;
             }
 
-            foreach (Model.Row row in sheet.Rows)
+            columnViewModel.Order = columnViewModels.Count - 1;
+            columnViewModel.IsXDirty = true;
+
+            UpdateColumnX();
+
+            //mainPageViewModel.TableViewModel.UpdateCellXPosition();
+
+            foreach (View.RowPresenter rowPresenter in mainPageViewModel.TableViewModel.RowPresenters)
             {
-                row.OnPropertyChanged("Y");
+                rowPresenter.UpdateCellsWithoutAnimation();
             }
 
-            foreach (View.RowPresenter rowPresenter in rowPresenters)
+            mainPageViewModel.View.TableView.TopColumnHeader.Update();
+            mainPageViewModel.View.TableView.BottomColumnHeader.Update();
+        }
+
+        public void BringFront(ColumnViewModel columnViewModel)
+        {
+            if (!columnViewModel.IsHidden) return;
+
+            columnViewModel.Show();
+            Int32 order = columnViewModels.Count(c => !c.IsHidden && c.Index < columnViewModel.Index);
+            IEnumerable<ColumnViewModel> nexts = columnViewModels.Where(c => order <= c.Order && c.Order < columnViewModel.Order);
+
+            foreach (ColumnViewModel cvm in nexts)
             {
-                rowPresenter.Update();
-            }*/
+                cvm.Order++;
+                cvm.IsXDirty = true;
+            }
+
+            columnViewModel.Order = order;
+            columnViewModel.IsXDirty = true;
+
+            UpdateColumnX();
+
+            //mainPageViewModel.TableViewModel.UpdateCellXPosition();
+            foreach (View.RowPresenter rowPresenter in mainPageViewModel.TableViewModel.RowPresenters)
+            {
+                rowPresenter.UpdateCellsWithoutAnimation();
+            }
+
+            mainPageViewModel.View.TableView.TopColumnHeader.Update();
+            mainPageViewModel.View.TableView.BottomColumnHeader.Update();
         }
 
         public void Ungroup(ViewModel.ColumnViewModel pivotColumnViewModel)
@@ -471,7 +498,7 @@ namespace FlexTable.ViewModel
                 view.DummyTextBlock.Text = maxValue;
                 view.DummyTextBlock.Measure(new Size(Double.MaxValue, Double.MaxValue));
 
-                columnViewModel.Width = view.DummyTextBlock.ActualWidth;
+                columnViewModel.Width = Math.Max(view.DummyTextBlock.ActualWidth, 40);
             }
         }
 

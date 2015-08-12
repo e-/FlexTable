@@ -1,0 +1,63 @@
+﻿<UserControl
+    x:Class="FlexTable.View.ColumnPopupMenu.Down"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:FlexTable.View.ColumnPopupMenu"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400">
+
+    <UserControl.Resources>
+        <Color x:Key="NormalBorderColor">#CC000000</Color>
+
+        <Storyboard x:Name="ShowStoryboard">
+            <DoubleAnimation Storyboard.TargetName="PopupElement" Storyboard.TargetProperty="Opacity" 
+                             To="1" Duration="0:0:0.2" EasingFunction="{StaticResource QuarticEaseInOut}">
+            </DoubleAnimation>
+            <DoubleAnimation Storyboard.TargetName="PopupElement" Storyboard.TargetProperty="(Canvas.Top)"
+                             To="90" 
+                             Duration="0:0:0.2" EasingFunction="{StaticResource QuarticEaseInOut}">
+            </DoubleAnimation>
+        </Storyboard>
+
+        <Storyboard x:Name="HideStoryboard">
+            <DoubleAnimation Storyboard.TargetName="PopupElement" Storyboard.TargetProperty="Opacity" 
+                             To="0" Duration="0:0:0.2" EasingFunction="{StaticResource QuarticEaseInOut}">
+            </DoubleAnimation>
+            <DoubleAnimation Storyboard.TargetName="PopupElement" Storyboard.TargetProperty="(Canvas.Top)"
+                             To="60" 
+                             Duration="0:0:0.2" EasingFunction="{StaticResource QuarticEaseInOut}">
+            </DoubleAnimation>
+        </Storyboard>
+
+        <Storyboard x:Name="HighlightStoryboard">
+            <ColorAnimation Storyboard.TargetName="PopupBorderBrush" Storyboard.TargetProperty="Color" 
+                            To="{StaticResource HighlightColor1}" Duration="0:0:0.1" EasingFunction="{StaticResource QuarticEaseInOut}"/>
+        </Storyboard>
+        
+        <Storyboard x:Name="UnHighlightStoryboard">
+            <ColorAnimation Storyboard.TargetName="PopupBorderBrush" Storyboard.TargetProperty="Color" 
+                            To="{StaticResource NormalBorderColor}" Duration="0:0:0.1" EasingFunction="{StaticResource QuarticEaseInOut}"/>
+        </Storyboard>
+    </UserControl.Resources>
+
+    <Canvas HorizontalAlignment="Center" VerticalAlignment="Bottom" IsHitTestVisible="False">
+        <Border Width="120" CornerRadius="3" Canvas.Left="-60" Canvas.Top="60" x:Name="PopupElement" Opacity="0">
+            <Border.Background>
+                <SolidColorBrush Color="{StaticResource NormalBorderColor}" x:Name="PopupBorderBrush"/>
+            </Border.Background>
+            <StackPanel>
+                <TextBlock TextAlignment="Center" HorizontalAlignment="Center"
+                                FontSize="14" Foreground="White" Padding="0 5 0 0" >
+                        Sort Descending
+                </TextBlock>
+                <TextBlock FontFamily="FontAwesome" Foreground="White" HorizontalAlignment="Center"
+                                FontSize="24" TextAlignment="Center">
+                        &#xf0d7;
+                </TextBlock>
+            </StackPanel>
+        </Border>
+    </Canvas>
+</UserControl>
