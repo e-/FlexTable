@@ -19,6 +19,9 @@ namespace FlexTable.Util
     {
         public delegate void StrokeAddedEventHandler(InkManager inkManager);
         public event StrokeAddedEventHandler StrokeAdded;
+        
+        private Boolean ignoreSmallStrokes = true;
+        public Boolean IgnoreSmallStrokes { get { return ignoreSmallStrokes; } set { ignoreSmallStrokes = value;  } }
 
         InkManager inkManager = new InkManager();
         InkDrawingAttributes inkDrawingAttributes = new InkDrawingAttributes();
@@ -43,6 +46,12 @@ namespace FlexTable.Util
             root.PointerPressed += PointerPressed;
             root.PointerMoved += PointerMoved;
             root.PointerReleased += PointerReleased;
+            root.PointerExited += root_PointerExited;
+        }
+
+        void root_PointerExited(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
+        {
+            PointerReleased(sender, e);
         }
 
         private void PointerPressed(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
@@ -134,7 +143,7 @@ namespace FlexTable.Util
                         IReadOnlyList<InkStroke> inkStrokes = inkManager.GetStrokes();
                         InkStroke inkStroke = inkStrokes[inkStrokes.Count - 1];
 
-                        if (inkStroke.BoundingRect.Width < 10 && inkStroke.BoundingRect.Height < 10)
+                        if (IgnoreSmallStrokes && inkStroke.BoundingRect.Width < 10 && inkStroke.BoundingRect.Height < 10)
                         {
                             inkStroke.Selected = true;
                             inkManager.DeleteSelected();
@@ -146,7 +155,8 @@ namespace FlexTable.Util
                     }
 
                     pointerDictionary.Remove(id);
-                    StrokeAdded(inkManager);
+                    
+                    if(StrokeAdded != null)StrokeAdded(inkManager);
                 }
 
                 e.Handled = true;

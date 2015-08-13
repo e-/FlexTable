@@ -29,6 +29,7 @@ namespace FlexTable.View
         public d3.View.BarChart PivotBarChart { get { return PivotBarChartElement; } }
         public d3.View.GroupedBarChart PivotGroupedBarChart { get { return PivotGroupedBarChartElement; } }
         public d3.View.BarChart NumericalHistogram { get { return NumericalHistogramElement; } }
+        public CustomHistogramView CustomHistogramView { get { return CustomHistogramViewElement; } }
 
         public ViewModel.PageViewModel PageViewModel { get { return this.DataContext as ViewModel.PageViewModel; } }
         public Storyboard HideStoryboard { get { return HideStoryboardElement; } }

@@ -23,7 +23,7 @@
         
     </UserControl.Resources>
     
-    <Canvas Background="LightGray" x:Name="AxisCanvas">
+    <Canvas x:Name="AxisCanvas">
         <Line x:Name="AxisLine" Style="{StaticResource AxisLineStyle}"></Line>
     </Canvas>
 </UserControl>

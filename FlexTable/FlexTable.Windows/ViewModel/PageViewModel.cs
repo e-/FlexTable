@@ -29,6 +29,9 @@ namespace FlexTable.ViewModel
         PivotTableViewModel pivotTableViewModel;
         public PivotTableViewModel PivotTableViewModel { get { return pivotTableViewModel; } }
 
+        CustomHistogramViewModel customHistogramViewModel;
+        public CustomHistogramViewModel CustomHistogramViewModel { get { return customHistogramViewModel; } }
+
         private Boolean isSummaryVisible = false;
         public Boolean IsSummaryVisible { get { return isSummaryVisible; } set { isSummaryVisible = value; OnPropertyChanged("IsSummaryVisible"); } }
 
@@ -60,6 +63,7 @@ namespace FlexTable.ViewModel
             this.mainPageViewModel = mainPageViewModel;
             this.pageView = pageView;
             this.pivotTableViewModel = new PivotTableViewModel(mainPageViewModel, pageView.PivotTableView);
+            this.customHistogramViewModel = new CustomHistogramViewModel(mainPageViewModel, pageView.CustomHistogramView);
         }
 
         public void ShowSummary(ColumnViewModel columnViewModel)
@@ -136,7 +140,6 @@ namespace FlexTable.ViewModel
                     ColumnViewModel g1 = mainPageViewModel.SheetViewModel.GroupedColumnViewModels[count - 2],
                                     g2 = mainPageViewModel.SheetViewModel.GroupedColumnViewModels[count - 1];
 
-
                     IsPivotGroupedBarChartVisible = true;
 
                     pageView.PivotGroupedBarChart.Data = mainPageViewModel.SheetViewModel
@@ -173,6 +176,13 @@ namespace FlexTable.ViewModel
                 {
                     IsPivotBarChartVisible = false;
                 }
+
+                // TODO: custom histogram 그리기
+                customHistogramViewModel.Show(
+                    mainPageViewModel.TableViewModel.RowViewModels.Select(
+                        r => (Double)r.Cells[columnViewModel.Index].Content
+                    )
+                );                
             }
 
             pageView.UpdateCarousel();
