@@ -1,5 +1,5 @@
 ﻿<UserControl
-    x:Class="d3.View.BarChart"
+    x:Class="d3.View.Scatterplot"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:d3.View"
@@ -8,14 +8,14 @@
     xmlns:com="using:d3.Component"
     mc:Ignorable="d"
     d:DesignHeight="300"
-    d:DesignWidth="400"
-    >
-    
+    d:DesignWidth="400">
+
     <Canvas Width="{Binding Width}" Height="{Binding Height}">
-        <com:Rectangles Data="{Binding ChartData}" WidthGetter="{Binding WidthGetter}" HeightGetter="{Binding HeightGetter}" 
-                               XGetter="{Binding XGetter}" YGetter="{Binding YGetter}" ColorGetter="{Binding ColorGetter}"
-                        x:Name="RectangleElement"/>
-        
+        <com:Circles Data="{Binding ChartData}" RadiusGetter="{Binding RadiusGetter}" 
+                               XGetter="{Binding XGetter}" YGetter="{Binding YGetter}" 
+                              ColorGetter="{Binding ColorGetter}" OpacityGetter="{Binding OpacityGetter}"
+                        x:Name="CircleElement"/>
+
         <com:Axis Orientation="Horizontal" Scale="{Binding XScale}" Canvas.Top="{Binding HorizontalAxisCanvasTop}" Canvas.Left="0" x:Name="HorizontalAxis"
                   Visibility="{Binding HorizontalAxisVisibility}"/>
         <com:Axis Orientation="Vertical" Scale="{Binding YScale}" Canvas.Top="0" Canvas.Left="50" x:Name="VerticalAxis"/>
@@ -36,11 +36,5 @@
                        Visibility="{Binding LegendVisibility}"
                        />
         </Canvas>
-        
-        <com:Texts Data="{Binding ChartData}" TextGetter="{Binding IndicatorTextGetter}"
-                         WidthGetter="{Binding IndicatorWidthGetter}"
-                         XGetter="{Binding IndicatorXGetter}" YGetter="{Binding IndicatorYGetter}" 
-                         Foreground="Black" FontSize="14" x:Name="IndicatorTextElement"
-                   />
     </Canvas>
 </UserControl>

@@ -168,14 +168,17 @@
     <Compile Include="View\CustomHistogramView.xaml.cs">
       <DependentUpon>CustomHistogramView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\DistributionView.xaml.cs">
+      <DependentUpon>DistributionView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\ExplorationView.xaml.cs">
       <DependentUpon>ExplorationView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\MetedataView.xaml.cs">
       <DependentUpon>MetedataView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\NumericalDescriptiveStatisticsView.xaml.cs">
-      <DependentUpon>NumericalDescriptiveStatisticsView.xaml</DependentUpon>
+    <Compile Include="View\DescriptiveStatisticsView.xaml.cs">
+      <DependentUpon>DescriptiveStatisticsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\PageView.xaml.cs">
       <DependentUpon>PageView.xaml</DependentUpon>
@@ -270,6 +273,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\DistributionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\ExplorationView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -278,7 +285,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\NumericalDescriptiveStatisticsView.xaml">
+    <Page Include="View\DescriptiveStatisticsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -89,7 +89,13 @@ namespace d3.Component
             textBlocks.Update();
         }
 
+        /*public Double MaxActualWidth { get { 
+            return borders.Select(tb => tb.ActualWidth).Max(); 
+        } }*/
+
         List<Border> previousBorders = new List<Border>();
+        List<TextBlock> textBlocks = new List<TextBlock>();
+        List<Border> borders = new List<Border>();
 
         public Texts()
         {
@@ -103,6 +109,7 @@ namespace d3.Component
                 TextsCanvas.Children.Remove(border);
             }
             previousBorders.Clear();
+            textBlocks.Clear();
 
             Int32 index = 0;
             foreach (Object datum in Data.List)
@@ -125,7 +132,12 @@ namespace d3.Component
                 Canvas.SetLeft(border, XGetter(datum, index));
                 Canvas.SetTop(border, YGetter(datum, index));
                 index++;
+
                 TextsCanvas.Children.Add(border);
+                textBlocks.Add(textBlock);
+                border.Measure(new Size(Double.MaxValue, Double.MaxValue));
+                borders.Add(border);
+
                 previousBorders.Add(border);
             }
         }

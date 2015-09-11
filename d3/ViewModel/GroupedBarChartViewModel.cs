@@ -104,11 +104,12 @@ namespace d3.ViewModel
             }
         }
 
-        public Func<Object, Int32, Double> IndicatorWidthGetter { get { return (d, index) => 100; /* BarWidth;*/ } }
+        public Func<Object, Int32, Double> IndicatorWidthGetter { get { return (d, index) => 100;} }
         public Func<Object, Int32, String> IndicatorTextGetter { get { return (d, index) => (d as Tuple<Object, Object, Double>).Item3.ToString("0.##"); } }
         public Func<Object, Int32, Double> IndicatorXGetter { get { return (d, index) =>
-            xDictionary[(d as Tuple<Object, Object, Double>).Item1].Map((d as Tuple<Object, Object, Double>).Item2) - 50 /*BarWidth / 2*/; 
+            xDictionary[(d as Tuple<Object, Object, Double>).Item1].Map((d as Tuple<Object, Object, Double>).Item2) - 50; 
         } }
+
         public Func<Object, Int32, Double> IndicatorYGetter { get { return (d, index) => yScale.Map((d as Tuple<Object, Object, Double>).Item3) - 18; } }
 
         public void Update()

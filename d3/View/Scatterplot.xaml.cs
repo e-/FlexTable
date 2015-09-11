@@ -5,7 +5,6 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
-using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -18,11 +17,11 @@ using Windows.UI.Xaml.Navigation;
 
 namespace d3.View
 {
-    public sealed partial class BarChart : UserControl
+    public sealed partial class Scatterplot : UserControl
     {
-        ViewModel.BarChartViewModel viewModel = new ViewModel.BarChartViewModel();
+        ViewModel.ScatterplotViewModel viewModel = new ViewModel.ScatterplotViewModel();
 
-        public IEnumerable<Tuple<Object, Double>> Data
+        public IEnumerable<Tuple<Object, Double, Double>> Data
         {
             set
             {
@@ -38,26 +37,8 @@ namespace d3.View
             get { return (Visibility)GetValue(LegendVisibilityProperty); }
             set { SetValue(LegendVisibilityProperty, value); }
         }
-
-        public static readonly DependencyProperty HorizontalAxisVisibilityProperty =
-            DependencyProperty.Register("HorizontalAxisVisibility", typeof(Visibility), typeof(BarChart), new PropertyMetadata(Visibility.Visible));
-
-        public Visibility HorizontalAxisVisibility
-        {
-            get { return (Visibility)GetValue(HorizontalAxisVisibilityProperty); }
-            set { SetValue(HorizontalAxisVisibilityProperty, value); }
-        }
-
-        public static readonly DependencyProperty AutoColorProperty =
-            DependencyProperty.Register("AutoColor", typeof(Boolean), typeof(BarChart), new PropertyMetadata(true));
-
-        public Boolean AutoColor
-        {
-            get { return (Boolean)GetValue(AutoColorProperty); }
-            set { SetValue(AutoColorProperty, value); }
-        }
-
-        public static readonly DependencyProperty BarPointerPressedProperty = DependencyProperty.Register("BarPointerPressed", typeof(d3.Event.EventHandler), typeof(BarChart), new PropertyMetadata(null));
+        
+        //public static readonly DependencyProperty BarPointerPressedProperty = DependencyProperty.Register("BarPointerPressed", typeof(d3.Event.EventHandler), typeof(BarChart), new PropertyMetadata(null));
 
         /*public d3.Event.EventHandler BarPointerPressed
         {
@@ -76,13 +57,13 @@ namespace d3.View
         public event d3.Event.EventHandler BarPointerPressed;
         public event d3.Event.EventHandler BarPointerReleased;
 
-        public BarChart()
+        public Scatterplot()
         {
             this.InitializeComponent();
             this.DataContext = viewModel;
 
-            RectangleElement.RectanglePointerPressed += RectangleElement_RectanglePointerPressed;
-            RectangleElement.RectanglePointerReleased += RectangleElement_RectanglePointerReleased;
+            /*RectangleElement.RectanglePointerPressed += RectangleElement_RectanglePointerPressed;
+            RectangleElement.RectanglePointerReleased += RectangleElement_RectanglePointerReleased;*/
         }
 
         void RectangleElement_RectanglePointerPressed(object sender, object datum)
@@ -99,15 +80,12 @@ namespace d3.View
 
         public void Update()
         {
-            viewModel.HorizontalAxisVisibility = HorizontalAxisVisibility;
             viewModel.LegendVisibility = LegendVisibility;
-            viewModel.AutoColor = AutoColor;
             viewModel.Width = this.Width;
             viewModel.Height = this.Height;
             viewModel.Update();
 
-            RectangleElement.Update();
-            IndicatorTextElement.Update();
+            CircleElement.Update();
             HorizontalAxis.Update();
             VerticalAxis.Update();
 

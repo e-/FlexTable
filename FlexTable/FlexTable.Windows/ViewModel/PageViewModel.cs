@@ -19,26 +19,36 @@ namespace FlexTable.ViewModel
     {
         private ColumnViewModel columnViewModel;
         public ColumnViewModel ColumnViewModel { get { return columnViewModel; } set { columnViewModel = value; OnPropertyChanged("ColumnViewModel"); } }
-
-        private DescriptiveStatisticsResult boxPlotViewModel;
-        public DescriptiveStatisticsResult BoxPlotViewModel { get { return boxPlotViewModel; } set { boxPlotViewModel = value; OnPropertyChanged("BoxPlotViewModel"); } }
-
+        
         MainPageViewModel mainPageViewModel;
         public MainPageViewModel MainPageViewModel { get { return mainPageViewModel; } }
 
-        PivotTableViewModel pivotTableViewModel;
+        /*PivotTableViewModel pivotTableViewModel;
         public PivotTableViewModel PivotTableViewModel { get { return pivotTableViewModel; } }
 
         CustomHistogramViewModel customHistogramViewModel;
         public CustomHistogramViewModel CustomHistogramViewModel { get { return customHistogramViewModel; } }
+        */
 
         private Boolean isSummaryVisible = false;
         public Boolean IsSummaryVisible { get { return isSummaryVisible; } set { isSummaryVisible = value; OnPropertyChanged("IsSummaryVisible"); } }
 
+        private Boolean isBarChartVisible = false;
+        public Boolean IsBarChartVisible { get { return isBarChartVisible; } set { isBarChartVisible = value; OnPropertyChanged("IsBarChartVisible"); } }
+
+        private Boolean isDescriptiveStatisticsVisible = false;
+        public Boolean IsDescriptiveStatisticsVisible { get { return isDescriptiveStatisticsVisible; } set { isDescriptiveStatisticsVisible = value; OnPropertyChanged("IsDescriptiveStatisticsVisible"); } }
+        
+        private Boolean isDistributionVisible = false;
+        public Boolean IsDistributionVisible { get { return isDistributionVisible; } set { isDistributionVisible = value; OnPropertyChanged("IsDistributionVisible"); } }
+
         private Boolean isGroupedBarChartVisible = false;
         public Boolean IsGroupedBarChartVisible { get { return isGroupedBarChartVisible; } set { isGroupedBarChartVisible = value; OnPropertyChanged("IsGroupedBarChartVisible"); } }
 
-        private Boolean isPivotTableVisible = false;
+        private Boolean isScatterplotVisible = false;
+        public Boolean IsScatterplotVisible { get { return isScatterplotVisible; } set { isScatterplotVisible = value; OnPropertyChanged("IsScatterplotVisible"); } }
+
+        /*private Boolean isPivotTableVisible = false;
         public Boolean IsPivotTableVisible { get { return isPivotTableVisible; } set { isPivotTableVisible = value; OnPropertyChanged("IsPivotTableVisible"); } }                                                                                                                                                     
 
         private Boolean isCategoricalColumn;
@@ -53,6 +63,9 @@ namespace FlexTable.ViewModel
         private Boolean isPivotGroupedBarChartVisible;
         public Boolean IsPivotGroupedBarChartVisible { get { return isPivotGroupedBarChartVisible; } set { isPivotGroupedBarChartVisible = value; OnPropertyChanged("IsPivotGroupedBarChartVisible"); } }
 
+        private Boolean isCustomHistogramVisible;
+        public Boolean IsCustomHistogramVisible { get { return isCustomHistogramVisible; } set { isCustomHistogramVisible = value; OnPropertyChanged("IsCustomHistogramVisible"); } }*/
+
         private Boolean isGroupedBy = false;
         public Boolean IsGroupedBy { get { return isGroupedBy; } set { isGroupedBy = value; OnPropertyChanged("IsGroupedBy"); } }
 
@@ -62,129 +75,165 @@ namespace FlexTable.ViewModel
         {
             this.mainPageViewModel = mainPageViewModel;
             this.pageView = pageView;
-            this.pivotTableViewModel = new PivotTableViewModel(mainPageViewModel, pageView.PivotTableView);
-            this.customHistogramViewModel = new CustomHistogramViewModel(mainPageViewModel, pageView.CustomHistogramView);
+            //this.pivotTableViewModel = new PivotTableViewModel(mainPageViewModel, pageView.PivotTableView);
+            //this.customHistogramViewModel = new CustomHistogramViewModel(mainPageViewModel, pageView.CustomHistogramView);
         }
 
         public void ShowSummary(ColumnViewModel columnViewModel)
         {
             IsSummaryVisible = true;
+            IsBarChartVisible = false;
+            IsDescriptiveStatisticsVisible = false;
+            IsDistributionVisible = false;
+            IsGroupedBarChartVisible = false;
+            IsScatterplotVisible = false;
 
             ColumnViewModel = columnViewModel;
 
-            if (columnViewModel.Type == Model.ColumnType.Categorical)
-            {
-                IsCategoricalColumn = true;
-                IsNumericalColumn = false;
-                IsPivotBarChartVisible = false;
-                // bar and pie
+            List<ColumnViewModel> selectedColumnViewModels = mainPageViewModel.ExplorationViewModel.SelectedColumnViewModels;
 
-                // grouped bar chart가 될 수도 있음.
+            List<ColumnViewModel> numericalColumns = selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical).ToList();
+            List<ColumnViewModel> categoricalColumns = selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).ToList();
+
+            switch (columnViewModel.Type)
+            {
+                case ColumnType.Categorical:
+                    categoricalColumns.Add(columnViewModel);
+                    break;
+                case ColumnType.Numerical:
+                    numericalColumns.Add(columnViewModel);
+                    break;
+            }
+
+            List<GroupedRows> groupedRows = null;
+            Int32 numericalCount = numericalColumns.Count;
+            Int32 categoricalCount = categoricalColumns.Count;
+
+            if (categoricalColumns.Count > 0)
+            {
+                groupedRows = SheetViewModel.GroupRecursive(mainPageViewModel.SheetViewModel.Sheet.Rows.ToList(), categoricalColumns, 0);
+            }
+
+
+            if (categoricalCount == 1 && numericalCount == 0)
+            {
+                IsBarChartVisible = true;
+
                 pageView.BarChart.Data = mainPageViewModel.SheetViewModel.CountByColumnViewModel(columnViewModel)
                     .OrderBy(t => t.Item1.Order)
                     .Select(t => new Tuple<Object, Double>(t.Item1, t.Item2));
                 pageView.BarChart.Update();
-
-                if (mainPageViewModel.SheetViewModel.GroupedColumnViewModels.Count > 1 && !columnViewModel.IsGroupedBy)
-                {
-                    IsPivotTableVisible = true;
-                    pivotTableViewModel.Preview(mainPageViewModel.SheetViewModel.GroupedColumnViewModels, columnViewModel);
-                }
-                else
-                {
-                    IsPivotTableVisible = false;
-                }
-
-                if (mainPageViewModel.SheetViewModel.GroupedColumnViewModels.Count == 1 && !columnViewModel.IsGroupedBy)
-                {
-                    IsGroupedBarChartVisible = true;
-
-                    pageView.GroupedBarChart.Data = mainPageViewModel.SheetViewModel.CountByDoubleColumnViewModel(columnViewModel)
-                        .OrderBy(t => t.Item1.Order * 10000 + t.Item2.Order)
-                        .Select(tp => new Tuple<Object, Object, Double>(tp.Item1.ToString(), tp.Item2.ToString(), tp.Item3));
-                    pageView.GroupedBarChart.Update();
-                }
-                else
-                {
-                    IsGroupedBarChartVisible = false;
-                }
             }
-            else
+            else if (categoricalCount == 0 && numericalCount == 1)
             {
-                IsNumericalColumn = true;
-                IsCategoricalColumn = false;
-                IsPivotTableVisible = false;
-                IsGroupedBarChartVisible = false;
-
-                BoxPlotViewModel = DescriptiveStatistics.Analyze(
+                DescriptiveStatisticsResult result = DescriptiveStatistics.Analyze(
                     mainPageViewModel.TableViewModel.RowViewModels.Select(r => (Double)r.Cells[columnViewModel.Index].Content)
                     );
 
-                pageView.BoxPlot.UpdateLayout();
-                pageView.BoxPlot.Update();
+                IsDescriptiveStatisticsVisible = true;
+                pageView.DescriptiveStatisticsView.DataContext = result;
 
-                pageView.NumericalHistogram.Data = Util.HistogramCalculator.Bin(
-                        pageView.BoxPlot.BoxPlotViewModel.Scale.DomainStart,
-                        pageView.BoxPlot.BoxPlotViewModel.Scale.DomainEnd,
-                        pageView.BoxPlot.BoxPlotViewModel.Scale.Step,
-                        mainPageViewModel.TableViewModel.RowViewModels.Select(r => (Double)r.Cells[columnViewModel.Index].Content)
-                    )
-                    .Select(d => new Tuple<Object, Double>(d.Item1, d.Item3));
+                IsDistributionVisible = true;
+                pageView.DistributionView.Update(
+                    result,
+                    mainPageViewModel.TableViewModel.RowViewModels.Select(r => (Double)r.Cells[columnViewModel.Index].Content)
+                    ); // 히스토그램 업데이트
+            }
+            else if (categoricalCount == 2 && numericalCount == 0)
+            {
+                IsGroupedBarChartVisible = true;
 
-                pageView.NumericalHistogram.Update();
+                pageView.GroupedBarChart.Data = groupedRows
+                            .OrderBy(g => g.Keys[categoricalColumns[0]].Order * 10000 + g.Keys[categoricalColumns[1]].Order)
+                            .Select(g => new Tuple<Object, Object, Double>(
+                                g.Keys[categoricalColumns[0]],
+                                g.Keys[categoricalColumns[1]],
+                                g.Rows.Count
+                            ));
 
-                if (mainPageViewModel.SheetViewModel.GroupedColumnViewModels.Count > 1)
-                {
-                    Int32 count = mainPageViewModel.SheetViewModel.GroupedColumnViewModels.Count;
+                pageView.GroupedBarChart.Update();
+            }
+            else if (categoricalCount == 1 && numericalCount == 1)
+            {
+                IsBarChartVisible = true;
 
-                    ColumnViewModel g1 = mainPageViewModel.SheetViewModel.GroupedColumnViewModels[count - 2],
-                                    g2 = mainPageViewModel.SheetViewModel.GroupedColumnViewModels[count - 1];
-
-                    IsPivotGroupedBarChartVisible = true;
-
-                    pageView.PivotGroupedBarChart.Data = mainPageViewModel.SheetViewModel
-                        .GroupingResult
-                        .OrderBy(g => g.Keys[g1].Order * 10000 + g.Keys[g2].Order)
-                        .Select(g => new Tuple<Object, Object, Double>(
-                            g.Keys[g1], 
-                            g.Keys[g2], 
-                            g.Rows.Select(r => (Double)r.Cells[columnViewModel.Index].Content).Average()
+                pageView.BarChart.Data = groupedRows
+                    .OrderBy(g => g.Keys[categoricalColumns[0]].Order)
+                    .Select(g => new Tuple<Object, Double>(
+                        g.Keys[categoricalColumns[0]],
+                        g.Rows.Select(r => (Double)r.Cells[numericalColumns[0].Index].Content).Average<Double>(r => r)
                         ));
-
-                    pageView.PivotGroupedBarChart.Update();
-                }
-                else
-                {
-                    IsPivotGroupedBarChartVisible = false;
-                }
-
-                if (mainPageViewModel.SheetViewModel.GroupedColumnViewModels.Count == 1)
-                {
-                    IsPivotBarChartVisible = true;
-                    ColumnViewModel groupedColumnViewModel = mainPageViewModel.SheetViewModel.GroupedColumnViewModels.First();
-
-                    pageView.PivotBarChart.Data = mainPageViewModel.SheetViewModel
-                        .GroupingResult
-                        .OrderBy(g => g.Keys[groupedColumnViewModel].Order)
-                        .Select(g => new Tuple<Object, Double>(
-                            g.Keys[groupedColumnViewModel], g.Rows.Select(r => (Double)r.Cells[columnViewModel.Index].Content).Average()
-                        ));
-
-                    pageView.PivotBarChart.Update();
-                }
-                else
-                {
-                    IsPivotBarChartVisible = false;
-                }
-
-                // TODO: custom histogram 그리기
-                customHistogramViewModel.Show(
-                    mainPageViewModel.TableViewModel.RowViewModels.Select(
-                        r => (Double)r.Cells[columnViewModel.Index].Content
-                    )
-                );                
+                pageView.BarChart.Update();
+            }
+            else if (categoricalCount == 0 && numericalCount == 2)
+            {
+                IsScatterplotVisible = true;
+                pageView.Scatterplot.Data = mainPageViewModel.SheetViewModel.Sheet.Rows
+                    .Select(r => new Tuple<Object, Double, Double>(0, (Double)r.Cells[numericalColumns[0].Index].Content, (Double)r.Cells[numericalColumns[1].Index].Content))
+                    ;
+                pageView.Scatterplot.Update();
             }
 
+/*                        
+                    IsPivotTableVisible = false;
+                    IsGroupedBarChartVisible = false;
+
+                    
+                    
+                    if (mainPageViewModel.SheetViewModel.GroupedColumnViewModels.Count > 1)
+                    {
+                        Int32 count = mainPageViewModel.SheetViewModel.GroupedColumnViewModels.Count;
+
+                        ColumnViewModel g1 = mainPageViewModel.SheetViewModel.GroupedColumnViewModels[count - 2],
+                                        g2 = mainPageViewModel.SheetViewModel.GroupedColumnViewModels[count - 1];
+
+                        IsPivotGroupedBarChartVisible = true;
+
+                        pageView.PivotGroupedBarChart.Data = mainPageViewModel.SheetViewModel
+                            .GroupingResult
+                            .OrderBy(g => g.Keys[g1].Order * 10000 + g.Keys[g2].Order)
+                            .Select(g => new Tuple<Object, Object, Double>(
+                                g.Keys[g1], 
+                                g.Keys[g2], 
+                                g.Rows.Select(r => (Double)r.Cells[columnViewModel.Index].Content).Average()
+                            ));
+
+                        pageView.PivotGroupedBarChart.Update();
+                    }
+                    else
+                    {
+                        IsPivotGroupedBarChartVisible = false;
+                    }
+
+                    if (mainPageViewModel.SheetViewModel.GroupedColumnViewModels.Count == 1)
+                    {
+                        IsPivotBarChartVisible = true;
+                        ColumnViewModel groupedColumnViewModel = mainPageViewModel.SheetViewModel.GroupedColumnViewModels.First();
+
+                        pageView.PivotBarChart.Data = mainPageViewModel.SheetViewModel
+                            .GroupingResult
+                            .OrderBy(g => g.Keys[groupedColumnViewModel].Order)
+                            .Select(g => new Tuple<Object, Double>(
+                                g.Keys[groupedColumnViewModel], g.Rows.Select(r => (Double)r.Cells[columnViewModel.Index].Content).Average()
+                            ));
+
+                        pageView.PivotBarChart.Update();
+                    }
+                    else
+                    {
+                        IsPivotBarChartVisible = false;
+                    }
+
+                    IsCustomHistogramVisible = false;
+                    // TODO: custom histogram 그리기
+                    customHistogramViewModel.Show(
+                        mainPageViewModel.TableViewModel.RowViewModels.Select(
+                            r => (Double)r.Cells[columnViewModel.Index].Content
+                        )
+                    );    
+                     */
+
+            
             pageView.UpdateCarousel();
         }
 
@@ -203,12 +252,14 @@ namespace FlexTable.ViewModel
         {
             pageView.GoUp();
             IsGroupedBy = false;
+            pageView.UpdateCarousel();
         }
 
         public void GoDown()
         {
             pageView.GoDown();
             IsGroupedBy = true;
+            pageView.UpdateCarousel();
         }
 
         public void StrokeAdded(InkStroke stroke)

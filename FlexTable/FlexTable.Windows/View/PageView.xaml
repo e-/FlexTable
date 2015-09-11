@@ -88,6 +88,28 @@
                           VerticalScrollMode="Disabled" VerticalScrollBarVisibility="Hidden"
                           x:Name="Carousel" Height="{StaticResource ParagraphHeight}" Width="{StaticResource ParagraphWidth}" ViewChanged="Carousel_ViewChanged" ViewChanging="Carousel_ViewChanging">
                 <StackPanel Orientation="Horizontal" x:Name="ParagraphContainer">
+                    
+                    <Grid Visibility="{Binding IsBarChartVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Bar Chart">
+                        <d3view:BarChart x:Name="BarChartElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}" />
+                    </Grid>
+
+                    <Grid Visibility="{Binding IsDescriptiveStatisticsVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Statistics">
+                        <local:DescriptiveStatisticsView x:Name="DescriptiveStatisticsViewElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}"/>
+                    </Grid>
+
+                    <Grid Visibility="{Binding IsDistributionVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Distribution">
+                        <local:DistributionView x:Name="DistributionViewElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}"/>
+                    </Grid>
+
+                    <Grid Visibility="{Binding IsGroupedBarChartVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Grouped Bar Chart">
+                        <d3view:GroupedBarChart x:Name="GroupedBarChartElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}" />
+                    </Grid>
+
+                    <Grid Visibility="{Binding IsScatterplotVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Scatterplot">
+                        <d3view:Scatterplot x:Name="ScatterplotElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}" />
+                    </Grid>
+
+                    <!--
                     <Grid Visibility="{Binding IsPivotBarChartVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Pivot Chart">
                         <d3view:BarChart x:Name="PivotBarChartElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}" />
                     </Grid>
@@ -96,9 +118,6 @@
                         <d3view:GroupedBarChart x:Name="PivotGroupedBarChartElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}" />
                     </Grid>
 
-                    <Grid Visibility="{Binding IsNumericalColumn, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Custom Histogram">
-                        <local:CustomHistogramView x:Name="CustomHistogramViewElement" Width="{StaticResource ParagraphWidth}" DataContext="{Binding CustomHistogramViewModel}"/>
-                    </Grid>
                     
                     <Grid Visibility="{Binding IsNumericalColumn, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Statistics">
                         <local:NumericalDescriptiveStatisticsView DataContext="{Binding BoxPlotViewModel}" Width="{StaticResource ParagraphWidth}" />
@@ -129,6 +148,10 @@
                     <Grid Visibility="{Binding IsCategoricalColumn, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Histogram">
                         <d3view:BarChart x:Name="BarChartElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}"/>
                     </Grid>
+
+                    <Grid Visibility="{Binding IsCustomHistogramVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Custom Histogram">
+                        <local:CustomHistogramView x:Name="CustomHistogramViewElement" Width="{StaticResource ParagraphWidth}" DataContext="{Binding CustomHistogramViewModel}"/>
+                    </Grid>-->
                 </StackPanel>
             </ScrollViewer>
             <StackPanel x:Name="ParagraphLabelContainer" Height="40" Orientation="Horizontal" HorizontalAlignment="Center"></StackPanel>

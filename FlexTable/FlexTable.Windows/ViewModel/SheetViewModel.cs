@@ -322,7 +322,7 @@ namespace FlexTable.ViewModel
             }
             else
             {
-                groupingResult = GroupRecursive(sheet.Rows.ToList(), 0);
+                groupingResult = GroupRecursive(sheet.Rows.ToList(), groupedColumnViewModels, 0);
                 
                 foreach (GroupedRows groupedRows in groupingResult)
                 {
@@ -364,7 +364,7 @@ namespace FlexTable.ViewModel
             SheetHeight = temporaryRowViewModels.Count * (Double)App.Current.Resources["RowHeight"];
         }
 
-        public List<GroupedRows> GroupRecursive(List<Row> rows, Int32 pivotIndex)
+        public static List<GroupedRows> GroupRecursive(List<Row> rows, List<ColumnViewModel> groupedColumnViewModels, Int32 pivotIndex)
         {            
             ColumnViewModel pivot = groupedColumnViewModels[pivotIndex];
             Dictionary<Category, List<Row>> dict = GetRowsByColumnViewModel(rows, pivot);
@@ -374,7 +374,7 @@ namespace FlexTable.ViewModel
                 List<GroupedRows> groupedRowsList = new List<GroupedRows>();
                 foreach(KeyValuePair<Category, List<Row>> kv in dict)
                 {
-                    List<GroupedRows> ret = GroupRecursive(kv.Value, pivotIndex + 1);
+                    List<GroupedRows> ret = GroupRecursive(kv.Value, groupedColumnViewModels, pivotIndex + 1);
 
                     foreach (GroupedRows groupedRows in ret)
                     {
@@ -421,7 +421,7 @@ namespace FlexTable.ViewModel
             return GetRowsByColumnViewModel(sheet.Rows, columnViewModel).Select(kv => new Tuple<Category, Int32>(kv.Key, kv.Value.Count)).ToList();
         }
 
-        public Dictionary<Category, List<Model.Row>> GetRowsByColumnViewModel(IEnumerable<Row> rows, ColumnViewModel columnViewModel)
+        public static Dictionary<Category, List<Model.Row>> GetRowsByColumnViewModel(IEnumerable<Row> rows, ColumnViewModel columnViewModel)
         {
             Dictionary<Category, List<Model.Row>> dict = new Dictionary<Category, List<Model.Row>>();
             

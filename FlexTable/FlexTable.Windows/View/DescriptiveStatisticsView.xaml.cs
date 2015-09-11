@@ -17,11 +17,12 @@ using Windows.UI.Xaml.Navigation;
 
 namespace FlexTable.View
 {
-    public sealed partial class NumericalDescriptiveStatisticsView : UserControl
+    public sealed partial class DescriptiveStatisticsView : UserControl
     {
-        public NumericalDescriptiveStatisticsView()
+        public DescriptiveStatisticsView()
         {
             this.InitializeComponent();
+            this.DataContext = new Model.DescriptiveStatisticsResult();
         }
     }
 }
