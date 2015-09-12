@@ -12,6 +12,7 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Shapes;
 
@@ -89,16 +90,28 @@ namespace d3.Component
 
         List<Ellipse> previousCircles = new List<Ellipse>();
 
+        Storyboard previousStoryboard;
+
         public void Update()
         {
             Int32 index = 0;
+            Storyboard storyboard = new Storyboard();
+        
+            if (previousStoryboard != null)
+                previousStoryboard.Pause();
+
             foreach (Object datum in Data.List)
             {
                 Ellipse ellipse = null;
-                
-                if(index < CirclesCanvas.Children.Count ) {
+                Boolean newbie = false;
+
+                if (index < CirclesCanvas.Children.Count)
+                {
                     ellipse = CirclesCanvas.Children[index] as Ellipse;
-                } else {
+                }
+                else
+                {
+                    newbie = true;
                     ellipse = new Ellipse()
                     {
                     };
@@ -126,16 +139,29 @@ namespace d3.Component
                     CirclesCanvas.Children.Add(ellipse);
                     previousCircles.Add(ellipse);
                 }
+
+                if (newbie)
+                {
+                    Canvas.SetLeft(ellipse, XGetter(datum, index) - RadiusGetter(datum, index) / 2);
+                    Canvas.SetTop(ellipse, YGetter(datum, index) - RadiusGetter(datum, index) / 2);
+                }
+                else
+                {
+                    storyboard.Children.Add(Util.GenerateDoubleAnimation(ellipse, "(Canvas.Left)", XGetter(datum, index) - RadiusGetter(datum, index) / 2));
+                    storyboard.Children.Add(Util.GenerateDoubleAnimation(ellipse, "(Canvas.Top)", YGetter(datum, index) - RadiusGetter(datum, index) / 2));   
+                }
                 
                 
                 ellipse.Width = RadiusGetter(datum, index);
                 ellipse.Height = RadiusGetter(datum, index);
                 ellipse.Fill = ColorGetter == null ? new SolidColorBrush(Colors.LightGray) : new SolidColorBrush(ColorGetter(datum, index));
                 ellipse.Opacity = OpacityGetter == null ? 1.0 : OpacityGetter(datum, index);
-                Canvas.SetLeft(ellipse, XGetter(datum, index) - RadiusGetter(datum, index)  / 2);
-                Canvas.SetTop(ellipse, YGetter(datum, index) - RadiusGetter(datum, index) / 2);
+
+                
                 index++;
             }
+            storyboard.Begin();
+            previousStoryboard = storyboard;
 
             for (Int32 i = CirclesCanvas.Children.Count - 1; i >= index; --i)
             {

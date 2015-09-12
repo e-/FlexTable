@@ -12,12 +12,13 @@
 
     <StackPanel>
         <d3view:BarChart x:Name="HistogramElement" HorizontalAxisVisibility="Collapsed" LegendVisibility="Collapsed"
-                                         Width="670" Height="265" AutoColor="False"
+                                         Width="670" Height="265"
                                          ></d3view:BarChart>
+        <!--AutoColor="False"-->
 
-        <d3view:BoxPlot Margin="50 0 0 0" x:Name="BoxPlotElement" Min="{Binding Min}" Max="{Binding Max}"
+        <d3view:BoxPlot Margin="60 0 0 0" x:Name="BoxPlotElement" Min="{Binding Min}" Max="{Binding Max}"
                                     FirstQuartile="{Binding FirstQuartile}" ThirdQuartile="{Binding ThirdQuartile}"
-                                    Mean="{Binding Mean}" Median="{Binding Median}" Width="620"
+                                    Mean="{Binding Mean}" Median="{Binding Median}" Width="610"
                                     ></d3view:BoxPlot>
     </StackPanel>
 </UserControl>

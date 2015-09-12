@@ -12,6 +12,7 @@ using Windows.Foundation;
 using Windows.UI.Input.Inking;
 using FlexTable.Model;
 using Windows.UI.Xaml.Media.Animation;
+using Windows.UI.Xaml;
 
 namespace FlexTable.ViewModel
 {
@@ -119,6 +120,8 @@ namespace FlexTable.ViewModel
             {
                 IsBarChartVisible = true;
 
+                pageView.BarChart.HorizontalAxisLabel = columnViewModel.Column.Name;
+                pageView.BarChart.VerticalAxisLabel = String.Format("Frequency");
                 pageView.BarChart.Data = mainPageViewModel.SheetViewModel.CountByColumnViewModel(columnViewModel)
                     .OrderBy(t => t.Item1.Order)
                     .Select(t => new Tuple<Object, Double>(t.Item1, t.Item2));
@@ -143,6 +146,8 @@ namespace FlexTable.ViewModel
             {
                 IsGroupedBarChartVisible = true;
 
+                pageView.GroupedBarChart.HorizontalAxisLabel = categoricalColumns[0].Column.Name;
+                pageView.GroupedBarChart.VerticalAxisLabel = String.Format("Frequency of {0}", categoricalColumns[1].Column.Name);
                 pageView.GroupedBarChart.Data = groupedRows
                             .OrderBy(g => g.Keys[categoricalColumns[0]].Order * 10000 + g.Keys[categoricalColumns[1]].Order)
                             .Select(g => new Tuple<Object, Object, Double>(
@@ -157,6 +162,8 @@ namespace FlexTable.ViewModel
             {
                 IsBarChartVisible = true;
 
+                pageView.BarChart.HorizontalAxisLabel = categoricalColumns[0].Column.Name;
+                pageView.BarChart.VerticalAxisLabel = String.Format("Average of {0}", numericalColumns[0].Column.Name);
                 pageView.BarChart.Data = groupedRows
                     .OrderBy(g => g.Keys[categoricalColumns[0]].Order)
                     .Select(g => new Tuple<Object, Double>(
@@ -168,10 +175,44 @@ namespace FlexTable.ViewModel
             else if (categoricalCount == 0 && numericalCount == 2)
             {
                 IsScatterplotVisible = true;
+                pageView.Scatterplot.LegendVisibility = Visibility.Collapsed;
+                pageView.Scatterplot.HorizontalAxisLabel = numericalColumns[0].Column.Name;
+                pageView.Scatterplot.VerticalAxisLabel = numericalColumns[1].Column.Name;
                 pageView.Scatterplot.Data = mainPageViewModel.SheetViewModel.Sheet.Rows
-                    .Select(r => new Tuple<Object, Double, Double>(0, (Double)r.Cells[numericalColumns[0].Index].Content, (Double)r.Cells[numericalColumns[1].Index].Content))
-                    ;
+                    .Select(r => new Tuple<Object, Double, Double>(0, (Double)r.Cells[numericalColumns[0].Index].Content, (Double)r.Cells[numericalColumns[1].Index].Content));
+                
                 pageView.Scatterplot.Update();
+            }
+            else if (categoricalCount == 3 && numericalCount == 0)
+            {
+                IsBarChartVisible = true;
+                // table을 그린다
+                // 그룹 바차트를 여러개 그려야한다
+            }
+            else if (categoricalCount == 2 && numericalCount == 1)
+            {
+                IsBarChartVisible = true;
+                // 테이블을 그린다
+                // 그룹 바 차트를 그린다
+            }
+            else if (categoricalCount == 1 && numericalCount == 2)
+            {
+                IsScatterplotVisible = true;
+                pageView.Scatterplot.LegendVisibility = Visibility.Visible;
+                pageView.Scatterplot.HorizontalAxisLabel = numericalColumns[0].Column.Name;
+                pageView.Scatterplot.VerticalAxisLabel = numericalColumns[1].Column.Name;
+                pageView.Scatterplot.Data = mainPageViewModel.SheetViewModel.Sheet.Rows
+                    .Select(r => new Tuple<Object, Double, Double>(
+                        r.Cells[categoricalColumns[0].Index].Content,
+                        (Double)r.Cells[numericalColumns[0].Index].Content, 
+                        (Double)r.Cells[numericalColumns[1].Index].Content));
+
+                pageView.Scatterplot.Update();
+            }
+            else if (categoricalCount == 0 && numericalCount == 3)
+            {
+                IsBarChartVisible = true;
+                // 지금 필요없다.
             }
 
 /*                        

@@ -13,6 +13,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using d3.ViewModel;
 
 // 사용자 정의 컨트롤 항목 템플릿에 대한 설명은 http://go.microsoft.com/fwlink/?LinkId=234236에 나와 있습니다.
 
@@ -48,15 +49,34 @@ namespace d3.View
             set { SetValue(HorizontalAxisVisibilityProperty, value); }
         }
 
-        public static readonly DependencyProperty AutoColorProperty =
+        public static readonly DependencyProperty HorizontalAxisLabelProperty =
+            DependencyProperty.Register("HorizontalAxisLabel", typeof(String), typeof(BarChart), new PropertyMetadata(String.Empty));
+
+        public String HorizontalAxisLabel
+        {
+            get { return (String)GetValue(HorizontalAxisLabelProperty); }
+            set { SetValue(HorizontalAxisLabelProperty, value); }
+        }
+
+        public static readonly DependencyProperty VerticalAxisLabelProperty =
+            DependencyProperty.Register("VeritcalAxisLabel", typeof(String), typeof(BarChart), new PropertyMetadata(String.Empty));
+
+        public String VerticalAxisLabel
+        {
+            get { return (String)GetValue(VerticalAxisLabelProperty); }
+            set { SetValue(VerticalAxisLabelProperty, value); }
+        }
+
+        /*public static readonly DependencyProperty AutoColorProperty =
             DependencyProperty.Register("AutoColor", typeof(Boolean), typeof(BarChart), new PropertyMetadata(true));
+        
 
         public Boolean AutoColor
         {
             get { return (Boolean)GetValue(AutoColorProperty); }
             set { SetValue(AutoColorProperty, value); }
         }
-
+        */
         public static readonly DependencyProperty BarPointerPressedProperty = DependencyProperty.Register("BarPointerPressed", typeof(d3.Event.EventHandler), typeof(BarChart), new PropertyMetadata(null));
 
         /*public d3.Event.EventHandler BarPointerPressed
@@ -101,20 +121,40 @@ namespace d3.View
         {
             viewModel.HorizontalAxisVisibility = HorizontalAxisVisibility;
             viewModel.LegendVisibility = LegendVisibility;
-            viewModel.AutoColor = AutoColor;
+            viewModel.HorizontalAxisLabel = HorizontalAxisLabel;
+            viewModel.VerticalAxisLabel = VerticalAxisLabel;
+
             viewModel.Width = this.Width;
             viewModel.Height = this.Height;
-            viewModel.Update();
 
+            //Double 
+            Double legendAreaWidth = 0;
+            if (viewModel.IsLegendVisible)
+            {
+                LegendRectangleElement.Data = new Data()
+                {
+                    List = viewModel.Data.Select(d => d as Object).ToList()
+                };
+                LegendRectangleElement.Update();
+
+                LegendTextElement.Data = new Data()
+                {
+                    List = viewModel.Data.Select(d => d as Object).ToList()
+                };
+                LegendTextElement.Update();
+
+                legendAreaWidth = LegendTextElement.MaxActualWidth + BarChartViewModel.LegendPatchWidth + BarChartViewModel.LegendPatchSpace + BarChartViewModel.PaddingRight;
+            }
+
+            Canvas.SetLeft(LegendPanel, this.Width - legendAreaWidth);
+
+            viewModel.LegendAreaWidth = legendAreaWidth;
+            viewModel.Update();
+           
             RectangleElement.Update();
             IndicatorTextElement.Update();
             HorizontalAxis.Update();
             VerticalAxis.Update();
-
-            LegendRectangleElement.Update();
-            LegendTextElement.Update();
-
-//            Canvas.SetLeft(LegendPanel, 50 - LegendTextElement.MaxActualWidth / 2);
         }
     }
 }

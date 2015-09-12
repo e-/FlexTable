@@ -89,9 +89,9 @@ namespace d3.Component
             textBlocks.Update();
         }
 
-        /*public Double MaxActualWidth { get { 
-            return borders.Select(tb => tb.ActualWidth).Max(); 
-        } }*/
+        public Double MaxActualWidth { get { 
+            return textBlocks.Select(tb => tb.ActualWidth).Max(); 
+        } }
 
         List<Border> previousBorders = new List<Border>();
         List<TextBlock> textBlocks = new List<TextBlock>();

@@ -12,6 +12,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using d3.ViewModel;
 
 // 사용자 정의 컨트롤 항목 템플릿에 대한 설명은 http://go.microsoft.com/fwlink/?LinkId=234236에 나와 있습니다.
 
@@ -37,62 +38,70 @@ namespace d3.View
             get { return (Visibility)GetValue(LegendVisibilityProperty); }
             set { SetValue(LegendVisibilityProperty, value); }
         }
-        
-        //public static readonly DependencyProperty BarPointerPressedProperty = DependencyProperty.Register("BarPointerPressed", typeof(d3.Event.EventHandler), typeof(BarChart), new PropertyMetadata(null));
 
-        /*public d3.Event.EventHandler BarPointerPressed
+        public static readonly DependencyProperty HorizontalAxisVisibilityProperty =
+            DependencyProperty.Register("HorizontalAxisVisibility", typeof(Visibility), typeof(BarChart), new PropertyMetadata(Visibility.Visible));
+
+        public Visibility HorizontalAxisVisibility
         {
-            get { return (d3.Event.EventHandler)GetValue(BarPointerPressedProperty); }
-            set { SetValue(BarPointerPressedProperty, value); }
+            get { return (Visibility)GetValue(HorizontalAxisVisibilityProperty); }
+            set { SetValue(HorizontalAxisVisibilityProperty, value); }
         }
 
-        public static readonly DependencyProperty BarPointerReleasedProperty = DependencyProperty.Register("BarPointerReleased", typeof(d3.Event.EventHandler), typeof(BarChart), new PropertyMetadata(null));
+        public static readonly DependencyProperty HorizontalAxisLabelProperty =
+            DependencyProperty.Register("HorizontalAxisLabel", typeof(String), typeof(BarChart), new PropertyMetadata(String.Empty));
 
-        public d3.Event.EventHandler BarPointerReleased
+        public String HorizontalAxisLabel
         {
-            get { return (d3.Event.EventHandler)GetValue(BarPointerReleasedProperty); }
-            set { SetValue(BarPointerReleasedProperty, value); }
-        }*/
+            get { return (String)GetValue(HorizontalAxisLabelProperty); }
+            set { SetValue(HorizontalAxisLabelProperty, value); }
+        }
 
-        public event d3.Event.EventHandler BarPointerPressed;
-        public event d3.Event.EventHandler BarPointerReleased;
+        public static readonly DependencyProperty VerticalAxisLabelProperty =
+            DependencyProperty.Register("VeritcalAxisLabel", typeof(String), typeof(BarChart), new PropertyMetadata(String.Empty));
+
+        public String VerticalAxisLabel
+        {
+            get { return (String)GetValue(VerticalAxisLabelProperty); }
+            set { SetValue(VerticalAxisLabelProperty, value); }
+        }
 
         public Scatterplot()
         {
             this.InitializeComponent();
             this.DataContext = viewModel;
-
-            /*RectangleElement.RectanglePointerPressed += RectangleElement_RectanglePointerPressed;
-            RectangleElement.RectanglePointerReleased += RectangleElement_RectanglePointerReleased;*/
-        }
-
-        void RectangleElement_RectanglePointerPressed(object sender, object datum)
-        {
-            if (BarPointerPressed != null)
-                BarPointerPressed(sender, datum);
-        }
-
-        void RectangleElement_RectanglePointerReleased(object sender, object datum)
-        {
-            if (BarPointerReleased != null)
-                BarPointerReleased(sender, datum);
         }
 
         public void Update()
         {
+            viewModel.HorizontalAxisVisibility = HorizontalAxisVisibility;
             viewModel.LegendVisibility = LegendVisibility;
+            viewModel.HorizontalAxisLabel = HorizontalAxisLabel;
+            viewModel.VerticalAxisLabel = VerticalAxisLabel;
+
             viewModel.Width = this.Width;
             viewModel.Height = this.Height;
+
+            Double legendAreaWidth = 0;
+            if (viewModel.IsLegendVisible)
+            {
+                viewModel.UpdateLegendData();
+                LegendRectangleElement.Update();
+                LegendTextElement.Update();
+
+                legendAreaWidth = LegendTextElement.MaxActualWidth + ScatterplotViewModel.LegendPatchWidth +
+                    ScatterplotViewModel.LegendPatchSpace + ScatterplotViewModel.PaddingRight;
+            }
+
+            Canvas.SetLeft(LegendPanel, this.Width - legendAreaWidth);
+
+            viewModel.LegendAreaWidth = legendAreaWidth;
+
             viewModel.Update();
 
             CircleElement.Update();
             HorizontalAxis.Update();
             VerticalAxis.Update();
-
-            LegendRectangleElement.Update();
-            LegendTextElement.Update();
-
-//            Canvas.SetLeft(LegendPanel, 50 - LegendTextElement.MaxActualWidth / 2);
         }
     }
 }

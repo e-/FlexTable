@@ -11,6 +11,18 @@ namespace d3.ViewModel
 {
     class BarChartViewModel : Notifiable
     {
+        const Double PaddingLeft = 0;
+        const Double PaddingTop = 30;
+        public const Double PaddingRight = 10;
+        const Double PaddingBottom = 0;
+        const Double HorizontalAxisHeight = 25;
+        const Double HorizontalAxisLabelHeight = 20;
+        const Double VerticalAxisWidth = 40;
+        const Double VerticalAxisLabelWidth = 20;        
+        public const Double LegendPatchWidth = 20;
+        public const Double LegendPatchHeight = 20;
+        public const Double LegendPatchSpace = 10;
+
         private Ordinal xScale = new Ordinal();
         public Ordinal XScale { get { return xScale; } set { xScale = value; OnPropertyChanged("XScale"); } }
 
@@ -18,54 +30,21 @@ namespace d3.ViewModel
         public Linear YScale { get { return yScale; } set { yScale = value; OnPropertyChanged("YScale"); } }
 
         private Double height = 350;
-        public Double Height
-        {
-            get { return height; }
-            set
-            {
-                height = value;
-                if (IsHorizontalAxisVisible)
-                    HorizontalAxisCanvasTop = value - 30;
-                else
-                    HorizontalAxisCanvasTop = value;
-                OnPropertyChanged("Height");
-            }
-        }
+        public Double Height { get { return height; } set { height = value; OnPropertyChanged("Height"); } }
 
         private Double width = 580;
-        public Double Width
-        {
-            get { return width; }
-            set
-            {
-                width = value;
-                if (IsLegendVisible)
-                {
-                    LegendAreaWidth = 140;
-                }
-                else
-                {
-                    LegendAreaWidth = 0;
-                }
-
-                ChartAreaWidth = width - LegendAreaWidth;
-                OnPropertyChanged("Width");
-            }
-        }
+        public Double Width { get { return width; } set { width = value; OnPropertyChanged("Width"); } }
         
-        private Double chartAreaWidth;
-        public Double ChartAreaWidth { get { return chartAreaWidth; } set { chartAreaWidth = value; OnPropertyChanged("ChartAreaWidth"); } }
+        private Double chartAreaEndX;
+        public Double ChartAreaEndX { get { return chartAreaEndX; } set { chartAreaEndX = value; OnPropertyChanged("ChartAreaEndX"); } }
 
-        private Double legendAreaWidth;
-        public Double LegendAreaWidth { get { return legendAreaWidth; } set { legendAreaWidth = value; OnPropertyChanged("LegendAreaWidth"); } }
-
-        private Double horizontalAxisCanvasTop = 300;
-        public Double HorizontalAxisCanvasTop { get { return horizontalAxisCanvasTop; } set { horizontalAxisCanvasTop = value; OnPropertyChanged("HorizontalAxisCanvasTop"); } }
+        private Double chartAreaEndY = 300;
+        public Double ChartAreaEndY { get { return chartAreaEndY; } set { chartAreaEndY = value; OnPropertyChanged("ChartAreaEndY"); } }
 
         private Double BarWidth { get { return Math.Min(60, xScale.RangeBand / 2); } }
 
         public Func<Object, Int32, Double> WidthGetter { get { return (d, index) => BarWidth; } }
-        public Func<Object, Int32, Double> HeightGetter { get { return (d, index) => HorizontalAxisCanvasTop - yScale.Map((d as Tuple<Object, Double>).Item2); } }
+        public Func<Object, Int32, Double> HeightGetter { get { return (d, index) => ChartAreaEndY - yScale.Map((d as Tuple<Object, Double>).Item2); } }
         public Func<Object, Int32, Double> XGetter { get { return (d, index) => xScale.Map((d as Tuple<Object, Double>).Item1) - BarWidth / 2; } }
         public Func<Object, Int32, Double> YGetter { get { return (d, index) => yScale.Map((d as Tuple<Object, Double>).Item2); } }
 
@@ -75,31 +54,22 @@ namespace d3.ViewModel
         private IEnumerable<Tuple<Object, Double>> data;
         public IEnumerable<Tuple<Object, Double>> Data { get { return data; } set { data = value; } }
         
-        public Func<Object, Int32, Double> LegendPatchWidthGetter { get { return (d, index) => 20; } }
-        public Func<Object, Int32, Double> LegendPatchHeightGetter { get { return (d, index) => 20; } }
+        public Func<Object, Int32, Double> LegendPatchWidthGetter { get { return (d, index) => LegendPatchWidth; } }
+        public Func<Object, Int32, Double> LegendPatchHeightGetter { get { return (d, index) => LegendPatchHeight; } }
         public Func<Object, Int32, Double> LegendPatchXGetter { get { return (d, index) => 0; } }
         public Func<Object, Int32, Double> LegendPatchYGetter
         {
             get
             {
-                return (d, index) => (Height - Data.Count() * 20 - (Data.Count() - 1) * 10) / 2 + index * 30;
+                return (d, index) => (Height - Data.Count() * LegendPatchHeight - (Data.Count() - 1) * LegendPatchSpace) / 2 + index * (LegendPatchHeight + LegendPatchSpace);
             }
         }
 
-        public Func<Object, Int32, Double> LegendTextXGetter { get { return (d, index) => 25; } }
+        public Func<Object, Int32, Double> LegendTextXGetter { get { return (d, index) => LegendPatchWidth + LegendPatchSpace; } }
         public Func<Object, Int32, String> LegendTextGetter { get { return (d, index) => (d as Tuple<Object, Double>).Item1.ToString(); } }
         public Func<Object, Int32, Color> LegendTextColorGetter { get { return (d, index) => /*(d as Model.Bin).IsFilteredOut ? Colors.LightGray :*/ Colors.Black; } }
-
         
-        public Func<Object, Int32, Color> ColorGetter
-        {
-            get
-            {
-                if(AutoColor)
-                    return (bin, index) => ColorScheme.Category10.Colors[index % ColorScheme.Category10.Colors.Count];
-                return (bin, index) => ColorScheme.Category10.Colors.First();
-            }
-        }
+        public Func<Object, Int32, Color> ColorGetter { get { return (bin, index) => ColorScheme.Category10.Colors[index % 10]; } }
 
         public Func<Object, Int32, Double> IndicatorWidthGetter { get { return (d, index) => xScale.RangeBand; } }
         public Func<Object, Int32, String> IndicatorTextGetter { get { return (d, index) => (d as Tuple<Object, Double>).Item2.ToString("0.##"); } }
@@ -114,7 +84,35 @@ namespace d3.ViewModel
         public Visibility LegendVisibility { get { return legendVisibility; } set { legendVisibility = value; OnPropertyChanged("LegendVisibility"); } }
         public Boolean IsLegendVisible { get { return legendVisibility == Visibility.Visible; } }
 
-        public Boolean AutoColor { get; set; }
+        private Double horizontalAxisLabelCanvasTop;
+        public Double HorizontalAxisLabelCanvasTop { get { return horizontalAxisLabelCanvasTop; } set { horizontalAxisLabelCanvasTop = value; OnPropertyChanged("HorizontalAxisLabelCanvasTop"); } }
+
+        private Double horizontalAxisLabelCanvasLeft;
+        public Double HorizontalAxisLabelCanvasLeft { get { return horizontalAxisLabelCanvasLeft; } set { horizontalAxisLabelCanvasLeft = value; OnPropertyChanged("HorizontalAxisLabelCanvasLeft"); } }
+
+        private Double horizontalAxisLabelWidth;
+        public Double HorizontalAxisLabelWidth { get { return horizontalAxisLabelWidth; } set { horizontalAxisLabelWidth = value; OnPropertyChanged("HorizontalAxisLabelWidth"); } }
+
+        private Double verticalAxisLabelCanvasTop;
+        public Double VerticalAxisLabelCanvasTop { get { return verticalAxisLabelCanvasTop; } set { verticalAxisLabelCanvasTop = value; OnPropertyChanged("VerticalAxisLabelCanvasTop"); } }
+
+        private Double verticalAxisLabelCanvasLeft;
+        public Double VerticalAxisLabelCanvasLeft { get { return verticalAxisLabelCanvasLeft; } set { verticalAxisLabelCanvasLeft = value; OnPropertyChanged("VerticalAxisLabelCanvasLeft"); } }
+
+        private Double verticalAxisLabelHeight;
+        public Double VerticalAxisLabelHeight { get { return verticalAxisLabelHeight; } set { verticalAxisLabelHeight = value; OnPropertyChanged("VerticalAxisLabelHeight"); } }
+
+        private Double verticalAxisCanvasLeft;
+        public Double VerticalAxisCanvasLeft { get { return verticalAxisCanvasLeft; } set { verticalAxisCanvasLeft = value; OnPropertyChanged("VerticalAxisCanvasLeft"); } }
+
+        private Double legendAreaWidth = 140;
+        public Double LegendAreaWidth { get { return legendAreaWidth; } set { legendAreaWidth = value; OnPropertyChanged("LegendAreaWidth"); } }
+
+        private String horizontalAxisLabel;
+        public String HorizontalAxisLabel { get { return horizontalAxisLabel; } set { horizontalAxisLabel = value; OnPropertyChanged("HorizontalAxisLabel"); } }
+
+        private String verticalAxisLabel;
+        public String VerticalAxisLabel { get { return verticalAxisLabel; } set { verticalAxisLabel = value; OnPropertyChanged("VerticalAxisLabel"); } }
 
         public void Update()
         {
@@ -123,12 +121,39 @@ namespace d3.ViewModel
                 List = data.Select(d => d as Object).ToList()
             };
 
+            if (IsHorizontalAxisVisible)
+            {
+                ChartAreaEndY = height - PaddingBottom - HorizontalAxisHeight - HorizontalAxisLabelHeight;
+            }
+            else
+            {
+                ChartAreaEndY = height - PaddingBottom;
+            }
+
+            if (IsLegendVisible)
+            {
+                ChartAreaEndX = width - PaddingLeft - PaddingRight - LegendAreaWidth;
+            }
+            else
+            {
+                ChartAreaEndX = width - PaddingLeft - PaddingRight;
+            }
+
+            HorizontalAxisLabelCanvasLeft = PaddingLeft + VerticalAxisWidth + VerticalAxisLabelWidth;
+            HorizontalAxisLabelCanvasTop = ChartAreaEndY + HorizontalAxisHeight;
+            HorizontalAxisLabelWidth = ChartAreaEndX - PaddingLeft - VerticalAxisWidth - VerticalAxisLabelWidth;
+
+            VerticalAxisCanvasLeft = PaddingLeft + VerticalAxisLabelWidth + VerticalAxisWidth;
+            VerticalAxisLabelCanvasLeft = PaddingLeft + VerticalAxisLabelWidth / 2 - (ChartAreaEndY - PaddingTop) / 2;
+            VerticalAxisLabelCanvasTop = PaddingTop + (ChartAreaEndY - PaddingTop) / 2;
+            VerticalAxisLabelHeight = ChartAreaEndY - PaddingTop;
+
             yScale = new Linear()
             {
                 DomainStart = 0,
                 DomainEnd = data.Select(d => d.Item2).Max(),
-                RangeStart = HorizontalAxisCanvasTop,
-                RangeEnd = 50
+                RangeStart = ChartAreaEndY,
+                RangeEnd = PaddingTop
             };
 
             yScale.Nice();
@@ -137,8 +162,8 @@ namespace d3.ViewModel
 
             xScale = new Ordinal()
             {
-                RangeStart = 50,
-                RangeEnd = chartAreaWidth
+                RangeStart = VerticalAxisCanvasLeft,
+                RangeEnd = ChartAreaEndX + PaddingLeft
             };
             foreach (Tuple<Object, Double> d in data)
             {
@@ -146,7 +171,6 @@ namespace d3.ViewModel
             }
             XScale = xScale;
 
-            OnPropertyChanged("ColorGetter");
             OnPropertyChanged("ChartData");            
         }
     }
