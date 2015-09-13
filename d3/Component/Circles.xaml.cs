@@ -95,7 +95,10 @@ namespace d3.Component
         public void Update()
         {
             Int32 index = 0;
-            Storyboard storyboard = new Storyboard();
+            Storyboard storyboard = new Storyboard()
+            {
+                BeginTime = TimeSpan.FromMilliseconds(100)
+            };
         
             if (previousStoryboard != null)
                 previousStoryboard.Pause();

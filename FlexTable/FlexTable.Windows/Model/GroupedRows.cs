@@ -13,5 +13,5 @@ namespace FlexTable.Model
 
         private List<Row> rows = new List<Row>();
         public List<Row> Rows { get { return rows; } set { rows = value; } }
-    }
+   } 
 }

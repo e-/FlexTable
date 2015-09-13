@@ -28,7 +28,16 @@ namespace FlexTable.View
 
         public void Update(DescriptiveStatisticsResult result, IEnumerable<Double> data)
         {
-            this.DataContext = result;
+            //this.DataContext = result;
+            //this.UpdateLayout();
+            BoxPlotElement.Min = result.Min;
+            BoxPlotElement.Max = result.Max;
+            BoxPlotElement.FirstQuartile = result.FirstQuartile;
+            BoxPlotElement.Median = result.Median;
+            BoxPlotElement.ThirdQuartile = result.ThirdQuartile;
+            BoxPlotElement.Mean = result.Mean;
+
+
             BoxPlotElement.Update();
 
             d3.Scale.Linear linear = new d3.Scale.Linear()

@@ -24,10 +24,10 @@ namespace FlexTable.ViewModel
         MainPageViewModel mainPageViewModel;
         public MainPageViewModel MainPageViewModel { get { return mainPageViewModel; } }
 
-        /*PivotTableViewModel pivotTableViewModel;
+        PivotTableViewModel pivotTableViewModel;
         public PivotTableViewModel PivotTableViewModel { get { return pivotTableViewModel; } }
 
-        CustomHistogramViewModel customHistogramViewModel;
+        /*CustomHistogramViewModel customHistogramViewModel;
         public CustomHistogramViewModel CustomHistogramViewModel { get { return customHistogramViewModel; } }
         */
 
@@ -49,23 +49,12 @@ namespace FlexTable.ViewModel
         private Boolean isScatterplotVisible = false;
         public Boolean IsScatterplotVisible { get { return isScatterplotVisible; } set { isScatterplotVisible = value; OnPropertyChanged("IsScatterplotVisible"); } }
 
-        /*private Boolean isPivotTableVisible = false;
-        public Boolean IsPivotTableVisible { get { return isPivotTableVisible; } set { isPivotTableVisible = value; OnPropertyChanged("IsPivotTableVisible"); } }                                                                                                                                                     
+        private Boolean isPivotTableVisible = false;
+        public Boolean IsPivotTableVisible { get { return isPivotTableVisible; } set { isPivotTableVisible = value; OnPropertyChanged("IsPivotTableVisible"); } }
 
-        private Boolean isCategoricalColumn;
-        public Boolean IsCategoricalColumn { get { return isCategoricalColumn; } set { isCategoricalColumn = value; OnPropertyChanged("IsCategoricalColumn"); } }
 
-        private Boolean isNumericalColumn;
-        public Boolean IsNumericalColumn { get { return isNumericalColumn; } set { isNumericalColumn = value; OnPropertyChanged("IsNumericalColumn"); } }
-
-        private Boolean isPivotBarChartVisible;
-        public Boolean IsPivotBarChartVisible { get { return isPivotBarChartVisible; } set { isPivotBarChartVisible = value; OnPropertyChanged("IsPivotBarChartVisible"); } }
-
-        private Boolean isPivotGroupedBarChartVisible;
-        public Boolean IsPivotGroupedBarChartVisible { get { return isPivotGroupedBarChartVisible; } set { isPivotGroupedBarChartVisible = value; OnPropertyChanged("IsPivotGroupedBarChartVisible"); } }
-
-        private Boolean isCustomHistogramVisible;
-        public Boolean IsCustomHistogramVisible { get { return isCustomHistogramVisible; } set { isCustomHistogramVisible = value; OnPropertyChanged("IsCustomHistogramVisible"); } }*/
+        private Boolean isCorrelationStatisticsVisible = false;
+        public Boolean IsCorrelationStatisticsVisible { get { return isCorrelationStatisticsVisible; } set { isCorrelationStatisticsVisible = value; OnPropertyChanged("IsCorrelationStatisticsVisible"); } }
 
         private Boolean isGroupedBy = false;
         public Boolean IsGroupedBy { get { return isGroupedBy; } set { isGroupedBy = value; OnPropertyChanged("IsGroupedBy"); } }
@@ -76,7 +65,7 @@ namespace FlexTable.ViewModel
         {
             this.mainPageViewModel = mainPageViewModel;
             this.pageView = pageView;
-            //this.pivotTableViewModel = new PivotTableViewModel(mainPageViewModel, pageView.PivotTableView);
+            this.pivotTableViewModel = new PivotTableViewModel(mainPageViewModel, pageView.PivotTableView);
             //this.customHistogramViewModel = new CustomHistogramViewModel(mainPageViewModel, pageView.CustomHistogramView);
         }
 
@@ -88,6 +77,8 @@ namespace FlexTable.ViewModel
             IsDistributionVisible = false;
             IsGroupedBarChartVisible = false;
             IsScatterplotVisible = false;
+            IsPivotTableVisible = false;
+            IsCorrelationStatisticsVisible = false;
 
             ColumnViewModel = columnViewModel;
 
@@ -174,6 +165,16 @@ namespace FlexTable.ViewModel
             }
             else if (categoricalCount == 0 && numericalCount == 2)
             {
+                CorrelationStatisticsResult result = CorrelationStatistics.Analyze(
+                    numericalColumns[0].Column.Name,
+                    numericalColumns[1].Column.Name,
+                    mainPageViewModel.SheetViewModel.Sheet.Rows.Select(r => (Double)r.Cells[numericalColumns[0].Index].Content),
+                    mainPageViewModel.SheetViewModel.Sheet.Rows.Select(r => (Double)r.Cells[numericalColumns[1].Index].Content)
+                    );
+
+                IsCorrelationStatisticsVisible = true;
+                pageView.CorrelationStatisticsView.DataContext = result;
+
                 IsScatterplotVisible = true;
                 pageView.Scatterplot.LegendVisibility = Visibility.Collapsed;
                 pageView.Scatterplot.HorizontalAxisLabel = numericalColumns[0].Column.Name;
@@ -185,15 +186,43 @@ namespace FlexTable.ViewModel
             }
             else if (categoricalCount == 3 && numericalCount == 0)
             {
-                IsBarChartVisible = true;
-                // table을 그린다
+                IsPivotTableVisible = true;
+
+                pivotTableViewModel.Preview(
+                    selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).ToList(), 
+                    columnViewModel,
+                    new List<ColumnViewModel>(),
+                    groupedRows
+                    );
+
                 // 그룹 바차트를 여러개 그려야한다
             }
             else if (categoricalCount == 2 && numericalCount == 1)
             {
-                IsBarChartVisible = true;
                 // 테이블을 그린다
+                IsPivotTableVisible = true;
+
+                pivotTableViewModel.Preview(
+                    new List<ColumnViewModel>() { categoricalColumns[0] },
+                    categoricalColumns[1],
+                    numericalColumns,
+                    groupedRows
+                    );
+
                 // 그룹 바 차트를 그린다
+                IsGroupedBarChartVisible = true;
+
+                pageView.GroupedBarChart.HorizontalAxisLabel = categoricalColumns[0].Column.Name;
+                pageView.GroupedBarChart.VerticalAxisLabel = String.Format("Average of {0}", numericalColumns[0].Column.Name);
+                pageView.GroupedBarChart.Data = groupedRows
+                            .OrderBy(g => g.Keys[categoricalColumns[0]].Order * 10000 + g.Keys[categoricalColumns[1]].Order)
+                            .Select(g => new Tuple<Object, Object, Double>(
+                                g.Keys[categoricalColumns[0]],
+                                String.Format("{0} {1}", categoricalColumns[1].Column.Name, g.Keys[categoricalColumns[1]]),
+                                g.Rows.Select(row => (Double)row.Cells[numericalColumns[0].Index].Content).Average() // 평균으로
+                            ));
+
+                pageView.GroupedBarChart.Update();
             }
             else if (categoricalCount == 1 && numericalCount == 2)
             {
@@ -208,11 +237,73 @@ namespace FlexTable.ViewModel
                         (Double)r.Cells[numericalColumns[1].Index].Content));
 
                 pageView.Scatterplot.Update();
+
+                // 테이블을 그린다
+                IsPivotTableVisible = true;
+
+                pivotTableViewModel.Preview(
+                    categoricalColumns,
+                    null,
+                    numericalColumns,
+                    groupedRows
+                    );
             }
             else if (categoricalCount == 0 && numericalCount == 3)
             {
                 IsBarChartVisible = true;
                 // 지금 필요없다.
+            }
+            else if (categoricalCount >= 1 && numericalCount == 0)
+            {
+                // 테이블을 그린다
+                IsPivotTableVisible = true;
+
+                pivotTableViewModel.Preview(
+                    categoricalColumns.Where((c, index) => index != categoricalColumns.Count - 1).ToList(),
+                    categoricalColumns.Last(),
+                    numericalColumns,
+                    groupedRows
+                    );
+            }
+            else if (categoricalCount >= 1 && numericalCount == 1)
+            {
+                // 테이블을 그린다
+                IsPivotTableVisible = true;
+
+                pivotTableViewModel.Preview(
+                    categoricalColumns.Where((c, index) => index != categoricalColumns.Count - 1).ToList(),
+                    categoricalColumns.Last(),
+                    numericalColumns,
+                    groupedRows
+                    );
+            }
+            else if (categoricalCount >= 1 && numericalCount > 1)
+            {
+                // 테이블을 그린다
+                IsPivotTableVisible = true;
+
+                if (numericalCount * categoricalColumns.Last().Categories.Count <= 12)
+                {
+                    pivotTableViewModel.Preview(
+                        categoricalColumns.Where((c, index) => index != categoricalColumns.Count - 1).ToList(),
+                        categoricalColumns.Last(),
+                        numericalColumns,
+                        groupedRows
+                        );
+                }
+                else
+                {
+                    pivotTableViewModel.Preview(
+                        categoricalColumns,
+                        null, // 여길 채워서 남은 카테고리컬 하나를 여기로 시각화 가능
+                        numericalColumns,
+                        groupedRows
+                        );
+                }
+            }
+            else
+            {
+                IsBarChartVisible = true;
             }
 
 /*                        

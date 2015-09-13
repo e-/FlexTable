@@ -88,17 +88,17 @@
                           VerticalScrollMode="Disabled" VerticalScrollBarVisibility="Hidden"
                           x:Name="Carousel" Height="{StaticResource ParagraphHeight}" Width="{StaticResource ParagraphWidth}" ViewChanged="Carousel_ViewChanged" ViewChanging="Carousel_ViewChanging">
                 <StackPanel Orientation="Horizontal" x:Name="ParagraphContainer">
-                    
+
                     <Grid Visibility="{Binding IsBarChartVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Bar Chart">
                         <d3view:BarChart x:Name="BarChartElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}" />
                     </Grid>
 
-                    <Grid Visibility="{Binding IsDescriptiveStatisticsVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Statistics">
-                        <local:DescriptiveStatisticsView x:Name="DescriptiveStatisticsViewElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}"/>
-                    </Grid>
-
                     <Grid Visibility="{Binding IsDistributionVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Distribution">
                         <local:DistributionView x:Name="DistributionViewElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}"/>
+                    </Grid>
+                    
+                    <Grid Visibility="{Binding IsDescriptiveStatisticsVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Statistics">
+                        <local:DescriptiveStatisticsView x:Name="DescriptiveStatisticsViewElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}"/>
                     </Grid>
 
                     <Grid Visibility="{Binding IsGroupedBarChartVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Grouped Bar Chart">
@@ -107,6 +107,15 @@
 
                     <Grid Visibility="{Binding IsScatterplotVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Scatterplot">
                         <d3view:Scatterplot x:Name="ScatterplotElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}" />
+                    </Grid>
+
+                    <Grid Visibility="{Binding IsPivotTableVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Pivot Table">
+                        <local:PivotTableView x:Name="PivotTableViewElement" VerticalAlignment="Center"                                              
+                           Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}"></local:PivotTableView>
+                    </Grid>
+
+                    <Grid Visibility="{Binding IsCorrelationStatisticsVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Statistics">
+                        <local:CorrelationStatisticsView x:Name="CorrelationStatisticsViewElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}"/>
                     </Grid>
 
                     <!--

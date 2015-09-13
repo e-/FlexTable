@@ -24,16 +24,12 @@ namespace FlexTable.View
     {
         public d3.View.BarChart BarChart { get { return BarChartElement; } }
         public DescriptiveStatisticsView DescriptiveStatisticsView { get { return DescriptiveStatisticsViewElement; } }
+        public CorrelationStatisticsView CorrelationStatisticsView { get { return CorrelationStatisticsViewElement; } }
         public DistributionView DistributionView { get { return DistributionViewElement; } }
         public d3.View.GroupedBarChart GroupedBarChart { get { return GroupedBarChartElement; } }
         public d3.View.Scatterplot Scatterplot { get { return ScatterplotElement; } }
-
-        /*public PivotTableView PivotTableView { get { return PivotTableViewElement; } }
-        public d3.View.BarChart PivotBarChart { get { return PivotBarChartElement; } }
-        public d3.View.GroupedBarChart PivotGroupedBarChart { get { return PivotGroupedBarChartElement; } }
-        public d3.View.BarChart NumericalHistogram { get { return NumericalHistogramElement; } }
-        public CustomHistogramView CustomHistogramView { get { return CustomHistogramViewElement; } }*/
-
+        public PivotTableView PivotTableView { get { return PivotTableViewElement; } }
+        
         public ViewModel.PageViewModel PageViewModel { get { return this.DataContext as ViewModel.PageViewModel; } }
         public Storyboard HideStoryboard { get { return HideStoryboardElement; } }
         private Int32 activatedParagraphIndex = 0;

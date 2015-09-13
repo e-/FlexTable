@@ -55,9 +55,18 @@
         </Style>
         <Style TargetType="Border" x:Key="MaxBorderStyle" BasedOn="{StaticResource BorderStyle}">
             <Setter Property="Background" Value="#dff0d8" />
+            <Setter Property="BorderBrush" Value="#d6e9c6" />
         </Style>
         <Style TargetType="TextBlock" x:Key="MaxValueTextStyle" BasedOn="{StaticResource ValueTextStyle}">
             <Setter Property="Foreground" Value="#468847" />
+        </Style>
+
+        <Style TargetType="Border" x:Key="MinBorderStyle" BasedOn="{StaticResource BorderStyle}">
+            <Setter Property="Background" Value="#f2dede" />
+            <Setter Property="BorderBrush" Value="#ebccd1" />
+        </Style>
+        <Style TargetType="TextBlock" x:Key="MinValueTextStyle" BasedOn="{StaticResource ValueTextStyle}">
+            <Setter Property="Foreground" Value="#a94442" />
         </Style>
     </UserControl.Resources>
 

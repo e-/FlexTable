@@ -88,6 +88,9 @@ namespace FlexTable.ViewModel
                 view.TableView.BottomColumnHeader.Update();
                 view.TableView.ScrollToColumnViewModel(mainPageViewModel.SheetViewModel.ColumnViewModels.OrderBy(c => c.Order).First());
             }
+            else if(pageView == TopPageView && pageViewModel.ColumnViewModel != null && selectedColumnViewModels.IndexOf(pageViewModel.ColumnViewModel) >= 0) {
+                // 이미 선택된 것 또 선택하는 경우
+            }
             else if (pageViewModel.ColumnViewModel != null && selectedColumnViewModels.IndexOf(pageViewModel.ColumnViewModel) >= 0)
             {
                 // 선택해제 

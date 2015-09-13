@@ -21,7 +21,7 @@
                    Text="{Binding HorizontalAxisLabel}"
                    Width="{Binding HorizontalAxisLabelWidth}" Visibility="{Binding HorizontalAxisVisibility}" FontSize="12"></TextBlock>
 
-        <com:Axis Orientation="Vertical" Scale="{Binding YScale}" Canvas.Top="0" Canvas.Left="50" x:Name="VerticalAxis"/>
+        <com:Axis Orientation="Vertical" Scale="{Binding YScale}" Canvas.Top="0" Canvas.Left="{Binding VerticalAxisCanvasLeft}" x:Name="VerticalAxis"/>
         <TextBlock TextAlignment="Center" Canvas.Top="{Binding VerticalAxisLabelCanvasTop}" Canvas.Left="{Binding VerticalAxisLabelCanvasLeft}"
                    Width="{Binding VerticalAxisLabelHeight}" FontSize="12" Text="{Binding VerticalAxisLabel}">
             <TextBlock.RenderTransformOrigin>0.5 0.5</TextBlock.RenderTransformOrigin>
@@ -34,13 +34,13 @@
             <com:Rectangles Data="{Binding LegendData}" WidthGetter="{Binding LegendPatchWidthGetter}" 
                                    HeightGetter="{Binding LegendPatchHeightGetter}" XGetter="{Binding LegendPatchXGetter}" 
                                    YGetter="{Binding LegendPatchYGetter}" ColorGetter="{Binding LegendColorGetter}"
-                                   Canvas.Left="{Binding ChartAreaWidth}" x:Name="LegendRectangleElement"/>
+                            x:Name="LegendRectangleElement"/>
 
             <com:Texts Data="{Binding LegendData}" TextGetter="{Binding LegendTextGetter}"
                           HeightGetter="{Binding LegendPatchHeightGetter}"
                           XGetter="{Binding LegendTextXGetter}" YGetter="{Binding LegendPatchYGetter}" 
                           ColorGetter="{Binding LegendTextColorGetter}"
-                          Canvas.Left="{Binding ChartAreaWidth}" x:Name="LegendTextElement"/>
+                       x:Name="LegendTextElement"/>
         </Canvas>
 
         <com:Texts Data="{Binding ChartData}" TextGetter="{Binding IndicatorTextGetter}"

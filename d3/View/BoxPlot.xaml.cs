@@ -75,8 +75,8 @@ namespace d3.View
 
         public BoxPlot()
         {
+            this.DataContext = viewModel;
             this.InitializeComponent();
-            this.Canvas.DataContext = viewModel;
         }
 
         public void Update()

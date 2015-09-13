@@ -34,7 +34,7 @@
             <com:Rectangles Data="{Binding LegendData}" WidthGetter="{Binding LegendPatchWidthGetter}" 
                             HeightGetter="{Binding LegendPatchHeightGetter}" XGetter="{Binding LegendPatchXGetter}" 
                             YGetter="{Binding LegendPatchYGetter}" ColorGetter="{Binding LegendColorGetter}"
-                            Canvas.Left="{Binding ChartAreaWidth}" x:Name="LegendRectangleElement"
+                            x:Name="LegendRectangleElement"
                             Visibility="{Binding LegendVisibility}"
                             />
 
@@ -42,7 +42,7 @@
                        HeightGetter="{Binding LegendPatchHeightGetter}"
                        XGetter="{Binding LegendTextXGetter}" YGetter="{Binding LegendPatchYGetter}" 
                        ColorGetter="{Binding LegendTextColorGetter}"
-                       Canvas.Left="{Binding ChartAreaWidth}" x:Name="LegendTextElement"
+                       x:Name="LegendTextElement"
                        Visibility="{Binding LegendVisibility}"
                        />
         </Canvas>
