@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI;
@@ -19,11 +20,6 @@ using Windows.UI.Xaml.Navigation;
 
 namespace FlexTable.View
 {
-    class ColumnHeaderHighlightConverter : Util.BooleanConverter<SolidColorBrush>
-    {
-        public ColumnHeaderHighlightConverter() : base(new SolidColorBrush(Colors.Red), new SolidColorBrush(Color.FromArgb(255, 236, 236, 236))) { }
-    }
-
     public sealed partial class ColumnHeaderCellPresenter : UserControl
     {
         ViewModel.ColumnViewModel columnViewModel;
@@ -46,8 +42,11 @@ namespace FlexTable.View
 
         private void Border_PointerEntered(object sender, PointerRoutedEventArgs e)
         {
-            columnViewModel.MainPageViewModel.TableViewModel.IndexedColumnViewModel = columnViewModel;
-            columnViewModel.MainPageViewModel.ExplorationViewModel.ShowSummary(columnViewModel);
+            if (e.Pointer.PointerDeviceType == PointerDeviceType.Touch)
+            {
+                columnViewModel.MainPageViewModel.TableViewModel.IndexedColumnViewModel = columnViewModel;
+                columnViewModel.MainPageViewModel.ExplorationViewModel.ShowSummary(columnViewModel);
+            }
         }
     }
 }

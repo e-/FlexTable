@@ -18,8 +18,6 @@ namespace FlexTable.View
             }
         }
 
-        public Grid ScrollViewerContentWrapper { get { return ScrollViewerContentWrapperElement; } }
-
         public ColumnHeaderPresenter()
         {
             this.InitializeComponent();
@@ -27,13 +25,32 @@ namespace FlexTable.View
 
         public void Update()
         {
-            Items.UpdateLayout();
+            if (Items.Children.Count == 0)
+            {
+                ViewModel.SheetViewModel sheetViewModel = (this.DataContext as ViewModel.TableViewModel).SheetViewModel;
+                foreach (ViewModel.ColumnViewModel cvm in sheetViewModel.ColumnViewModels)
+                {
+                    ColumnHeaderCellPresenter chcp = new ColumnHeaderCellPresenter()
+                    {
+                        DataContext = cvm
+                    };
+                    Items.Children.Add(chcp);
+                }
+            }
+
+            foreach (UIElement ele in Items.Children)
+            {
+                ColumnHeaderCellPresenter chcp = ele as ColumnHeaderCellPresenter;
+                chcp.Update();
+            }
+
+            /*Items.UpdateLayout();
             foreach (var item in Items.Items)
             {
                 var uiElement = Items.ContainerFromItem(item);
                 ColumnHeaderCellPresenter chcp = VisualTreeHelper.GetChild(uiElement, 0) as ColumnHeaderCellPresenter;
                 chcp.Update();
-            }
+            }*/
         }
     }
 }

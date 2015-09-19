@@ -97,6 +97,8 @@ namespace FlexTable.ViewModel
 
             // 최대 row header 추가
             view.TableView.RowHeaderPresenter.SetMaximumRowNumber(SheetViewModel.AllRowViewModels.Count);
+            view.TableView.TopColumnHeader.Update();
+            view.TableView.BottomColumnHeader.Update();
         }
 
         public void CreateAllRows()
@@ -304,10 +306,32 @@ namespace FlexTable.ViewModel
 
         public void Sort(ColumnViewModel columnViewModel, Model.SortOption sortOption)
         {
+            // 하나의 컬럼으로만 소트가 가능하다 현재는
             sortBy = columnViewModel;
             this.sortOption = sortOption;
 
+            foreach (ColumnViewModel cvm in SheetViewModel.ColumnViewModels)
+            {
+                cvm.IsAscendingSorted = false;
+                cvm.IsDescendingSorted= false;
+            }
+
+            if (sortOption == Model.SortOption.Ascending)
+            {
+                columnViewModel.IsAscendingSorted = true;
+            }
+            else if(sortOption == Model.SortOption.Descending)
+            {
+                columnViewModel.IsDescendingSorted = true;
+            }
             UpdateRows();
+        }
+
+        public void OnAggregativeFunctionChanged(ColumnViewModel columnViewModel)
+        {
+            // 위 아래 컬럼 헤더 업데이트
+            // 는 바인딩으로 자동으로 됨
+
         }
     }
 }

@@ -66,6 +66,9 @@ namespace FlexTable.ViewModel
                 // Preview 풀기
                 mainPageViewModel.TableViewModel.CancelIndexing();
 
+                // 선택 표시 (컬럼 위 아래 헤더 업데이트)
+                columnViewModel.IsSelected = true;
+
                 if (columnViewModel.Type == ColumnType.Categorical) // grouping
                 {
                     // SheetViewModel 에서 grouping 하기, 이건 rowViewModels를 업데이트함
@@ -104,6 +107,9 @@ namespace FlexTable.ViewModel
 
                 // 기존 탑 페이지 지우고 이걸 탑 페이지로 지정
                 view.ExplorationView.RemoveTopPage(pageView);
+
+                // 선택 해제 (컬럼 위 아래 헤더 업데이트)
+                pageViewModel.ColumnViewModel.IsSelected = false;
 
                 if (pageViewModel.ColumnViewModel.Type == ColumnType.Categorical) // grouping 해제해야함
                 {

@@ -12,12 +12,13 @@
             <x:Double x:Key="ColumnHeaderHeight">50</x:Double>
             <SolidColorBrush x:Key="GridLineBrush" Color="#EEEEEE" />
             <Color x:Key="HighlightColor1">#1FAF9b</Color>
-            
+            <SolidColorBrush Color="{StaticResource HighlightColor1}" x:Key="HighlightBrush1" />
+                
             <GridLength x:Key="RowHeaderWidthInGridLength">110</GridLength>
             <GridLength x:Key="ColumnHeaderHeightInGridLength">50</GridLength>
             
             <Style TargetType="TextBlock" x:Key="CellStyle">
-                <Setter Property="Padding" Value="10 4" />
+                <Setter Property="Padding" Value="5 4" />
                 <Setter Property="Height" Value="24" />
                 <Setter Property="TextAlignment" Value="Center" />
                 <Setter Property="FontFamily" Value="Roboto" />

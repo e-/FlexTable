@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace FlexTable.Model
 {
-    public enum AggregationType
+    /*public enum AggregationType
     {
         Average, Maximum
-    }
+    }*/
 }

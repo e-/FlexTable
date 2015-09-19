@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
@@ -16,6 +17,7 @@ namespace FlexTable.View
 
         private void Border_PointerMoved(object sender, PointerRoutedEventArgs e)
         {
+//            if(e.GetCurrentPoint(this).PointerDevice.PointerDeviceType != PointerDeviceType.Touch) return; 
             Point point = e.GetCurrentPoint(this).Position;
             (DataContext as ViewModel.TableViewModel).IndexColumn(e.GetCurrentPoint(this).PointerId, point.Y);
         }

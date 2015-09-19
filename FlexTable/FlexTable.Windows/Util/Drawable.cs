@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ using Windows.UI.Input;
 using Windows.UI.Input.Inking;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
 
@@ -49,15 +51,21 @@ namespace FlexTable.Util
             root.PointerExited += root_PointerExited;
         }
 
-        void root_PointerExited(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
+        void root_PointerExited(object sender, PointerRoutedEventArgs e)
         {
-            PointerReleased(sender, e);
-        }
-
-        private void PointerPressed(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
-        {
+            //Debug.WriteLine("Exited");
             if (e.Pointer.PointerDeviceType == PointerDeviceType.Pen)
             {
+                PointerReleased(sender, e);
+                e.Handled = true;
+            }
+        }
+
+        private void PointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            if (e.Pointer.PointerDeviceType == PointerDeviceType.Pen && e.Pointer.IsInContact)
+            {
+                //Debug.WriteLine("Pressed");
                 PointerPoint pointerPoint = e.GetCurrentPoint(root);
                 if (!pointerPoint.Properties.IsEraser)
                 {
@@ -68,19 +76,28 @@ namespace FlexTable.Util
                     inkManager.Mode = InkManipulationMode.Erasing;
                 }
 
-                inkManager.ProcessPointerDown(pointerPoint);
-                pointerDictionary.Add(e.Pointer.PointerId, pointerPoint.Position);
+                if (pointerDictionary.ContainsKey(e.Pointer.PointerId))
+                {
+                    pointerDictionary[e.Pointer.PointerId] = pointerPoint.Position;
+                }
+                else {
+                    inkManager.ProcessPointerDown(pointerPoint);
+                }
+                pointerDictionary[e.Pointer.PointerId] = pointerPoint.Position;
                 e.Handled = true;
             }
         }
 
-        private void PointerMoved(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
+        private void PointerMoved(object sender, PointerRoutedEventArgs e)
         {
-            if (e.Pointer.PointerDeviceType == PointerDeviceType.Pen)
+            if (e.Pointer.PointerDeviceType == PointerDeviceType.Pen && e.Pointer.IsInContact)
             {
+                //Debug.WriteLine("Moved");
+                
                 PointerPoint pointerPoint = e.GetCurrentPoint(root);
                 uint id = pointerPoint.PointerId;
 
+                //Debug.WriteLine(id) ;
                 if (pointerDictionary.ContainsKey(id))
                 {
                     foreach (PointerPoint point in Enumerable.Reverse(e.GetIntermediatePoints(root))/*.Reverse()*/)
@@ -122,10 +139,12 @@ namespace FlexTable.Util
             }
         }
 
-        private void PointerReleased(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
+        private void PointerReleased(object sender, PointerRoutedEventArgs e)
         {
+            //Debug.WriteLine("Released");
             if (e.Pointer.PointerDeviceType == PointerDeviceType.Pen)
             {
+                //Debug.WriteLine("Released");
                 PointerPoint pointerPoint = e.GetCurrentPoint(root);
                 uint id = pointerPoint.PointerId;
 
@@ -133,7 +152,7 @@ namespace FlexTable.Util
                 {
                     // Give PointerPoint to InkManager
                     inkManager.ProcessPointerUp(pointerPoint);
-
+                    
                     if (inkManager.Mode == InkManipulationMode.Inking)
                     {
                         // Get rid of the little Line segments

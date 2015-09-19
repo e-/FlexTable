@@ -104,8 +104,11 @@ namespace FlexTable.View
 
                 Canvas.SetLeft(MagnifiedColumn, left);
 
-                UpperColumnHeader.Width = LowerColumnHeader.Width = MagnifiedColumn.Width = columnViewModel.Width;
-                UpperColumnHeader.Text = LowerColumnHeader.Text = columnViewModel.Column.Name;
+                UpperColumnHeaderWrapperElement.Width = LowerColumnHeaderWrapperElement.Width = MagnifiedColumn.Width = columnViewModel.Width;
+                UpperColumnHeaderWrapperElement.DataContext = LowerColumnHeaderWrapperElement.DataContext = columnViewModel;
+
+                Canvas.SetLeft(UpperPopupElement, columnViewModel.Width / 2);
+                Canvas.SetLeft(LowerPopupElement, columnViewModel.Width / 2);
 
                 Wrapper.Visibility = Visibility.Visible;
 
@@ -113,8 +116,6 @@ namespace FlexTable.View
                 TableScrollViewer.UpdateLayout();
                 TableScrollViewer.ChangeView(null, tvm.ScrollTop, null, true);
 
-                Canvas.SetLeft(UpperPopupElement, columnViewModel.Width / 2);
-                Canvas.SetLeft(LowerPopupElement, columnViewModel.Width / 2);
 
                 if (columnViewModel.IsHidden)
                 {

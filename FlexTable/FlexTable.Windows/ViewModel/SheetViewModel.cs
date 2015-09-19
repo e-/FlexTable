@@ -76,7 +76,7 @@ namespace FlexTable.ViewModel
             {
                 index = columnViewModel.Index;
                 columnViewModel.Type = Column.GuessColumnType(sheet.Rows.Select(r => r.Cells[index].RawContent));
-                columnViewModel.ContainsString = Column.CheckStringValue(sheet.Rows.Select(r => r.Cells[index].RawContent));
+                Boolean containsString = Column.CheckStringValue(sheet.Rows.Select(r => r.Cells[index].RawContent));
 
                 if (columnViewModel.Type == ColumnType.Categorical)
                 {
@@ -92,7 +92,7 @@ namespace FlexTable.ViewModel
                     }
 
                     // uniqueValues의 순서 정해야 함.
-                    if (columnViewModel.ContainsString)
+                    if (containsString)
                     {
                         uniqueValues = uniqueValues.OrderBy(u => u).ToList();
                     }
@@ -276,7 +276,7 @@ namespace FlexTable.ViewModel
                 groupedColumnViewModel.Order = order++;
             }
 
-            foreach (ColumnViewModel remainingColumnViewModel in columnViewModels.Except(groupedColumnViewModels).OrderBy(d => d.Order))
+            foreach (ColumnViewModel remainingColumnViewModel in columnViewModels.Except(groupedColumnViewModels).OrderBy(d => d.Index))
             {
                 remainingColumnViewModel.Order = order++;
             }
@@ -310,7 +310,7 @@ namespace FlexTable.ViewModel
                     }
                     else //numerical
                     {
-                        Object aggregated = Aggregate(Sheet.Rows.Select(r => r.Cells[columnViewModel.Index].Content), columnViewModel.AggregationType);
+                        Object aggregated = columnViewModel.AggregativeFunction.Aggregate(Sheet.Rows.Select(r => (Double)r.Cells[columnViewModel.Index].Content));
                         cell.RawContent = aggregated.ToString();
                         cell.Content = aggregated;
                     }
@@ -350,7 +350,7 @@ namespace FlexTable.ViewModel
                         }
                         else //numerical
                         {
-                            Object aggregated = Aggregate(groupedRows.Rows.Select(r => r.Cells[columnViewModel.Index].Content), columnViewModel.AggregationType);
+                            Object aggregated = columnViewModel.AggregativeFunction.Aggregate(groupedRows.Rows.Select(r => (Double)r.Cells[columnViewModel.Index].Content));
                             cell.RawContent = aggregated.ToString();
                             cell.Content = aggregated;
                         }
@@ -451,42 +451,6 @@ namespace FlexTable.ViewModel
             return result;
         }
 
-        public void ChangeAggregationType(Int32 columnIndex, Model.AggregationType aggregationType)
-        {
-            /*if (groupedColumn == null) return;
-
-            Model.Column column = sheet.Columns[columnIndex];
-
-            Int32 index = 0;
-            foreach (Model.Bin bin in groupedColumn.Bins)
-            {
-                Model.Row row = rowViewModels[index].Row;
-                column.AggregationType = aggregationType;
-
-                Object aggr = Aggregate(column, bin.Rows.Select(r => r.Cells[columnIndex].Content), aggregationType);
-                row.Cells[columnIndex].RawContent = aggr.ToString();
-                row.Cells[columnIndex].Content = aggr;
-                index++;
-            }
-
-            if (column == chartedColumn)
-            {
-                DrawChart(chartedColumnIndex);
-            }*/
-        }
-
-        public Object Aggregate(IEnumerable<Object> values, Model.AggregationType aggregationType)
-        {
-            switch (aggregationType)
-            {
-                case Model.AggregationType.Average:
-                    return Math.Round(values.Sum(v => (Double)v) / values.Count(), 2);
-                case Model.AggregationType.Maximum:
-                    return values.Max();
-            }
-            throw new Exception("Unknown Aggregation Type");
-        }
-
         public void MeasureColumnWidth()
         {
             foreach (ColumnViewModel columnViewModel in columnViewModels)
@@ -498,7 +462,23 @@ namespace FlexTable.ViewModel
                 view.DummyTextBlock.Text = maxValue;
                 view.DummyTextBlock.Measure(new Size(Double.MaxValue, Double.MaxValue));
 
-                columnViewModel.Width = Math.Max(view.DummyTextBlock.ActualWidth, 40);
+                Double width = view.DummyTextBlock.ActualWidth;
+
+                if (columnViewModel.Type == ColumnType.Numerical)
+                {
+                    view.DummyTextBlock.Text = String.Format("AVG({0})", columnViewModel.Column.Name);
+                    view.DummyTextBlock.Measure(new Size(Double.MaxValue, Double.MaxValue));
+                    if (width < view.DummyTextBlock.ActualWidth)
+                        width = view.DummyTextBlock.ActualWidth;
+                }
+                else if (columnViewModel.Type == ColumnType.Categorical)
+                {
+                    view.DummyTextBlock.Text = columnViewModel.Column.Name;
+                    view.DummyTextBlock.Measure(new Size(Double.MaxValue, Double.MaxValue));
+                    if (width < view.DummyTextBlock.ActualWidth)
+                        width = view.DummyTextBlock.ActualWidth;
+                }
+                columnViewModel.Width = width + 13 /* width of check icon */ + 10 /* width of sort caret*/;
             }
         }
 

@@ -22,21 +22,47 @@
             </DoubleAnimation>
         </Storyboard>
         
-        <local:ColumnHeaderHighlightConverter x:Key="ColumnHeaderHighlightConverter" />
-    </UserControl.Resources>
+        <util:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
 
+    </UserControl.Resources>
+    
     <Grid Height="{StaticResource ColumnHeaderHeight}" 
           Width="{Binding Width}"
           x:Name="Wrapper"
-          PointerEntered="Border_PointerEntered" 
+            PointerEntered="Border_PointerEntered" 
           >
+
         <Grid.RenderTransform>
             <CompositeTransform x:Name="CompositeTransform" />
         </Grid.RenderTransform>
-        
-        <Border Background="Transparent"> <!--0 Background="{Binding IsGroupedBy, Converter={StaticResource ColumnHeaderHighlightConverter}}">-->
-            <TextBlock Text="{Binding Column.Name}" Width="{Binding Width}" 
-                       Style="{StaticResource ColumnHeaderStyle}" VerticalAlignment="Center"/>
-        </Border>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
+                    Background="Transparent"
+                    >
+            <Grid Width="13">
+                <TextBlock FontFamily="FontAwesome" Foreground="{StaticResource HighlightBrush1}" 
+                            FontSize="10" TextAlignment="Right" VerticalAlignment="Center" 
+                            Padding="0 0 3 0" 
+                            Visibility="{Binding IsSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    &#xf00c;
+                </TextBlock>
+            </Grid>
+            <TextBlock Text="{Binding HeaderName}" VerticalAlignment="Center" FontWeight="Bold"
+                       />
+            <Grid Width="10">
+                <TextBlock FontFamily="FontAwesome"
+                           FontSize="10" TextAlignment="Left" VerticalAlignment="Center" 
+                           Padding="3 0 0 0"
+                           Visibility="{Binding IsDescendingSorted, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    &#xf0d7;
+                </TextBlock>
+                <TextBlock FontFamily="FontAwesome"
+                           FontSize="10" TextAlignment="Left" VerticalAlignment="Center" 
+                           Padding="3 0 0 0"
+                           Visibility="{Binding IsAscendingSorted, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    &#xf0d8;
+                </TextBlock>
+            </Grid>
+        </StackPanel>
     </Grid>
 </UserControl>

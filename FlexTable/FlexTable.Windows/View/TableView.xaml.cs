@@ -24,7 +24,10 @@ namespace FlexTable.View
 {
     public sealed partial class TableView : UserControl
     {
-        Drawable drawable = new Drawable();
+        Drawable drawable = new Drawable()
+        {
+            IgnoreSmallStrokes = false
+        };
 
         public Canvas AllRowsTableCanvas { get { return AllRowsCanvasElement; } }
         public Canvas TableCanvas { get { return TableCanvasElement; } }
@@ -33,6 +36,11 @@ namespace FlexTable.View
         public ColumnHeaderPresenter BottomColumnHeader { get { return BottomColumnHeaderElement; } }
         public RowHeaderPresenter RowHeaderPresenter { get { return RowHeaderPresenterElement; } }
         public ScrollViewer TableScrollViewer { get { return TableScrollViewerElement; } }
+        DispatcherTimer timer = new DispatcherTimer()
+        {
+            Interval = TimeSpan.FromMilliseconds(1000)
+        };
+        InkManager inkManager;
 
         public TableView()
         {
@@ -40,6 +48,79 @@ namespace FlexTable.View
             
             drawable.Attach(SheetView, StrokeGrid, NewStrokeGrid);
             drawable.StrokeAdded += RecognizeStrokes;
+            timer.Tick += timer_Tick;
+        }
+
+        async void timer_Tick(object sender, object e)
+        {
+            timer.Stop();
+            if (this.inkManager == null)
+                return;
+
+            IReadOnlyList<InkStroke> strokes = this.inkManager.GetStrokes();
+            Double centerX = strokes[0].BoundingRect.X + strokes[0].BoundingRect.Width / 2 -
+                (Double)App.Current.Resources["RowHeaderWidth"] + TableScrollViewer.HorizontalOffset;
+            TableViewModel tableViewModel = this.DataContext as TableViewModel;
+            ColumnViewModel selectedColumnViewModel = null;
+
+            if (strokes[0].BoundingRect.Y < 100)
+            {
+                foreach (ViewModel.ColumnViewModel columnViewModel in tableViewModel.SheetViewModel.ColumnViewModels)
+                {
+                    if (columnViewModel.X <= centerX && centerX < columnViewModel.X + columnViewModel.Width)
+                    {
+                        selectedColumnViewModel = columnViewModel;
+                        break;
+                    }
+                }
+            }
+
+            IReadOnlyList<InkRecognitionResult> results = await this.inkManager.RecognizeAsync(InkRecognitionTarget.Recent);
+
+            foreach (InkRecognitionResult result in results)
+            {
+                foreach (String candidate in result.GetTextCandidates())
+                {
+                    String upperCandidate = candidate.ToUpper();
+
+                    if (selectedColumnViewModel != null && selectedColumnViewModel.Type == Model.ColumnType.Numerical)
+                    {
+                        switch (upperCandidate)
+                        {
+                            case "MIN":
+                                selectedColumnViewModel.AggregativeFunction = new AggregativeFunctions.MinAggregation();
+                                tableViewModel.OnAggregativeFunctionChanged(selectedColumnViewModel);
+                                Debug.WriteLine("Min selected");
+                                drawable.RemoveAllStrokes();
+                                timer.Stop();
+                                return;
+                            case "MAX":
+                                selectedColumnViewModel.AggregativeFunction = new AggregativeFunctions.MaxAggregation();
+                                tableViewModel.OnAggregativeFunctionChanged(selectedColumnViewModel);
+                                Debug.WriteLine("Max selected");
+                                drawable.RemoveAllStrokes();
+                                timer.Stop();
+                                return;
+                            case "AVG":
+                            case "MEAN":
+                                selectedColumnViewModel.AggregativeFunction = new AggregativeFunctions.AverageAggregation();
+                                tableViewModel.OnAggregativeFunctionChanged(selectedColumnViewModel);
+                                Debug.WriteLine("Mean selected");
+                                drawable.RemoveAllStrokes();
+                                timer.Stop();
+                                return;
+                            case "SUM":
+                                selectedColumnViewModel.AggregativeFunction = new AggregativeFunctions.SumAggregation();
+                                tableViewModel.OnAggregativeFunctionChanged(selectedColumnViewModel);
+                                Debug.WriteLine("Sum selected");
+                                drawable.RemoveAllStrokes();
+                                timer.Stop();
+                                return;
+                        }
+                    }
+                }
+            }
+            drawable.RemoveAllStrokes();
         }
 
         public void AddGuidelines(Int32 count)
@@ -56,64 +137,10 @@ namespace FlexTable.View
             }
         }
 
-        /*async*/ void RecognizeStrokes(InkManager inkManager)
+        void RecognizeStrokes(InkManager inkManager)
         {
-            /*try
-            {
-                IReadOnlyList<InkStroke> strokes = inkManager.GetStrokes();
-                Double centerX = strokes[0].BoundingRect.X + strokes[0].BoundingRect.Width / 2 -
-                    (Double)App.Current.Resources["RowHeaderWidth"] + TableScrollViewer.HorizontalOffset;
-                ViewModel.MainPageViewModel mainPageViewModel = this.DataContext as ViewModel.MainPageViewModel;
-
-                Int32 columnIndex = -1, index = 0;
-                foreach (Model.Column column in mainPageViewModel.Sheet.Columns)
-                {
-                    if (column.X <= centerX && centerX < column.X + column.Width)
-                    {
-                        columnIndex = index;
-                        break;
-                    }
-                    index++;
-                }
-
-
-                IReadOnlyList<InkRecognitionResult> results = await inkManager.RecognizeAsync(InkRecognitionTarget.Recent);
-
-                foreach (InkRecognitionResult result in results)
-                {
-                    foreach (String candidate in result.GetTextCandidates())
-                    {
-                        Debug.WriteLine(candidate);
-
-                        if (candidate == "a" || candidate == "A")
-                        {
-                            //mainPageViewModel.ChangeAggregationType(columnIndex, Model.AggregationType.Average);
-                            drawable.RemoveAllStrokes();
-                            return;
-                        }
-
-                        if (candidate == "m" || candidate == "M")
-                        {
-                            //mainPageViewModel.ChangeAggregationType(columnIndex, Model.AggregationType.Maximum);
-                            drawable.RemoveAllStrokes();
-                            return;
-                        }
-
-                        if (candidate == "v" || candidate == "V")
-                        {
-                            mainPageViewModel.DrawChart(columnIndex);
-                            drawable.RemoveAllStrokes();
-                            return;
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e.ToString());
-            }
-
-            drawable.RemoveAllStrokes();*/
+            timer.Start();
+            this.inkManager = inkManager;
         }
 
         public void ScrollToColumnViewModel(ViewModel.ColumnViewModel columnViewModel)
