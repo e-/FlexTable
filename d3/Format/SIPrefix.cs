@@ -23,7 +23,7 @@ namespace d3.Format
             if (value >= 1000)
                 return (value / 1000).ToString("#.#") + "K";
 
-            return value.ToString();//.ToString("#,0");
+            return value.ToString("0.###"); //);//.ToString("#,0");
         }
     }
 }

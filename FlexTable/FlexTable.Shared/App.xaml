@@ -9,6 +9,7 @@
         <ResourceDictionary>
             <x:Double x:Key="RowHeight">20</x:Double>
             <x:Double x:Key="RowHeaderWidth">110</x:Double>
+            <x:Double x:Key="HalfRowHeaderWidth">55</x:Double>
             <x:Double x:Key="ColumnHeaderHeight">50</x:Double>
             <SolidColorBrush x:Key="GridLineBrush" Color="#EEEEEE" />
             <Color x:Key="HighlightColor1">#1FAF9b</Color>

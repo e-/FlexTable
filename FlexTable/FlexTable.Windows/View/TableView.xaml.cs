@@ -36,6 +36,8 @@ namespace FlexTable.View
         public ColumnHeaderPresenter BottomColumnHeader { get { return BottomColumnHeaderElement; } }
         public RowHeaderPresenter RowHeaderPresenter { get { return RowHeaderPresenterElement; } }
         public ScrollViewer TableScrollViewer { get { return TableScrollViewerElement; } }
+        public ColumnIndexer ColumnIndexer { get { return ColumnIndexerElement; } }
+
         DispatcherTimer timer = new DispatcherTimer()
         {
             Interval = TimeSpan.FromMilliseconds(1000)
@@ -83,7 +85,8 @@ namespace FlexTable.View
                 {
                     String upperCandidate = candidate.ToUpper();
 
-                    if (selectedColumnViewModel != null && selectedColumnViewModel.Type == Model.ColumnType.Numerical)
+                    if (selectedColumnViewModel != null && selectedColumnViewModel.Type == Model.ColumnType.Numerical
+                        && tableViewModel.MainPageViewModel.ExplorationViewModel.SelectedColumnViewModels.Count > 0)
                     {
                         switch (upperCandidate)
                         {

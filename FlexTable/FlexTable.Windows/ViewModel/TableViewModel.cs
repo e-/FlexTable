@@ -99,6 +99,9 @@ namespace FlexTable.ViewModel
             view.TableView.RowHeaderPresenter.SetMaximumRowNumber(SheetViewModel.AllRowViewModels.Count);
             view.TableView.TopColumnHeader.Update();
             view.TableView.BottomColumnHeader.Update();
+
+          
+            view.TableView.ColumnIndexer.Update();
         }
 
         public void CreateAllRows()
@@ -242,8 +245,8 @@ namespace FlexTable.ViewModel
         {
             IsIndexing = false;
             IndexedColumnViewModel = null;
+            view.TableView.ColumnIndexer.HideHelper();
             view.ExplorationView.TopPageViewModel.Hide();
-
             ignoredPointerId = activatedPointerId;
         }
 
@@ -332,6 +335,8 @@ namespace FlexTable.ViewModel
             // 위 아래 컬럼 헤더 업데이트
             // 는 바인딩으로 자동으로 됨
 
+            mainPageViewModel.SheetViewModel.Group();
+            UpdateRows();
         }
     }
 }

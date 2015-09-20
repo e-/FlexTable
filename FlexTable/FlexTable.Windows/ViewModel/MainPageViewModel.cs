@@ -48,6 +48,7 @@ namespace FlexTable.ViewModel
             // rowViewModels 계산
             sheetViewModel.Initialize(sheet);
 
+            
             // 가이드라인 및 헤더 컬럼 추가
             tableViewModel.Initialize();
 
@@ -57,6 +58,7 @@ namespace FlexTable.ViewModel
             // 전체 컬럼을 가지고 있는 것으로 이분화 하기로 했으므로 updateRows대신 CreateAllRows를 함
 
             tableViewModel.CreateAllRows();
+
 
             // tableViewModel.UpdateRows();
 

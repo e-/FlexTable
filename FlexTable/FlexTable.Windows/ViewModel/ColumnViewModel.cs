@@ -8,32 +8,7 @@ using System.Threading.Tasks;
 namespace FlexTable.ViewModel
 {
     public class ColumnViewModel : NotifyViewModel
-    {
-        public static String FormatHeaderName(Model.Column column, Model.ColumnType type, AggregativeFunctions.BaseAggregation aggregativeFunction)
-        {
-            if (type == Model.ColumnType.Categorical)
-                return column.Name;
-
-            if (aggregativeFunction is AggregativeFunctions.MinAggregation)
-            {
-                return String.Format("Min({0})", column.Name);
-            }
-            if (aggregativeFunction is AggregativeFunctions.MaxAggregation)
-            {
-                return String.Format("Max({0})", column.Name);
-            }
-            if (aggregativeFunction is AggregativeFunctions.AverageAggregation)
-            {
-                return String.Format("Avg({0})", column.Name);
-            }
-            if (aggregativeFunction is AggregativeFunctions.SumAggregation)
-            {
-                return String.Format("Sum({0})", column.Name);
-            }
-
-            return column.Name;
-        }
-
+    {     
         private ViewModel.MainPageViewModel mainPageViewModel;
         public ViewModel.MainPageViewModel MainPageViewModel { get { return mainPageViewModel; } }
 
@@ -42,7 +17,7 @@ namespace FlexTable.ViewModel
             get { return column; } 
             set { 
                 column = value;
-                HeaderName = FormatHeaderName(column, Type, aggregativeFunction);
+                OnPropertyChanged("HeaderName");
             }
         }
 
@@ -81,14 +56,43 @@ namespace FlexTable.ViewModel
         private List<Model.Category> categories;
         public List<Model.Category> Categories { get { return categories; } set { categories = value; } }
 
-        private String headerName;
-        public String HeaderName { get { return headerName; } set { headerName = value; OnPropertyChanged("HeaderName"); } }
+        public String HeaderName { 
+            get { return FormatHeaderName(column, Type, aggregativeFunction); } 
+        }
+
+        public String FormatHeaderName(Model.Column column, Model.ColumnType type, AggregativeFunctions.BaseAggregation aggregativeFunction)
+        {
+            if (type == Model.ColumnType.Categorical)
+                return column.Name;
+
+            if (mainPageViewModel.ExplorationViewModel.SelectedColumnViewModels.Count == 0)
+                return column.Name;
+            
+            if (aggregativeFunction is AggregativeFunctions.MinAggregation)
+            {
+                return String.Format("Min({0})", column.Name);
+            }
+            if (aggregativeFunction is AggregativeFunctions.MaxAggregation)
+            {
+                return String.Format("Max({0})", column.Name);
+            }
+            if (aggregativeFunction is AggregativeFunctions.AverageAggregation)
+            {
+                return String.Format("Avg({0})", column.Name);
+            }
+            if (aggregativeFunction is AggregativeFunctions.SumAggregation)
+            {
+                return String.Format("Sum({0})", column.Name);
+            }
+
+            return column.Name;
+        }
 
         private AggregativeFunctions.BaseAggregation aggregativeFunction = new AggregativeFunctions.AverageAggregation();
         public AggregativeFunctions.BaseAggregation AggregativeFunction
         {
             get { return aggregativeFunction; }
-            set { aggregativeFunction = value; HeaderName = FormatHeaderName(column, Type, aggregativeFunction); OnPropertyChanged("AggregativeFunction"); }
+            set { aggregativeFunction = value; OnPropertyChanged("HeaderName"); OnPropertyChanged("AggregativeFunction"); }
         }
 
         public ColumnViewModel(ViewModel.MainPageViewModel mainPageViewModel)
@@ -120,6 +124,11 @@ namespace FlexTable.ViewModel
             {
                 rowPresenter.CellPresenters[index].Opacity = 1;
             }
+        }
+
+        public void UpdateHeaderName()
+        {
+            OnPropertyChanged("HeaderName");
         }
     }
 }

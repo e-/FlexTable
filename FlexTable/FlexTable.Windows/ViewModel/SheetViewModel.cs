@@ -23,8 +23,8 @@ namespace FlexTable.ViewModel
 
         public Double AllRowsSheetHeight { get { return allRowViewModels.Count * (Double)App.Current.Resources["RowHeight"]; } }
 
-        private ObservableCollection<ViewModel.ColumnViewModel> columnViewModels = new ObservableCollection<ColumnViewModel>();
-        public ObservableCollection<ViewModel.ColumnViewModel> ColumnViewModels { get { return columnViewModels; } }
+        private List<ViewModel.ColumnViewModel> columnViewModels = new List<ColumnViewModel>();
+        public List<ViewModel.ColumnViewModel> ColumnViewModels { get { return columnViewModels; } }
 
         // 모든 로우에 대한 정보 가지고 있음 속도 위함
         private List<ViewModel.RowViewModel> allRowViewModels = new List<ViewModel.RowViewModel>();
@@ -244,10 +244,10 @@ namespace FlexTable.ViewModel
 
         public void Group()
         {
-            if (groupedColumnViewModels.Count > 0)
+            /*if (groupedColumnViewModels.Count > 0)
             {
                 throw new Exception("Calling Group method is permitted only when no column has been grouped");
-            }
+            }*/
             GroupUpdate();
         }
 
@@ -276,7 +276,12 @@ namespace FlexTable.ViewModel
                 groupedColumnViewModel.Order = order++;
             }
 
-            foreach (ColumnViewModel remainingColumnViewModel in columnViewModels.Except(groupedColumnViewModels).OrderBy(d => d.Index))
+            foreach (ColumnViewModel remainingColumnViewModel in columnViewModels.Except(groupedColumnViewModels).Where(d => !d.IsHidden).OrderBy(d => d.Index))
+            {
+                remainingColumnViewModel.Order = order++;
+            }
+
+            foreach (ColumnViewModel remainingColumnViewModel in columnViewModels.Except(groupedColumnViewModels).Where(d => d.IsHidden).OrderBy(d => d.Order))
             {
                 remainingColumnViewModel.Order = order++;
             }
@@ -289,7 +294,7 @@ namespace FlexTable.ViewModel
 
             Int32 index = 0;
 
-            if (groupedColumnViewModels.Count == 0)
+            if (groupedColumnViewModels.Count == 0) // 이 경우는 뉴메리커 하나만 선택되어 한 줄만 표시되는 경우이다.
             {
                 RowViewModel rowViewModel = new RowViewModel(mainPageViewModel)
                 {
@@ -311,8 +316,9 @@ namespace FlexTable.ViewModel
                     else //numerical
                     {
                         Object aggregated = columnViewModel.AggregativeFunction.Aggregate(Sheet.Rows.Select(r => (Double)r.Cells[columnViewModel.Index].Content));
-                        cell.RawContent = aggregated.ToString();
-                        cell.Content = aggregated;
+                        String formatted = Util.Formatter.FormatAuto4((Double)aggregated); 
+                        cell.RawContent = formatted;
+                        cell.Content = Double.Parse(formatted);
                     }
 
                     rowViewModel.Cells.Add(cell);
@@ -351,8 +357,9 @@ namespace FlexTable.ViewModel
                         else //numerical
                         {
                             Object aggregated = columnViewModel.AggregativeFunction.Aggregate(groupedRows.Rows.Select(r => (Double)r.Cells[columnViewModel.Index].Content));
-                            cell.RawContent = aggregated.ToString();
-                            cell.Content = aggregated;
+                            String formatted = Util.Formatter.FormatAuto4((Double)aggregated);
+                            cell.RawContent = formatted;
+                            cell.Content = Double.Parse(formatted);
                         }
 
                         rowViewModel.Cells.Add(cell);
@@ -490,24 +497,6 @@ namespace FlexTable.ViewModel
                 columnViewModel.X = total;
                 total += columnViewModel.Width;
             }
-        }
-
-            
-
-        /*public void CreateColumnSummary()
-        {
-            for (Int32 i = 0; i < columnViewModels.Count; ++i)
-            {
-                ColumnViewModel columnViewModel = columnViewModels[i];
-                if (columnViewModel.Type == ColumnType.Categorical) // bar chart
-                {
-                    columnViewModel.Bins = Column.GetFrequencyBins(rowViewModels, i);
-                }
-                else // histogram
-                {
-                    columnViewModel.Bins = new List<Bin>();
-                }
-            }
-        }*/
+        }            
     }
 }

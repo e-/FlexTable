@@ -95,7 +95,7 @@ namespace d3.ViewModel
         }
 
         public Func<Object, Int32, Double> IndicatorWidthGetter { get { return (d, index) => 100; } }
-        public Func<Object, Int32, String> IndicatorTextGetter { get { return (d, index) => (d as Tuple<Object, Object, Double>).Item3.ToString("0.##"); } }
+        public Func<Object, Int32, String> IndicatorTextGetter { get { return (d, index) => Format.IntegerBalanced.Format((d as Tuple<Object, Object, Double>).Item3); } }
         public Func<Object, Int32, Double> IndicatorXGetter
         {
             get

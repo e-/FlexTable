@@ -17,8 +17,8 @@ namespace FlexTable.ViewModel
 {
     public class ExplorationViewModel : NotifyViewModel
     {
-        private ColumnViewModel columnViewModel;
-        public ColumnViewModel ColumnViewModel { get { return columnViewModel; } set { columnViewModel = value; OnPropertyChanged("ColumnViewModel"); } }
+        /*private ColumnViewModel columnViewModel;
+        public ColumnViewModel ColumnViewModel { get { return columnViewModel; } set { columnViewModel = value; OnPropertyChanged("ColumnViewModel"); } }*/
 
         MainPageViewModel mainPageViewModel;
         public MainPageViewModel MainPageViewModel { get { return mainPageViewModel; } }
@@ -45,17 +45,25 @@ namespace FlexTable.ViewModel
         public void ShowSummary(ColumnViewModel columnViewModel)
         {
             PageViewModel pageViewModel = TopPageView.PageViewModel;
-            ColumnViewModel = columnViewModel;
+            //ColumnViewModel = columnViewModel;
 
             pageViewModel.ShowSummary(columnViewModel);
         }
 
         public void PageViewTapped(PageViewModel pageViewModel, View.PageView pageView)
         {
-            if (pageView == TopPageView && columnViewModel != null && selectedColumnViewModels.IndexOf(columnViewModel) < 0)
+            ColumnViewModel topPageColumnViewModel = TopPageView.PageViewModel.ColumnViewModel;
+
+            if (pageView == TopPageView && topPageColumnViewModel != null && selectedColumnViewModels.IndexOf(topPageColumnViewModel) < 0)
             {
                 // 선택되었다고 표시
-                selectedColumnViewModels.Add(columnViewModel);
+                selectedColumnViewModels.Add(topPageColumnViewModel);
+
+                // column header 업데이트
+                foreach (ColumnViewModel cvm in mainPageViewModel.SheetViewModel.ColumnViewModels)
+                {
+                    cvm.UpdateHeaderName();
+                }
 
                 // Page View 아래로 보내기                    
                 pageViewModel.GoDown();
@@ -67,17 +75,17 @@ namespace FlexTable.ViewModel
                 mainPageViewModel.TableViewModel.CancelIndexing();
 
                 // 선택 표시 (컬럼 위 아래 헤더 업데이트)
-                columnViewModel.IsSelected = true;
+                topPageColumnViewModel.IsSelected = true;
 
-                if (columnViewModel.Type == ColumnType.Categorical) // grouping
+                if (topPageColumnViewModel.Type == ColumnType.Categorical) // grouping
                 {
                     // SheetViewModel 에서 grouping 하기, 이건 rowViewModels를 업데이트함
-                    mainPageViewModel.SheetViewModel.Group(columnViewModel);
+                    mainPageViewModel.SheetViewModel.Group(topPageColumnViewModel);
 
                     // Table View 업데이트
                     mainPageViewModel.TableViewModel.UpdateRows();
                 }
-                else if (columnViewModel.Type == ColumnType.Numerical)
+                else if (topPageColumnViewModel.Type == ColumnType.Numerical)
                 {
                     if (selectedColumnViewModels.Count == 1)
                     {
@@ -98,6 +106,12 @@ namespace FlexTable.ViewModel
             {
                 // 선택해제 
                 selectedColumnViewModels.Remove(pageViewModel.ColumnViewModel);
+
+                // column header 업데이트
+                foreach (ColumnViewModel cvm in mainPageViewModel.SheetViewModel.ColumnViewModels)
+                {
+                    cvm.UpdateHeaderName();
+                }
 
                 // Page View 위로 올리기
                 pageViewModel.GoUp();

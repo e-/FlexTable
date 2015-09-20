@@ -154,12 +154,12 @@ namespace FlexTable.ViewModel
                 IsBarChartVisible = true;
 
                 pageView.BarChart.HorizontalAxisLabel = categoricalColumns[0].Column.Name;
-                pageView.BarChart.VerticalAxisLabel = String.Format("Average of {0}", numericalColumns[0].Column.Name);
+                pageView.BarChart.VerticalAxisLabel = numericalColumns[0].HeaderName;
                 pageView.BarChart.Data = groupedRows
                     .OrderBy(g => g.Keys[categoricalColumns[0]].Order)
                     .Select(g => new Tuple<Object, Double>(
                         g.Keys[categoricalColumns[0]],
-                        g.Rows.Select(r => (Double)r.Cells[numericalColumns[0].Index].Content).Average<Double>(r => r)
+                        numericalColumns[0].AggregativeFunction.Aggregate(g.Rows.Select(r => (Double)r.Cells[numericalColumns[0].Index].Content))
                         ));
                 pageView.BarChart.Update();
             }
@@ -213,13 +213,13 @@ namespace FlexTable.ViewModel
                 IsGroupedBarChartVisible = true;
 
                 pageView.GroupedBarChart.HorizontalAxisLabel = categoricalColumns[0].Column.Name;
-                pageView.GroupedBarChart.VerticalAxisLabel = String.Format("Average of {0}", numericalColumns[0].Column.Name);
+                pageView.GroupedBarChart.VerticalAxisLabel = numericalColumns[0].HeaderName;
                 pageView.GroupedBarChart.Data = groupedRows
                             .OrderBy(g => g.Keys[categoricalColumns[0]].Order * 10000 + g.Keys[categoricalColumns[1]].Order)
                             .Select(g => new Tuple<Object, Object, Double>(
                                 g.Keys[categoricalColumns[0]],
                                 String.Format("{0} {1}", categoricalColumns[1].Column.Name, g.Keys[categoricalColumns[1]]),
-                                g.Rows.Select(row => (Double)row.Cells[numericalColumns[0].Index].Content).Average() // 평균으로
+                                numericalColumns[0].AggregativeFunction.Aggregate(g.Rows.Select(row => (Double)row.Cells[numericalColumns[0].Index].Content))
                             ));
 
                 pageView.GroupedBarChart.Update();
@@ -305,66 +305,6 @@ namespace FlexTable.ViewModel
             {
                 IsBarChartVisible = true;
             }
-
-/*                        
-                    IsPivotTableVisible = false;
-                    IsGroupedBarChartVisible = false;
-
-                    
-                    
-                    if (mainPageViewModel.SheetViewModel.GroupedColumnViewModels.Count > 1)
-                    {
-                        Int32 count = mainPageViewModel.SheetViewModel.GroupedColumnViewModels.Count;
-
-                        ColumnViewModel g1 = mainPageViewModel.SheetViewModel.GroupedColumnViewModels[count - 2],
-                                        g2 = mainPageViewModel.SheetViewModel.GroupedColumnViewModels[count - 1];
-
-                        IsPivotGroupedBarChartVisible = true;
-
-                        pageView.PivotGroupedBarChart.Data = mainPageViewModel.SheetViewModel
-                            .GroupingResult
-                            .OrderBy(g => g.Keys[g1].Order * 10000 + g.Keys[g2].Order)
-                            .Select(g => new Tuple<Object, Object, Double>(
-                                g.Keys[g1], 
-                                g.Keys[g2], 
-                                g.Rows.Select(r => (Double)r.Cells[columnViewModel.Index].Content).Average()
-                            ));
-
-                        pageView.PivotGroupedBarChart.Update();
-                    }
-                    else
-                    {
-                        IsPivotGroupedBarChartVisible = false;
-                    }
-
-                    if (mainPageViewModel.SheetViewModel.GroupedColumnViewModels.Count == 1)
-                    {
-                        IsPivotBarChartVisible = true;
-                        ColumnViewModel groupedColumnViewModel = mainPageViewModel.SheetViewModel.GroupedColumnViewModels.First();
-
-                        pageView.PivotBarChart.Data = mainPageViewModel.SheetViewModel
-                            .GroupingResult
-                            .OrderBy(g => g.Keys[groupedColumnViewModel].Order)
-                            .Select(g => new Tuple<Object, Double>(
-                                g.Keys[groupedColumnViewModel], g.Rows.Select(r => (Double)r.Cells[columnViewModel.Index].Content).Average()
-                            ));
-
-                        pageView.PivotBarChart.Update();
-                    }
-                    else
-                    {
-                        IsPivotBarChartVisible = false;
-                    }
-
-                    IsCustomHistogramVisible = false;
-                    // TODO: custom histogram 그리기
-                    customHistogramViewModel.Show(
-                        mainPageViewModel.TableViewModel.RowViewModels.Select(
-                            r => (Double)r.Cells[columnViewModel.Index].Content
-                        )
-                    );    
-                     */
-
             
             pageView.UpdateCarousel();
         }

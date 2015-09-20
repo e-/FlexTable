@@ -368,7 +368,7 @@ namespace FlexTable.ViewModel
 
                         foreach (ColumnViewModel column in columns)
                         {
-                            Double value = groupedRow.Rows.Select(r => (Double)r.Cells[column.Index].Content).Average(); // Average로 강제됨!
+                            Double value = column.AggregativeFunction.Aggregate(groupedRow.Rows.Select(r => (Double)r.Cells[column.Index].Content)); 
                             Border border = borders[String.Format("{0},{1}", rowIndex, columnIndex + index)];
                             (border.Child as TextBlock).Text = Util.Formatter.FormatAuto3(value);
                             zeroValueBorders.Remove(border);
@@ -401,7 +401,7 @@ namespace FlexTable.ViewModel
                     else if(columns.Count == 1){
                         Int32 columnIndex = horizontal.Categories.IndexOf(groupedRow.Keys[horizontal]);
 
-                        Double value = groupedRow.Rows.Select(r => (Double)r.Cells[columns[0].Index].Content).Average(); // AVerage로 강제됨!
+                        Double value = columns[0].AggregativeFunction.Aggregate(groupedRow.Rows.Select(r => (Double)r.Cells[columns[0].Index].Content));
                         Border border = borders[String.Format("{0},{1}", rowIndex, columnIndex)];
                         (border.Child as TextBlock).Text = Util.Formatter.FormatAuto3(value);
                         zeroValueBorders.Remove(border);
@@ -462,7 +462,7 @@ namespace FlexTable.ViewModel
                         index = 0;
                         foreach (ColumnViewModel column in columns)
                         {
-                            Double value = groupedRow.Rows.Select(r => (Double)r.Cells[column.Index].Content).Average(); // AVerage로 강제됨!
+                            Double value = column.AggregativeFunction.Aggregate(groupedRow.Rows.Select(r => (Double)r.Cells[column.Index].Content));
                             Border border = borders[String.Format("{0},{1}", rowIndex, index)];
                             (border.Child as TextBlock).Text = Util.Formatter.FormatAuto3(value);
                             zeroValueBorders.Remove(border);

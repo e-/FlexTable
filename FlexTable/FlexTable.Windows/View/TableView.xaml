@@ -51,7 +51,7 @@
             <view:ColumnHeaderPresenter Grid.Row="0" Grid.Column="1" x:Name="TopColumnHeaderElement"></view:ColumnHeaderPresenter>            
 
             <view:RowHeaderPresenter Grid.Row="1" Grid.Column="0" x:Name="RowHeaderPresenterElement"></view:RowHeaderPresenter>
-            <view:ColumnIndexer Grid.Row="1" Grid.Column="0" x:Name="ColumnIndex"></view:ColumnIndexer>
+            <view:ColumnIndexer Grid.Row="1" Grid.Column="0" x:Name="ColumnIndexerElement"></view:ColumnIndexer>
         
             <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" 
                               ZoomMode="Disabled" Grid.Row="1" Grid.Column="1"

@@ -9,12 +9,44 @@
     d:DesignHeight="300"
     d:DesignWidth="400">
     
-    <Border Height="{Binding PaddedSheetHeight}" Width="{StaticResource RowHeaderWidth}" Background="Transparent"
+    <UserControl.Resources>
+        <Storyboard x:Name="ShowHelperStoryboard">
+            <DoubleAnimation Duration="0:0:0.2" Storyboard.TargetName="IndexHelperWrapperElement"
+                             Storyboard.TargetProperty="Opacity" To="1" EasingFunction="{StaticResource QuarticEaseInOut}">
+            </DoubleAnimation>
+        </Storyboard>
+
+        <Storyboard x:Name="HideHelperStoryboard">
+            <DoubleAnimation Duration="0:0:0.5" Storyboard.TargetName="IndexHelperWrapperElement"
+                             Storyboard.TargetProperty="Opacity" To="0" EasingFunction="{StaticResource QuarticEaseInOut}">
+            </DoubleAnimation>
+        </Storyboard>
+        
+        <Style x:Key="LabelStyle" TargetType="TextBlock">
+            <Setter Property="RenderTransform">
+                <Setter.Value>
+                    <TransformGroup>
+                        <RotateTransform Angle="90"/>
+                        <TranslateTransform X="{StaticResource HalfRowHeaderWidth}" />
+                        <TranslateTransform X="-15" />
+                    </TransformGroup>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="RenderTransformOrigin" Value="0.5 0.5" />
+            <Setter Property="VerticalAlignment" Value="Center"></Setter>
+            <Setter Property="TextAlignment" Value="Center" />
+        </Style>
+    </UserControl.Resources>
+    
+    <Grid Height="{Binding PaddedSheetHeight}" Width="{StaticResource RowHeaderWidth}" 
+            Background="Transparent"
             PointerMoved="Border_PointerMoved"
             PointerReleased="Border_PointerReleased"
             PointerCaptureLost="Border_PointerCaptureLost"
             PointerExited="Border_PointerExited"
             PointerPressed="Border_PointerPressed"
             >
-    </Border>
+        <StackPanel x:Name="IndexHelperWrapperElement" Opacity="0">
+        </StackPanel>
+    </Grid>
 </UserControl>

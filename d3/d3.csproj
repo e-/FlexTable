@@ -86,6 +86,7 @@
       <DependentUpon>Circles.xaml</DependentUpon>
     </Compile>
     <Compile Include="Event.cs" />
+    <Compile Include="Format\IntegerBalanced.cs" />
     <Compile Include="Format\SIPrefix.cs" />
     <Compile Include="Notifiable.cs" />
     <Compile Include="Scale\Ordinal.cs" />

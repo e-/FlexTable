@@ -16,7 +16,7 @@
                       ZoomMode="Disabled"
                       Width="{Binding SheetViewWidth}"
                       >
-            <Canvas x:Name="Items">
+            <Canvas x:Name="Items" Width="{Binding PaddedSheetWidth}">
             
             </Canvas>
             <!--<Grid x:Name="ScrollViewerContentWrapperElement" Width="{Binding PaddedSheetWidth}" Background="Red">

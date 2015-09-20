@@ -105,7 +105,6 @@
   <ItemGroup>
     <Compile Include="IMainPage.cs" />
     <Compile Include="AggregativeFunctions\AggregativeFunction.cs" />
-    <Compile Include="Model\AggregationType.cs" />
     <Compile Include="Model\Bin.cs" />
     <Compile Include="Model\Category.cs" />
     <Compile Include="Model\CorrelationStatistics.cs" />
@@ -229,6 +228,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Data\Korea.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\Koeun2.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="FlexTable.Windows_TemporaryKey.pfx" />

@@ -72,7 +72,7 @@ namespace d3.ViewModel
         public Func<Object, Int32, Color> ColorGetter { get { return (bin, index) => ColorScheme.Category10.Colors[index % 10]; } }
 
         public Func<Object, Int32, Double> IndicatorWidthGetter { get { return (d, index) => xScale.RangeBand; } }
-        public Func<Object, Int32, String> IndicatorTextGetter { get { return (d, index) => (d as Tuple<Object, Double>).Item2.ToString("0.##"); } }
+        public Func<Object, Int32, String> IndicatorTextGetter { get { return (d, index) => Format.IntegerBalanced.Format((d as Tuple<Object, Double>).Item2); } }
         public Func<Object, Int32, Double> IndicatorXGetter { get { return (d, index) => xScale.Map((d as Tuple<Object, Double>).Item1) - xScale.RangeBand / 2; } }
         public Func<Object, Int32, Double> IndicatorYGetter { get { return (d, index) => yScale.Map((d as Tuple<Object, Double>).Item2) - 18; } }
 
