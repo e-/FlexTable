@@ -47,7 +47,6 @@ namespace FlexTable.ViewModel
         {
             // rowViewModels 계산
             sheetViewModel.Initialize(sheet);
-
             
             // 가이드라인 및 헤더 컬럼 추가
             tableViewModel.Initialize();

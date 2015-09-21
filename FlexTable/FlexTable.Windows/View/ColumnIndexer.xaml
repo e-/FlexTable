@@ -26,15 +26,16 @@
             <Setter Property="RenderTransform">
                 <Setter.Value>
                     <TransformGroup>
-                        <RotateTransform Angle="90"/>
-                        <TranslateTransform X="{StaticResource HalfRowHeaderWidth}" />
-                        <TranslateTransform X="-15" />
+                        <!--<RotateTransform Angle="90"/>
+                        <TranslateTransform X="{StaticResource RowHeaderWidth}" />
+                        <TranslateTransform X="-7" />-->
                     </TransformGroup>
                 </Setter.Value>
             </Setter>
-            <Setter Property="RenderTransformOrigin" Value="0.5 0.5" />
-            <Setter Property="VerticalAlignment" Value="Center"></Setter>
+            <Setter Property="RenderTransformOrigin" Value="0 0" />
+            <!--<Setter Property="VerticalAlignment" Value="Center"></Setter>-->
             <Setter Property="TextAlignment" Value="Center" />
+            <Setter Property="Margin" Value="0 3 0 0" />
         </Style>
     </UserControl.Resources>
     

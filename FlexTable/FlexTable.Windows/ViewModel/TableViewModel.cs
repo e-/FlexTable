@@ -109,6 +109,7 @@ namespace FlexTable.ViewModel
             PaddedSheetHeight = SheetViewModel.AllRowsSheetHeight > SheetViewHeight ? SheetViewModel.AllRowsSheetHeight : SheetViewHeight;
             PaddedSheetWidth = SheetViewModel.SheetWidth > SheetViewWidth ? SheetViewModel.SheetWidth : SheetViewWidth;
 
+            view.TableView.AllRowsTableCanvas.Children.Clear();
             foreach (ViewModel.RowViewModel rowViewModel in SheetViewModel.AllRowViewModels)
             {
                 View.RowPresenter rowPresenter = new View.RowPresenter(rowViewModel);

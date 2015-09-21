@@ -124,6 +124,7 @@
     <Compile Include="Util\Drawable.cs" />
     <Compile Include="Util\Formatter.cs" />
     <Compile Include="Util\HistogramCalculator.cs" />
+    <Compile Include="Util\FileLoader.cs" />
     <Compile Include="ViewModel\CustomHistogramViewModel.cs" />
     <Compile Include="ViewModel\MetadataViewModel.cs" />
     <Compile Include="ViewModel\PageViewModel.cs" />

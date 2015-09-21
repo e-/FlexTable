@@ -36,7 +36,6 @@ namespace FlexTable.View
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            Update();
             columnViewModel = this.DataContext as ViewModel.ColumnViewModel;
         }
 

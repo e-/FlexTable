@@ -128,6 +128,7 @@ namespace FlexTable.View
 
         public void AddGuidelines(Int32 count)
         {
+            GuidelineElement.Children.Clear();
             if (count < 50) count = 50;
 
             for (Int32 i = 0; i < count - 1; ++i)
@@ -136,7 +137,7 @@ namespace FlexTable.View
                 {
                     Style = (Style)App.Current.Resources["RowGuidelineStyle" + (i % 2).ToString()]
                 };
-                GuildlineElement.Children.Add(rectangle);
+                GuidelineElement.Children.Add(rectangle);
             }
         }
 

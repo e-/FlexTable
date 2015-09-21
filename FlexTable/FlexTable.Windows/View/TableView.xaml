@@ -60,7 +60,7 @@
                               x:Name="TableScrollViewerElement"
                               >
                 <Grid x:Name="ScrollViewerContentWrapperElement" Width="{Binding PaddedSheetWidth}" Height="{Binding PaddedSheetHeight}">
-                    <StackPanel x:Name="GuildlineElement" IsHitTestVisible="False"></StackPanel>
+                    <StackPanel x:Name="GuidelineElement" IsHitTestVisible="False"></StackPanel>
                     <Canvas x:Name="AllRowsCanvasElement" Opacity="1">
                     </Canvas>
                     <Canvas x:Name="TableCanvasElement" Visibility="Collapsed" Opacity="0">

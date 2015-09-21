@@ -97,11 +97,27 @@ namespace FlexTable.View
 
 
                 textBlock.Text = cvm.Column.Name;
-                
-                textBlock.Width = border.Height = (tvm.SheetViewHeight + 10) / sorted.Count;
+                textBlock.Measure(new Size(Double.MaxValue, Double.MaxValue));
+                Double perHeight = (tvm.SheetViewHeight + 10) / sorted.Count;
+                if (textBlock.ActualWidth <= perHeight)
+                {
+                    textBlock.Width = (Double)App.Current.Resources["RowHeaderWidth"] - 1;
+                }
+                else
+                {
+                    textBlock.Width = 1000;
+                    textBlock.TextAlignment = TextAlignment.Left;
+                }
+
+                border.Height = perHeight;
                 border.Width = (Double)App.Current.Resources["RowHeaderWidth"] - 1;
                 border.Background = index % 2 == 0 ? (App.Current.Resources["GridLineBrush"] as SolidColorBrush) : (new SolidColorBrush(Colors.White)); 
                 index++;
+            }
+
+            for (Int32 j = IndexHelperWrapperElement.Children.Count - 1; j >= index; --j)
+            {
+                IndexHelperWrapperElement.Children.RemoveAt(j);
             }
 
             //tvm.SheetViewModel.ColumnViewModels.Or

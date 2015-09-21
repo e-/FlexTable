@@ -52,5 +52,10 @@ namespace FlexTable.View
                 chcp.Update();
             }*/
         }
+
+        public void Reset()
+        {
+            Items.Children.Clear();
+        }
     }
 }
