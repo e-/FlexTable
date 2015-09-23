@@ -43,7 +43,8 @@ namespace FlexTable.View
         {
             if (e.Pointer.PointerDeviceType == PointerDeviceType.Touch)
             {
-                columnViewModel.MainPageViewModel.TableViewModel.IndexedColumnViewModel = columnViewModel;
+                columnViewModel.MainPageViewModel.View.TableView.ColumnHighlighter.ColumnViewModel = columnViewModel;
+                columnViewModel.MainPageViewModel.View.TableView.ColumnHighlighter.Update();
                 columnViewModel.MainPageViewModel.ExplorationViewModel.ShowSummary(columnViewModel);
             }
         }

@@ -16,6 +16,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
 using FlexTable.ViewModel;
+using Windows.Devices.Input;
 
 // 사용자 정의 컨트롤 항목 템플릿에 대한 설명은 http://go.microsoft.com/fwlink/?LinkId=234236에 나와 있습니다.
 
@@ -23,24 +24,11 @@ namespace FlexTable.View
 {
     public sealed partial class ColumnHighlighter : UserControl
     {
-        public static readonly DependencyProperty ColumnViewModelProperty =
-            DependencyProperty.Register("ColumnViewModel", typeof(ColumnViewModel), typeof(ColumnHighlighter), new PropertyMetadata(null, new PropertyChangedCallback(ColumnViewModelChanged)));
-
-        public ColumnViewModel ColumnViewModel
-        {
-            get { return (ColumnViewModel)GetValue(ColumnViewModelProperty); }
-            set { SetValue(ColumnViewModelProperty, value); }
-        }
+        public ColumnViewModel ColumnViewModel { get; set; }
 
         public ColumnHighlighter()
         {
             this.InitializeComponent();
-        }
-
-        private static void ColumnViewModelChanged(DependencyObject source, DependencyPropertyChangedEventArgs e)
-        {
-            ColumnHighlighter ch = source as ColumnHighlighter;
-            ch.Update();
         }
 
         public void Update()
@@ -149,7 +137,7 @@ namespace FlexTable.View
 
         private void Darken_Completed(object sender, object e)
         {
-            ViewModel.TableViewModel tvm = (this.DataContext as ViewModel.TableViewModel);
+            TableViewModel tvm = (this.DataContext as TableViewModel);
             TableScrollViewer.Height = tvm.SheetViewHeight / 2 - (Double)App.Current.Resources["ColumnHeaderHeight"];
         }
 
@@ -160,8 +148,9 @@ namespace FlexTable.View
 
         enum Command { Left, Right, Up, Down, None };
 
-        private void UpperColumnHeaderWrapperElement_PointerPressed(object sender, PointerRoutedEventArgs e)
+        private void UpperColumnHeaderWrapperElement_PointerEntered(object sender, PointerRoutedEventArgs e)
         {
+            if (e.Pointer.PointerDeviceType != PointerDeviceType.Touch) return;
             UpperDownMenuElement.Show();
             UpperLeftMenuElement.Show();
             UpperRightMenuElement.Show();
@@ -217,7 +206,8 @@ namespace FlexTable.View
 
             if (!tvm.IsIndexing)
             {
-                tvm.MainPageViewModel.TableViewModel.IndexedColumnViewModel = null;
+                tvm.MainPageViewModel.View.TableView.ColumnHighlighter.ColumnViewModel = null;
+                tvm.MainPageViewModel.View.TableView.ColumnHighlighter.Update();
                 tvm.MainPageViewModel.View.ExplorationView.TopPageViewModel.Hide();
             }
         }
@@ -231,7 +221,8 @@ namespace FlexTable.View
 
             if (!tvm.IsIndexing)
             {
-                tvm.MainPageViewModel.TableViewModel.IndexedColumnViewModel = null;
+                tvm.MainPageViewModel.View.TableView.ColumnHighlighter.ColumnViewModel = null;
+                tvm.MainPageViewModel.View.TableView.ColumnHighlighter.Update();
                 tvm.MainPageViewModel.View.ExplorationView.TopPageViewModel.Hide();
             }
         }
@@ -301,8 +292,9 @@ namespace FlexTable.View
             }
         }
 
-        private void LowerColumnHeaderWrapperElement_PointerPressed(object sender, PointerRoutedEventArgs e)
+        private void LowerColumnHeaderWrapperElement_PointerEntered(object sender, PointerRoutedEventArgs e)
         {
+            if (e.Pointer.PointerDeviceType != PointerDeviceType.Touch) return;
             LowerUpMenuElement.Show();
             LowerRightMenuElement.Show();
             LowerLeftMenuElement.Show();
@@ -359,7 +351,8 @@ namespace FlexTable.View
 
             if (!tvm.IsIndexing)
             {
-                tvm.MainPageViewModel.TableViewModel.IndexedColumnViewModel = null;
+                tvm.MainPageViewModel.View.TableView.ColumnHighlighter.ColumnViewModel = null;
+                tvm.MainPageViewModel.View.TableView.ColumnHighlighter.Update();
                 tvm.MainPageViewModel.View.ExplorationView.TopPageViewModel.Hide();
             }
         }
@@ -373,7 +366,8 @@ namespace FlexTable.View
 
             if (!tvm.IsIndexing)
             {
-                tvm.MainPageViewModel.TableViewModel.IndexedColumnViewModel = null;
+                tvm.MainPageViewModel.View.TableView.ColumnHighlighter.ColumnViewModel = null;
+                tvm.MainPageViewModel.View.TableView.ColumnHighlighter.Update();
                 tvm.MainPageViewModel.View.ExplorationView.TopPageViewModel.Hide();
             }
         }

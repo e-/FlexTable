@@ -67,10 +67,28 @@ namespace d3.View
             set { SetValue(VerticalAxisLabelProperty, value); }
         }
 
+        public event d3.Event.EventHandler BarPointerPressed;
+        public event d3.Event.EventHandler BarPointerReleased;
+
         public GroupedBarChart()
         {
             this.InitializeComponent();
             this.DataContext = viewModel;
+
+            RectangleElement.RectanglePointerPressed += RectangleElement_RectanglePointerPressed;
+            RectangleElement.RectanglePointerReleased += RectangleElement_RectanglePointerReleased;
+        }
+
+        void RectangleElement_RectanglePointerPressed(object sender, object datum)
+        {
+            if (BarPointerPressed != null)
+                BarPointerPressed(sender, datum);
+        }
+
+        void RectangleElement_RectanglePointerReleased(object sender, object datum)
+        {
+            if (BarPointerReleased != null)
+                BarPointerReleased(sender, datum);
         }
 
         public void Update()

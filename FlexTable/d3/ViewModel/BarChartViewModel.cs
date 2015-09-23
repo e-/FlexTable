@@ -69,7 +69,7 @@ namespace d3.ViewModel
         public Func<Object, Int32, String> LegendTextGetter { get { return (d, index) => (d as Tuple<Object, Double>).Item1.ToString(); } }
         public Func<Object, Int32, Color> LegendTextColorGetter { get { return (d, index) => /*(d as Model.Bin).IsFilteredOut ? Colors.LightGray :*/ Colors.Black; } }
         
-        public Func<Object, Int32, Color> ColorGetter { get { return (bin, index) => ColorScheme.Category10.Colors[index % 10]; } }
+        public Func<Object, Int32, Color> ColorGetter { get { return (bin, index) => (AutoColor ? ColorScheme.Category10.Colors[index % 10] : ColorScheme.Category10.Colors.First()); } }
 
         public Func<Object, Int32, Double> IndicatorWidthGetter { get { return (d, index) => xScale.RangeBand; } }
         public Func<Object, Int32, String> IndicatorTextGetter { get { return (d, index) => Format.IntegerBalanced.Format((d as Tuple<Object, Double>).Item2); } }
@@ -114,6 +114,8 @@ namespace d3.ViewModel
         private String verticalAxisLabel;
         public String VerticalAxisLabel { get { return verticalAxisLabel; } set { verticalAxisLabel = value; OnPropertyChanged("VerticalAxisLabel"); } }
 
+        public Boolean AutoColor { get; set; } = true;
+
         public void Update()
         {
             chartData = new d3.Data()
@@ -142,7 +144,7 @@ namespace d3.ViewModel
             HorizontalAxisLabelCanvasLeft = PaddingLeft + VerticalAxisWidth + VerticalAxisLabelWidth;
             HorizontalAxisLabelCanvasTop = ChartAreaEndY + HorizontalAxisHeight;
             HorizontalAxisLabelWidth = ChartAreaEndX - PaddingLeft - VerticalAxisWidth - VerticalAxisLabelWidth;
-
+            
             VerticalAxisCanvasLeft = PaddingLeft + VerticalAxisLabelWidth + VerticalAxisWidth;
             VerticalAxisLabelCanvasLeft = PaddingLeft + VerticalAxisLabelWidth / 2 - (ChartAreaEndY - PaddingTop) / 2;
             VerticalAxisLabelCanvasTop = PaddingTop + (ChartAreaEndY - PaddingTop) / 2;

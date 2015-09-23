@@ -56,7 +56,8 @@
                     <CompositeTransform ScaleX="1" ScaleY="1" x:Name="UpperCompositeTransform"></CompositeTransform>
                 </StackPanel.RenderTransform>
                 <Border Background="{StaticResource GridLineBrush}" Height="{StaticResource ColumnHeaderHeight}" 
-                        x:Name="UpperColumnHeaderWrapperElement" PointerPressed="UpperColumnHeaderWrapperElement_PointerPressed"
+                        x:Name="UpperColumnHeaderWrapperElement" 
+                        PointerEntered="UpperColumnHeaderWrapperElement_PointerEntered"
                         PointerReleased="UpperColumnHeaderWrapperElement_PointerReleased"
                         ManipulationMode="All"
                         ManipulationCompleted="UpperColumnHeaderWrapperElement_ManipulationCompleted"
@@ -104,7 +105,8 @@
             </StackPanel>
 
             <Border Background="{StaticResource GridLineBrush}" Height="{StaticResource ColumnHeaderHeight}" 
-                    x:Name="LowerColumnHeaderWrapperElement" PointerPressed="LowerColumnHeaderWrapperElement_PointerPressed"
+                    x:Name="LowerColumnHeaderWrapperElement" 
+                    PointerEntered="LowerColumnHeaderWrapperElement_PointerEntered"
                     PointerReleased="LowerColumnHeaderWrapperElement_PointerReleased"
                     ManipulationMode="All"
                     ManipulationCompleted="LowerColumnHeaderWrapperElement_ManipulationCompleted"

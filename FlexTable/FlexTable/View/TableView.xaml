@@ -72,7 +72,7 @@
             <Border Grid.Row="2" Grid.Column="0" Background="LightGray"></Border>
             <view:ColumnHeaderPresenter Grid.Row="2" Grid.Column="1" x:Name="BottomColumnHeaderElement"></view:ColumnHeaderPresenter>
 
-            <view:ColumnHighlighter Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" ColumnViewModel="{Binding IndexedColumnViewModel}"></view:ColumnHighlighter>
+            <view:ColumnHighlighter Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" x:Name="ColumnHighlighterElement"></view:ColumnHighlighter>
             
             <Canvas Grid.Row="1" Grid.Column="1">
                 <Border Opacity="{Binding IsIndexing,Converter={StaticResource BooleanToOpacityConverter}}"

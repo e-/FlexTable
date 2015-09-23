@@ -24,36 +24,40 @@ namespace FlexTable.View
 
         private void Border_PointerMoved(object sender, PointerRoutedEventArgs e)
         {
-//            if(e.GetCurrentPoint(this).PointerDevice.PointerDeviceType != PointerDeviceType.Touch) return; 
+            if(e.GetCurrentPoint(this).PointerDevice.PointerDeviceType != PointerDeviceType.Touch) return; 
             Point point = e.GetCurrentPoint(this).Position;
-            (DataContext as ViewModel.TableViewModel).IndexColumn(e.GetCurrentPoint(this).PointerId, point.Y);
+            (DataContext as TableViewModel).IndexColumn(e.GetCurrentPoint(this).PointerId, point.Y);
         }
 
         private void Border_PointerReleased(object sender, PointerRoutedEventArgs e)
         {
-            (DataContext as ViewModel.TableViewModel).CancelIndexing();
+            if (e.GetCurrentPoint(this).PointerDevice.PointerDeviceType != PointerDeviceType.Touch) return;
+            (DataContext as TableViewModel).CancelIndexing();
             ShowHelperStoryboard.Pause();
             HideHelperStoryboard.Begin();
         }
 
         private void Border_PointerCaptureLost(object sender, PointerRoutedEventArgs e)
         {
-            (DataContext as ViewModel.TableViewModel).CancelIndexing();
+            if (e.GetCurrentPoint(this).PointerDevice.PointerDeviceType != PointerDeviceType.Touch) return;
+            (DataContext as TableViewModel).CancelIndexing();
             ShowHelperStoryboard.Pause();
             HideHelperStoryboard.Begin();
         }
 
         private void Border_PointerExited(object sender, PointerRoutedEventArgs e)
         {
-            (DataContext as ViewModel.TableViewModel).CancelIndexing();
+            if (e.GetCurrentPoint(this).PointerDevice.PointerDeviceType != PointerDeviceType.Touch) return;
+            (DataContext as TableViewModel).CancelIndexing();
             ShowHelperStoryboard.Pause();
             HideHelperStoryboard.Begin();
         }
-
-        private void Border_PointerPressed(object sender, PointerRoutedEventArgs e)
+        
+        private void Grid_PointerEntered(object sender, PointerRoutedEventArgs e)
         {
+            if (e.GetCurrentPoint(this).PointerDevice.PointerDeviceType != PointerDeviceType.Touch) return;
             Point point = e.GetCurrentPoint(this).Position;
-            (DataContext as ViewModel.TableViewModel).IndexColumn(e.GetCurrentPoint(this).PointerId, point.Y);
+            (DataContext as TableViewModel).IndexColumn(e.GetCurrentPoint(this).PointerId, point.Y);
             Update();
             HideHelperStoryboard.Pause();
             ShowHelperStoryboard.Begin();
@@ -102,6 +106,7 @@ namespace FlexTable.View
                 if (textBlock.ActualWidth <= perHeight)
                 {
                     textBlock.Width = (Double)App.Current.Resources["RowHeaderWidth"] - 1;
+                    textBlock.TextAlignment = TextAlignment.Center;
                 }
                 else
                 {

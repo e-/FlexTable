@@ -37,7 +37,6 @@ namespace FlexTable.ViewModel
         public Boolean IsHidden { get { return isHidden; } set { isHidden = value; OnPropertyChanged("IsHidden"); } }
 
         public Model.ColumnType Type { get; set; }
-        public String TypeString { get { return Type.ToString(); } }
 
         private Boolean isGroupedBy = false;
         public Boolean IsGroupedBy { get { return isGroupedBy; } set { isGroupedBy = value; OnPropertyChanged("IsGroupedBy"); } }

@@ -30,6 +30,7 @@ namespace FlexTable.View
         {
             //this.DataContext = result;
             //this.UpdateLayout();
+            BoxPlotElement.Width = (Double)App.Current.Resources["PaddedParagraphWidth"];
             BoxPlotElement.Min = result.Min;
             BoxPlotElement.Max = result.Max;
             BoxPlotElement.FirstQuartile = result.FirstQuartile;

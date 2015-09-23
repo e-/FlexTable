@@ -15,6 +15,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
+using FlexTable.ViewModel;
 
 // 사용자 정의 컨트롤 항목 템플릿에 대한 설명은 http://go.microsoft.com/fwlink/?LinkId=234236에 나와 있습니다.
 
@@ -23,15 +24,23 @@ namespace FlexTable.View
     public sealed partial class PageView : UserControl
     {
         public d3.View.BarChart BarChart { get { return BarChartElement; } }
-        public DescriptiveStatisticsView DescriptiveStatisticsView { get { return DescriptiveStatisticsViewElement; } }
-        public CorrelationStatisticsView CorrelationStatisticsView { get { return CorrelationStatisticsViewElement; } }
-        public DistributionView DistributionView { get { return DistributionViewElement; } }
-        public d3.View.GroupedBarChart GroupedBarChart { get { return GroupedBarChartElement; } }
-        public d3.View.Scatterplot Scatterplot { get { return ScatterplotElement; } }
-        public PivotTableView PivotTableView { get { return PivotTableViewElement; } }
-        
-        public ViewModel.PageViewModel PageViewModel { get { return this.DataContext as ViewModel.PageViewModel; } }
-        public Storyboard HideStoryboard { get { return HideStoryboardElement; } }
+        public DescriptiveStatisticsView DescriptiveStatisticsView => DescriptiveStatisticsViewElement;
+        public CorrelationStatisticsView CorrelationStatisticsView => CorrelationStatisticsViewElement;
+        public DistributionView DistributionView => DistributionViewElement;
+        public d3.View.GroupedBarChart GroupedBarChart => GroupedBarChartElement;
+        public d3.View.Scatterplot Scatterplot => ScatterplotElement;
+        public PivotTableView PivotTableView => PivotTableViewElement;
+
+        public TextBlock BarChartTitle => BarChartTitleElement;
+        public TextBlock DistributionViewTitle => DistributionViewTitleElement;
+        public TextBlock DescriptiveStatisticsTitle => DescriptiveStatisticsTitleElement;
+        public TextBlock GroupedBarChartTitle => GroupedBarChartTitleElement;
+        public TextBlock ScatterplotTitle => ScatterplotTitleElement;
+        public TextBlock PivotTableTitle => PivotTableTitleElement;
+        public TextBlock CorrelationStatisticsTitle => CorrelationStatisticsTitleElement;
+
+        public PageViewModel PageViewModel => (this.DataContext as PageViewModel);
+        public Storyboard HideStoryboard => HideStoryboardElement;
         private Int32 activatedParagraphIndex = 0;
         private List<Border> paragraphLabels = new List<Border>();
 
@@ -39,32 +48,33 @@ namespace FlexTable.View
         {
             this.InitializeComponent();
 
-        /*    BarChartElement.BarPointerPressed += BarChartElement_BarPointerPressed;
-            BarChartElement.BarPointerReleased += BarChartElement_BarPointerReleased;*/
+            BarChartElement.BarPointerPressed += BarChartElement_BarPointerPressed;
+            BarChartElement.BarPointerReleased += BarChartElement_BarPointerReleased;
+
+            GroupedBarChartElement.BarPointerPressed += GroupedBarChartElement_BarPointerPressed;
+            GroupedBarChartElement.BarPointerReleased += BarChartElement_BarPointerReleased;
+        }
+        
+        private void GroupedBarChartElement_BarPointerPressed(object sender, object d)
+        {
+            PageViewModel pvm = this.DataContext as PageViewModel;
+
+            Tuple<Object, Object, Double> datum = d as Tuple<Object, Object, Double>;
+            pvm.MainPageViewModel.TableViewModel.PreviewRows(pvm.GroupedBarChartRowSelecter(datum.Item1 as Model.Category, datum.Item2 as Model.Category));
         }
 
         void BarChartElement_BarPointerPressed(object sender, object d)
         {
-            ViewModel.PageViewModel pvm = this.DataContext as ViewModel.PageViewModel;
-
-            if (pvm.ColumnViewModel.IsGroupedBy) 
-            {
-                Tuple<Object, Double> datum = d as Tuple<Object, Double>;
-
-                pvm.MainPageViewModel.TableViewModel.PreviewRows(pvm.ColumnViewModel, datum.Item1 as Model.Category);
-            }
+            PageViewModel pvm = this.DataContext as PageViewModel;
+            
+            Tuple<Object, Double> datum = d as Tuple<Object, Double>;
+            pvm.MainPageViewModel.TableViewModel.PreviewRows(pvm.BarChartRowSelecter(datum.Item1 as Model.Category));
         }
 
         void BarChartElement_BarPointerReleased(object sender, object d)
         {
-            ViewModel.PageViewModel pvm = this.DataContext as ViewModel.PageViewModel;
-
-            if (pvm.ColumnViewModel.IsGroupedBy)
-            {
-                Tuple<Object, Double> datum = d as Tuple<Object, Double>;
-
-                pvm.MainPageViewModel.TableViewModel.CancelPreviewRows();
-            }
+            PageViewModel pvm = this.DataContext as PageViewModel;
+            pvm.MainPageViewModel.TableViewModel.CancelPreviewRows();
         }
 
         
@@ -81,11 +91,13 @@ namespace FlexTable.View
         public void GoDown()
         {
             GoDownStoryboard.Begin();
+            ParagraphContainer.IsHitTestVisible = true;
         }
 
         public void GoUp()
         {
             GoUpStoryboard.Begin();
+            ParagraphContainer.IsHitTestVisible = false;
         }
 
         private void GoUpStoryboard_Completed(object sender, object e)

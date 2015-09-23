@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 
 namespace FlexTable.ViewModel
@@ -15,6 +16,9 @@ namespace FlexTable.ViewModel
     {
         private IMainPage view;
         public IMainPage View { get { return view; } }
+
+        private Size bounds;
+        public Size Bounds { get { return bounds; } }
 
         private Model.Sheet sheet;
         public Model.Sheet Sheet {
@@ -37,6 +41,10 @@ namespace FlexTable.ViewModel
         public MainPageViewModel(IMainPage view)
         {
             this.view = view;
+
+            var bounds = ApplicationView.GetForCurrentView().VisibleBounds;
+            var scaleFactor = 1.0; // DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel;
+            this.bounds = new Size(bounds.Width * scaleFactor, bounds.Height * scaleFactor);
 
             SheetViewModel = new SheetViewModel(this, view);
             TableViewModel = new TableViewModel(this, view);
@@ -65,7 +73,7 @@ namespace FlexTable.ViewModel
             var elapsedMs = watch.ElapsedMilliseconds;
             Debug.WriteLine("elapsed " + elapsedMs);
 
-            ViewModel.PageViewModel pageViewModel = new ViewModel.PageViewModel(
+            PageViewModel pageViewModel = new PageViewModel(
                 this,
                 view.ExplorationView.TopPageView
                 );

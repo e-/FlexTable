@@ -15,14 +15,22 @@
     >
 
     <UserControl.Resources>
+        <Style TargetType="Border" x:Key="TitleWrapperStyle">
+            <Setter Property="Height" Value="90" />
+        </Style>
+        
         <Style TargetType="TextBlock" x:Key="TitleStyle">
             <Setter Property="FontSize" Value="42" />
-            <Setter Property="TextAlignment" Value="Center"></Setter>    
+            <Setter Property="TextAlignment" Value="Center"></Setter>
+            <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
+        
+        <!-- 
         <Style TargetType="TextBlock" x:Key="SubtitleStyle">
             <Setter Property="FontSize" Value="18" />
             <Setter Property="TextAlignment" Value="Center"></Setter>
         </Style>
+        -->
         
         <Style TargetType="Border" x:Key="ParagraphLabelBorderStyle">
             <Setter Property="CornerRadius" Value="14" />
@@ -38,8 +46,7 @@
         </Style>
         
         <util:BooleanToVisibilityConverter x:Name="BooleanToVisibilityConverter" />
-        <util:BooleanToInvertedVisibilityConverter x:Name="BooleanToInvertedVisibilityConverter" />
-        
+        <util:BooleanToInvertedVisibilityConverter x:Name="BooleanToInvertedVisibilityConverter" />        
         
         <Storyboard x:Name="Show">
             <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.3"
@@ -55,7 +62,7 @@
 
         <Storyboard x:Name="GoDownStoryboard">
             <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.5"
-                             Storyboard.TargetName="UserControl" Storyboard.TargetProperty="(Canvas.Top)" To="520">
+                             Storyboard.TargetName="UserControl" Storyboard.TargetProperty="(Canvas.Top)" To="{Binding PageHeight}">
             </DoubleAnimation>
         </Storyboard>
 
@@ -63,7 +70,7 @@
             <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.5"
                              Storyboard.TargetName="UserControl" Storyboard.TargetProperty="(Canvas.Top)" To="0">
             </DoubleAnimation>
-            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.2" BeginTime="00:00:00.2"
+            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.2" BeginTime="00:00:00.3"
                              Storyboard.TargetName="ChartWrapper" Storyboard.TargetProperty="Opacity" To="0">
             </DoubleAnimation>
         </Storyboard>              
@@ -74,58 +81,71 @@
         <Color x:Key="ActivatedLabelBackgroundColor">#ddd</Color>
     </UserControl.Resources>
     
-    <StackPanel Margin="20" Opacity="0" x:Name="Wrapper" Tapped="Wrapper_Tapped">
-        <StackPanel Height="480" Visibility="{Binding IsSummaryVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Background="White" 
-                    x:Name="ChartWrapper">
-            <TextBlock Style="{StaticResource TitleStyle}">
-                <Run Text="{Binding ColumnViewModel.Column.Name}" />
-            </TextBlock>
-            <TextBlock Style="{StaticResource SubtitleStyle}">
-                <Run Text="{Binding ColumnViewModel.TypeString}" />
-            </TextBlock>
-            
+    <StackPanel Opacity="0" x:Name="Wrapper" Tapped="Wrapper_Tapped">
+        <StackPanel Height="{Binding PageHeight}" Visibility="{Binding IsSummaryVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Background="White" 
+                    x:Name="ChartWrapper" Padding="20">
             <ScrollViewer HorizontalScrollBarVisibility="Hidden" HorizontalScrollMode="Auto" 
                           VerticalScrollMode="Disabled" VerticalScrollBarVisibility="Hidden"
-                          x:Name="Carousel" Height="{StaticResource ParagraphHeight}" Width="{StaticResource ParagraphWidth}" ViewChanged="Carousel_ViewChanged" ViewChanging="Carousel_ViewChanging">
-                <StackPanel Orientation="Horizontal" x:Name="ParagraphContainer">
-
-                    <Grid Visibility="{Binding IsBarChartVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Bar Chart">
+                          x:Name="Carousel" Width="{StaticResource ParagraphWidth}" ViewChanged="Carousel_ViewChanged" ViewChanging="Carousel_ViewChanging">
+                <StackPanel Orientation="Horizontal" x:Name="ParagraphContainer" IsHitTestVisible="False">
+                    <StackPanel Visibility="{Binding IsBarChartVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Bar Chart">
+                        <Border Style="{StaticResource TitleWrapperStyle}">
+                            <TextBlock Style="{StaticResource TitleStyle}" x:Name="BarChartTitleElement" />
+                        </Border>
                         <d3view:BarChart x:Name="BarChartElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}" />
-                    </Grid>
+                    </StackPanel>
 
-                    <Grid Visibility="{Binding IsDistributionVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Distribution">
+                    <StackPanel Visibility="{Binding IsDistributionVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Distribution">
+                        <Border Style="{StaticResource TitleWrapperStyle}">
+                            <TextBlock Style="{StaticResource TitleStyle}" x:Name="DistributionViewTitleElement" />
+                        </Border>
                         <local:DistributionView x:Name="DistributionViewElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}"/>
-                    </Grid>
+                    </StackPanel>
                     
-                    <Grid Visibility="{Binding IsDescriptiveStatisticsVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Statistics">
+                    <StackPanel Visibility="{Binding IsDescriptiveStatisticsVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Statistics">
+                        <Border Style="{StaticResource TitleWrapperStyle}">
+                            <TextBlock Style="{StaticResource TitleStyle}" x:Name="DescriptiveStatisticsTitleElement" />
+                        </Border>
                         <local:DescriptiveStatisticsView x:Name="DescriptiveStatisticsViewElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}"/>
-                    </Grid>
+                    </StackPanel>
 
-                    <Grid Visibility="{Binding IsGroupedBarChartVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Grouped Bar Chart">
+                    <StackPanel Visibility="{Binding IsGroupedBarChartVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Grouped Bar Chart">
+                        <Border Style="{StaticResource TitleWrapperStyle}">
+                            <TextBlock Style="{StaticResource TitleStyle}" x:Name="GroupedBarChartTitleElement" />
+                        </Border>
                         <d3view:GroupedBarChart x:Name="GroupedBarChartElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}" />
-                    </Grid>
+                    </StackPanel>
 
-                    <Grid Visibility="{Binding IsScatterplotVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Scatterplot">
+                    <StackPanel Visibility="{Binding IsScatterplotVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Scatterplot">
+                        <Border Style="{StaticResource TitleWrapperStyle}">
+                            <TextBlock Style="{StaticResource TitleStyle}" x:Name="ScatterplotTitleElement" />
+                        </Border>
                         <d3view:Scatterplot x:Name="ScatterplotElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}" />
-                    </Grid>
+                    </StackPanel>
 
-                    <Grid Visibility="{Binding IsPivotTableVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Pivot Table">
+                    <StackPanel Visibility="{Binding IsPivotTableVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Pivot Table">
+                        <Border Style="{StaticResource TitleWrapperStyle}">
+                            <TextBlock Style="{StaticResource TitleStyle}" x:Name="PivotTableTitleElement" />
+                        </Border>
                         <local:PivotTableView x:Name="PivotTableViewElement" VerticalAlignment="Center"                                              
                            Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}"></local:PivotTableView>
-                    </Grid>
+                    </StackPanel>
 
-                    <Grid Visibility="{Binding IsCorrelationStatisticsVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Statistics">
+                    <StackPanel Visibility="{Binding IsCorrelationStatisticsVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Statistics">
+                        <Border Style="{StaticResource TitleWrapperStyle}">
+                            <TextBlock Style="{StaticResource TitleStyle}" x:Name="CorrelationStatisticsTitleElement" />
+                        </Border>
                         <local:CorrelationStatisticsView x:Name="CorrelationStatisticsViewElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}"/>
-                    </Grid>
+                    </StackPanel>
                 </StackPanel>
             </ScrollViewer>
             <StackPanel x:Name="ParagraphLabelContainer" Height="40" Orientation="Horizontal" HorizontalAlignment="Center"></StackPanel>
         </StackPanel>
-        <Border Height="480" Visibility="{Binding IsSummaryVisible, Converter={StaticResource BooleanToInvertedVisibilityConverter}}">
+        <Border Height="{Binding PageHeight}" Visibility="{Binding IsSummaryVisible, Converter={StaticResource BooleanToInvertedVisibilityConverter}}" Padding="20" Background="White">
             <StackPanel VerticalAlignment="Center">
                 <TextBlock FontSize="25" TextAlignment="Center">Please select a column to preview.</TextBlock>
             </StackPanel>
         </Border>
-        <Image Source="/Assets/horizontal-separator.png" Width="710" Height="8"></Image>
+        <Image Source="ms-appx:///Assets/horizontal-separator.png" Width="{Binding PageWidth}" Height="8"></Image>
     </StackPanel>
 </UserControl>

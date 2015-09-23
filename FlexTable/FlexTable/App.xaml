@@ -7,7 +7,7 @@
 
     <Application.Resources>
         <ResourceDictionary>
-            <x:Double x:Key="RowHeight">20</x:Double>
+            <x:Double x:Key="RowHeight">24</x:Double>
             <x:Double x:Key="RowHeaderWidth">110</x:Double>
             <x:Double x:Key="HalfRowHeaderWidth">55</x:Double>
             <x:Double x:Key="ColumnHeaderHeight">50</x:Double>
@@ -19,22 +19,21 @@
             <GridLength x:Key="ColumnHeaderHeightInGridLength">50</GridLength>
 
             <Style TargetType="TextBlock" x:Key="CellStyle">
-                <Setter Property="Padding" Value="5 4" />
+                <Setter Property="Padding" Value="5 2" />
                 <Setter Property="Height" Value="24" />
                 <Setter Property="TextAlignment" Value="Center" />
-                <Setter Property="FontFamily" Value="Roboto" />
             </Style>
 
             <Style TargetType="TextBlock" x:Key="RowHeaderStyle">
-                <Setter Property="Padding" Value="10 4" />
-                <Setter Property="Height" Value="20" />
+                <Setter Property="Padding" Value="10 2" />
+                <Setter Property="Height" Value="24" />
                 <Setter Property="TextAlignment" Value="Center" />
                 <Setter Property="Width" Value="{StaticResource RowHeaderWidth}" />
                 <!--<Setter Property="FontWeight" Value="Bold" />-->
             </Style>
 
             <Style TargetType="TextBlock" x:Key="ColumnHeaderStyle">
-                <Setter Property="Padding" Value="10 2" />
+                <Setter Property="Padding" Value="5 2" />
                 <Setter Property="TextAlignment" Value="Center" />
                 <Setter Property="FontWeight" Value="Bold" />
             </Style>
@@ -54,8 +53,9 @@
                 <Setter Property="VerticalAlignment" Value="Bottom" />
             </Style>
 
-            <x:Double x:Key="ParagraphWidth">710</x:Double>
-            <x:Double x:Key="ParagraphHeight">365</x:Double>
+            <x:Double x:Key="ParagraphWidth">794</x:Double> <!-- 794인데 마지막 축 레이블 튀어나가서 줄임 -->
+            <x:Double x:Key="PaddedParagraphWidth">704</x:Double>
+            <x:Double x:Key="ParagraphHeight">410</x:Double>
 
             <QuarticEase EasingMode="EaseInOut" x:Key="QuarticEaseInOut" />
         </ResourceDictionary>

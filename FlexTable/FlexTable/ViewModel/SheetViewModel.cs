@@ -12,8 +12,8 @@ namespace FlexTable.ViewModel
 {
     public class SheetViewModel : NotifyViewModel
     {
-        private Model.Sheet sheet;
-        public Model.Sheet Sheet { get { return sheet; } set { sheet = value; OnPropertyChanged("Sheet"); } }
+        private Sheet sheet;
+        public Sheet Sheet { get { return sheet; } set { sheet = value; OnPropertyChanged("Sheet"); } }
 
         private Double sheetWidth;
         public Double SheetWidth { get { return sheetWidth; } private set { sheetWidth = value; OnPropertyChanged("SheetWidth"); } }
@@ -23,37 +23,34 @@ namespace FlexTable.ViewModel
 
         public Double AllRowsSheetHeight { get { return allRowViewModels.Count * (Double)App.Current.Resources["RowHeight"]; } }
 
-        private List<ViewModel.ColumnViewModel> columnViewModels = new List<ColumnViewModel>();
-        public List<ViewModel.ColumnViewModel> ColumnViewModels { get { return columnViewModels; } }
+        private List<ColumnViewModel> columnViewModels = new List<ColumnViewModel>();
+        public List<ColumnViewModel> ColumnViewModels => columnViewModels;
 
         // 모든 로우에 대한 정보 가지고 있음 속도 위함
-        private List<ViewModel.RowViewModel> allRowViewModels = new List<ViewModel.RowViewModel>();
-        public List<ViewModel.RowViewModel> AllRowViewModels { get { return allRowViewModels; } }
+        private List<RowViewModel> allRowViewModels = new List<RowViewModel>();
+        public List<RowViewModel> AllRowViewModels => allRowViewModels;
 
         // group된 일시적인 테이블
-        private List<ViewModel.RowViewModel> temporaryRowViewModels = new List<ViewModel.RowViewModel>();
-        public List<ViewModel.RowViewModel> TemporaryRowViewModels { get { return temporaryRowViewModels; } }
+        private List<RowViewModel> temporaryRowViewModels = new List<RowViewModel>();
+        public List<RowViewModel> TemporaryRowViewModels => temporaryRowViewModels;
 
-        /*private List<ViewModel.RowViewModel> rowViewModels;
-        public List<ViewModel.RowViewModel> RowViewModels { get { return rowViewModels; } }*/
-
-        private List<ViewModel.ColumnViewModel> groupedColumnViewModels = new List<ViewModel.ColumnViewModel>();
-        public List<ViewModel.ColumnViewModel> GroupedColumnViewModels { get { return groupedColumnViewModels; } }
+        private List<ColumnViewModel> groupedColumnViewModels = new List<ColumnViewModel>();
+        public List<ColumnViewModel> GroupedColumnViewModels => groupedColumnViewModels;
 
 
         private List<GroupedRows> groupingResult;
-        public List<GroupedRows> GroupingResult { get { return groupingResult; } }
+        public List<GroupedRows> GroupingResult => groupingResult;
 
         ViewModel.MainPageViewModel mainPageViewModel;
         IMainPage view;
 
-        public SheetViewModel(ViewModel.MainPageViewModel mainPageViewModel, IMainPage view)
+        public SheetViewModel(MainPageViewModel mainPageViewModel, IMainPage view)
         {
             this.mainPageViewModel = mainPageViewModel;
             this.view = view;
         }
 
-        public void Initialize(Model.Sheet sheet)
+        public void Initialize(Sheet sheet)
         {
             Sheet = sheet;
 
@@ -62,9 +59,9 @@ namespace FlexTable.ViewModel
             /* 기본 컬럼 추가 */
             columnViewModels.Clear();
             index = 0;
-            foreach (Model.Column column in sheet.Columns)
+            foreach (Column column in sheet.Columns)
             {
-                columnViewModels.Add(new ViewModel.ColumnViewModel(mainPageViewModel) { 
+                columnViewModels.Add(new ColumnViewModel(mainPageViewModel) { 
                     Column = column,
                     Index = index
                 });
@@ -82,7 +79,7 @@ namespace FlexTable.ViewModel
                 {
                     List<String> uniqueValues = new List<String>();
 
-                    foreach (Model.Row row in sheet.Rows)
+                    foreach (Row row in sheet.Rows)
                     {
                         String value = row.Cells[index].RawContent;
                         if (!uniqueValues.Contains(value))
@@ -113,7 +110,7 @@ namespace FlexTable.ViewModel
                     columnViewModel.Categories = categories;
                     
                     // 원래 cateogorical의 content는 string이 들어있을 텐데 이를 Category로 바꾼다. 즉 content는 Category 아니면 Double임
-                    foreach (Model.Row row in sheet.Rows)
+                    foreach (Row row in sheet.Rows)
                     {
                         String value = row.Cells[index].RawContent;
                         row.Cells[index].Content = categories.Where(c => c.Value == value).First();
@@ -121,7 +118,7 @@ namespace FlexTable.ViewModel
                 }
                 else
                 {
-                    foreach (Model.Row row in sheet.Rows)
+                    foreach (Row row in sheet.Rows)
                     {
                         String value = row.Cells[index].RawContent;
                         row.Cells[index].Content = Double.Parse(row.Cells[index].RawContent);
@@ -143,9 +140,9 @@ namespace FlexTable.ViewModel
             /* 기본 row 추가 */
             allRowViewModels.Clear();
             index = 0;
-            foreach (Model.Row row in sheet.Rows)
+            foreach (Row row in sheet.Rows)
             {
-                ViewModel.RowViewModel rowViewModel = new ViewModel.RowViewModel(mainPageViewModel) { 
+                RowViewModel rowViewModel = new RowViewModel(mainPageViewModel) { 
                     Index = index
                 };
                 Int32 index2 = 0;
@@ -186,8 +183,6 @@ namespace FlexTable.ViewModel
 
             UpdateColumnX();
 
-            //mainPageViewModel.TableViewModel.UpdateCellXPosition();
-
             foreach (View.RowPresenter rowPresenter in mainPageViewModel.TableViewModel.RowPresenters)
             {
                 rowPresenter.UpdateCellsWithoutAnimation();
@@ -216,7 +211,6 @@ namespace FlexTable.ViewModel
 
             UpdateColumnX();
 
-            //mainPageViewModel.TableViewModel.UpdateCellXPosition();
             foreach (View.RowPresenter rowPresenter in mainPageViewModel.TableViewModel.RowPresenters)
             {
                 rowPresenter.UpdateCellsWithoutAnimation();
@@ -226,7 +220,7 @@ namespace FlexTable.ViewModel
             mainPageViewModel.View.TableView.BottomColumnHeader.Update();
         }
 
-        public void Ungroup(ViewModel.ColumnViewModel pivotColumnViewModel)
+        public void Ungroup(ColumnViewModel pivotColumnViewModel)
         {
             groupedColumnViewModels.Remove(pivotColumnViewModel);
             pivotColumnViewModel.IsGroupedBy = false;
@@ -251,7 +245,7 @@ namespace FlexTable.ViewModel
             GroupUpdate();
         }
 
-        public void Group(ViewModel.ColumnViewModel pivotColumnViewModel)
+        public void Group(ColumnViewModel pivotColumnViewModel)
         {
             if (pivotColumnViewModel.Type != Model.ColumnType.Categorical)
             {
@@ -310,8 +304,8 @@ namespace FlexTable.ViewModel
                     if (columnViewModel.Type == ColumnType.Categorical)
                     {
                         Int32 uniqueCount = GetUniqueList(Sheet.Rows.Select(r => r.Cells[columnViewModel.Index].Content as Category)).Count;
-                        cell.Content = String.Format("({0})", uniqueCount);
-                        cell.RawContent = String.Format("({0})", uniqueCount);
+                        cell.Content = $"({uniqueCount})";
+                        cell.RawContent = $"({uniqueCount})"; 
                     }
                     else //numerical
                     {
@@ -351,8 +345,8 @@ namespace FlexTable.ViewModel
                         else if (columnViewModel.Type == ColumnType.Categorical)
                         {
                             Int32 uniqueCount = GetUniqueList(groupedRows.Rows.Select(r => r.Cells[columnViewModel.Index].Content as Category)).Count;
-                            cell.Content = String.Format("({0})", uniqueCount);
-                            cell.RawContent = String.Format("({0})", uniqueCount);
+                            cell.Content = $"({uniqueCount})";
+                            cell.RawContent = $"({uniqueCount})";
                         }
                         else //numerical
                         {
@@ -428,15 +422,15 @@ namespace FlexTable.ViewModel
             return GetRowsByColumnViewModel(sheet.Rows, columnViewModel).Select(kv => new Tuple<Category, Int32>(kv.Key, kv.Value.Count)).ToList();
         }
 
-        public static Dictionary<Category, List<Model.Row>> GetRowsByColumnViewModel(IEnumerable<Row> rows, ColumnViewModel columnViewModel)
+        public static Dictionary<Category, List<Row>> GetRowsByColumnViewModel(IEnumerable<Row> rows, ColumnViewModel columnViewModel)
         {
-            Dictionary<Category, List<Model.Row>> dict = new Dictionary<Category, List<Model.Row>>();
+            Dictionary<Category, List<Row>> dict = new Dictionary<Category, List<Row>>();
             
-            foreach (Model.Row row in rows)
+            foreach (Row row in rows)
             {
                 Category category = row.Cells[columnViewModel.Index].Content as Category;
                 if(!dict.ContainsKey(category)) {
-                    dict[category] = new List<Model.Row>();
+                    dict[category] = new List<Row>();
                 }
 
                 dict[category].Add(row);
@@ -448,10 +442,10 @@ namespace FlexTable.ViewModel
         public List<Tuple<Category, Category, Int32>> CountByDoubleColumnViewModel(ColumnViewModel secondary)
         {
             ColumnViewModel primary = groupedColumnViewModels.Last();
-            Dictionary<Category, List<Model.Row>> dict = GetRowsByColumnViewModel(sheet.Rows, primary);
+            Dictionary<Category, List<Row>> dict = GetRowsByColumnViewModel(sheet.Rows, primary);
             List<Tuple<Category, Category, Int32>> result = new List<Tuple<Category, Category, Int32>>();
 
-            foreach (KeyValuePair<Category, List<Model.Row>> kv in dict)
+            foreach (KeyValuePair<Category, List<Row>> kv in dict)
             {
                 result.AddRange(GetRowsByColumnViewModel(kv.Value, secondary).Select(kv2 => new Tuple<Category, Category, Int32>(kv.Key, kv2.Key, kv2.Value.Count)));
             }

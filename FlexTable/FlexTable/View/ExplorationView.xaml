@@ -10,35 +10,13 @@
     d:DesignHeight="300"
     d:DesignWidth="400">
 
-    <UserControl.Resources>
-        <Style TargetType="TextBlock" x:Key="HeaderStyle">
-            <Setter Property="FontSize" Value="30" />
-            <Setter Property="TextAlignment" Value="Left" />
-            <Setter Property="Padding" Value="0 5 10 5" />
-        </Style>
-        <Style TargetType="TextBlock" x:Key="DescriptionStyle">
-            <Setter Property="FontSize" Value="20" />
-            <Setter Property="TextAlignment" Value="Left" />
-            <Setter Property="Padding" Value="0 5 10 5" />
-        </Style>
-        
-        <Style TargetType="TextBlock" x:Key="SummaryHeaderStyle">
-            <Setter Property="FontSize" Value="20" />
-            <Setter Property="TextAlignment" Value="Right" />
-            <Setter Property="Padding" Value="0 5 10 5" />
-        </Style>
-        <Style TargetType="TextBlock" x:Key="SummaryValueStyle">
-            <Setter Property="FontSize" Value="20" />
-            <Setter Property="TextAlignment" Value="Left" />
-            <Setter Property="Padding" Value="0 5 10 5" />
-        </Style>
-    </UserControl.Resources>
-    
     <Grid x:Name="Wrapper">
-        <Canvas Margin="10" x:Name="PageViewsElement">
-            <local:MetedataView Canvas.Top="520" Margin="20" DataContext="{Binding MetadataViewModel}" Width="700"></local:MetedataView>
-
-            <local:PageView x:Name="InitialPageViewElement" DataContext="{Binding DummyPageViewModel}"></local:PageView>
+        <Canvas x:Name="PageViewsElement">
+            <Border Canvas.Top="{Binding PageHeight}" Width="{Binding PageWidth}">
+                <local:MetedataView DataContext="{Binding MetadataViewModel}"></local:MetedataView>
+            </Border>
+            
+            <local:PageView x:Name="InitialPageViewElement" DataContext="{Binding DummyPageViewModel}" Width="{Binding PageWidth}"></local:PageView>
         </Canvas>
         <Grid x:Name="StrokeGrid" IsHitTestVisible="False"></Grid>
         <Grid x:Name="NewStrokeGrid" IsHitTestVisible="False"></Grid>

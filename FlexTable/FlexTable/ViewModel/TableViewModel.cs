@@ -14,32 +14,26 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.ViewManagement;
 using Windows.Graphics.Display;
+using FlexTable.View;
 
 namespace FlexTable.ViewModel
 {
     public class TableViewModel : NotifyViewModel
     {
         MainPageViewModel mainPageViewModel;
-        public MainPageViewModel MainPageViewModel
-        {
-            get { return mainPageViewModel; }
-        }
-        public SheetViewModel SheetViewModel
-        {
-            get { return mainPageViewModel.SheetViewModel; }
-        }
+        public MainPageViewModel MainPageViewModel => mainPageViewModel;
+        public SheetViewModel SheetViewModel => mainPageViewModel.SheetViewModel;
 
         private IMainPage view;
 
         public Double ScrollLeft { get; set; }
         public Double ScrollTop { get; set; }
+       
+        public Double Width => mainPageViewModel.Bounds.Width;
+        public Double Height => mainPageViewModel.Bounds.Height;
 
-        private Size bounds;
-        public Double Width { get { return bounds.Width; } }
-        public Double Height { get { return bounds.Height; } }
-
-        public Double SheetViewWidth { get { return bounds.Width / 2 - (Double)App.Current.Resources["RowHeaderWidth"]; } }
-        public Double SheetViewHeight { get { return bounds.Height - (Double)App.Current.Resources["ColumnHeaderHeight"] * 2; } }
+        public Double SheetViewWidth => mainPageViewModel.Bounds.Width / 2 - (Double)App.Current.Resources["RowHeaderWidth"];
+        public Double SheetViewHeight => mainPageViewModel.Bounds.Height - (Double)App.Current.Resources["ColumnHeaderHeight"] * 2;
 
         private Double paddedSheetWidth;
         public Double PaddedSheetWidth { get { return paddedSheetWidth; } set { paddedSheetWidth = value; OnPropertyChanged("PaddedSheetWidth"); } }
@@ -47,14 +41,14 @@ namespace FlexTable.ViewModel
         private Double paddedSheetHeight;
         public Double PaddedSheetHeight { get { return paddedSheetHeight; } set { paddedSheetHeight = value; OnPropertyChanged("PaddedSheetHeight"); } }
 
-        private List<View.RowPresenter> allRowPresenters = new List<View.RowPresenter>();
-        public List<View.RowPresenter> AllRowPresenters { get { return allRowPresenters; } }
+        private List<RowPresenter> allRowPresenters = new List<RowPresenter>();
+        public List<RowPresenter> AllRowPresenters => allRowPresenters;
 
-        private List<View.RowPresenter> temporaryRowPresenters = new List<View.RowPresenter>();
-        public List<View.RowPresenter> TemporaryRowPresenters { get { return temporaryRowPresenters; } }
+        private List<RowPresenter> temporaryRowPresenters = new List<RowPresenter>();
+        public List<RowPresenter> TemporaryRowPresenters => temporaryRowPresenters;
 
-        private List<View.RowPresenter> rowPresenters;
-        public List<View.RowPresenter> RowPresenters { get { return rowPresenters; } }
+        private List<RowPresenter> rowPresenters;
+        public List<RowPresenter> RowPresenters => rowPresenters;
 
         private Boolean isIndexing;
         public Boolean IsIndexing { get { return isIndexing; } set { isIndexing = value; OnPropertyChanged("IsIndexing"); } }
@@ -64,14 +58,11 @@ namespace FlexTable.ViewModel
 
         private String indexTooltipContent;
         public String IndexTooltipContent { get { return indexTooltipContent; } set { indexTooltipContent = value; OnPropertyChanged("IndexTooltipContent"); } }
-
-        private ColumnViewModel indexedColumnViewModel;
-        public ColumnViewModel IndexedColumnViewModel { get { return indexedColumnViewModel; } set { indexedColumnViewModel = value; OnPropertyChanged("IndexedColumnViewModel"); } }
-
+        
         private Boolean isPreviewing = false;
 
-        private List<ViewModel.RowViewModel> rowViewModels;
-        public List<ViewModel.RowViewModel> RowViewModels { get { return rowViewModels; } }
+        private List<RowViewModel> rowViewModels;
+        public List<RowViewModel> RowViewModels => rowViewModels;
 
         private ColumnViewModel sortBy;
         public ColumnViewModel SortBy { get { return sortBy; } set { sortBy = value; } }
@@ -79,14 +70,10 @@ namespace FlexTable.ViewModel
         private Model.SortOption sortOption;
         public Model.SortOption SortOption { get { return sortOption; } set { sortOption = value; } }
 
-        public TableViewModel(ViewModel.MainPageViewModel mainPageViewModel, IMainPage view)
+        public TableViewModel(MainPageViewModel mainPageViewModel, IMainPage view)
         {
             this.mainPageViewModel = mainPageViewModel;
             this.view = view;
-
-            var bounds = ApplicationView.GetForCurrentView().VisibleBounds;
-            var scaleFactor = DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel;
-            this.bounds = new Size(bounds.Width * scaleFactor, bounds.Height * scaleFactor);
 
             OnPropertyChanged("Width");
             OnPropertyChanged("Height");
@@ -114,9 +101,9 @@ namespace FlexTable.ViewModel
             PaddedSheetWidth = SheetViewModel.SheetWidth > SheetViewWidth ? SheetViewModel.SheetWidth : SheetViewWidth;
 
             view.TableView.AllRowsTableCanvas.Children.Clear();
-            foreach (ViewModel.RowViewModel rowViewModel in SheetViewModel.AllRowViewModels)
+            foreach (RowViewModel rowViewModel in SheetViewModel.AllRowViewModels)
             {
-                View.RowPresenter rowPresenter = new View.RowPresenter(rowViewModel);
+                RowPresenter rowPresenter = new RowPresenter(rowViewModel);
 
                 view.TableView.AllRowsTableCanvas.Children.Add(rowPresenter);
                 rowPresenter.Y = rowViewModel.Y;
@@ -179,7 +166,7 @@ namespace FlexTable.ViewModel
             {
                 rowPresenters = allRowPresenters;
 
-                foreach (View.RowPresenter rowPresenter in allRowPresenters)
+                foreach (RowPresenter rowPresenter in allRowPresenters)
                 {
                     rowPresenter.Visibility = Visibility.Visible;
                     rowPresenter.Y = rowPresenter.RowViewModel.Y;
@@ -201,9 +188,9 @@ namespace FlexTable.ViewModel
 
                 PaddedSheetHeight = SheetViewModel.SheetHeight > SheetViewHeight ? SheetViewModel.SheetHeight : SheetViewHeight;
 
-                foreach (ViewModel.RowViewModel rowViewModel in SheetViewModel.TemporaryRowViewModels)
+                foreach (RowViewModel rowViewModel in SheetViewModel.TemporaryRowViewModels)
                 {
-                    View.RowPresenter rowPresenter = new View.RowPresenter(rowViewModel);
+                    RowPresenter rowPresenter = new RowPresenter(rowViewModel);
                     temporaryRowPresenters.Add(rowPresenter);
 
                     view.TableView.TableCanvas.Children.Add(rowPresenter);
@@ -230,11 +217,12 @@ namespace FlexTable.ViewModel
 
             ColumnViewModel columnViewModel = SheetViewModel.ColumnViewModels.First(c => c.Order == columnIndex);
 
-            if (indexedColumnViewModel != columnViewModel)
+            if (view.TableView.ColumnHighlighter.ColumnViewModel != columnViewModel)
             {
                 view.TableView.ScrollToColumnViewModel(columnViewModel);
 
-                IndexedColumnViewModel = columnViewModel;
+                view.TableView.ColumnHighlighter.ColumnViewModel = columnViewModel;
+                view.TableView.ColumnHighlighter.Update();
 
                 IsIndexing = true;
                 IndexTooltipY = (columnIndex + 0.5) * (totalHeight / SheetViewModel.ColumnViewModels.Count) - 15;
@@ -249,21 +237,22 @@ namespace FlexTable.ViewModel
         public void CancelIndexing()
         {
             IsIndexing = false;
-            IndexedColumnViewModel = null;
+            view.TableView.ColumnHighlighter.ColumnViewModel = null;
+            view.TableView.ColumnHighlighter.Update();
             view.TableView.ColumnIndexer.HideHelper();
             view.ExplorationView.TopPageViewModel.Hide();
             ignoredPointerId = activatedPointerId;
         }
 
-        public void PreviewRows(ColumnViewModel columnViewModel, Model.Category category)
+        public void PreviewRows(Func<RowViewModel, Boolean> condition)
         {
             isPreviewing = true;
 
             Int32 index = 0;
             Double rowHeight = (Double)App.Current.Resources["RowHeight"];
-            foreach (View.RowPresenter rowPresenter in allRowPresenters)
+            foreach (RowPresenter rowPresenter in allRowPresenters)
             {
-                if (rowPresenter.RowViewModel.Cells[columnViewModel.Index].Content == category)
+                if(condition(rowPresenter.RowViewModel))
                 {
                     rowPresenter.Visibility = Visibility.Visible;
                     rowPresenter.Y = (index++) * rowHeight;
@@ -300,7 +289,7 @@ namespace FlexTable.ViewModel
                 {
                     columnViewModel.IsXDirty = false;
 
-                    foreach(View.RowPresenter rowPresenter in rowPresenters) {
+                    foreach(RowPresenter rowPresenter in rowPresenters) {
                         
                         sb.Children.Add(
                             Util.Animator.Generate(rowPresenter.CellPresenters[columnViewModel.Index], "(Canvas.Left)", columnViewModel.X)

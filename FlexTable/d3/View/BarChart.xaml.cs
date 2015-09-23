@@ -67,6 +67,15 @@ namespace d3.View
             set { SetValue(VerticalAxisLabelProperty, value); }
         }
 
+        public static readonly DependencyProperty AutoColorProperty =
+            DependencyProperty.Register("AutoColor", typeof(Boolean), typeof(BarChart), new PropertyMetadata(true));
+
+        public Boolean AutoColor
+        {
+            get { return (Boolean)GetValue(AutoColorProperty); }
+            set { SetValue(AutoColorProperty, value); }
+        }
+
         /*public static readonly DependencyProperty AutoColorProperty =
             DependencyProperty.Register("AutoColor", typeof(Boolean), typeof(BarChart), new PropertyMetadata(true));
         
@@ -123,7 +132,7 @@ namespace d3.View
             viewModel.LegendVisibility = LegendVisibility;
             viewModel.HorizontalAxisLabel = HorizontalAxisLabel;
             viewModel.VerticalAxisLabel = VerticalAxisLabel;
-
+            viewModel.AutoColor = AutoColor;
             viewModel.Width = this.Width;
             viewModel.Height = this.Height;
 

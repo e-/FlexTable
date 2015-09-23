@@ -44,8 +44,8 @@
             PointerMoved="Border_PointerMoved"
             PointerReleased="Border_PointerReleased"
             PointerCaptureLost="Border_PointerCaptureLost"
+          PointerEntered="Grid_PointerEntered"
             PointerExited="Border_PointerExited"
-            PointerPressed="Border_PointerPressed"
             >
         <StackPanel x:Name="IndexHelperWrapperElement" Opacity="0">
         </StackPanel>

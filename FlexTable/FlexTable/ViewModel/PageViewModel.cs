@@ -1,18 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using d3;
-using Windows.UI.Xaml.Shapes;
-using Windows.UI;
-using System.Diagnostics;
-using Windows.Foundation;
 using Windows.UI.Input.Inking;
 using FlexTable.Model;
-using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml;
+using FlexTable.View;
+using Windows.UI.Xaml.Controls;
 
 namespace FlexTable.ViewModel
 {
@@ -22,10 +15,10 @@ namespace FlexTable.ViewModel
         public ColumnViewModel ColumnViewModel { get { return columnViewModel; } set { columnViewModel = value; OnPropertyChanged("ColumnViewModel"); } }
         
         MainPageViewModel mainPageViewModel;
-        public MainPageViewModel MainPageViewModel { get { return mainPageViewModel; } }
+        public MainPageViewModel MainPageViewModel => mainPageViewModel;
 
         PivotTableViewModel pivotTableViewModel;
-        public PivotTableViewModel PivotTableViewModel { get { return pivotTableViewModel; } }
+        public PivotTableViewModel PivotTableViewModel => pivotTableViewModel; 
 
         /*CustomHistogramViewModel customHistogramViewModel;
         public CustomHistogramViewModel CustomHistogramViewModel { get { return customHistogramViewModel; } }
@@ -52,23 +45,34 @@ namespace FlexTable.ViewModel
         private Boolean isPivotTableVisible = false;
         public Boolean IsPivotTableVisible { get { return isPivotTableVisible; } set { isPivotTableVisible = value; OnPropertyChanged("IsPivotTableVisible"); } }
 
-
         private Boolean isCorrelationStatisticsVisible = false;
         public Boolean IsCorrelationStatisticsVisible { get { return isCorrelationStatisticsVisible; } set { isCorrelationStatisticsVisible = value; OnPropertyChanged("IsCorrelationStatisticsVisible"); } }
 
         private Boolean isGroupedBy = false;
         public Boolean IsGroupedBy { get { return isGroupedBy; } set { isGroupedBy = value; OnPropertyChanged("IsGroupedBy"); } }
 
-        View.PageView pageView;
+        private Double pageHeight;
+        public Double PageHeight { get { return pageHeight; } set { pageHeight = value;  OnPropertyChanged("PageHeight"); } }
 
-        public PageViewModel(MainPageViewModel mainPageViewModel, View.PageView pageView)
+        private Double pageWidth;
+        public Double PageWidth { get { return pageWidth; } set { pageWidth = value; OnPropertyChanged("PageWidth"); } }
+
+        public Func<Category, Func<RowViewModel, Boolean>> BarChartRowSelecter { get; set; }
+        public Func<Category, Category, Func<RowViewModel, Boolean>> GroupedBarChartRowSelecter { get; set; }
+
+        PageView pageView;
+
+        public PageViewModel(MainPageViewModel mainPageViewModel, PageView pageView)
         {
+            PageHeight = mainPageViewModel.Bounds.Height / 2;
+            PageWidth = mainPageViewModel.Bounds.Width / 2;
+
             this.mainPageViewModel = mainPageViewModel;
             this.pageView = pageView;
             this.pivotTableViewModel = new PivotTableViewModel(mainPageViewModel, pageView.PivotTableView);
             //this.customHistogramViewModel = new CustomHistogramViewModel(mainPageViewModel, pageView.CustomHistogramView);
         }
-
+        
         public void ShowSummary(ColumnViewModel columnViewModel)
         {
             IsSummaryVisible = true;
@@ -106,10 +110,16 @@ namespace FlexTable.ViewModel
                 groupedRows = SheetViewModel.GroupRecursive(mainPageViewModel.SheetViewModel.Sheet.Rows.ToList(), categoricalColumns, 0);
             }
 
-
             if (categoricalCount == 1 && numericalCount == 0)
             {
                 IsBarChartVisible = true;
+
+                Format(
+                    pageView.BarChartTitle,
+                    $"Frequency of <b>{columnViewModel.Column.Name}</b>"
+                    );
+                Int32 categoricalIndex = categoricalColumns[0].Index;
+                BarChartRowSelecter = c => (r => r.Cells[categoricalIndex].Content == c);
 
                 pageView.BarChart.HorizontalAxisLabel = columnViewModel.Column.Name;
                 pageView.BarChart.VerticalAxisLabel = String.Format("Frequency");
@@ -124,9 +134,17 @@ namespace FlexTable.ViewModel
                     mainPageViewModel.TableViewModel.RowViewModels.Select(r => (Double)r.Cells[columnViewModel.Index].Content)
                     );
 
+                Format(
+                    pageView.DescriptiveStatisticsTitle,
+                    $"Descriptive Statistics of <b>{columnViewModel.Column.Name}</b>"
+                    );
                 IsDescriptiveStatisticsVisible = true;
                 pageView.DescriptiveStatisticsView.DataContext = result;
 
+                Format(
+                    pageView.DistributionViewTitle,
+                    $"Distribution of <b>{columnViewModel.Column.Name}</b>"
+                    );
                 IsDistributionVisible = true;
                 pageView.DistributionView.Update(
                     result,
@@ -137,8 +155,12 @@ namespace FlexTable.ViewModel
             {
                 IsGroupedBarChartVisible = true;
 
+                Format(pageView.GroupedBarChartTitle, $"Frequency of <b>{categoricalColumns[1].Column.Name}</b> by <b>{categoricalColumns[0].Column.Name}</b>");
+                Int32 categoricalIndex1 = categoricalColumns[0].Index,
+                      categoricalIndex2 = categoricalColumns[1].Index;
+                GroupedBarChartRowSelecter = (c1, c2) => (r => r.Cells[categoricalIndex1].Content == c1 && r.Cells[categoricalIndex2].Content == c2);
                 pageView.GroupedBarChart.HorizontalAxisLabel = categoricalColumns[0].Column.Name;
-                pageView.GroupedBarChart.VerticalAxisLabel = String.Format("Frequency of {0}", categoricalColumns[1].Column.Name);
+                pageView.GroupedBarChart.VerticalAxisLabel = $"Frequency of {categoricalColumns[1].Column.Name}";
                 pageView.GroupedBarChart.Data = groupedRows
                             .OrderBy(g => g.Keys[categoricalColumns[0]].Order * 10000 + g.Keys[categoricalColumns[1]].Order)
                             .Select(g => new Tuple<Object, Object, Double>(
@@ -153,6 +175,9 @@ namespace FlexTable.ViewModel
             {
                 IsBarChartVisible = true;
 
+                Format(pageView.BarChartTitle, $"<b>{numericalColumns[0].HeaderName}</b> by <b>{categoricalColumns[0].Column.Name}</b>");
+                Int32 categoricalIndex = categoricalColumns[0].Index;
+                BarChartRowSelecter = c => (r => r.Cells[categoricalIndex].Content == c);
                 pageView.BarChart.HorizontalAxisLabel = categoricalColumns[0].Column.Name;
                 pageView.BarChart.VerticalAxisLabel = numericalColumns[0].HeaderName;
                 pageView.BarChart.Data = groupedRows
@@ -171,9 +196,12 @@ namespace FlexTable.ViewModel
                     mainPageViewModel.SheetViewModel.Sheet.Rows.Select(r => (Double)r.Cells[numericalColumns[0].Index].Content),
                     mainPageViewModel.SheetViewModel.Sheet.Rows.Select(r => (Double)r.Cells[numericalColumns[1].Index].Content)
                     );
+                Format(pageView.CorrelationStatisticsTitle, $"Correlation between <b>{numericalColumns[0].Column.Name}</b> and <b>{numericalColumns[1].Column.Name}</b>");
 
                 IsCorrelationStatisticsVisible = true;
                 pageView.CorrelationStatisticsView.DataContext = result;
+
+                Format(pageView.ScatterplotTitle, $"<b>{numericalColumns[0].Column.Name}</b> vs. <b>{numericalColumns[1].Column.Name}</b>");
 
                 IsScatterplotVisible = true;
                 pageView.Scatterplot.LegendVisibility = Visibility.Collapsed;
@@ -188,6 +216,7 @@ namespace FlexTable.ViewModel
             {
                 IsPivotTableVisible = true;
 
+                Format(pageView.PivotTableTitle, $"Frequency of <b>{categoricalColumns[2].Column.Name}</b> by <b>{categoricalColumns[0].Column.Name}</b> and <b>{numericalColumns[1].Column.Name}</b>");
                 pivotTableViewModel.Preview(
                     selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).ToList(), 
                     columnViewModel,
@@ -201,6 +230,7 @@ namespace FlexTable.ViewModel
             {
                 // 테이블을 그린다
                 IsPivotTableVisible = true;
+                Format(pageView.PivotTableTitle, $"<b>{numericalColumns[0].HeaderName}</b> by <b>{categoricalColumns[0].Column.Name}</b> and <b>{categoricalColumns[1].Column.Name}</b>");
 
                 pivotTableViewModel.Preview(
                     new List<ColumnViewModel>() { categoricalColumns[0] },
@@ -211,6 +241,11 @@ namespace FlexTable.ViewModel
 
                 // 그룹 바 차트를 그린다
                 IsGroupedBarChartVisible = true;
+
+                Format(pageView.GroupedBarChartTitle, $"<b>{numericalColumns[0].HeaderName}</b> by <b>{categoricalColumns[0].Column.Name}</b> and <b>{categoricalColumns[1].Column.Name}</b>");
+                Int32 categoricalIndex1 = categoricalColumns[0].Index,
+                      categoricalIndex2 = categoricalColumns[1].Index;
+                GroupedBarChartRowSelecter = (c1, c2) => (r => r.Cells[categoricalIndex1].Content == c1 && r.Cells[categoricalIndex2].Content == c2);
 
                 pageView.GroupedBarChart.HorizontalAxisLabel = categoricalColumns[0].Column.Name;
                 pageView.GroupedBarChart.VerticalAxisLabel = numericalColumns[0].HeaderName;
@@ -227,6 +262,8 @@ namespace FlexTable.ViewModel
             else if (categoricalCount == 1 && numericalCount == 2)
             {
                 IsScatterplotVisible = true;
+                Format(pageView.ScatterplotTitle, $"<b>{numericalColumns[0].Column.Name}</b> vs. <b>{numericalColumns[1].Column.Name}</b> colored by <b>{categoricalColumns[0].Column.Name}</b>");
+
                 pageView.Scatterplot.LegendVisibility = Visibility.Visible;
                 pageView.Scatterplot.HorizontalAxisLabel = numericalColumns[0].Column.Name;
                 pageView.Scatterplot.VerticalAxisLabel = numericalColumns[1].Column.Name;
@@ -240,6 +277,7 @@ namespace FlexTable.ViewModel
 
                 // 테이블을 그린다
                 IsPivotTableVisible = true;
+                Format(pageView.PivotTableTitle, $"<b>{numericalColumns[0].HeaderName}</b> and <b>{numericalColumns[1].HeaderName}</b> by <b>{categoricalColumns[0].Column.Name}</b>");
 
                 pivotTableViewModel.Preview(
                     categoricalColumns,
@@ -315,7 +353,7 @@ namespace FlexTable.ViewModel
             ColumnViewModel = null;
         }
 
-        public void Tapped(View.PageView pageView)
+        public void Tapped(PageView pageView)
         {
             mainPageViewModel.ExplorationViewModel.PageViewTapped(this, pageView);
         }
@@ -376,6 +414,21 @@ namespace FlexTable.ViewModel
             mainPageViewModel.UpdateFiltering();*/
         }
 
-        
+        public void Format(TextBlock textBlock, String html)
+        {
+            Util.HtmlToTextBlockFormatter.Format(
+                html,
+                textBlock
+            );
+
+            Double fontSize = 42;
+
+            for (; fontSize > 10; fontSize -= 1) {
+                textBlock.FontSize = fontSize;
+                textBlock.Measure(new Windows.Foundation.Size(5000, 5000));
+
+                if (textBlock.ActualWidth < (Double)App.Current.Resources["ParagraphWidth"]) break;
+            }
+        }
     }
 }

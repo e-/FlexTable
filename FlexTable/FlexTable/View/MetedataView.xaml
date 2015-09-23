@@ -57,7 +57,7 @@
         </Style>
     </UserControl.Resources>
     
-    <StackPanel>
+    <StackPanel Padding="30">
         <TextBlock Style="{StaticResource TitleStyle}">
             <Run Text="{Binding SheetName}" />
         </TextBlock>

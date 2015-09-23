@@ -31,8 +31,14 @@ namespace FlexTable.ViewModel
 
         public View.PageView TopPageView { get { return view.ExplorationView.TopPageView; } }
 
-        public ViewModel.PageViewModel DummyPageViewModel { get; set; } // for supress initial pageview binding warnings
+        public PageViewModel DummyPageViewModel { get; set; } // for supressing initial pageview binding warnings
 
+        private Double pageHeight;
+        public Double PageHeight { get { return pageHeight; } set { pageHeight = value; OnPropertyChanged("PageHeight"); } }
+
+        private Double pageWidth;
+        public Double PageWidth { get { return pageWidth; } set { pageWidth = value; OnPropertyChanged("PageWidth"); } }
+        
         IMainPage view;
 
         public ExplorationViewModel(MainPageViewModel mainPageViewModel, IMainPage view)
@@ -40,6 +46,9 @@ namespace FlexTable.ViewModel
             this.mainPageViewModel = mainPageViewModel;
             MetadataViewModel = new MetadataViewModel(mainPageViewModel);
             this.view = view;
+
+            PageHeight = mainPageViewModel.Bounds.Height / 2;
+            PageWidth = mainPageViewModel.Bounds.Width / 2;
         }
 
         public void ShowSummary(ColumnViewModel columnViewModel)

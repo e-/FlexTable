@@ -29,7 +29,7 @@ namespace FlexTable.View
             IgnoreSmallStrokes = false
         };
 
-        public Canvas AllRowsTableCanvas { get { return AllRowsCanvasElement; } }
+        public Canvas AllRowsTableCanvas => AllRowsCanvasElement;
         public Canvas TableCanvas { get { return TableCanvasElement; } }
         public Grid ScrollViewerContentWrapper { get { return ScrollViewerContentWrapperElement; } }
         public ColumnHeaderPresenter TopColumnHeader { get { return TopColumnHeaderElement; } }
@@ -37,6 +37,7 @@ namespace FlexTable.View
         public RowHeaderPresenter RowHeaderPresenter { get { return RowHeaderPresenterElement; } }
         public ScrollViewer TableScrollViewer { get { return TableScrollViewerElement; } }
         public ColumnIndexer ColumnIndexer { get { return ColumnIndexerElement; } }
+        public ColumnHighlighter ColumnHighlighter { get { return ColumnHighlighterElement; } }
 
         DispatcherTimer timer = new DispatcherTimer()
         {
@@ -67,7 +68,7 @@ namespace FlexTable.View
 
             if (strokes[0].BoundingRect.Y < 100)
             {
-                foreach (ViewModel.ColumnViewModel columnViewModel in tableViewModel.SheetViewModel.ColumnViewModels)
+                foreach (ColumnViewModel columnViewModel in tableViewModel.SheetViewModel.ColumnViewModels)
                 {
                     if (columnViewModel.X <= centerX && centerX < columnViewModel.X + columnViewModel.Width)
                     {
@@ -147,7 +148,7 @@ namespace FlexTable.View
             this.inkManager = inkManager;
         }
 
-        public void ScrollToColumnViewModel(ViewModel.ColumnViewModel columnViewModel)
+        public void ScrollToColumnViewModel(ColumnViewModel columnViewModel)
         {
             TableViewModel tableViewModel = this.DataContext as TableViewModel;
             Double offset = TableScrollViewerElement.HorizontalOffset,
@@ -183,7 +184,7 @@ namespace FlexTable.View
 
         private void ScrollViewer_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
         {
-            ViewModel.TableViewModel tableViewModel = this.DataContext as ViewModel.TableViewModel;
+            TableViewModel tableViewModel = this.DataContext as TableViewModel;
             ScrollViewer sv = sender as ScrollViewer;
 
             RowHeaderPresenterElement.VerticalOffset = sv.VerticalOffset;
