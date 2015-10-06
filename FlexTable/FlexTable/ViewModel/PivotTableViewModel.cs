@@ -355,7 +355,7 @@ namespace FlexTable.ViewModel
                 foreach(ColumnViewModel vertical in verticals)
                 {
                     rowIndex *= vertical.Categories.Count;
-                    rowIndex += vertical.Categories.IndexOf(groupedRow.Keys[vertical]);
+                    rowIndex += vertical.Categories.IndexOf(groupedRow.Keys[vertical] as Category);
                 }
 
                 // 이제 행을 채운다.
@@ -364,7 +364,7 @@ namespace FlexTable.ViewModel
                     if (columns.Count > 1)
                     {
                         index = 0;
-                        Int32 columnIndex = horizontal.Categories.IndexOf(groupedRow.Keys[horizontal]) * columns.Count;
+                        Int32 columnIndex = horizontal.Categories.IndexOf(groupedRow.Keys[horizontal] as Category) * columns.Count;
 
                         foreach (ColumnViewModel column in columns)
                         {
@@ -399,7 +399,7 @@ namespace FlexTable.ViewModel
                         }
                     }
                     else if(columns.Count == 1){
-                        Int32 columnIndex = horizontal.Categories.IndexOf(groupedRow.Keys[horizontal]);
+                        Int32 columnIndex = horizontal.Categories.IndexOf(groupedRow.Keys[horizontal] as Category);
 
                         Double value = columns[0].AggregativeFunction.Aggregate(groupedRow.Rows.Select(r => (Double)r.Cells[columns[0].Index].Content));
                         Border border = borders[String.Format("{0},{1}", rowIndex, columnIndex)];
@@ -432,7 +432,7 @@ namespace FlexTable.ViewModel
                     else
                     {
                         // count로 채움
-                        Int32 columnIndex = horizontal.Categories.IndexOf(groupedRow.Keys[horizontal]);
+                        Int32 columnIndex = horizontal.Categories.IndexOf(groupedRow.Keys[horizontal] as Category);
                         
                         Int32 value = groupedRow.Rows.Count;
                         Border border = borders[String.Format("{0},{1}", rowIndex, columnIndex)];

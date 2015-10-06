@@ -329,7 +329,7 @@ namespace FlexTable.ViewModel
             // 위 아래 컬럼 헤더 업데이트
             // 는 바인딩으로 자동으로 됨
 
-            mainPageViewModel.SheetViewModel.Group();
+            mainPageViewModel.SheetViewModel.GroupUpdate();
             UpdateRows();
         }
     }

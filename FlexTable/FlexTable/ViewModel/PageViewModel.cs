@@ -6,6 +6,8 @@ using FlexTable.Model;
 using Windows.UI.Xaml;
 using FlexTable.View;
 using Windows.UI.Xaml.Controls;
+using Series = System.Tuple<System.String, System.Collections.Generic.List<System.Tuple<System.Object, System.Double>>>;
+using DataPoint = System.Tuple<System.Object, System.Double>;
 
 namespace FlexTable.ViewModel
 {
@@ -20,15 +22,14 @@ namespace FlexTable.ViewModel
         PivotTableViewModel pivotTableViewModel;
         public PivotTableViewModel PivotTableViewModel => pivotTableViewModel; 
 
-        /*CustomHistogramViewModel customHistogramViewModel;
-        public CustomHistogramViewModel CustomHistogramViewModel { get { return customHistogramViewModel; } }
-        */
-
         private Boolean isSummaryVisible = false;
         public Boolean IsSummaryVisible { get { return isSummaryVisible; } set { isSummaryVisible = value; OnPropertyChanged("IsSummaryVisible"); } }
 
         private Boolean isBarChartVisible = false;
         public Boolean IsBarChartVisible { get { return isBarChartVisible; } set { isBarChartVisible = value; OnPropertyChanged("IsBarChartVisible"); } }
+
+        private Boolean isLineChartVisible = false;
+        public Boolean IsLineChartVisible { get { return isLineChartVisible; } set { isLineChartVisible = value; OnPropertyChanged(nameof(IsLineChartVisible)); } }
 
         private Boolean isDescriptiveStatisticsVisible = false;
         public Boolean IsDescriptiveStatisticsVisible { get { return isDescriptiveStatisticsVisible; } set { isDescriptiveStatisticsVisible = value; OnPropertyChanged("IsDescriptiveStatisticsVisible"); } }
@@ -77,40 +78,50 @@ namespace FlexTable.ViewModel
         {
             IsSummaryVisible = true;
             IsBarChartVisible = false;
+            IsLineChartVisible = false;
             IsDescriptiveStatisticsVisible = false;
             IsDistributionVisible = false;
             IsGroupedBarChartVisible = false;
             IsScatterplotVisible = false;
             IsPivotTableVisible = false;
             IsCorrelationStatisticsVisible = false;
-
+            
             ColumnViewModel = columnViewModel;
 
             List<ColumnViewModel> selectedColumnViewModels = mainPageViewModel.ExplorationViewModel.SelectedColumnViewModels;
 
             List<ColumnViewModel> numericalColumns = selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical).ToList();
             List<ColumnViewModel> categoricalColumns = selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).ToList();
+            List<ColumnViewModel> datetimeColumns = selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Datetime).ToList();
+            List<ColumnViewModel> categoricalOrdatetimeColumns = selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical || cvm.Type == ColumnType.Datetime).ToList();
 
             switch (columnViewModel.Type)
             {
                 case ColumnType.Categorical:
                     categoricalColumns.Add(columnViewModel);
+                    categoricalOrdatetimeColumns.Add(columnViewModel);
                     break;
                 case ColumnType.Numerical:
                     numericalColumns.Add(columnViewModel);
+                    break;
+                case ColumnType.Datetime:
+                    datetimeColumns.Add(columnViewModel);
+                    categoricalOrdatetimeColumns.Add(columnViewModel);
                     break;
             }
 
             List<GroupedRows> groupedRows = null;
             Int32 numericalCount = numericalColumns.Count;
             Int32 categoricalCount = categoricalColumns.Count;
+            Int32 datetimeCount = datetimeColumns.Count;
+            ColumnViewModel firstDatetimeColumnViewModel = datetimeCount > 0 ? datetimeColumns.First() : null;
 
-            if (categoricalColumns.Count > 0)
+            if (categoricalOrdatetimeColumns.Count > 0)
             {
-                groupedRows = SheetViewModel.GroupRecursive(mainPageViewModel.SheetViewModel.Sheet.Rows.ToList(), categoricalColumns, 0);
+                groupedRows = SheetViewModel.GroupRecursive(mainPageViewModel.SheetViewModel.Sheet.Rows.ToList(), categoricalOrdatetimeColumns, 0);
             }
 
-            if (categoricalCount == 1 && numericalCount == 0)
+            if (categoricalCount == 1 && numericalCount == 0 && datetimeCount == 0)
             {
                 IsBarChartVisible = true;
 
@@ -123,12 +134,11 @@ namespace FlexTable.ViewModel
 
                 pageView.BarChart.HorizontalAxisLabel = columnViewModel.Column.Name;
                 pageView.BarChart.VerticalAxisLabel = String.Format("Frequency");
-                pageView.BarChart.Data = mainPageViewModel.SheetViewModel.CountByColumnViewModel(columnViewModel)
-                    .OrderBy(t => t.Item1.Order)
-                    .Select(t => new Tuple<Object, Double>(t.Item1, t.Item2));
+                pageView.BarChart.Data = groupedRows.Select(grs => new Tuple<Object, Double>(grs.Keys[categoricalColumns[0]], grs.Rows.Count))
+                    .OrderBy(t => (t.Item1 as Category).Order);
                 pageView.BarChart.Update();
             }
-            else if (categoricalCount == 0 && numericalCount == 1)
+            else if (categoricalCount == 0 && numericalCount == 1 && datetimeCount == 0)
             {
                 DescriptiveStatisticsResult result = DescriptiveStatistics.Analyze(
                     mainPageViewModel.TableViewModel.RowViewModels.Select(r => (Double)r.Cells[columnViewModel.Index].Content)
@@ -151,7 +161,87 @@ namespace FlexTable.ViewModel
                     mainPageViewModel.TableViewModel.RowViewModels.Select(r => (Double)r.Cells[columnViewModel.Index].Content)
                     ); // 히스토그램 업데이트
             }
-            else if (categoricalCount == 2 && numericalCount == 0)
+            else if (categoricalCount == 0 && numericalCount == 0 && datetimeCount == 1)
+            {
+                IsBarChartVisible = true;
+
+                Format(
+                    pageView.BarChartTitle,
+                    $"Frequency of <b>{columnViewModel.Column.Name}</b>"
+                    );
+                Int32 datetimeIndex = firstDatetimeColumnViewModel.Index;
+                BarChartRowSelecter = c => (r => r.Cells[datetimeIndex].Content == c);
+
+                pageView.BarChart.HorizontalAxisLabel = columnViewModel.Column.Name;
+                pageView.BarChart.VerticalAxisLabel = String.Format("Frequency");
+                pageView.BarChart.Data = groupedRows.Select(
+                    grs => new Tuple<Object, Double>(((DateTime)grs.Keys[firstDatetimeColumnViewModel]).ToString("yyyy"), grs.Rows.Count)
+                    );
+                pageView.BarChart.Update();
+            }
+            else if(categoricalCount == 0 && numericalCount == 1 && datetimeCount == 1)
+            {
+                IsLineChartVisible = true;
+
+                Format(
+                    pageView.LineChartTitle,
+                    $"<b>{numericalColumns[0].AggregatedName}</b> by <b>{firstDatetimeColumnViewModel.Column.Name}</b>"
+                    );
+
+                Int32 datetimeIndex = firstDatetimeColumnViewModel.Index;
+                //LineChartRowSelecter = c => (r => r.Cells[datetimeIndex].Content == c);
+
+                pageView.LineChart.HorizontalAxisLabel = firstDatetimeColumnViewModel.Column.Name;
+                pageView.LineChart.VerticalAxisLabel = String.Format(numericalColumns[0].AggregatedName);
+                var rows = groupedRows
+                    .OrderBy(g => g.Keys[firstDatetimeColumnViewModel])
+                    .Select(grs => new Tuple<Object, Double>(
+                        ((DateTime)grs.Keys[firstDatetimeColumnViewModel]).ToString("yyyy"),
+                        numericalColumns[0].AggregativeFunction.Aggregate(grs.Rows.Select(r => (Double)r.Cells[numericalColumns[0].Index].Content))
+                        )).ToList();
+
+                pageView.LineChart.Data = new List<Series>() { new Series(numericalColumns[0].AggregatedName, rows) };
+                pageView.LineChart.Update();
+            }
+            else if (categoricalCount == 1 && numericalCount == 1 && datetimeCount == 1)
+            {
+                IsLineChartVisible = true;
+
+                Format(
+                    pageView.LineChartTitle,
+                    $"<b>{numericalColumns[0].AggregatedName}</b> by <b>{categoricalColumns[0].Column.Name}</b> and <b>{firstDatetimeColumnViewModel.Column.Name}</b>"
+                    );
+
+                Int32 datetimeIndex = firstDatetimeColumnViewModel.Index;
+                //LineChartRowSelecter = c => (r => r.Cells[datetimeIndex].Content == c);
+
+                pageView.LineChart.HorizontalAxisLabel = firstDatetimeColumnViewModel.Column.Name;
+                pageView.LineChart.VerticalAxisLabel = String.Format(numericalColumns[0].AggregatedName);
+                var rows =
+                    groupedRows
+                    .GroupBy(grs => grs.Keys[categoricalColumns[0]]) // 먼저 묶고 
+                    .Select(group =>
+                        new Series(
+                            group.Key.ToString(),
+                            group
+                                .GroupBy(g => ((DateTime)g.Keys[firstDatetimeColumnViewModel]).ToString("yyyy"))
+                                .Select(g =>
+                                    new DataPoint(
+                                        g.Key,
+                                        numericalColumns[0].AggregativeFunction.Aggregate(
+                                            g
+                                            .SelectMany(grs => grs.Rows)
+                                            .Select(r => (Double)r.Cells[numericalColumns[0].Index].Content)
+                                        )
+                                    )
+                            ).ToList()
+                        )
+                    );
+
+                pageView.LineChart.Data = rows;
+                pageView.LineChart.Update();
+            }
+            else if (categoricalCount == 2 && numericalCount == 0 && datetimeCount == 0)
             {
                 IsGroupedBarChartVisible = true;
 
@@ -162,7 +252,7 @@ namespace FlexTable.ViewModel
                 pageView.GroupedBarChart.HorizontalAxisLabel = categoricalColumns[0].Column.Name;
                 pageView.GroupedBarChart.VerticalAxisLabel = $"Frequency of {categoricalColumns[1].Column.Name}";
                 pageView.GroupedBarChart.Data = groupedRows
-                            .OrderBy(g => g.Keys[categoricalColumns[0]].Order * 10000 + g.Keys[categoricalColumns[1]].Order)
+                            .OrderBy(g => (g.Keys[categoricalColumns[0]] as Category).Order * 10000 + (g.Keys[categoricalColumns[1]] as Category).Order)
                             .Select(g => new Tuple<Object, Object, Double>(
                                 g.Keys[categoricalColumns[0]],
                                 g.Keys[categoricalColumns[1]],
@@ -171,7 +261,7 @@ namespace FlexTable.ViewModel
 
                 pageView.GroupedBarChart.Update();
             }
-            else if (categoricalCount == 1 && numericalCount == 1)
+            else if (categoricalCount == 1 && numericalCount == 1 && datetimeCount == 0)
             {
                 IsBarChartVisible = true;
 
@@ -181,14 +271,14 @@ namespace FlexTable.ViewModel
                 pageView.BarChart.HorizontalAxisLabel = categoricalColumns[0].Column.Name;
                 pageView.BarChart.VerticalAxisLabel = numericalColumns[0].HeaderName;
                 pageView.BarChart.Data = groupedRows
-                    .OrderBy(g => g.Keys[categoricalColumns[0]].Order)
+                    .OrderBy(g => (g.Keys[categoricalColumns[0]] as Category).Order)
                     .Select(g => new Tuple<Object, Double>(
                         g.Keys[categoricalColumns[0]],
                         numericalColumns[0].AggregativeFunction.Aggregate(g.Rows.Select(r => (Double)r.Cells[numericalColumns[0].Index].Content))
                         ));
                 pageView.BarChart.Update();
             }
-            else if (categoricalCount == 0 && numericalCount == 2)
+            else if (categoricalCount == 0 && numericalCount == 2 && datetimeCount == 0)
             {
                 CorrelationStatisticsResult result = CorrelationStatistics.Analyze(
                     numericalColumns[0].Column.Name,
@@ -212,7 +302,7 @@ namespace FlexTable.ViewModel
                 
                 pageView.Scatterplot.Update();
             }
-            else if (categoricalCount == 3 && numericalCount == 0)
+            else if (categoricalCount == 3 && numericalCount == 0 && datetimeCount == 0)
             {
                 IsPivotTableVisible = true;
 
@@ -226,7 +316,7 @@ namespace FlexTable.ViewModel
 
                 // 그룹 바차트를 여러개 그려야한다
             }
-            else if (categoricalCount == 2 && numericalCount == 1)
+            else if (categoricalCount == 2 && numericalCount == 1 && datetimeCount == 0)
             {
                 // 테이블을 그린다
                 IsPivotTableVisible = true;
@@ -250,7 +340,7 @@ namespace FlexTable.ViewModel
                 pageView.GroupedBarChart.HorizontalAxisLabel = categoricalColumns[0].Column.Name;
                 pageView.GroupedBarChart.VerticalAxisLabel = numericalColumns[0].HeaderName;
                 pageView.GroupedBarChart.Data = groupedRows
-                            .OrderBy(g => g.Keys[categoricalColumns[0]].Order * 10000 + g.Keys[categoricalColumns[1]].Order)
+                            .OrderBy(g => (g.Keys[categoricalColumns[0]] as Category).Order * 10000 + (g.Keys[categoricalColumns[1]] as Category).Order)
                             .Select(g => new Tuple<Object, Object, Double>(
                                 g.Keys[categoricalColumns[0]],
                                 String.Format("{0} {1}", categoricalColumns[1].Column.Name, g.Keys[categoricalColumns[1]]),
@@ -286,15 +376,19 @@ namespace FlexTable.ViewModel
                     groupedRows
                     );
             }
-            else if (categoricalCount == 0 && numericalCount == 3)
+            else if (categoricalCount == 0 && numericalCount == 3 && datetimeCount == 0)
             {
                 IsBarChartVisible = true;
                 // 지금 필요없다.
             }
-            else if (categoricalCount >= 1 && numericalCount == 0)
+            else if (categoricalCount >= 1 && numericalCount == 0 && datetimeCount == 0)
             {
                 // 테이블을 그린다
                 IsPivotTableVisible = true;
+
+                // TODO group by 열거
+                Format(pageView.PivotTableTitle, $"Frequency of <b>{categoricalColumns.Last().Column.Name}</b> " + 
+                      $"by {Concatenate(categoricalColumns.Where((c, index) => index != categoricalColumns.Count - 1).Select(s => "<b>" + s.Column.Name + "</b>"))}");
 
                 pivotTableViewModel.Preview(
                     categoricalColumns.Where((c, index) => index != categoricalColumns.Count - 1).ToList(),
@@ -303,10 +397,11 @@ namespace FlexTable.ViewModel
                     groupedRows
                     );
             }
-            else if (categoricalCount >= 1 && numericalCount == 1)
+            else if (categoricalCount >= 1 && numericalCount == 1 && datetimeCount == 0)
             {
                 // 테이블을 그린다
                 IsPivotTableVisible = true;
+                Format(pageView.PivotTableTitle, $"<b>{numericalColumns[0].HeaderName}</b> by {Concatenate(categoricalColumns.Select(s => "<b>" + s.Column.Name + "</b>"))}");
 
                 pivotTableViewModel.Preview(
                     categoricalColumns.Where((c, index) => index != categoricalColumns.Count - 1).ToList(),
@@ -315,10 +410,11 @@ namespace FlexTable.ViewModel
                     groupedRows
                     );
             }
-            else if (categoricalCount >= 1 && numericalCount > 1)
+            else if (categoricalCount >= 1 && numericalCount > 1 && datetimeCount == 0)
             {
                 // 테이블을 그린다
                 IsPivotTableVisible = true;
+                Format(pageView.PivotTableTitle, $"{Concatenate(numericalColumns.Select(s => "<b>" + s.HeaderName + "</b>"))} by {Concatenate(categoricalColumns.Select(s => "<b>" + s.Column.Name + "</b>"))}");
 
                 if (numericalCount * categoricalColumns.Last().Categories.Count <= 12)
                 {
@@ -421,13 +517,35 @@ namespace FlexTable.ViewModel
                 textBlock
             );
 
-            Double fontSize = 42;
+            Double fontSize = 42 * 0.8;
 
             for (; fontSize > 10; fontSize -= 1) {
                 textBlock.FontSize = fontSize;
                 textBlock.Measure(new Windows.Foundation.Size(5000, 5000));
 
-                if (textBlock.ActualWidth < (Double)App.Current.Resources["ParagraphWidth"]) break;
+                if (textBlock.ActualWidth < (Double)App.Current.Resources["ParagraphWidth"] * 0.8) break;
+            }
+        }
+
+        public String Concatenate(IEnumerable<String> words)
+        {
+            Int32 count = words.Count();
+            if (count == 1)
+            {
+                return words.First();
+            }
+            else if(count == 2)
+            {
+                return String.Join(" and ", words);
+            }
+
+            try
+            {
+                return String.Join(", ", words.Where((s, i) => i < count - 1)) + ", and " + words.Last();
+            }
+            catch (Exception e)
+            {
+                return "Wrong Title";
             }
         }
     }

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using d3.Scale;
 
 namespace FlexTable.ViewModel
 {
@@ -34,9 +35,7 @@ namespace FlexTable.ViewModel
         private List<RowViewModel> temporaryRowViewModels = new List<RowViewModel>();
         public List<RowViewModel> TemporaryRowViewModels => temporaryRowViewModels;
 
-        private List<ColumnViewModel> groupedColumnViewModels = new List<ColumnViewModel>();
-        public List<ColumnViewModel> GroupedColumnViewModels => groupedColumnViewModels;
-
+        private List<ColumnViewModel> selectedColumnViewModels = new List<ColumnViewModel>();
 
         private List<GroupedRows> groupingResult;
         public List<GroupedRows> GroupingResult => groupingResult;
@@ -48,6 +47,52 @@ namespace FlexTable.ViewModel
         {
             this.mainPageViewModel = mainPageViewModel;
             this.view = view;
+        }
+
+
+
+        public ColumnType GuessColumnType(IEnumerable<String> cellValues)
+        {
+            Boolean allDouble = true;
+            Double result;
+            List<String> differentValues = new List<String>();
+
+            foreach (String value in cellValues)
+            {
+                if (differentValues.IndexOf(value) < 0)
+                {
+                    differentValues.Add(value);
+                }
+
+                if (!Double.TryParse(value, out result))
+                {
+                    allDouble = false;
+                    break;
+                }
+            }
+
+            // 문자가 하나라도 있으면 무조건 범주형
+            if (!allDouble) return ColumnType.Categorical;
+
+            if (differentValues.Count < 10) return ColumnType.Categorical;
+            return ColumnType.Numerical;
+        }
+
+        public Boolean CheckStringValue(IEnumerable<String> cellValues)
+        {
+            Boolean allDouble = true;
+            Double result;
+
+            foreach (String value in cellValues)
+            {
+                if (!Double.TryParse(value, out result))
+                {
+                    allDouble = false;
+                    break;
+                }
+            }
+
+            return !allDouble;
         }
 
         public void Initialize(Sheet sheet)
@@ -72,8 +117,15 @@ namespace FlexTable.ViewModel
             foreach (ColumnViewModel columnViewModel in columnViewModels)
             {
                 index = columnViewModel.Index;
-                columnViewModel.Type = Column.GuessColumnType(sheet.Rows.Select(r => r.Cells[index].RawContent));
-                Boolean containsString = Column.CheckStringValue(sheet.Rows.Select(r => r.Cells[index].RawContent));
+                if (columnViewModel.Column.Name == "Year")
+                {
+                    columnViewModel.Type = ColumnType.Datetime;
+                }
+                else
+                {
+                    columnViewModel.Type = GuessColumnType(sheet.Rows.Select(r => r.Cells[index].RawContent));
+                }
+                Boolean containsString = CheckStringValue(sheet.Rows.Select(r => r.Cells[index].RawContent));
 
                 if (columnViewModel.Type == ColumnType.Categorical)
                 {
@@ -109,14 +161,22 @@ namespace FlexTable.ViewModel
 
                     columnViewModel.Categories = categories;
                     
-                    // 원래 cateogorical의 content는 string이 들어있을 텐데 이를 Category로 바꾼다. 즉 content는 Category 아니면 Double임
+                    // 원래 cateogorical의 content는 string이 들어있을 텐데 이를 Category로 바꾼다. 즉 content는 Category 아니면 Double임 혹은 데이트타임일수도
                     foreach (Row row in sheet.Rows)
                     {
                         String value = row.Cells[index].RawContent;
                         row.Cells[index].Content = categories.Where(c => c.Value == value).First();
                     }
                 }
-                else
+                else if(columnViewModel.Type == ColumnType.Datetime)
+                {
+                    foreach(Row row in sheet.Rows)
+                    {
+                        String value = row.Cells[index].RawContent;
+                        row.Cells[index].Content = new DateTime(Int32.Parse(value), 1, 1);
+                    }
+                }
+                else if (columnViewModel.Type == ColumnType.Numerical)
                 {
                     foreach (Row row in sheet.Rows)
                     {
@@ -127,12 +187,15 @@ namespace FlexTable.ViewModel
             }
 
             // 추측한 컬럼 타입에 대해 순서 정함 (카테고리컬을 먼저 보여줌)
+            // 그냥 그대로 보여주는것으로 변경
+
             index = 0;
-            foreach (ColumnViewModel columnViewModel in columnViewModels.Where(c => c.Type == ColumnType.Categorical))
+            /*foreach (ColumnViewModel columnViewModel in columnViewModels.Where(c => c.Type == ColumnType.Categorical))
             {
                 columnViewModel.Order = index++;
-            }
-            foreach (ColumnViewModel columnViewModel in columnViewModels.Where(c => c.Type == ColumnType.Numerical))
+            }*/
+            
+            foreach (ColumnViewModel columnViewModel in columnViewModels/*.Where(c => c.Type != ColumnType.Categorical)*/)
             {
                 columnViewModel.Order = index++;
             }
@@ -220,43 +283,19 @@ namespace FlexTable.ViewModel
             mainPageViewModel.View.TableView.BottomColumnHeader.Update();
         }
 
-        public void Ungroup(ColumnViewModel pivotColumnViewModel)
+        public void Unselect(ColumnViewModel columnViewModel)
         {
-            groupedColumnViewModels.Remove(pivotColumnViewModel);
-            pivotColumnViewModel.IsGroupedBy = false;
+            selectedColumnViewModels.Remove(columnViewModel);
+            columnViewModel.IsGroupedBy = false;
             GroupUpdate();
         }
 
-        public void Ungroup()
+        public void Select(ColumnViewModel columnViewModel)
         {
-            if (groupedColumnViewModels.Count > 0)
-            {
-                throw new Exception("Calling Ungroup method is permitted only when no column has been grouped");
-            }
+            selectedColumnViewModels.Add(columnViewModel);
+            columnViewModel.IsGroupedBy = true;
             GroupUpdate();
-        }
-
-        public void Group()
-        {
-            /*if (groupedColumnViewModels.Count > 0)
-            {
-                throw new Exception("Calling Group method is permitted only when no column has been grouped");
-            }*/
-            GroupUpdate();
-        }
-
-        public void Group(ColumnViewModel pivotColumnViewModel)
-        {
-            if (pivotColumnViewModel.Type != Model.ColumnType.Categorical)
-            {
-                throw new Exception("Grouping rows by a numerical column is not supported.");
-            }
-
-            groupedColumnViewModels.Add(pivotColumnViewModel);
-            pivotColumnViewModel.IsGroupedBy = true;
-
-            GroupUpdate();
-        }
+        }        
 
         public void GroupUpdate()
         {
@@ -265,17 +304,22 @@ namespace FlexTable.ViewModel
             Int32 order = 0;
 
             // 우선으로 그룹된 컬럼에 순서 할당
-            foreach (ColumnViewModel groupedColumnViewModel in groupedColumnViewModels)
+            foreach (ColumnViewModel groupedColumnViewModel in selectedColumnViewModels.Where(s => s.Type == ColumnType.Categorical || s.Type == ColumnType.Datetime))
             {
                 groupedColumnViewModel.Order = order++;
             }
 
-            foreach (ColumnViewModel remainingColumnViewModel in columnViewModels.Except(groupedColumnViewModels).Where(d => !d.IsHidden).OrderBy(d => d.Index))
+            foreach (ColumnViewModel groupedColumnViewModel in selectedColumnViewModels.Where(s => s.Type == ColumnType.Numerical))
+            {
+                groupedColumnViewModel.Order = order++;
+            }
+
+            foreach (ColumnViewModel remainingColumnViewModel in columnViewModels.Except(selectedColumnViewModels).Where(d => !d.IsHidden).OrderBy(d => d.Index))
             {
                 remainingColumnViewModel.Order = order++;
             }
 
-            foreach (ColumnViewModel remainingColumnViewModel in columnViewModels.Except(groupedColumnViewModels).Where(d => d.IsHidden).OrderBy(d => d.Order))
+            foreach (ColumnViewModel remainingColumnViewModel in columnViewModels.Except(selectedColumnViewModels).Where(d => d.IsHidden).OrderBy(d => d.Order))
             {
                 remainingColumnViewModel.Order = order++;
             }
@@ -288,43 +332,19 @@ namespace FlexTable.ViewModel
 
             Int32 index = 0;
 
-            if (groupedColumnViewModels.Count == 0) // 이 경우는 뉴메리커 하나만 선택되어 한 줄만 표시되는 경우이다.
+            // 여기서 상황별로 왼쪽에 보일 rowViewModel을 만들어 줘야함. 여기서 만들면 tableViewModel에서 받아다가 그림
+
+            if(selectedColumnViewModels.Count == 0) // 아무것도 안된경우 아무것도 안해도됨 어차피 allViewModel에서 다 보여줄 것 
             {
-                RowViewModel rowViewModel = new RowViewModel(mainPageViewModel)
-                {
-                    Index = 0
-                };
 
-                foreach (ColumnViewModel columnViewModel in columnViewModels)
-                {
-                    Model.Cell cell = new Model.Cell();
-
-                    cell.ColumnViewModel = columnViewModel;
-
-                    if (columnViewModel.Type == ColumnType.Categorical)
-                    {
-                        Int32 uniqueCount = GetUniqueList(Sheet.Rows.Select(r => r.Cells[columnViewModel.Index].Content as Category)).Count;
-                        cell.Content = $"({uniqueCount})";
-                        cell.RawContent = $"({uniqueCount})"; 
-                    }
-                    else //numerical
-                    {
-                        Object aggregated = columnViewModel.AggregativeFunction.Aggregate(Sheet.Rows.Select(r => (Double)r.Cells[columnViewModel.Index].Content));
-                        String formatted = Util.Formatter.FormatAuto4((Double)aggregated); 
-                        cell.RawContent = formatted;
-                        cell.Content = Double.Parse(formatted);
-                    }
-
-                    rowViewModel.Cells.Add(cell);
-                }
-
-                temporaryRowViewModels.Add(rowViewModel);
             }
-            else
+            else if (selectedColumnViewModels.Count == 1 && selectedColumnViewModels[0].Type == ColumnType.Numerical) // 이 경우는 뉴메리컬 하나만 선택되어 비닝 된 결과가 보이는 경우이다.
             {
-                groupingResult = GroupRecursive(sheet.Rows.ToList(), groupedColumnViewModels, 0);
-                
-                foreach (GroupedRows groupedRows in groupingResult)
+                ColumnViewModel selected = selectedColumnViewModels[0];
+
+                List<GroupedRows> binResult = Bin(selected, Sheet.Rows);
+
+                foreach (GroupedRows groupedRows in binResult)
                 {
                     RowViewModel rowViewModel = new RowViewModel(mainPageViewModel)
                     {
@@ -337,18 +357,71 @@ namespace FlexTable.ViewModel
 
                         cell.ColumnViewModel = columnViewModel;
 
-                        if (groupedRows.Keys.ContainsKey(columnViewModel))
+                        if(columnViewModel == selected)
                         {
-                            cell.Content = groupedRows.Keys[columnViewModel];
-                            cell.RawContent = cell.Content.ToString();
+                            String content = $"{groupedRows.Keys[selected]} ({groupedRows.Rows.Count})";
+                            cell.RawContent = content;
+                            cell.Content = content;
                         }
-                        else if (columnViewModel.Type == ColumnType.Categorical)
+                        else if (columnViewModel.Type == ColumnType.Categorical || columnViewModel.Type == ColumnType.Datetime)
                         {
-                            Int32 uniqueCount = GetUniqueList(groupedRows.Rows.Select(r => r.Cells[columnViewModel.Index].Content as Category)).Count;
+                            Int32 uniqueCount = Sheet.Rows.Select(r => r.Cells[columnViewModel.Index].Content).Distinct().Count();
                             cell.Content = $"({uniqueCount})";
                             cell.RawContent = $"({uniqueCount})";
                         }
                         else //numerical
+                        {
+                            Object aggregated = columnViewModel.AggregativeFunction.Aggregate(groupedRows.Rows.Select(r => (Double)r.Cells[columnViewModel.Index].Content));
+                            String formatted = Util.Formatter.FormatAuto4((Double)aggregated);
+                            cell.RawContent = formatted;
+                            cell.Content = Double.Parse(formatted);
+                        }
+
+                        rowViewModel.Cells.Add(cell);
+                    }
+
+                    temporaryRowViewModels.Add(rowViewModel);
+                }
+            }
+            else if(selectedColumnViewModels.Count == 2 && selectedColumnViewModels[0].Type == ColumnType.Numerical && selectedColumnViewModels[1].Type == ColumnType.Numerical)
+                // 두개 골라지고 둘다 뉴메리컬의 경우 모두 보여야함.
+            {
+                foreach(RowViewModel rowViewModel in allRowViewModels)
+                {
+                    temporaryRowViewModels.Add(rowViewModel);
+                }
+            }
+            else // 이 경우는 categorical이든 datetime이든 뭔가로 그룹핑이 된 경우 
+            {
+                groupingResult = GroupRecursive(sheet.Rows.ToList(), selectedColumnViewModels.Where(s => s.Type == ColumnType.Datetime || s.Type == ColumnType.Categorical).ToList() , 0);
+                
+                foreach (GroupedRows groupedRows in groupingResult)
+                {
+                    RowViewModel rowViewModel = new RowViewModel(mainPageViewModel)
+                    {
+                        Index = index++
+                    };
+
+                    foreach (ColumnViewModel columnViewModel in columnViewModels)
+                    {
+                        Cell cell = new Cell();
+
+                        cell.ColumnViewModel = columnViewModel;
+
+                        if (groupedRows.Keys.ContainsKey(columnViewModel))
+                        {
+                            Object content = groupedRows.Keys[columnViewModel];
+                            cell.Content = (content is DateTime) ? ((DateTime)content).ToString("yyyy") : content;
+                            cell.RawContent = cell.Content.ToString();
+                        }
+
+                        else if (columnViewModel.Type == ColumnType.Categorical || columnViewModel.Type == ColumnType.Datetime)
+                        {
+                            Int32 uniqueCount = groupedRows.Rows.Select(r => r.Cells[columnViewModel.Index].Content).Distinct().Count();
+                            cell.Content = $"({uniqueCount})";
+                            cell.RawContent = $"({uniqueCount})";
+                        }
+                        else if (columnViewModel.Type == ColumnType.Numerical)
                         {
                             Object aggregated = columnViewModel.AggregativeFunction.Aggregate(groupedRows.Rows.Select(r => (Double)r.Cells[columnViewModel.Index].Content));
                             String formatted = Util.Formatter.FormatAuto4((Double)aggregated);
@@ -368,12 +441,12 @@ namespace FlexTable.ViewModel
         public static List<GroupedRows> GroupRecursive(List<Row> rows, List<ColumnViewModel> groupedColumnViewModels, Int32 pivotIndex)
         {            
             ColumnViewModel pivot = groupedColumnViewModels[pivotIndex];
-            Dictionary<Category, List<Row>> dict = GetRowsByColumnViewModel(rows, pivot);
+            Dictionary<Object, List<Row>> dict = GetRowsByColumnViewModel(rows, pivot);
             
             if (pivotIndex < groupedColumnViewModels.Count - 1) // 그루핑을 더 해야함.
             {
                 List<GroupedRows> groupedRowsList = new List<GroupedRows>();
-                foreach(KeyValuePair<Category, List<Row>> kv in dict)
+                foreach(KeyValuePair<Object, List<Row>> kv in dict)
                 {
                     List<GroupedRows> ret = GroupRecursive(kv.Value, groupedColumnViewModels, pivotIndex + 1);
 
@@ -389,7 +462,7 @@ namespace FlexTable.ViewModel
             else // 마지막임
             {
                 List<GroupedRows> groupedRowsList = new List<GroupedRows>();
-                foreach (KeyValuePair<Category, List<Row>> kv in dict)
+                foreach (KeyValuePair<Object, List<Row>> kv in dict)
                 {
                     GroupedRows groupedRows = new GroupedRows();
                     groupedRows.Keys[pivot] = kv.Key;
@@ -401,55 +474,58 @@ namespace FlexTable.ViewModel
                 return groupedRowsList;
             }
         }
-
-        public Dictionary<Category, Int32> GetUniqueList(IEnumerable<Category> values)
+        
+        public static List<GroupedRows> Bin(ColumnViewModel selected, List<Row> rows)
         {
-            Dictionary<Category, Int32> dict = new Dictionary<Category, int>();
-            
-            foreach (Category value in values)
+            Linear linear = new Linear()
             {
-                if (!dict.ContainsKey(value))
-                    dict[value] = 0;
+                DomainStart = rows.Select(r => (Double)r.Cells[selected.Index].Content).Min(),
+                DomainEnd = rows.Select(r => (Double)r.Cells[selected.Index].Content).Max(),
+            };
 
-                dict[value]++;
+            linear.Nice();
+
+            List<Tuple<Double, Double, Int32>> bins = Util.HistogramCalculator.Bin(
+                linear.DomainStart,
+                linear.DomainEnd,
+                linear.Step,
+                rows.Select(r => (Double)r.Cells[selected.Index].Content)
+                );
+
+            List<GroupedRows> groupedRows = new List<GroupedRows>();
+            foreach(Tuple<Double, Double, Int32> bin in bins)
+            {
+                GroupedRows grs = new GroupedRows();
+                grs.Keys[selected] = $"{Util.Formatter.FormatAuto3(bin.Item1)} - {Util.Formatter.FormatAuto3(bin.Item2)}";
+                groupedRows.Add(grs);
             }
 
-            return dict;
+            foreach(Row row in rows)
+            {
+                Int32 index = (Int32)Math.Floor(((Double)row.Cells[selected.Index].Content - linear.DomainStart) / linear.Step);
+                if (index >= bins.Count) index = bins.Count - 1;
+
+                groupedRows[index].Rows.Add(row);
+            }
+
+            return groupedRows;
         }
 
-        public List<Tuple<Category, Int32>> CountByColumnViewModel(ColumnViewModel columnViewModel)
+        public static Dictionary<Object, List<Row>> GetRowsByColumnViewModel(IEnumerable<Row> rows, ColumnViewModel columnViewModel)
         {
-            return GetRowsByColumnViewModel(sheet.Rows, columnViewModel).Select(kv => new Tuple<Category, Int32>(kv.Key, kv.Value.Count)).ToList();
-        }
-
-        public static Dictionary<Category, List<Row>> GetRowsByColumnViewModel(IEnumerable<Row> rows, ColumnViewModel columnViewModel)
-        {
-            Dictionary<Category, List<Row>> dict = new Dictionary<Category, List<Row>>();
+            Dictionary<Object, List<Row>> dict = new Dictionary<Object, List<Row>>();
             
             foreach (Row row in rows)
             {
-                Category category = row.Cells[columnViewModel.Index].Content as Category;
-                if(!dict.ContainsKey(category)) {
-                    dict[category] = new List<Row>();
+                Object content = row.Cells[columnViewModel.Index].Content;
+                if(!dict.ContainsKey(content)) {
+                    dict[content] = new List<Row>();
                 }
 
-                dict[category].Add(row);
+                dict[content].Add(row);
             }
 
             return dict;
-        }
-
-        public List<Tuple<Category, Category, Int32>> CountByDoubleColumnViewModel(ColumnViewModel secondary)
-        {
-            ColumnViewModel primary = groupedColumnViewModels.Last();
-            Dictionary<Category, List<Row>> dict = GetRowsByColumnViewModel(sheet.Rows, primary);
-            List<Tuple<Category, Category, Int32>> result = new List<Tuple<Category, Category, Int32>>();
-
-            foreach (KeyValuePair<Category, List<Row>> kv in dict)
-            {
-                result.AddRange(GetRowsByColumnViewModel(kv.Value, secondary).Select(kv2 => new Tuple<Category, Category, Int32>(kv.Key, kv2.Key, kv2.Value.Count)));
-            }
-            return result;
         }
 
         public void MeasureColumnWidth()
@@ -472,7 +548,7 @@ namespace FlexTable.ViewModel
                     if (width < view.DummyTextBlock.ActualWidth)
                         width = view.DummyTextBlock.ActualWidth;
                 }
-                else if (columnViewModel.Type == ColumnType.Categorical)
+                else if (columnViewModel.Type == ColumnType.Categorical || columnViewModel.Type == ColumnType.Datetime)
                 {
                     view.DummyTextBlock.Text = columnViewModel.Column.Name;
                     view.DummyTextBlock.Measure(new Size(Double.MaxValue, Double.MaxValue));

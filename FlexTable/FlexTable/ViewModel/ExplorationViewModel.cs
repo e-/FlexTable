@@ -86,24 +86,9 @@ namespace FlexTable.ViewModel
                 // 선택 표시 (컬럼 위 아래 헤더 업데이트)
                 topPageColumnViewModel.IsSelected = true;
 
-                if (topPageColumnViewModel.Type == ColumnType.Categorical) // grouping
-                {
-                    // SheetViewModel 에서 grouping 하기, 이건 rowViewModels를 업데이트함
-                    mainPageViewModel.SheetViewModel.Group(topPageColumnViewModel);
-
-                    // Table View 업데이트
-                    mainPageViewModel.TableViewModel.UpdateRows();
-                }
-                else if (topPageColumnViewModel.Type == ColumnType.Numerical)
-                {
-                    if (selectedColumnViewModels.Count == 1)
-                    {
-                        // 초기상태에서 numerical을 내리는 경우에는 모든 로우가 하나로 가야 함
-                        mainPageViewModel.SheetViewModel.Group();
-                        mainPageViewModel.TableViewModel.UpdateRows();
-                    }
-                }
-
+                mainPageViewModel.SheetViewModel.Select(topPageColumnViewModel);
+                mainPageViewModel.TableViewModel.UpdateRows();
+                
                 view.TableView.TopColumnHeader.Update();
                 view.TableView.BottomColumnHeader.Update();
                 view.TableView.ScrollToColumnViewModel(mainPageViewModel.SheetViewModel.ColumnViewModels.OrderBy(c => c.Order).First());
@@ -134,23 +119,11 @@ namespace FlexTable.ViewModel
                 // 선택 해제 (컬럼 위 아래 헤더 업데이트)
                 pageViewModel.ColumnViewModel.IsSelected = false;
 
-                if (pageViewModel.ColumnViewModel.Type == ColumnType.Categorical) // grouping 해제해야함
-                {
-                    // SheetViewModel 에서 ungrouping 하기, 이건 rowViewModels를 업데이트함
-                    mainPageViewModel.SheetViewModel.Ungroup(pageViewModel.ColumnViewModel);
+                // SheetViewModel 에서 ungrouping 하기, 이건 rowViewModels를 업데이트함
+                mainPageViewModel.SheetViewModel.Unselect(pageViewModel.ColumnViewModel);
 
-                    // Table View 업데이트
-                    mainPageViewModel.TableViewModel.UpdateRows();
-                }
-                else if (pageViewModel.ColumnViewModel.Type == ColumnType.Numerical)
-                {
-                    if (selectedColumnViewModels.Count == 0)
-                    {
-                        // 초기상태에서 numerical을 내리는 경우에는 모든 로우가 하나로 가야 함
-                        mainPageViewModel.SheetViewModel.Ungroup();
-                        mainPageViewModel.TableViewModel.UpdateRows();
-                    }
-                }
+                // Table View 업데이트
+                mainPageViewModel.TableViewModel.UpdateRows();
 
                 view.TableView.TopColumnHeader.Update();
                 view.TableView.BottomColumnHeader.Update();

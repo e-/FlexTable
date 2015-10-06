@@ -95,6 +95,13 @@
                         <d3view:BarChart x:Name="BarChartElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}" />
                     </StackPanel>
 
+                    <StackPanel Visibility="{Binding IsLineChartVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Line Chart">
+                        <Border Style="{StaticResource TitleWrapperStyle}">
+                            <TextBlock Style="{StaticResource TitleStyle}" x:Name="LineChartTitleElement" />
+                        </Border>
+                        <d3view:LineChart x:Name="LineChartElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}" />
+                    </StackPanel>
+                    
                     <StackPanel Visibility="{Binding IsDistributionVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Distribution">
                         <Border Style="{StaticResource TitleWrapperStyle}">
                             <TextBlock Style="{StaticResource TitleStyle}" x:Name="DistributionViewTitleElement" />

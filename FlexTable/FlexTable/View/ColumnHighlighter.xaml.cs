@@ -43,7 +43,7 @@ namespace FlexTable.View
                 Int32 columnIndex = columnViewModel.Index;
                 Int32 index = 0;
 
-                foreach (ViewModel.RowViewModel rowViewModel in tvm.RowViewModels)
+                foreach (RowViewModel rowViewModel in tvm.RowViewModels)
                 {
                     TextBlock cell;
                     if (index < TableCanvas.Children.Count)
@@ -60,7 +60,13 @@ namespace FlexTable.View
                         TableCanvas.Children.Add(cell);
                     }
 
-                    cell.Text = rowViewModel.Cells[columnIndex].Content.ToString();
+                    String text = rowViewModel.Cells[columnIndex].Content.ToString();
+                    if (columnViewModel.Type == Model.ColumnType.Datetime)
+                    {
+                        if (rowViewModel.Cells[columnIndex].Content is DateTime)
+                            text = ((DateTime)rowViewModel.Cells[columnIndex].Content).ToString("yyyy");
+                    }
+                    cell.Text = text;
                     cell.Width = columnViewModel.Width;
                     Canvas.SetTop(cell, rowViewModel.Y);
                     index++;

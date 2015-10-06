@@ -9,6 +9,7 @@ namespace FlexTable.Model
     public enum ColumnType
     {
         Categorical, 
-        Numerical
+        Numerical,
+        Datetime
     }
 }

@@ -23,7 +23,8 @@ namespace FlexTable.View
 {
     public sealed partial class PageView : UserControl
     {
-        public d3.View.BarChart BarChart { get { return BarChartElement; } }
+        public d3.View.BarChart BarChart => BarChartElement;
+        public d3.View.LineChart LineChart => LineChartElement;
         public DescriptiveStatisticsView DescriptiveStatisticsView => DescriptiveStatisticsViewElement;
         public CorrelationStatisticsView CorrelationStatisticsView => CorrelationStatisticsViewElement;
         public DistributionView DistributionView => DistributionViewElement;
@@ -32,6 +33,7 @@ namespace FlexTable.View
         public PivotTableView PivotTableView => PivotTableViewElement;
 
         public TextBlock BarChartTitle => BarChartTitleElement;
+        public TextBlock LineChartTitle => LineChartTitleElement;
         public TextBlock DistributionViewTitle => DistributionViewTitleElement;
         public TextBlock DescriptiveStatisticsTitle => DescriptiveStatisticsTitleElement;
         public TextBlock GroupedBarChartTitle => GroupedBarChartTitleElement;

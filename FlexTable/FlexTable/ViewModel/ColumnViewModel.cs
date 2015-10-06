@@ -59,29 +59,43 @@ namespace FlexTable.ViewModel
             get { return FormatHeaderName(column, Type, aggregativeFunction); } 
         }
 
+        public String AggregatedName
+        {
+            get { return FormatAggregatedName(column, Type, aggregativeFunction); }
+        }
+
         public String FormatHeaderName(Model.Column column, Model.ColumnType type, AggregativeFunctions.BaseAggregation aggregativeFunction)
         {
-            if (type == Model.ColumnType.Categorical)
-                return column.Name;
-
-            if (mainPageViewModel.ExplorationViewModel.SelectedColumnViewModels.Count == 0)
+            if (type == Model.ColumnType.Categorical || type == Model.ColumnType.Datetime)
                 return column.Name;
             
+            if (mainPageViewModel.ExplorationViewModel.SelectedColumnViewModels.Count == 0)
+                return column.Name;
+
+            if (mainPageViewModel.ExplorationViewModel.SelectedColumnViewModels.Count == 1 &&
+                mainPageViewModel.ExplorationViewModel.SelectedColumnViewModels[0] == this)
+                return $"Bin({column.Name})";
+
+            return FormatAggregatedName(column, type, aggregativeFunction);
+        }
+
+        public String FormatAggregatedName(Model.Column column, Model.ColumnType type, AggregativeFunctions.BaseAggregation aggregativeFunction)
+        {
             if (aggregativeFunction is AggregativeFunctions.MinAggregation)
             {
-                return String.Format("Min({0})", column.Name);
+                return $"Min({column.Name})";
             }
             if (aggregativeFunction is AggregativeFunctions.MaxAggregation)
             {
-                return String.Format("Max({0})", column.Name);
+                return $"Max({column.Name})";
             }
             if (aggregativeFunction is AggregativeFunctions.AverageAggregation)
             {
-                return String.Format("Avg({0})", column.Name);
+                return $"Avg({column.Name})";
             }
             if (aggregativeFunction is AggregativeFunctions.SumAggregation)
             {
-                return String.Format("Sum({0})", column.Name);
+                return $"Sum({column.Name})";
             }
 
             return column.Name;

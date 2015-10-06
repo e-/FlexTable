@@ -15,10 +15,10 @@ namespace FlexTable.Model
         private String name;
         public String Name { get { return name; } set { name = value; OnPropertyChanged("Name"); } }
 
-        private ObservableCollection<Model.Column> columns = new ObservableCollection<Model.Column>();
-        public ObservableCollection<Model.Column> Columns { get { return columns; } }
+        private List<Column> columns = new List<Column>();
+        public List<Column> Columns { get { return columns; } }
 
-        private ObservableCollection<Model.Row> rows = new ObservableCollection<Model.Row>();
-        public ObservableCollection<Model.Row> Rows { get { return rows; } private set { rows = value; OnPropertyChanged("Rows"); } }
+        private List<Row> rows = new List<Row>();
+        public List<Row> Rows { get { return rows; } private set { rows = value; OnPropertyChanged("Rows"); } }
     }
 }

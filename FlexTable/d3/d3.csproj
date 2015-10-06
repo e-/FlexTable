@@ -114,6 +114,9 @@
     <Compile Include="Component\Circles.xaml.cs">
       <DependentUpon>Circles.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Component\Lines.xaml.cs">
+      <DependentUpon>Lines.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Component\Rectangles.xaml.cs">
       <DependentUpon>Rectangles.xaml</DependentUpon>
     </Compile>
@@ -130,10 +133,14 @@
     <Compile Include="Scale\Ordinal.cs" />
     <Compile Include="Scale\ScaleBase.cs" />
     <Compile Include="Util.cs" />
+    <Compile Include="ViewModel\LineChartViewModel.cs" />
     <Compile Include="ViewModel\BarChartViewModel.cs" />
     <Compile Include="ViewModel\BoxPlotViewModel.cs" />
     <Compile Include="ViewModel\GroupedBarChartViewModel.cs" />
     <Compile Include="ViewModel\ScatterplotViewModel.cs" />
+    <Compile Include="View\LineChart.xaml.cs">
+      <DependentUpon>LineChart.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\BarChart.xaml.cs">
       <DependentUpon>BarChart.xaml</DependentUpon>
     </Compile>
@@ -157,6 +164,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Component\Lines.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Component\Rectangles.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -170,6 +181,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Scale\OrdinalScaleTypeInfo.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\LineChart.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
