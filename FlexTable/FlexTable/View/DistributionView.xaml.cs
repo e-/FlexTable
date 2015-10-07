@@ -28,9 +28,8 @@ namespace FlexTable.View
 
         public void Update(DescriptiveStatisticsResult result, IEnumerable<Double> data)
         {
-            //this.DataContext = result;
-            //this.UpdateLayout();
-            BoxPlotElement.Width = (Double)App.Current.Resources["PaddedParagraphWidth"];
+            HistogramElement.Width = (Double)App.Current.Resources["ParagraphWidth"] - 20;
+            BoxPlotElement.Width = (Double)App.Current.Resources["ParagraphWidth"] - 90;
             BoxPlotElement.Min = result.Min;
             BoxPlotElement.Max = result.Max;
             BoxPlotElement.FirstQuartile = result.FirstQuartile;

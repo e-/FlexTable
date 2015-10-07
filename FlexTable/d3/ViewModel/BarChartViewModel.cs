@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Windows.UI;
 using d3.Scale;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 
 namespace d3.ViewModel
 {
@@ -47,6 +48,10 @@ namespace d3.ViewModel
         public Func<Object, Int32, Double> HeightGetter { get { return (d, index) => ChartAreaEndY - yScale.Map((d as Tuple<Object, Double>).Item2); } }
         public Func<Object, Int32, Double> XGetter { get { return (d, index) => xScale.Map((d as Tuple<Object, Double>).Item1) - BarWidth / 2; } }
         public Func<Object, Int32, Double> YGetter { get { return (d, index) => yScale.Map((d as Tuple<Object, Double>).Item2); } }
+        //public Func<TextBlock, Double> LabelOpacityGetter { get { return textBlock => textBlock.ActualWidth > xScale.RangeBand ? 0 : 1; } }
+        public Func<TextBlock, Double, Double> LabelFontSizeGetter { get {
+                return (textBlock, currentSize) => textBlock.ActualWidth > xScale.RangeBand ? currentSize * xScale.RangeBand / textBlock.ActualWidth * 0.9 : currentSize;
+            } }
 
         private d3.Data chartData;
         public d3.Data ChartData { get { return chartData; } }
@@ -134,11 +139,11 @@ namespace d3.ViewModel
 
             if (IsLegendVisible)
             {
-                ChartAreaEndX = width - PaddingLeft - PaddingRight - LegendAreaWidth;
+                ChartAreaEndX = width - PaddingRight - LegendAreaWidth;
             }
             else
             {
-                ChartAreaEndX = width - PaddingLeft - PaddingRight;
+                ChartAreaEndX = width - PaddingRight;
             }
 
             HorizontalAxisLabelCanvasLeft = PaddingLeft + VerticalAxisWidth + VerticalAxisLabelWidth;
@@ -165,7 +170,7 @@ namespace d3.ViewModel
             xScale = new Ordinal()
             {
                 RangeStart = VerticalAxisCanvasLeft,
-                RangeEnd = ChartAreaEndX + PaddingLeft
+                RangeEnd = ChartAreaEndX
             };
             foreach (Tuple<Object, Double> d in data)
             {

@@ -1,4 +1,4 @@
-W,A,Id,t (light),error (light),t (heavy),error (heavy)
+W,A,Id-num,t light,error light,t heavy,error heavy
 0.25,2,4,0.392,3.35,0.406,3.8
 0.25,4,5,0.484,3.41,0.51,3.83
 0.25,8,6,0.58,2.78,0.649,4.04

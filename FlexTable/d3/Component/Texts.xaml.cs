@@ -82,7 +82,16 @@ namespace d3.Component
             get { return (Func<Object, Int32, String>)GetValue(TextGetterProperty); }
             set { SetValue(TextGetterProperty, value); }
         }
-        
+
+        public static readonly DependencyProperty OpacityGetterProperty =
+            DependencyProperty.Register("OpacityGetter", typeof(Func<TextBlock, Object, Int32, Double>), typeof(Texts), new PropertyMetadata(default(Func<TextBlock, Object, Int32, Double>)));
+
+        public Func<TextBlock, Object, Int32, Double> OpacityGetter
+        {
+            get { return (Func<TextBlock, Object, Int32, Double>)GetValue(OpacityGetterProperty); }
+            set { SetValue(OpacityGetterProperty, value); }
+        }
+
         private static void DataChanged(DependencyObject source, DependencyPropertyChangedEventArgs e)
         {
             Texts textBlocks = source as Texts;
@@ -106,7 +115,7 @@ namespace d3.Component
         {
             foreach (Border border in previousBorders)
             {
-                TextsCanvas.Children.Remove(border);
+                TextCanvas.Children.Remove(border);
             }
             previousBorders.Clear();
             textBlocks.Clear();
@@ -131,14 +140,22 @@ namespace d3.Component
 
                 Canvas.SetLeft(border, XGetter(datum, index));
                 Canvas.SetTop(border, YGetter(datum, index));
-                index++;
+                
 
-                TextsCanvas.Children.Add(border);
+                TextCanvas.Children.Add(border);
                 textBlocks.Add(textBlock);
                 border.Measure(new Size(Double.MaxValue, Double.MaxValue));
                 borders.Add(border);
 
                 previousBorders.Add(border);
+
+                if (OpacityGetter != null)
+                {
+                    textBlock.Measure(new Size(10000, 10000));
+                    Double opacity = OpacityGetter(textBlock, datum, index);
+                    textBlock.Opacity = opacity;
+                }
+                index++;
             }
         }
     }

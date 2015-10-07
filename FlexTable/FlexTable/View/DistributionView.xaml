@@ -12,11 +12,9 @@
 
     <StackPanel>
         <d3view:BarChart x:Name="HistogramElement" HorizontalAxisVisibility="Collapsed" LegendVisibility="Collapsed"
-                         Width="{StaticResource PaddedParagraphWidth}" Height="340" AutoColor="False"
-                         HorizontalAlignment="Left"
-                                         ></d3view:BarChart>
-        <d3view:BoxPlot Margin="60 0 0 0" x:Name="BoxPlotElement" Width="{StaticResource PaddedParagraphWidth}"
-                        HorizontalAlignment="Left"
+                         Height="340" AutoColor="False" VerticalAxisLabel="Frequency"
+                         HorizontalAlignment="Left"></d3view:BarChart> <!-- width는 코드 비하인드에서 설정 -->
+        <d3view:BoxPlot Margin="60 0 0 0" x:Name="BoxPlotElement" HorizontalAlignment="Left"
                         ></d3view:BoxPlot>
     </StackPanel>
 </UserControl>

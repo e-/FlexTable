@@ -47,7 +47,7 @@ namespace d3.ViewModel
         public Func<Object, Int32, Double> XGetter { get { return (d, index) => xScale.Map((d as Tuple<Object, Double, Double>).Item2); } }
         public Func<Object, Int32, Double> YGetter { get { return (d, index) => yScale.Map((d as Tuple<Object, Double, Double>).Item3); } }
         public Func<Object, Int32, Double> RadiusGetter { get { return (d, index) => 5; } }
-        public Func<Object, Int32, Double> OpacityGetter { get { return (d, index) => 0.5; } }
+        public Func<Object, Int32, Double> OpacityGetter { get { return (d, index) => 0.8; } }
 
         private d3.Data chartData;
         public d3.Data ChartData { get { return chartData; } }

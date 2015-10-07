@@ -55,6 +55,9 @@ namespace d3.ViewModel
         private Data chartData;
         public Data ChartData => chartData;
 
+        private Data circleData;
+        public Data CircleData => circleData;
+
         private Data indicatorData;
         public Data IndicatorData => indicatorData;
 
@@ -79,6 +82,12 @@ namespace d3.ViewModel
         public Func<Object, Int32, Color> ColorGetter { get { return (bin, index) => (AutoColor ? ColorScheme.Category10.Colors[index % 10] : ColorScheme.Category10.Colors.First()); } }
         public Func<Object, Int32, Color> StrokeGetter { get { return (bin, index) => (AutoColor ? ColorScheme.Category10.Colors[index % 10] : ColorScheme.Category10.Colors.First()); } }
         public Func<Object, Int32, Double> StrokeThicknessGetter { get { return (bin, index) => 3.0; } }
+
+        public Func<Object, Int32, Double> XGetter { get { return (d, index) => xScale.Map((d as Tuple<Object, Double, Int32>).Item1); } }
+        public Func<Object, Int32, Double> YGetter { get { return (d, index) => yScale.Map((d as Tuple<Object, Double, Int32>).Item2); } }
+        public Func<Object, Int32, Color> CircleColorGetter { get { return (d, index) => ColorScheme.Category10.Colors[(d as Tuple<Object, Double, Int32>).Item3 % 10]; } }
+        public Func<Object, Int32, Double> RadiusGetter { get { return (d, index) => 10; } }
+        public Func<Object, Int32, Double> OpacityGetter { get { return (d, index) => 0.8; } }
 
         public Func<Object, Int32, Double> IndicatorWidthGetter { get { return (d, index) => xScale.RangeBand; } }
         public Func<Object, Int32, String> IndicatorTextGetter { get { return (d, index) => Format.IntegerBalanced.Format((d as DataPoint).Item2); } }
@@ -130,6 +139,22 @@ namespace d3.ViewModel
             chartData = new d3.Data()
             {
                 List = data.Select(d => d as Object).ToList()
+            };
+
+            Int32 index = 0;
+            List<Object> circleList = new List<Object>();
+            foreach (Series ser in data)
+            {
+                foreach(DataPoint dp in ser.Item2)
+                {
+                    circleList.Add(new Tuple<Object, Double, Int32>(dp.Item1, dp.Item2, index));
+                }
+                index++;
+            }
+
+            circleData = new d3.Data()
+            {
+                List = circleList
             };
 
             if (IsHorizontalAxisVisible)
@@ -190,6 +215,7 @@ namespace d3.ViewModel
 
 
             OnPropertyChanged("ChartData");
+            OnPropertyChanged("CircleData");
             OnPropertyChanged("IndicatorData");
         }
     }

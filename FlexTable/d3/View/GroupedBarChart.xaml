@@ -16,7 +16,9 @@
                                XGetter="{Binding XGetter}" YGetter="{Binding YGetter}" ColorGetter="{Binding ColorGetter}"
                         x:Name="RectangleElement"/>
 
-        <com:Axis Orientation="Horizontal" Scale="{Binding XScale}" Canvas.Top="{Binding ChartAreaEndY}" Canvas.Left="0" x:Name="HorizontalAxis"/>
+        <com:Axis Orientation="Horizontal" Scale="{Binding XScale}" Canvas.Top="{Binding ChartAreaEndY}" Canvas.Left="0" x:Name="HorizontalAxis"
+                   LabelFontSizeGetter="{Binding LabelFontSizeGetter}"
+                  />
         <TextBlock TextAlignment="Center" Canvas.Top="{Binding HorizontalAxisLabelCanvasTop}" Canvas.Left="{Binding HorizontalAxisLabelCanvasLeft}"
                    Text="{Binding HorizontalAxisLabel}"
                    Width="{Binding HorizontalAxisLabelWidth}" Visibility="{Binding HorizontalAxisVisibility}" FontSize="12"></TextBlock>

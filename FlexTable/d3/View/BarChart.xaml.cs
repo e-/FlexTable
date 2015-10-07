@@ -136,7 +136,6 @@ namespace d3.View
             viewModel.Width = this.Width;
             viewModel.Height = this.Height;
 
-            //Double 
             Double legendAreaWidth = 0;
             if (viewModel.IsLegendVisible)
             {

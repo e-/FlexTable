@@ -139,6 +139,7 @@ namespace d3.View
             viewModel.Update();
            
             LineElement.Update();
+            CircleElement.Update();
             IndicatorTextElement.Update();
             HorizontalAxis.Update();
             VerticalAxis.Update();

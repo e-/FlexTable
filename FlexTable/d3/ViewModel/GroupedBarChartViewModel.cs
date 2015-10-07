@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Windows.UI;
 using d3.Scale;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 
 namespace d3.ViewModel
 {
@@ -50,6 +51,13 @@ namespace d3.ViewModel
             xDictionary[(d as Tuple<Object, Object, Double>).Item1].Map((d as Tuple<Object, Object, Double>).Item2) - BarWidth / 2; 
         } }
         public Func<Object, Int32, Double> YGetter { get { return (d, index) => yScale.Map((d as Tuple<Object, Object, Double>).Item3); } }
+        public Func<TextBlock, Double, Double> LabelFontSizeGetter
+        {
+            get
+            {
+                return (textBlock, currentSize) => textBlock.ActualWidth > xScale.RangeBand ? currentSize * xScale.RangeBand / textBlock.ActualWidth * 0.9 : currentSize;
+            }
+        }
 
         private Dictionary<Object, Scale.Ordinal> xDictionary = new Dictionary<Object, Scale.Ordinal>();
         private List<Object> secondaryKeys = new List<Object>();

@@ -16,7 +16,14 @@
                    CoordinateGetter="{Binding CoordinateGetter}"
                    StrokeGetter="{Binding StrokeGetter}"
                    StrokeThicknessGetter="{Binding StrokeThicknessGetter}"
+                   Opacity="0.7"
                    x:Name="LineElement"/>
+        
+        <com:Circles 
+            Data="{Binding CircleData}" RadiusGetter="{Binding RadiusGetter}" 
+            XGetter="{Binding XGetter}" YGetter="{Binding YGetter}" 
+            ColorGetter="{Binding CircleColorGetter}" OpacityGetter="{Binding OpacityGetter}"
+            x:Name="CircleElement"/>
         
         <com:Axis Orientation="Horizontal" Scale="{Binding XScale}" Canvas.Top="{Binding ChartAreaEndY}" Canvas.Left="0" x:Name="HorizontalAxis"
                   Visibility="{Binding HorizontalAxisVisibility}"/>
@@ -51,7 +58,7 @@
         <com:Texts Data="{Binding IndicatorData}" TextGetter="{Binding IndicatorTextGetter}"
                          WidthGetter="{Binding IndicatorWidthGetter}"
                          XGetter="{Binding IndicatorXGetter}" YGetter="{Binding IndicatorYGetter}" 
-                         Foreground="Black" FontSize="14" x:Name="IndicatorTextElement"
+                         Foreground="Black" FontSize="14" x:Name="IndicatorTextElement" Visibility="Collapsed"
                    />
     </Canvas>
 </UserControl>

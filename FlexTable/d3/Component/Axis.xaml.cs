@@ -61,6 +61,25 @@ namespace d3.Component
             set { SetValue(TransitionProperty, value); }
         }
 
+        public static readonly DependencyProperty LabelOpacityGetterProperty =
+            DependencyProperty.Register("LabelOpacityGetter", typeof(Func<TextBlock, Double>), typeof(Axis), new PropertyMetadata(default(Func<TextBlock, Double>)));
+
+        public Func<TextBlock, Double> LabelOpacityGetter
+        {
+            get { return (Func<TextBlock, Double>)GetValue(LabelOpacityGetterProperty); }
+            set { SetValue(LabelOpacityGetterProperty, value); }
+        }
+
+        public static readonly DependencyProperty LabelFontSizeGetterProperty =
+            DependencyProperty.Register("LabelFontSizeGetter", typeof(Func<TextBlock, Double, Double>), typeof(Axis), new PropertyMetadata(default(Func<TextBlock, Double, Double>)));
+
+        public Func<TextBlock, Double, Double> LabelFontSizeGetter
+        {
+            get { return (Func<TextBlock, Double, Double>)GetValue(LabelFontSizeGetterProperty); }
+            set { SetValue(LabelFontSizeGetterProperty, value); }
+        }
+
+
         private DependencyProperty linePrimary1, linePrimary2, lineSecondary1, lineSecondary2;
         private DependencyProperty canvasPrimary, canvasSecondary;
         private DependencyProperty tickLabelSizeProperty;
@@ -205,7 +224,7 @@ namespace d3.Component
                         Storyboard.SetTarget(opacityAnimation2, tickMarker);
                         Storyboard.SetTargetProperty(opacityAnimation2, "Opacity");
 
-                        tickLabel.SetValue(canvasSecondary, Orientation == Orientations.Horizontal ? 3 : -tickLabel.ActualWidth - 10);
+                        tickLabel.SetValue(canvasSecondary, Orientation == Orientations.Horizontal ? (24 - tickLabel.ActualHeight) / 2 : -tickLabel.ActualWidth - 10);
 
                         tickLabelsStoryboard.Children.Add(opacityAnimation);
                         tickLabelsStoryboard.Children.Add(opacityAnimation2);
@@ -234,9 +253,22 @@ namespace d3.Component
 
                     AxisCanvas.Children.Add(tickLabel);
                     tickLabel.Measure(new Size(Double.MaxValue, Double.MaxValue));
+                    if (LabelFontSizeGetter != null)
+                    {
+                        tickLabel.FontSize = LabelFontSizeGetter(tickLabel, tickLabel.FontSize);
+                        tickLabel.Measure(new Size(Double.MaxValue, Double.MaxValue));
+                    }
+                    else if(Orientation == Orientations.Vertical)
+                    {
+                        if(tickLabel.ActualWidth > 28)
+                        {
+                            tickLabel.FontSize = tickLabel.FontSize * 28 / tickLabel.ActualWidth;
+                            tickLabel.Measure(new Size(Double.MaxValue, Double.MaxValue));
+                        }
+                    }
 
                     tickLabel.SetValue(canvasPrimary, previousScale.ClampedMap(tick.DomainValue) - (Double)tickLabel.GetValue(tickLabelSizeProperty) / 2); // excpetion 발생함 왜이렇지? TODO
-                    tickLabel.SetValue(canvasSecondary, Orientation == Orientations.Horizontal ? 3 : -tickLabel.ActualWidth - 10);
+                    tickLabel.SetValue(canvasSecondary, Orientation == Orientations.Horizontal ? (24 - tickLabel.ActualHeight) / 2 : -tickLabel.ActualWidth - 10);
 
                     AxisCanvas.Children.Add(tickMarker);
                     tickMarker.SetValue(linePrimary1, previousScale.ClampedMap(tick.DomainValue));
@@ -273,7 +305,7 @@ namespace d3.Component
                     Storyboard.SetTarget(positionAnimation2, tickMarker);
                     Storyboard.SetTargetProperty(positionAnimation2, linePrimary2String);
 
-                    if (previousScale.GetType() != Scale.GetType() || Scale is Scale.Ordinal) // position animation disabled because two scales have different types
+                    if (previousScale.GetType() != Scale.GetType() || Scale is Ordinal) // position animation disabled because two scales have different types
                     {
                         tickLabel.SetValue(canvasPrimary, positionAnimation.To);
                         tickMarker.SetValue(linePrimary1, positionAnimation1.To);
@@ -282,7 +314,7 @@ namespace d3.Component
 
                     DoubleAnimation opacityAnimation = new DoubleAnimation()
                     {
-                        To = 1,
+                        To = LabelOpacityGetter == null ? 1 : LabelOpacityGetter(tickLabel),
                         Duration = Duration,
                         EasingFunction = EasingFunction
                     };
@@ -349,9 +381,15 @@ namespace d3.Component
 
                     AxisCanvas.Children.Add(tickLabel);
                     tickLabel.Measure(new Size(Double.MaxValue, Double.MaxValue));
+                    if (LabelFontSizeGetter != null)
+                    {
+                        tickLabel.FontSize = LabelFontSizeGetter(tickLabel, tickLabel.FontSize);
+                        tickLabel.Measure(new Size(Double.MaxValue, Double.MaxValue));
+                    }
 
                     tickLabel.SetValue(canvasPrimary, previousScale.ClampedMap(tick.DomainValue) - (Double)tickLabel.GetValue(tickLabelSizeProperty) / 2);
-                    tickLabel.SetValue(canvasSecondary, Orientation == Orientations.Horizontal ? 3 : -tickLabel.ActualWidth - 10);
+                    tickLabel.SetValue(canvasSecondary, Orientation == Orientations.Horizontal ? (24 - tickLabel.ActualHeight) / 2 : -tickLabel.ActualWidth - 10);
+
                     tickLabel.SetValue(canvasPrimary, tick.RangeValue - (Double)tickLabel.GetValue(tickLabelSizeProperty) / 2);
                     tickLabels.Add(tickLabel);
                 }

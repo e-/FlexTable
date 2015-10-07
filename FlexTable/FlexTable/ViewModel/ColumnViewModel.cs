@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FlexTable.Model;
 
 namespace FlexTable.ViewModel
 {
@@ -55,6 +56,8 @@ namespace FlexTable.ViewModel
         private List<Model.Category> categories;
         public List<Model.Category> Categories { get { return categories; } set { categories = value; } }
 
+        public Boolean ContainString { get; set; }
+
         public String HeaderName { 
             get { return FormatHeaderName(column, Type, aggregativeFunction); } 
         }
@@ -68,8 +71,13 @@ namespace FlexTable.ViewModel
         {
             if (type == Model.ColumnType.Categorical || type == Model.ColumnType.Datetime)
                 return column.Name;
-            
-            if (mainPageViewModel.ExplorationViewModel.SelectedColumnViewModels.Count == 0)
+
+            List<ColumnViewModel> selectedColumnViewModels = mainPageViewModel.ExplorationViewModel.SelectedColumnViewModels;
+            if (selectedColumnViewModels.Count == 0)
+                return column.Name;
+
+            if (selectedColumnViewModels.Count == 2 && selectedColumnViewModels[0].Type == ColumnType.Numerical
+                && selectedColumnViewModels[1].Type == ColumnType.Numerical)
                 return column.Name;
 
             if (mainPageViewModel.ExplorationViewModel.SelectedColumnViewModels.Count == 1 &&

@@ -117,15 +117,22 @@ namespace FlexTable.ViewModel
             foreach (ColumnViewModel columnViewModel in columnViewModels)
             {
                 index = columnViewModel.Index;
-                if (columnViewModel.Column.Name == "Year")
+                if(columnViewModel.Column.Name.EndsWith("-num"))
                 {
+                    columnViewModel.Column.Name = columnViewModel.Column.Name.Replace("-num", "");
+                    columnViewModel.Type = ColumnType.Numerical;
+                }
+                else if (columnViewModel.Column.Name.EndsWith("-date"))
+                {
+                    columnViewModel.Column.Name = columnViewModel.Column.Name.Replace("-date", "");
                     columnViewModel.Type = ColumnType.Datetime;
                 }
                 else
                 {
                     columnViewModel.Type = GuessColumnType(sheet.Rows.Select(r => r.Cells[index].RawContent));
                 }
-                Boolean containsString = CheckStringValue(sheet.Rows.Select(r => r.Cells[index].RawContent));
+
+                columnViewModel.ContainString = CheckStringValue(sheet.Rows.Select(r => r.Cells[index].RawContent));
 
                 if (columnViewModel.Type == ColumnType.Categorical)
                 {
@@ -141,7 +148,7 @@ namespace FlexTable.ViewModel
                     }
 
                     // uniqueValues의 순서 정해야 함.
-                    if (containsString)
+                    if (columnViewModel.ContainString)
                     {
                         uniqueValues = uniqueValues.OrderBy(u => u).ToList();
                     }
@@ -334,7 +341,7 @@ namespace FlexTable.ViewModel
 
             // 여기서 상황별로 왼쪽에 보일 rowViewModel을 만들어 줘야함. 여기서 만들면 tableViewModel에서 받아다가 그림
 
-            if(selectedColumnViewModels.Count == 0) // 아무것도 안된경우 아무것도 안해도됨 어차피 allViewModel에서 다 보여줄 것 
+            if (selectedColumnViewModels.Count == 0) // 아무것도 안된경우 아무것도 안해도됨 어차피 allViewModel에서 다 보여줄 것 
             {
 
             }
@@ -346,6 +353,7 @@ namespace FlexTable.ViewModel
 
                 foreach (GroupedRows groupedRows in binResult)
                 {
+                    if (groupedRows.Rows.Count == 0) continue;
                     RowViewModel rowViewModel = new RowViewModel(mainPageViewModel)
                     {
                         Index = index++
@@ -357,7 +365,7 @@ namespace FlexTable.ViewModel
 
                         cell.ColumnViewModel = columnViewModel;
 
-                        if(columnViewModel == selected)
+                        if (columnViewModel == selected)
                         {
                             String content = $"{groupedRows.Keys[selected]} ({groupedRows.Rows.Count})";
                             cell.RawContent = content;
@@ -383,10 +391,10 @@ namespace FlexTable.ViewModel
                     temporaryRowViewModels.Add(rowViewModel);
                 }
             }
-            else if(selectedColumnViewModels.Count == 2 && selectedColumnViewModels[0].Type == ColumnType.Numerical && selectedColumnViewModels[1].Type == ColumnType.Numerical)
-                // 두개 골라지고 둘다 뉴메리컬의 경우 모두 보여야함.
+            else if (selectedColumnViewModels.Count >= 2 && selectedColumnViewModels.Count(s => s.Type != ColumnType.Numerical) == 0)
+            // 여러개 골라지고 둘다 뉴메리컬의 경우 모두 보여야함.
             {
-                foreach(RowViewModel rowViewModel in allRowViewModels)
+                foreach (RowViewModel rowViewModel in allRowViewModels)
                 {
                     temporaryRowViewModels.Add(rowViewModel);
                 }

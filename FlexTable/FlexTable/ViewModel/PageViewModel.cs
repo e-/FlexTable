@@ -306,7 +306,7 @@ namespace FlexTable.ViewModel
             {
                 IsPivotTableVisible = true;
 
-                Format(pageView.PivotTableTitle, $"Frequency of <b>{categoricalColumns[2].Column.Name}</b> by <b>{categoricalColumns[0].Column.Name}</b> and <b>{numericalColumns[1].Column.Name}</b>");
+                Format(pageView.PivotTableTitle, $"Frequency of <b>{categoricalColumns[2].Column.Name}</b> by <b>{categoricalColumns[0].Column.Name}</b> and <b>{categoricalColumns[1].Column.Name}</b>");
                 pivotTableViewModel.Preview(
                     selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).ToList(), 
                     columnViewModel,

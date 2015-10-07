@@ -22,7 +22,7 @@ namespace FlexTable.AggregativeFunctions
 
         public override Double Aggregate(IEnumerable<Double> values)
         {
-            return values.Max();
+            return values.Count() == 0 ? 0 : values.Max();
         }
     }
 
@@ -35,7 +35,7 @@ namespace FlexTable.AggregativeFunctions
 
         public override Double Aggregate(IEnumerable<Double> values)
         {
-            return values.Average();
+            return values.Count() == 0 ? 0 : values.Average();
         }
     }
 
@@ -48,7 +48,7 @@ namespace FlexTable.AggregativeFunctions
 
         public override Double Aggregate(IEnumerable<Double> values)
         {
-            return values.Min();
+            return values.Count() == 0 ? 0 : values.Min();
         }
     }
 
@@ -61,7 +61,7 @@ namespace FlexTable.AggregativeFunctions
 
         public override Double Aggregate(IEnumerable<Double> values)
         {
-            return values.Sum();
+            return values.Count() == 0 ? 0 : values.Sum();
         }
     }
 
