@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace FlexTable.Model
 {
-    public enum ColumnType
+    public enum CategoricalType
     {
-        Categorical, 
-        Numerical,
+        Nominal,
+        Ordinal,
         Unknown
     }
 }

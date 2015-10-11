@@ -78,10 +78,19 @@ namespace d3.View
             set { SetValue(AutoColorProperty, value); }
         }
 
-        public static readonly DependencyProperty LinePointerPressedProperty = DependencyProperty.Register("LinePointerPressed", typeof(d3.Event.EventHandler), typeof(LineChart), new PropertyMetadata(null));
+        public static readonly DependencyProperty LinePointerPressedProperty = DependencyProperty.Register("LinePointerPressed", typeof(Event.EventHandler), typeof(LineChart), new PropertyMetadata(null));
         
-        public event d3.Event.EventHandler LinePointerPressed;
-        public event d3.Event.EventHandler LinePointerReleased;
+        public event Event.EventHandler LinePointerPressed;
+        public event Event.EventHandler LinePointerReleased;
+
+        public static readonly DependencyProperty YStartsWithZeroProperty =
+            DependencyProperty.Register("YStartsWithZero", typeof(Boolean), typeof(LineChart), new PropertyMetadata(false));
+
+        public bool YStartsWithZero
+        {
+            get { return (Boolean)GetValue(YStartsWithZeroProperty); }
+            set { SetValue(YStartsWithZeroProperty, value); }
+        }
 
         public LineChart()
         {
@@ -113,6 +122,7 @@ namespace d3.View
             viewModel.AutoColor = AutoColor;
             viewModel.Width = this.Width;
             viewModel.Height = this.Height;
+            viewModel.YStartsWithZero = YStartsWithZero;
 
             //Double 
             Double legendAreaWidth = 0;

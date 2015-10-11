@@ -62,11 +62,11 @@ namespace d3.ViewModel
         private Dictionary<Object, Scale.Ordinal> xDictionary = new Dictionary<Object, Scale.Ordinal>();
         private List<Object> secondaryKeys = new List<Object>();
 
-        private d3.Data legendData;
-        public d3.Data LegendData { get { return legendData; } }
+        private Data legendData;
+        public Data LegendData { get { return legendData; } }
 
-        private d3.Data chartData;
-        public d3.Data ChartData { get { return chartData; } }
+        private Data chartData;
+        public Data ChartData { get { return chartData; } }
 
         private IEnumerable<Tuple<Object, Object, Double>> data;
         public IEnumerable<Tuple<Object, Object, Double>> Data { get { return data; } set { data = value; } }
@@ -154,6 +154,8 @@ namespace d3.ViewModel
         private String verticalAxisLabel;
         public String VerticalAxisLabel { get { return verticalAxisLabel; } set { verticalAxisLabel = value; OnPropertyChanged("VerticalAxisLabel"); } }
 
+        public Boolean YStartsWithZero { get; set; } = false;
+
         public void UpdateLegendData()
         {
             MaxCountInGroup = 0;
@@ -188,7 +190,7 @@ namespace d3.ViewModel
                 xDictionary.Add(category1, ordinal);
             }
 
-            legendData = new d3.Data()
+            legendData = new Data()
             {
                 List = secondaryKeys
             };
@@ -198,7 +200,7 @@ namespace d3.ViewModel
 
         public void Update()
         {
-            chartData = new d3.Data()
+            chartData = new Data()
             {
                 List = data.Select(d => d as Object).ToList()
             };
@@ -230,10 +232,31 @@ namespace d3.ViewModel
             VerticalAxisLabelCanvasTop = PaddingTop + (ChartAreaEndY - PaddingTop) / 2;
             VerticalAxisLabelHeight = ChartAreaEndY - PaddingTop;
 
+            IEnumerable<Double> values = data.Select(d => d.Item3);
+            Double yMin = values.Min(), yMax = values.Max();
+            if (YStartsWithZero) yMin = 0;
+            else if (yMin == yMax)
+            {
+                if (yMin == 0.0)
+                {
+                    yMin = -1; yMax = 1;
+                }
+                else if (yMin < 0)
+                {
+                    yMin *= 1.2;
+                    yMax *= 0.8;
+                }
+                else
+                {
+                    yMin *= 0.8;
+                    yMax *= 1.2;
+                }
+            }
+
             Linear yScale = new d3.Scale.Linear()
             {
-                DomainStart = 0,
-                DomainEnd = data.Select(d => d.Item3).Max(),
+                DomainStart = yMin,
+                DomainEnd = yMax,
                 RangeStart = ChartAreaEndY,
                 RangeEnd = PaddingTop
             };

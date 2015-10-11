@@ -11,7 +11,8 @@
     d:DesignWidth="400">
 
     <StackPanel>
-        <d3view:BarChart x:Name="HistogramElement" HorizontalAxisVisibility="Collapsed" LegendVisibility="Collapsed"
+        <d3view:BarChart x:Name="HistogramElement" LegendVisibility="Collapsed"
+                         YStartsWithZero="True"
                          Height="340" AutoColor="False" VerticalAxisLabel="Frequency"
                          HorizontalAlignment="Left"></d3view:BarChart> <!-- width는 코드 비하인드에서 설정 -->
         <d3view:BoxPlot Margin="60 0 0 0" x:Name="BoxPlotElement" HorizontalAlignment="Left"

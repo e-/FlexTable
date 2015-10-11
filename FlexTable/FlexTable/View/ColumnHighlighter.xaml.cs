@@ -60,12 +60,7 @@ namespace FlexTable.View
                         TableCanvas.Children.Add(cell);
                     }
 
-                    String text = rowViewModel.Cells[columnIndex].Content.ToString();
-                    if (columnViewModel.Type == Model.ColumnType.Datetime)
-                    {
-                        if (rowViewModel.Cells[columnIndex].Content is DateTime)
-                            text = ((DateTime)rowViewModel.Cells[columnIndex].Content).ToString("yyyy");
-                    }
+                    String text = rowViewModel.Cells[columnIndex].Content.ToString();                    
                     cell.Text = text;
                     cell.Width = columnViewModel.Width;
                     Canvas.SetTop(cell, rowViewModel.Y);

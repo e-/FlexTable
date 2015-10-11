@@ -134,9 +134,11 @@ namespace d3.ViewModel
 
         public Boolean AutoColor { get; set; } = true;
 
+        public Boolean YStartsWithZero { get; set; } = false;
+
         public void Update()
         {
-            chartData = new d3.Data()
+            chartData = new Data()
             {
                 List = data.Select(d => d as Object).ToList()
             };
@@ -152,7 +154,7 @@ namespace d3.ViewModel
                 index++;
             }
 
-            circleData = new d3.Data()
+            circleData = new Data()
             {
                 List = circleList
             };
@@ -184,10 +186,33 @@ namespace d3.ViewModel
             VerticalAxisLabelCanvasTop = PaddingTop + (ChartAreaEndY - PaddingTop) / 2;
             VerticalAxisLabelHeight = ChartAreaEndY - PaddingTop;
 
+            Double yMin = data.Select(series => (series as Series).Item2.Select(p => (p as DataPoint).Item2).Min()).Min(),
+                yMax = data.Select(series => (series as Series).Item2.Select(p => (p as DataPoint).Item2).Max()).Max();
+
+            if (YStartsWithZero) yMin = 0;
+            else if (yMin == yMax)
+            {
+                if (yMin == 0.0)
+                {
+                    yMin = -1; yMax = 1;
+                }
+                else if (yMin < 0)
+                {
+                    yMin *= 1.2;
+                    yMax *= 0.8;
+                }
+                else
+                {
+                    yMin *= 0.8;
+                    yMax *= 1.2;
+                }
+            }
+
+
             yScale = new Linear()
             {
-                DomainStart = 0,
-                DomainEnd = data.Select(series => (series as Series).Item2.Select(p => (p as DataPoint).Item2).Max()).Max(),
+                DomainStart = yMin,
+                DomainEnd = yMax,
                 RangeStart = ChartAreaEndY,
                 RangeEnd = PaddingTop
             };

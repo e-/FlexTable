@@ -29,8 +29,8 @@ namespace d3.Component
         public static readonly DependencyProperty DataProperty =
             DependencyProperty.Register("Data", typeof(Data), typeof(Rectangles), new PropertyMetadata(null, new PropertyChangedCallback(DataChanged)));
         
-        public event d3.Event.EventHandler RectanglePointerPressed;
-        public event d3.Event.EventHandler RectanglePointerReleased;
+        public event Event.EventHandler RectanglePointerPressed;
+        public event Event.EventHandler RectanglePointerReleased;
 
         public Data Data
         {

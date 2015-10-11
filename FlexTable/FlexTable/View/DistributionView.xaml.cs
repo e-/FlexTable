@@ -49,14 +49,14 @@ namespace FlexTable.View
             };
 
             linear.Nice();
-            
+                        
             HistogramElement.Data = Util.HistogramCalculator.Bin(
                 linear.DomainStart,
                 linear.DomainEnd,
                 linear.Step,
                 data
                 )
-                .Select(d => new Tuple<Object, Double>(d.Item1, d.Item3));
+                .Select(d => new Tuple<Object, Double>($"~{Util.Formatter.Auto(d.Item2)}", d.Item3));
 
             HistogramElement.Update();
         }

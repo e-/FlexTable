@@ -53,8 +53,8 @@ namespace d3.ViewModel
                 return (textBlock, currentSize) => textBlock.ActualWidth > xScale.RangeBand ? currentSize * xScale.RangeBand / textBlock.ActualWidth * 0.9 : currentSize;
             } }
 
-        private d3.Data chartData;
-        public d3.Data ChartData { get { return chartData; } }
+        private Data chartData;
+        public Data ChartData { get { return chartData; } }
 
         private IEnumerable<Tuple<Object, Double>> data;
         public IEnumerable<Tuple<Object, Double>> Data { get { return data; } set { data = value; } }
@@ -120,10 +120,11 @@ namespace d3.ViewModel
         public String VerticalAxisLabel { get { return verticalAxisLabel; } set { verticalAxisLabel = value; OnPropertyChanged("VerticalAxisLabel"); } }
 
         public Boolean AutoColor { get; set; } = true;
+        public Boolean YStartsWithZero { get; set; } = false;
 
         public void Update()
         {
-            chartData = new d3.Data()
+            chartData = new Data()
             {
                 List = data.Select(d => d as Object).ToList()
             };
@@ -155,10 +156,31 @@ namespace d3.ViewModel
             VerticalAxisLabelCanvasTop = PaddingTop + (ChartAreaEndY - PaddingTop) / 2;
             VerticalAxisLabelHeight = ChartAreaEndY - PaddingTop;
 
+            IEnumerable<Double> values = data.Select(d => d.Item2);
+            Double yMin = values.Min(), yMax = values.Max();
+            if (YStartsWithZero) yMin = 0;
+            else if(yMin == yMax)
+            {
+                if(yMin == 0.0)
+                {
+                    yMin = -1; yMax = 1;
+                }
+                else if(yMin < 0) 
+                {
+                    yMin *= 1.2;
+                    yMax *= 0.8;
+                }
+                else
+                {
+                    yMin *= 0.8;
+                    yMax *= 1.2;
+                }
+            }
+
             yScale = new Linear()
             {
-                DomainStart = 0,
-                DomainEnd = data.Select(d => d.Item2).Max(),
+                DomainStart = yMin,
+                DomainEnd = yMax,
                 RangeStart = ChartAreaEndY,
                 RangeEnd = PaddingTop
             };

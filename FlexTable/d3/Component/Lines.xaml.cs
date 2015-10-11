@@ -28,8 +28,8 @@ namespace d3.Component
         public static readonly DependencyProperty DataProperty =
             DependencyProperty.Register("Data", typeof(Data), typeof(Lines), new PropertyMetadata(null, new PropertyChangedCallback(DataChanged)));
         
-        public event d3.Event.EventHandler LinePointerPressed;
-        public event d3.Event.EventHandler LinePointerReleased;
+        public event Event.EventHandler LinePointerPressed;
+        public event Event.EventHandler LinePointerReleased;
 
         public Data Data
         {

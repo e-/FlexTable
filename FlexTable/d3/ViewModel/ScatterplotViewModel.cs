@@ -49,14 +49,14 @@ namespace d3.ViewModel
         public Func<Object, Int32, Double> RadiusGetter { get { return (d, index) => 5; } }
         public Func<Object, Int32, Double> OpacityGetter { get { return (d, index) => 0.8; } }
 
-        private d3.Data chartData;
-        public d3.Data ChartData { get { return chartData; } }
+        private Data chartData;
+        public Data ChartData { get { return chartData; } }
 
         private IEnumerable<Tuple<Object, Double, Double>> data;
         public IEnumerable<Tuple<Object, Double, Double>> Data { get { return data; } set { data = value; } }
 
-        private d3.Data legendData;
-        public d3.Data LegendData { get { return legendData; } }
+        private Data legendData;
+        public Data LegendData { get { return legendData; } }
 
         public Func<Object, Int32, Double> LegendPatchWidthGetter { get { return (d, index) => 20; } }
         public Func<Object, Int32, Double> LegendPatchHeightGetter { get { return (d, index) => 20; } }
@@ -142,7 +142,7 @@ namespace d3.ViewModel
             }
             ColorScale = colorScale;
 
-            legendData = new d3.Data()
+            legendData = new Data()
             {
                 List = colorScale.Select(kv => new Tuple<Object, Int32>(kv.Key, kv.Value) as Object).ToList()
             };
@@ -152,7 +152,7 @@ namespace d3.ViewModel
 
         public void Update()
         {
-            chartData = new d3.Data()
+            chartData = new Data()
             {
                 List = data.Select(d => d as Object).ToList()
             };

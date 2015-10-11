@@ -117,7 +117,7 @@ namespace FlexTable.ViewModel
             foreach (ColumnViewModel columnViewModel in columnViewModels)
             {
                 index = columnViewModel.Index;
-                if(columnViewModel.Column.Name.EndsWith("-num"))
+                /*if(columnViewModel.Column.Name.EndsWith("-num"))
                 {
                     columnViewModel.Column.Name = columnViewModel.Column.Name.Replace("-num", "");
                     columnViewModel.Type = ColumnType.Numerical;
@@ -130,7 +130,11 @@ namespace FlexTable.ViewModel
                 else
                 {
                     columnViewModel.Type = GuessColumnType(sheet.Rows.Select(r => r.Cells[index].RawContent));
-                }
+                }*/
+
+                columnViewModel.Type = columnViewModel.Column.Type;
+                columnViewModel.CategoricalType = columnViewModel.Column.CategoricalType;
+                columnViewModel.Unit = columnViewModel.Column.Unit;
 
                 columnViewModel.ContainString = CheckStringValue(sheet.Rows.Select(r => r.Cells[index].RawContent));
 
@@ -173,14 +177,6 @@ namespace FlexTable.ViewModel
                     {
                         String value = row.Cells[index].RawContent;
                         row.Cells[index].Content = categories.Where(c => c.Value == value).First();
-                    }
-                }
-                else if(columnViewModel.Type == ColumnType.Datetime)
-                {
-                    foreach(Row row in sheet.Rows)
-                    {
-                        String value = row.Cells[index].RawContent;
-                        row.Cells[index].Content = new DateTime(Int32.Parse(value), 1, 1);
                     }
                 }
                 else if (columnViewModel.Type == ColumnType.Numerical)
@@ -311,7 +307,7 @@ namespace FlexTable.ViewModel
             Int32 order = 0;
 
             // 우선으로 그룹된 컬럼에 순서 할당
-            foreach (ColumnViewModel groupedColumnViewModel in selectedColumnViewModels.Where(s => s.Type == ColumnType.Categorical || s.Type == ColumnType.Datetime))
+            foreach (ColumnViewModel groupedColumnViewModel in selectedColumnViewModels.Where(s => s.Type == ColumnType.Categorical))
             {
                 groupedColumnViewModel.Order = order++;
             }
@@ -361,7 +357,7 @@ namespace FlexTable.ViewModel
 
                     foreach (ColumnViewModel columnViewModel in columnViewModels)
                     {
-                        Model.Cell cell = new Model.Cell();
+                        Cell cell = new Cell();
 
                         cell.ColumnViewModel = columnViewModel;
 
@@ -371,7 +367,7 @@ namespace FlexTable.ViewModel
                             cell.RawContent = content;
                             cell.Content = content;
                         }
-                        else if (columnViewModel.Type == ColumnType.Categorical || columnViewModel.Type == ColumnType.Datetime)
+                        else if (columnViewModel.Type == ColumnType.Categorical)
                         {
                             Int32 uniqueCount = Sheet.Rows.Select(r => r.Cells[columnViewModel.Index].Content).Distinct().Count();
                             cell.Content = $"({uniqueCount})";
@@ -401,7 +397,7 @@ namespace FlexTable.ViewModel
             }
             else // 이 경우는 categorical이든 datetime이든 뭔가로 그룹핑이 된 경우 
             {
-                groupingResult = GroupRecursive(sheet.Rows.ToList(), selectedColumnViewModels.Where(s => s.Type == ColumnType.Datetime || s.Type == ColumnType.Categorical).ToList() , 0);
+                groupingResult = GroupRecursive(sheet.Rows.ToList(), selectedColumnViewModels.Where(s => s.Type == ColumnType.Categorical).ToList() , 0);
                 
                 foreach (GroupedRows groupedRows in groupingResult)
                 {
@@ -419,11 +415,11 @@ namespace FlexTable.ViewModel
                         if (groupedRows.Keys.ContainsKey(columnViewModel))
                         {
                             Object content = groupedRows.Keys[columnViewModel];
-                            cell.Content = (content is DateTime) ? ((DateTime)content).ToString("yyyy") : content;
+                            cell.Content = content;
                             cell.RawContent = cell.Content.ToString();
                         }
 
-                        else if (columnViewModel.Type == ColumnType.Categorical || columnViewModel.Type == ColumnType.Datetime)
+                        else if (columnViewModel.Type == ColumnType.Categorical)
                         {
                             Int32 uniqueCount = groupedRows.Rows.Select(r => r.Cells[columnViewModel.Index].Content).Distinct().Count();
                             cell.Content = $"({uniqueCount})";
@@ -556,7 +552,7 @@ namespace FlexTable.ViewModel
                     if (width < view.DummyTextBlock.ActualWidth)
                         width = view.DummyTextBlock.ActualWidth;
                 }
-                else if (columnViewModel.Type == ColumnType.Categorical || columnViewModel.Type == ColumnType.Datetime)
+                else if (columnViewModel.Type == ColumnType.Categorical)
                 {
                     view.DummyTextBlock.Text = columnViewModel.Column.Name;
                     view.DummyTextBlock.Measure(new Size(Double.MaxValue, Double.MaxValue));

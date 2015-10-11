@@ -13,8 +13,8 @@ namespace FlexTable.ViewModel
         private ViewModel.MainPageViewModel mainPageViewModel;
         public ViewModel.MainPageViewModel MainPageViewModel { get { return mainPageViewModel; } }
 
-        private Model.Column column;
-        public Model.Column Column { 
+        private Column column;
+        public Column Column { 
             get { return column; } 
             set { 
                 column = value;
@@ -37,7 +37,9 @@ namespace FlexTable.ViewModel
         private Boolean isHidden;
         public Boolean IsHidden { get { return isHidden; } set { isHidden = value; OnPropertyChanged("IsHidden"); } }
 
-        public Model.ColumnType Type { get; set; }
+        public ColumnType Type { get; set; }
+        public CategoricalType CategoricalType { get; set; }
+        public String Unit { get; set; }
 
         private Boolean isGroupedBy = false;
         public Boolean IsGroupedBy { get { return isGroupedBy; } set { isGroupedBy = value; OnPropertyChanged("IsGroupedBy"); } }
@@ -53,13 +55,40 @@ namespace FlexTable.ViewModel
 
         public Boolean IsXDirty { get; set; }
 
-        private List<Model.Category> categories;
-        public List<Model.Category> Categories { get { return categories; } set { categories = value; } }
+        private List<Category> categories;
+        public List<Category> Categories { get { return categories; } set { categories = value; } }
 
         public Boolean ContainString { get; set; }
 
+        public String Name { get { return column.Name; } }
         public String HeaderName { 
             get { return FormatHeaderName(column, Type, aggregativeFunction); } 
+        }
+
+        public String UnitString
+        {
+            get
+            {
+                String unitString = "";
+                if (Unit == null || Unit.Length == 0)
+                {
+
+                }
+                else
+                {
+                    unitString = $" ({Unit})";
+                }
+
+                return unitString;
+            }
+
+        }
+        public String HeaderNameWithUnit
+        {
+            get
+            {
+                return HeaderName + UnitString;
+            }
         }
 
         public String AggregatedName
@@ -67,9 +96,9 @@ namespace FlexTable.ViewModel
             get { return FormatAggregatedName(column, Type, aggregativeFunction); }
         }
 
-        public String FormatHeaderName(Model.Column column, Model.ColumnType type, AggregativeFunctions.BaseAggregation aggregativeFunction)
+        public String FormatHeaderName(Column column, ColumnType type, AggregativeFunctions.BaseAggregation aggregativeFunction)
         {
-            if (type == Model.ColumnType.Categorical || type == Model.ColumnType.Datetime)
+            if (type == ColumnType.Categorical)
                 return column.Name;
 
             List<ColumnViewModel> selectedColumnViewModels = mainPageViewModel.ExplorationViewModel.SelectedColumnViewModels;
@@ -87,7 +116,7 @@ namespace FlexTable.ViewModel
             return FormatAggregatedName(column, type, aggregativeFunction);
         }
 
-        public String FormatAggregatedName(Model.Column column, Model.ColumnType type, AggregativeFunctions.BaseAggregation aggregativeFunction)
+        public String FormatAggregatedName(Column column, ColumnType type, AggregativeFunctions.BaseAggregation aggregativeFunction)
         {
             if (aggregativeFunction is AggregativeFunctions.MinAggregation)
             {

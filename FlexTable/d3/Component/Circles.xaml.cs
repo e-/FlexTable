@@ -25,8 +25,8 @@ namespace d3.Component
         public static readonly DependencyProperty DataProperty =
             DependencyProperty.Register("Data", typeof(Data), typeof(Circles), new PropertyMetadata(null, new PropertyChangedCallback(DataChanged)));
         
-        public event d3.Event.EventHandler CirclePointerPressed;
-        public event d3.Event.EventHandler CirclePointerReleased;
+        public event Event.EventHandler CirclePointerPressed;
+        public event Event.EventHandler CirclePointerReleased;
 
         public Data Data
         {

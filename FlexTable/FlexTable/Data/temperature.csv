@@ -1,4 +1,5 @@
 City,Month-date,Temperature
+nominal,ordinal,C
 Tokyo,1,7
 Tokyo,2,6.9
 Tokyo,3,9.5
@@ -11,7 +12,7 @@ Tokyo,9,23.3
 Tokyo,10,18.3
 Tokyo,11,13.9
 Tokyo,12,9.6
-New York,1,0
+New York,1,-0.2
 New York,2,0.8
 New York,3,5.7
 New York,4,11.3
@@ -23,7 +24,7 @@ New York,9,20.1
 New York,10,14.1
 New York,11,8.6
 New York,12,2.5
-Berlin,1,0
+Berlin,1,-0.9
 Berlin,2,0.6
 Berlin,3,3.5
 Berlin,4,8.4

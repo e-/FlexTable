@@ -9,15 +9,15 @@
     d:DesignHeight="300"
     d:DesignWidth="400">
     <UserControl.Resources>
-        <Style x:Name="TickLabelStyle" TargetType="TextBlock">
+        <Style x:Key="TickLabelStyle" TargetType="TextBlock">
             <Setter Property="TextAlignment" Value="Center" />
             <Setter Property="FontSize" Value="15" />
             <!--<Setter Property="Foreground" Value="Gray" />-->
         </Style>
-        <Style x:Name="AxisLineStyle" TargetType="Line">
+        <Style x:Key="AxisLineStyle" TargetType="Line">
             <Setter Property="Stroke" Value="Gray" />
         </Style>
-        <Style x:Name="TickMarkerStyle" TargetType="Line">
+        <Style x:Key="TickMarkerStyle" TargetType="Line">
             <Setter Property="Stroke" Value="Gray" />
         </Style>
         

@@ -86,7 +86,7 @@ namespace d3.View
             set { SetValue(AutoColorProperty, value); }
         }
         */
-        public static readonly DependencyProperty BarPointerPressedProperty = DependencyProperty.Register("BarPointerPressed", typeof(d3.Event.EventHandler), typeof(BarChart), new PropertyMetadata(null));
+        public static readonly DependencyProperty BarPointerPressedProperty = DependencyProperty.Register("BarPointerPressed", typeof(Event.EventHandler), typeof(BarChart), new PropertyMetadata(null));
 
         /*public d3.Event.EventHandler BarPointerPressed
         {
@@ -102,8 +102,18 @@ namespace d3.View
             set { SetValue(BarPointerReleasedProperty, value); }
         }*/
 
-        public event d3.Event.EventHandler BarPointerPressed;
-        public event d3.Event.EventHandler BarPointerReleased;
+        public event Event.EventHandler BarPointerPressed;
+        public event Event.EventHandler BarPointerReleased;
+
+
+        public static readonly DependencyProperty YStartsWithZeroProperty =
+            DependencyProperty.Register("YStartsWithZero", typeof(Boolean), typeof(BarChart), new PropertyMetadata(false));
+
+        public bool YStartsWithZero
+        {
+            get { return (Boolean)GetValue(YStartsWithZeroProperty); }
+            set { SetValue(YStartsWithZeroProperty, value); }
+        }
 
         public BarChart()
         {
@@ -135,6 +145,7 @@ namespace d3.View
             viewModel.AutoColor = AutoColor;
             viewModel.Width = this.Width;
             viewModel.Height = this.Height;
+            viewModel.YStartsWithZero = YStartsWithZero;
 
             Double legendAreaWidth = 0;
             if (viewModel.IsLegendVisible)

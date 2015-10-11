@@ -67,8 +67,17 @@ namespace d3.View
             set { SetValue(VerticalAxisLabelProperty, value); }
         }
 
-        public event d3.Event.EventHandler BarPointerPressed;
-        public event d3.Event.EventHandler BarPointerReleased;
+        public event Event.EventHandler BarPointerPressed;
+        public event Event.EventHandler BarPointerReleased;
+
+        public static readonly DependencyProperty YStartsWithZeroProperty =
+            DependencyProperty.Register("YStartsWithZero", typeof(Boolean), typeof(GroupedBarChart), new PropertyMetadata(false));
+
+        public bool YStartsWithZero
+        {
+            get { return (Boolean)GetValue(YStartsWithZeroProperty); }
+            set { SetValue(YStartsWithZeroProperty, value); }
+        }
 
         public GroupedBarChart()
         {
@@ -100,6 +109,8 @@ namespace d3.View
 
             viewModel.Width = this.Width;
             viewModel.Height = this.Height;
+
+            viewModel.YStartsWithZero = YStartsWithZero;
 
             Double legendAreaWidth = 0;
             if (viewModel.IsLegendVisible)
