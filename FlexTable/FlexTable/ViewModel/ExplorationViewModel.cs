@@ -17,17 +17,14 @@ namespace FlexTable.ViewModel
 {
     public class ExplorationViewModel : NotifyViewModel
     {
-        /*private ColumnViewModel columnViewModel;
-        public ColumnViewModel ColumnViewModel { get { return columnViewModel; } set { columnViewModel = value; OnPropertyChanged("ColumnViewModel"); } }*/
-
         MainPageViewModel mainPageViewModel;
         public MainPageViewModel MainPageViewModel { get { return mainPageViewModel; } }
 
         MetadataViewModel metadataViewModel;
         public MetadataViewModel MetadataViewModel { get { return metadataViewModel; } set { metadataViewModel = value; OnPropertyChanged("MetadataViewModel"); } }
 
-        private List<ViewModel.ColumnViewModel> selectedColumnViewModels = new List<ViewModel.ColumnViewModel>();
-        public List<ViewModel.ColumnViewModel> SelectedColumnViewModels { get { return selectedColumnViewModels; } }
+        private ViewStatus viewStatus = new ViewStatus();
+        public ViewStatus ViewStatus => viewStatus;
 
         public View.PageView TopPageView { get { return view.ExplorationView.TopPageView; } }
 
@@ -63,10 +60,10 @@ namespace FlexTable.ViewModel
         {
             ColumnViewModel topPageColumnViewModel = TopPageView.PageViewModel.ColumnViewModel;
 
-            if (pageView == TopPageView && topPageColumnViewModel != null && selectedColumnViewModels.IndexOf(topPageColumnViewModel) < 0)
+            if (pageView == TopPageView && topPageColumnViewModel != null && viewStatus.SelectedColumnViewModels.IndexOf(topPageColumnViewModel) < 0)
             {
                 // 선택되었다고 표시
-                selectedColumnViewModels.Add(topPageColumnViewModel);
+                viewStatus.SelectedColumnViewModels.Add(topPageColumnViewModel);
 
                 // column header 업데이트
                 foreach (ColumnViewModel cvm in mainPageViewModel.SheetViewModel.ColumnViewModels)
@@ -86,21 +83,21 @@ namespace FlexTable.ViewModel
                 // 선택 표시 (컬럼 위 아래 헤더 업데이트)
                 topPageColumnViewModel.IsSelected = true;
 
-                mainPageViewModel.SheetViewModel.Select(topPageColumnViewModel);
+                mainPageViewModel.SheetViewModel.UpdateGroup(viewStatus);
                 mainPageViewModel.TableViewModel.UpdateRows();
                 
                 view.TableView.TopColumnHeader.Update();
                 view.TableView.BottomColumnHeader.Update();
                 view.TableView.ScrollToColumnViewModel(mainPageViewModel.SheetViewModel.ColumnViewModels.OrderBy(c => c.Order).First());
             }
-            else if(pageView == TopPageView && pageViewModel.ColumnViewModel != null && selectedColumnViewModels.IndexOf(pageViewModel.ColumnViewModel) >= 0) {
+            else if(pageView == TopPageView && pageViewModel.ColumnViewModel != null && viewStatus.SelectedColumnViewModels.IndexOf(pageViewModel.ColumnViewModel) >= 0) {
                 // 이미 선택된 것 또 선택하는 경우
             }
-            else if (pageViewModel.ColumnViewModel != null && selectedColumnViewModels.IndexOf(pageViewModel.ColumnViewModel) >= 0)
+            else if (pageViewModel.ColumnViewModel != null && viewStatus.SelectedColumnViewModels.IndexOf(pageViewModel.ColumnViewModel) >= 0)
             {
                 // 선택해제 
-                selectedColumnViewModels.Remove(pageViewModel.ColumnViewModel);
-
+                viewStatus.SelectedColumnViewModels.Remove(pageViewModel.ColumnViewModel);
+                
                 // column header 업데이트
                 foreach (ColumnViewModel cvm in mainPageViewModel.SheetViewModel.ColumnViewModels)
                 {
@@ -120,7 +117,7 @@ namespace FlexTable.ViewModel
                 pageViewModel.ColumnViewModel.IsSelected = false;
 
                 // SheetViewModel 에서 ungrouping 하기, 이건 rowViewModels를 업데이트함
-                mainPageViewModel.SheetViewModel.Unselect(pageViewModel.ColumnViewModel);
+                mainPageViewModel.SheetViewModel.UpdateGroup(viewStatus);
 
                 // Table View 업데이트
                 mainPageViewModel.TableViewModel.UpdateRows();

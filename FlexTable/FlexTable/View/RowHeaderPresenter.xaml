@@ -23,7 +23,7 @@
             </ScrollViewer>
         </Border>
         <Line X1="{StaticResource RowHeaderWidth}" Y1="0" X2="{StaticResource RowHeaderWidth}" Y2="2000"
-              Stroke="LightGray" StrokeThickness="1">
+              Stroke="LightGray" StrokeThickness="2">
             <Line.RenderTransform>
                 <TranslateTransform X="0" />
             </Line.RenderTransform>            

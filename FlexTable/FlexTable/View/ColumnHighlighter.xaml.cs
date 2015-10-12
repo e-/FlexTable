@@ -99,6 +99,8 @@ namespace FlexTable.View
                 Canvas.SetLeft(UpperPopupElement, columnViewModel.Width / 2);
                 Canvas.SetLeft(LowerPopupElement, columnViewModel.Width / 2);
 
+                Canvas.SetTop(LowerPopupElement, columnViewModel.MainPageViewModel.Bounds.Height - (Double)App.Current.Resources["ColumnHeaderHeight"] * 2);
+
                 Wrapper.Visibility = Visibility.Visible;
 
                 TableScrollViewer.Height = tvm.SheetViewHeight;

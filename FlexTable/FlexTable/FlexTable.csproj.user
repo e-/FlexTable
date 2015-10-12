@@ -8,7 +8,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <RemoteDebugEnabled>true</RemoteDebugEnabled>
-    <RemoteDebugMachine>hcil-surface</RemoteDebugMachine>
+    <RemoteDebugMachine>192.168.0.12:4020 (hcil-surface)</RemoteDebugMachine>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <RemoteDebugMachine>hcil-surface</RemoteDebugMachine>

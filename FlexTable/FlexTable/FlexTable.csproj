@@ -139,6 +139,7 @@
     <Compile Include="Model\RowHeader.cs" />
     <Compile Include="Model\Sheet.cs" />
     <Compile Include="Model\SortOption.cs" />
+    <Compile Include="Model\ViewStatus.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util\Animator.cs" />
     <Compile Include="Util\BooleanConverter.cs" />

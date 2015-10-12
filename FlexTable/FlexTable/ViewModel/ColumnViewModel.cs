@@ -41,9 +41,6 @@ namespace FlexTable.ViewModel
         public CategoricalType CategoricalType { get; set; }
         public String Unit { get; set; }
 
-        private Boolean isGroupedBy = false;
-        public Boolean IsGroupedBy { get { return isGroupedBy; } set { isGroupedBy = value; OnPropertyChanged("IsGroupedBy"); } }
-
         private Boolean isSelected = false;
         public Boolean IsSelected { get { return isSelected; } set { isSelected = value; OnPropertyChanged("IsSelected"); } }
 
@@ -101,7 +98,7 @@ namespace FlexTable.ViewModel
             if (type == ColumnType.Categorical)
                 return column.Name;
 
-            List<ColumnViewModel> selectedColumnViewModels = mainPageViewModel.ExplorationViewModel.SelectedColumnViewModels;
+            List<ColumnViewModel> selectedColumnViewModels = mainPageViewModel.ExplorationViewModel.ViewStatus.SelectedColumnViewModels;
             if (selectedColumnViewModels.Count == 0)
                 return column.Name;
 
@@ -109,8 +106,8 @@ namespace FlexTable.ViewModel
                 && selectedColumnViewModels[1].Type == ColumnType.Numerical)
                 return column.Name;
 
-            if (mainPageViewModel.ExplorationViewModel.SelectedColumnViewModels.Count == 1 &&
-                mainPageViewModel.ExplorationViewModel.SelectedColumnViewModels[0] == this)
+            if (mainPageViewModel.ExplorationViewModel.ViewStatus.SelectedColumnViewModels.Count == 1 &&
+                mainPageViewModel.ExplorationViewModel.ViewStatus.SelectedColumnViewModels[0] == this)
                 return $"Bin({column.Name})";
 
             return FormatAggregatedName(column, type, aggregativeFunction);

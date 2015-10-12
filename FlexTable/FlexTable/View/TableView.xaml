@@ -51,7 +51,7 @@
             <view:ColumnHeaderPresenter Grid.Row="0" Grid.Column="1" x:Name="TopColumnHeaderElement"></view:ColumnHeaderPresenter>            
 
             <view:RowHeaderPresenter Grid.Row="1" Grid.Column="0" x:Name="RowHeaderPresenterElement"></view:RowHeaderPresenter>
-            <view:ColumnIndexer Grid.Row="1" Grid.Column="0" x:Name="ColumnIndexerElement"></view:ColumnIndexer>
+            
         
             <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" 
                               ZoomMode="Disabled" Grid.Row="1" Grid.Column="1"
@@ -67,14 +67,22 @@
                     </Canvas>
                 </Grid>
             </ScrollViewer>
-       
-
+            
             <Border Grid.Row="2" Grid.Column="0" Background="LightGray"></Border>
             <view:ColumnHeaderPresenter Grid.Row="2" Grid.Column="1" x:Name="BottomColumnHeaderElement"></view:ColumnHeaderPresenter>
 
             <view:ColumnHighlighter Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" x:Name="ColumnHighlighterElement"></view:ColumnHighlighter>
-            
-            <Canvas Grid.Row="1" Grid.Column="1">
+
+            <view:ColumnIndexer Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" x:Name="ColumnIndexerElement"
+                                Width="{StaticResource ColumnIndexerWidth}"
+                                Height="{StaticResource ColumnIndexerHeight}"
+                                Margin="30 0 0 0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Bottom"
+                                ></view:ColumnIndexer>
+
+
+            <!--<Canvas Grid.Row="1" Grid.Column="1">
                 <Border Opacity="{Binding IsIndexing,Converter={StaticResource BooleanToOpacityConverter}}"
                            Background="#CC000000" CornerRadius="3">
                     <Border.RenderTransform>
@@ -82,7 +90,7 @@
                     </Border.RenderTransform>
                     <TextBlock FontSize="20" Foreground="White" Padding="20 5" Text="{Binding IndexTooltipContent}"/>
                 </Border>
-            </Canvas>
+            </Canvas>-->
         </Grid>
 
         <Grid x:Name="StrokeGrid" Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" IsHitTestVisible="False"></Grid>

@@ -57,6 +57,9 @@
             <x:Double x:Key="PaddedParagraphWidth">704</x:Double>
             <x:Double x:Key="ParagraphHeight">410</x:Double>
 
+            <x:Double x:Key="ColumnIndexerWidth">300</x:Double>
+            <x:Double x:Key="ColumnIndexerHeight">300</x:Double>
+
             <QuarticEase EasingMode="EaseInOut" x:Key="QuarticEaseInOut" />
         </ResourceDictionary>
     </Application.Resources>

@@ -38,16 +38,21 @@
             <Setter Property="Margin" Value="0 3 0 0" />
         </Style>
     </UserControl.Resources>
-    
-    <Grid Height="{Binding PaddedSheetHeight}" Width="{StaticResource RowHeaderWidth}" 
-            Background="Transparent"
-            PointerMoved="Border_PointerMoved"
-            PointerReleased="Border_PointerReleased"
-            PointerCaptureLost="Border_PointerCaptureLost"
-          PointerEntered="Grid_PointerEntered"
-            PointerExited="Border_PointerExited"
-            >
-        <StackPanel x:Name="IndexHelperWrapperElement" Opacity="0">
-        </StackPanel>
+
+    <Grid>
+        <Border Width="{StaticResource RowHeaderWidth}" Height="{StaticResource ColumnIndexerHeight}"
+                x:Name="Opener" 
+                Background="Transparent"
+                PointerEntered="Opener_PointerEntered"
+                PointerReleased="Opener_PointerReleased"
+                HorizontalAlignment="Left"
+                >
+        </Border>
+        <Canvas x:Name="IndexHelperWrapperElement" Width="{StaticResource ColumnIndexerWidth}" 
+                Height="{StaticResource ColumnIndexerHeight}"                 
+                IsHitTestVisible="False"
+                PointerExited="IndexHelperWrapperElement_PointerExited"
+                >
+        </Canvas>
     </Grid>
 </UserControl>

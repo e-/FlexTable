@@ -35,7 +35,7 @@ namespace FlexTable.ViewModel
         private List<RowViewModel> temporaryRowViewModels = new List<RowViewModel>();
         public List<RowViewModel> TemporaryRowViewModels => temporaryRowViewModels;
 
-        private List<ColumnViewModel> selectedColumnViewModels = new List<ColumnViewModel>();
+        //ViewStatus viewStatus = new ViewStatus();
 
         private List<GroupedRows> groupingResult;
         public List<GroupedRows> GroupingResult => groupingResult;
@@ -48,8 +48,6 @@ namespace FlexTable.ViewModel
             this.mainPageViewModel = mainPageViewModel;
             this.view = view;
         }
-
-
 
         public ColumnType GuessColumnType(IEnumerable<String> cellValues)
         {
@@ -286,43 +284,29 @@ namespace FlexTable.ViewModel
             mainPageViewModel.View.TableView.BottomColumnHeader.Update();
         }
 
-        public void Unselect(ColumnViewModel columnViewModel)
-        {
-            selectedColumnViewModels.Remove(columnViewModel);
-            columnViewModel.IsGroupedBy = false;
-            GroupUpdate();
-        }
-
-        public void Select(ColumnViewModel columnViewModel)
-        {
-            selectedColumnViewModels.Add(columnViewModel);
-            columnViewModel.IsGroupedBy = true;
-            GroupUpdate();
-        }        
-
-        public void GroupUpdate()
+        public void UpdateGroup(ViewStatus viewStatus)
         {
             // column order 조정 group된 것을 맨 앞으로
             var ordered = columnViewModels.OrderBy(c => c.Order);
             Int32 order = 0;
 
             // 우선으로 그룹된 컬럼에 순서 할당
-            foreach (ColumnViewModel groupedColumnViewModel in selectedColumnViewModels.Where(s => s.Type == ColumnType.Categorical))
+            foreach (ColumnViewModel groupedColumnViewModel in viewStatus.SelectedColumnViewModels.Where(s => s.Type == ColumnType.Categorical))
             {
                 groupedColumnViewModel.Order = order++;
             }
 
-            foreach (ColumnViewModel groupedColumnViewModel in selectedColumnViewModels.Where(s => s.Type == ColumnType.Numerical))
+            foreach (ColumnViewModel groupedColumnViewModel in viewStatus.SelectedColumnViewModels.Where(s => s.Type == ColumnType.Numerical))
             {
                 groupedColumnViewModel.Order = order++;
             }
 
-            foreach (ColumnViewModel remainingColumnViewModel in columnViewModels.Except(selectedColumnViewModels).Where(d => !d.IsHidden).OrderBy(d => d.Index))
+            foreach (ColumnViewModel remainingColumnViewModel in columnViewModels.Except(viewStatus.SelectedColumnViewModels).Where(d => !d.IsHidden).OrderBy(d => d.Index))
             {
                 remainingColumnViewModel.Order = order++;
             }
 
-            foreach (ColumnViewModel remainingColumnViewModel in columnViewModels.Except(selectedColumnViewModels).Where(d => d.IsHidden).OrderBy(d => d.Order))
+            foreach (ColumnViewModel remainingColumnViewModel in columnViewModels.Except(viewStatus.SelectedColumnViewModels).Where(d => d.IsHidden).OrderBy(d => d.Order))
             {
                 remainingColumnViewModel.Order = order++;
             }
@@ -337,13 +321,13 @@ namespace FlexTable.ViewModel
 
             // 여기서 상황별로 왼쪽에 보일 rowViewModel을 만들어 줘야함. 여기서 만들면 tableViewModel에서 받아다가 그림
 
-            if (selectedColumnViewModels.Count == 0) // 아무것도 안된경우 아무것도 안해도됨 어차피 allViewModel에서 다 보여줄 것 
+            if (viewStatus.SelectedColumnViewModels.Count == 0) // 아무것도 안된경우 아무것도 안해도됨 어차피 allViewModel에서 다 보여줄 것 
             {
 
             }
-            else if (selectedColumnViewModels.Count == 1 && selectedColumnViewModels[0].Type == ColumnType.Numerical) // 이 경우는 뉴메리컬 하나만 선택되어 비닝 된 결과가 보이는 경우이다.
+            else if (viewStatus.SelectedColumnViewModels.Count == 1 && viewStatus.SelectedColumnViewModels[0].Type == ColumnType.Numerical) // 이 경우는 뉴메리컬 하나만 선택되어 비닝 된 결과가 보이는 경우이다.
             {
-                ColumnViewModel selected = selectedColumnViewModels[0];
+                ColumnViewModel selected = viewStatus.SelectedColumnViewModels[0];
 
                 List<GroupedRows> binResult = Bin(selected, Sheet.Rows);
 
@@ -387,7 +371,7 @@ namespace FlexTable.ViewModel
                     temporaryRowViewModels.Add(rowViewModel);
                 }
             }
-            else if (selectedColumnViewModels.Count >= 2 && selectedColumnViewModels.Count(s => s.Type != ColumnType.Numerical) == 0)
+            else if (viewStatus.SelectedColumnViewModels.Count >= 2 && viewStatus.SelectedColumnViewModels.Count(s => s.Type != ColumnType.Numerical) == 0)
             // 여러개 골라지고 둘다 뉴메리컬의 경우 모두 보여야함.
             {
                 foreach (RowViewModel rowViewModel in allRowViewModels)
@@ -397,7 +381,7 @@ namespace FlexTable.ViewModel
             }
             else // 이 경우는 categorical이든 datetime이든 뭔가로 그룹핑이 된 경우 
             {
-                groupingResult = GroupRecursive(sheet.Rows.ToList(), selectedColumnViewModels.Where(s => s.Type == ColumnType.Categorical).ToList() , 0);
+                groupingResult = GroupRecursive(sheet.Rows.ToList(), viewStatus.SelectedColumnViewModels.Where(s => s.Type == ColumnType.Categorical).ToList() , 0);
                 
                 foreach (GroupedRows groupedRows in groupingResult)
                 {

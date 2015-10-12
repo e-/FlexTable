@@ -87,7 +87,7 @@ namespace FlexTable.View
                     String upperCandidate = candidate.ToUpper();
 
                     if (selectedColumnViewModel != null && selectedColumnViewModel.Type == Model.ColumnType.Numerical
-                        && tableViewModel.MainPageViewModel.ExplorationViewModel.SelectedColumnViewModels.Count > 0)
+                        && tableViewModel.MainPageViewModel.ExplorationViewModel.ViewStatus.SelectedColumnViewModels.Count > 0)
                     {
                         switch (upperCandidate)
                         {

@@ -120,7 +120,7 @@ namespace FlexTable.ViewModel
 
         public void UpdateRows()
         {
-            if (mainPageViewModel.ExplorationViewModel.SelectedColumnViewModels.Count == 0) // 아무 것도 선택되지 않으면 모든 로우 보여줘야함.
+            if (mainPageViewModel.ExplorationViewModel.ViewStatus.SelectedColumnViewModels.Count == 0) // 아무 것도 선택되지 않으면 모든 로우 보여줘야함.
             {
                 rowViewModels = SheetViewModel.AllRowViewModels;
             }
@@ -162,7 +162,7 @@ namespace FlexTable.ViewModel
             }
 
 
-            if (mainPageViewModel.ExplorationViewModel.SelectedColumnViewModels.Count == 0) // 아무 것도 선택되지 않으면 모든 로우 보여줘야함.
+            if (mainPageViewModel.ExplorationViewModel.ViewStatus.SelectedColumnViewModels.Count == 0) // 아무 것도 선택되지 않으면 모든 로우 보여줘야함.
             {
                 rowPresenters = allRowPresenters;
 
@@ -205,13 +205,13 @@ namespace FlexTable.ViewModel
         uint ignoredPointerId;
         uint activatedPointerId; // for cancel indexing
 
-        public void IndexColumn(uint id, Double y)
+        public void IndexColumn(uint id, Int32 order) //Double y)
         {
             if (isPreviewing) return;
             if (ignoredPointerId == id) return;
 
             Double totalHeight = SheetViewHeight;
-            Int32 columnIndex = (Int32)Math.Floor(y / totalHeight * SheetViewModel.ColumnViewModels.Count);
+            Int32 columnIndex = order; // (Int32)Math.Floor(y / totalHeight * SheetViewModel.ColumnViewModels.Count);
 
             if (columnIndex < 0 || columnIndex >= SheetViewModel.ColumnViewModels.Count) return;
 
@@ -239,7 +239,7 @@ namespace FlexTable.ViewModel
             IsIndexing = false;
             view.TableView.ColumnHighlighter.ColumnViewModel = null;
             view.TableView.ColumnHighlighter.Update();
-            view.TableView.ColumnIndexer.HideHelper();
+            //view.TableView.ColumnIndexer.HideHelper();
             view.ExplorationView.TopPageViewModel.Hide();
             ignoredPointerId = activatedPointerId;
         }
@@ -329,7 +329,7 @@ namespace FlexTable.ViewModel
             // 위 아래 컬럼 헤더 업데이트
             // 는 바인딩으로 자동으로 됨
 
-            mainPageViewModel.SheetViewModel.GroupUpdate();
+            mainPageViewModel.SheetViewModel.UpdateGroup(mainPageViewModel.ExplorationViewModel.ViewStatus);
             UpdateRows();
         }
     }
