@@ -8,13 +8,18 @@ using FlexTable.View;
 using Windows.UI.Xaml.Controls;
 using Series = System.Tuple<System.String, System.Collections.Generic.List<System.Tuple<System.Object, System.Double>>>;
 using DataPoint = System.Tuple<System.Object, System.Double>;
+using Windows.UI.Xaml.Documents;
+using Windows.UI.Text;
+using System.Diagnostics;
 
 namespace FlexTable.ViewModel
 {
     public class PageViewModel : NotifyViewModel
     {
-        private ColumnViewModel columnViewModel;
-        public ColumnViewModel ColumnViewModel { get { return columnViewModel; } set { columnViewModel = value; OnPropertyChanged("ColumnViewModel"); } }
+        // 이변수가 필요한가?
+        // 뷰에는 변수가 없는 것 같은데
+        // private ColumnViewModel columnViewModel;
+        // public ColumnViewModel ColumnViewModel { get { return columnViewModel; } set { columnViewModel = value; OnPropertyChanged("ColumnViewModel"); } }
         
         MainPageViewModel mainPageViewModel;
         public MainPageViewModel MainPageViewModel => mainPageViewModel;
@@ -49,8 +54,8 @@ namespace FlexTable.ViewModel
         private Boolean isCorrelationStatisticsVisible = false;
         public Boolean IsCorrelationStatisticsVisible { get { return isCorrelationStatisticsVisible; } set { isCorrelationStatisticsVisible = value; OnPropertyChanged("IsCorrelationStatisticsVisible"); } }
 
-        private Boolean isGroupedBy = false;
-        public Boolean IsGroupedBy { get { return isGroupedBy; } set { isGroupedBy = value; OnPropertyChanged("IsGroupedBy"); } }
+        private Boolean isSelected = false;
+        public Boolean IsSelected { get { return isSelected; } set { isSelected = value; OnPropertyChanged("IsSelected"); } }
 
         private Double pageHeight;
         public Double PageHeight { get { return pageHeight; } set { pageHeight = value;  OnPropertyChanged("PageHeight"); } }
@@ -63,6 +68,8 @@ namespace FlexTable.ViewModel
 
         PageView pageView;
 
+        public ViewStatus ViewStatus { get; set; } // 현재 페이지 뷰의 viewStatus
+        
         public PageViewModel(MainPageViewModel mainPageViewModel, PageView pageView)
         {
             PageHeight = mainPageViewModel.Bounds.Height / 2;
@@ -74,7 +81,7 @@ namespace FlexTable.ViewModel
             //this.customHistogramViewModel = new CustomHistogramViewModel(mainPageViewModel, pageView.CustomHistogramView);
         }
         
-        public void ShowSummary(ColumnViewModel columnViewModel)
+        public void Reflect()
         {
             IsSummaryVisible = true;
             IsBarChartVisible = false;
@@ -85,23 +92,10 @@ namespace FlexTable.ViewModel
             IsScatterplotVisible = false;
             IsPivotTableVisible = false;
             IsCorrelationStatisticsVisible = false;
-            
-            ColumnViewModel = columnViewModel;
 
-            List<ColumnViewModel> selectedColumnViewModels = mainPageViewModel.ExplorationViewModel.ViewStatus.SelectedColumnViewModels;
-
+            List<ColumnViewModel> selectedColumnViewModels = ViewStatus.SelectedColumnViewModels;
             List<ColumnViewModel> numericalColumns = selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical).ToList();
             List<ColumnViewModel> categoricalColumns = selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).ToList();
-
-            switch (columnViewModel.Type)
-            {
-                case ColumnType.Categorical:
-                    categoricalColumns.Add(columnViewModel);
-                    break;
-                case ColumnType.Numerical:
-                    numericalColumns.Add(columnViewModel);
-                    break;
-            }
 
             List<GroupedRows> groupedRows = null;
             Int32 numericalCount = numericalColumns.Count;
@@ -114,44 +108,12 @@ namespace FlexTable.ViewModel
 
             if (categoricalCount == 1 && numericalCount == 0)
             {
-                IsBarChartVisible = true;
-
-                Format(
-                    pageView.BarChartTitle,
-                    $"Frequency of <b>{columnViewModel.Name}</b>"
-                    );
-                Int32 categoricalIndex = categoricalColumns[0].Index;
-                BarChartRowSelecter = c => (r => r.Cells[categoricalIndex].Content == c);
-
-                pageView.BarChart.YStartsWithZero = true;
-                pageView.BarChart.HorizontalAxisLabel = columnViewModel.Name;
-                pageView.BarChart.VerticalAxisLabel = String.Format("Frequency");
-                pageView.BarChart.Data = groupedRows.Select(grs => new Tuple<Object, Double>(grs.Keys[categoricalColumns[0]], grs.Rows.Count))
-                    .OrderBy(t => (t.Item1 as Category).Order);
-                pageView.BarChart.Update();
+                DrawFrequencyHistogram(selectedColumnViewModels.First(), groupedRows, IsSelected);          
             }
             else if (categoricalCount == 0 && numericalCount == 1)
             {
-                DescriptiveStatisticsResult result = DescriptiveStatistics.Analyze(
-                    mainPageViewModel.TableViewModel.RowViewModels.Select(r => (Double)r.Cells[columnViewModel.Index].Content)
-                    );
-
-                Format(
-                    pageView.DescriptiveStatisticsTitle,
-                    $"Descriptive Statistics of <b>{columnViewModel.Name}</b>"
-                    );
-                IsDescriptiveStatisticsVisible = true;
-                pageView.DescriptiveStatisticsView.DataContext = result;
-
-                Format(
-                    pageView.DistributionViewTitle,
-                    $"Distribution of <b>{columnViewModel.Name}</b>"
-                    );
-                IsDistributionVisible = true;
-                pageView.DistributionView.Update(
-                    result,
-                    mainPageViewModel.TableViewModel.RowViewModels.Select(r => (Double)r.Cells[columnViewModel.Index].Content)
-                    ); // 히스토그램 업데이트
+                DrawDescriptiveStatistics(numericalColumns.First());
+                DrawDistributionHistogram(numericalColumns.First());
             }
             else if (categoricalCount == 2 && numericalCount == 0)
             {
@@ -180,7 +142,7 @@ namespace FlexTable.ViewModel
 
                 IsBarChartVisible = true;
 
-                Format(pageView.BarChartTitle, $"<b>{numericalColumns[0].HeaderName}</b> by <b>{categoricalColumns[0].Name}</b>");
+                //Format(pageView.BarChartTitle, $"<b>{numericalColumns[0].HeaderName}</b> by <b>{categoricalColumns[0].Name}</b>");
                 Int32 categoricalIndex = categoricalColumns[0].Index;
                 BarChartRowSelecter = c => (r => r.Cells[categoricalIndex].Content == c);
 
@@ -243,8 +205,8 @@ namespace FlexTable.ViewModel
 
                 Format(pageView.PivotTableTitle, $"Frequency of <b>{categoricalColumns[2].Name}</b> by <b>{categoricalColumns[0].Name}</b> and <b>{categoricalColumns[1].Name}</b>");
                 pivotTableViewModel.Preview(
-                    selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).ToList(), 
-                    columnViewModel,
+                    selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).ToList(),
+                    categoricalColumns.Last(),
                     new List<ColumnViewModel>(),
                     groupedRows
                     );
@@ -421,7 +383,6 @@ namespace FlexTable.ViewModel
         public void Hide()
         {
             IsSummaryVisible = false;
-            ColumnViewModel = null;
         }
 
         public void Tapped(PageView pageView)
@@ -432,14 +393,14 @@ namespace FlexTable.ViewModel
         public void GoUp()
         {
             pageView.GoUp();
-            IsGroupedBy = false;
+            IsSelected = false;
             pageView.UpdateCarousel();
         }
 
         public void GoDown()
         {
             pageView.GoDown();
-            IsGroupedBy = true;
+            IsSelected = true;
             pageView.UpdateCarousel();
         }
 
@@ -522,6 +483,139 @@ namespace FlexTable.ViewModel
             {
                 return "Wrong Title";
             }
+        }
+
+        void AddText(StackPanel stackPanel, String text)
+        {
+            TextBlock textBlock = new TextBlock()
+            {
+                VerticalAlignment = VerticalAlignment.Center,
+                FontSize = 30
+            };
+            Util.HtmlToTextBlockFormatter.Format(text, textBlock);
+
+            stackPanel.Children.Add(textBlock);
+        }
+
+        void AddComboBox(StackPanel stackPanel, String selected, IEnumerable<String> candidates, SelectionChangedEventHandler selectionChanged)
+        {
+            ComboBox comboBox = new ComboBox()
+            {
+                Style = App.Current.Resources["SeamlessComboBoxStyle"] as Style,
+                VerticalAlignment = VerticalAlignment.Center,
+                FontSize = 30
+            };
+
+            foreach(String candidate in candidates)
+            {
+                ComboBoxItem comboBoxItem = new ComboBoxItem()
+                {
+                    Content = candidate,
+                    IsSelected = candidate == selected,
+                    Style = App.Current.Resources["SeamlessComboBoxItemStyle"] as Style,
+                };
+                comboBox.Items.Add(comboBoxItem);
+            }
+            stackPanel.Children.Add(comboBox);
+
+            comboBox.DropDownOpened += (o, e) => 
+            {
+                comboBox.Width = comboBox.ActualWidth;
+            };
+
+            comboBox.DropDownClosed += (o, e) =>
+            {
+                comboBox.Width = Double.NaN;
+            };
+
+            comboBox.SelectionChanged += selectionChanged;
+        }
+
+
+        void DrawFrequencyHistogram(ColumnViewModel categorical, List<GroupedRows> groupedRows, Boolean isTitleEditable)
+        {
+            IsBarChartVisible = true;
+
+            pageView.BarChartTitle.Children.Clear();
+            if (isTitleEditable)
+            {
+                AddText(pageView.BarChartTitle, "Frequency of\x00A0");
+                AddComboBox(
+                    pageView.BarChartTitle, 
+                    categorical.Name, 
+                    mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).Select(cvm => cvm.Name),
+                        new SelectionChangedEventHandler((sender, args) => {
+                            ComboBox comboBox = sender as ComboBox;
+                            String selectedName = (comboBox.SelectedItem as ComboBoxItem).Content.ToString();
+                            ColumnViewModel selectedColumnViewModel = mainPageViewModel.SheetViewModel.ColumnViewModels.First(cvm => cvm.Name == selectedName);
+
+                            // selectedColumnViewModel로 이제 바꾸면 됨. 이 과정에 대해서는 explorationViewModel의 PageViewTapped를 참고하면 좋다.
+
+                            // 1. 컬럼의 상태 변경 
+                            categorical.IsSelected = false;
+                            selectedColumnViewModel.IsSelected = true;
+
+                            ViewStatus.SelectedColumnViewModels.Remove(categorical);
+                            ViewStatus.SelectedColumnViewModels.Add(selectedColumnViewModel);
+
+                            // 2. 차트 변경
+                            Reflect();
+
+                            // 3. 테이블 변경
+                            mainPageViewModel.SheetViewModel.UpdateGroup(ViewStatus);
+                            mainPageViewModel.TableViewModel.UpdateRows();
+
+                            // 4. 위 아래 컬럼 헤더 순서 변경
+                            mainPageViewModel.View.TableView.TopColumnHeader.Update();
+                            mainPageViewModel.View.TableView.BottomColumnHeader.Update();
+                        }) 
+                );
+            }
+            else
+            {
+                AddText(pageView.BarChartTitle, $"Frequency of <b>{categorical.Name}</b>");
+            }
+
+            Int32 index = categorical.Index;
+            BarChartRowSelecter = c => (r => r.Cells[index].Content == c);
+
+            pageView.BarChart.YStartsWithZero = true;
+            pageView.BarChart.HorizontalAxisLabel = categorical.Name;
+            pageView.BarChart.VerticalAxisLabel = String.Format("Frequency");
+            pageView.BarChart.Data = groupedRows.Select(grs => new Tuple<Object, Double>(grs.Keys[categorical], grs.Rows.Count))
+                .OrderBy(t => (t.Item1 as Category).Order);
+            pageView.BarChart.Update();
+        }
+
+        void DrawDescriptiveStatistics(ColumnViewModel numerical)
+        {
+            DescriptiveStatisticsResult result = DescriptiveStatistics.Analyze(
+                    mainPageViewModel.TableViewModel.RowViewModels.Select(r => (Double)r.Cells[numerical.Index].Content)
+                    );
+
+            Format(
+                pageView.DescriptiveStatisticsTitle,
+                $"Descriptive Statistics of <b>{numerical.Name}</b>"
+                );
+            IsDescriptiveStatisticsVisible = true;
+            pageView.DescriptiveStatisticsView.DataContext = result;            
+        }
+
+        void DrawDistributionHistogram(ColumnViewModel numerical)
+        {
+            DescriptiveStatisticsResult result = DescriptiveStatistics.Analyze(
+                       mainPageViewModel.TableViewModel.RowViewModels.Select(r => (Double)r.Cells[numerical.Index].Content)
+                       );
+
+            Format(
+                    pageView.DistributionViewTitle,
+                    $"Distribution of <b>{numerical.Name}</b>"
+                    );
+            IsDistributionVisible = true;
+            pageView.DistributionView.Update(
+                result,
+                mainPageViewModel.TableViewModel.RowViewModels.Select(r => (Double)r.Cells[numerical.Index].Content)
+                ); // 히스토그램 업데이트
         }
     }
 }

@@ -12,6 +12,7 @@ using Windows.Foundation;
 using Windows.UI.Input.Inking;
 using FlexTable.Model;
 using Windows.UI.Xaml.Media.Animation;
+using FlexTable.View;
 
 namespace FlexTable.ViewModel
 {
@@ -23,19 +24,21 @@ namespace FlexTable.ViewModel
         MetadataViewModel metadataViewModel;
         public MetadataViewModel MetadataViewModel { get { return metadataViewModel; } set { metadataViewModel = value; OnPropertyChanged("MetadataViewModel"); } }
 
-        private ViewStatus viewStatus = new ViewStatus();
-        public ViewStatus ViewStatus => viewStatus;
+        private ViewStatus initialViewStatus = new ViewStatus(); 
+        public ViewStatus ViewStatus => selectedPageViews.Count == 0 ? initialViewStatus : selectedPageViews.Last().PageViewModel.ViewStatus; // 이 view status는 이미 선택된 컬럼들을 가지는 view status 임
 
-        public View.PageView TopPageView { get { return view.ExplorationView.TopPageView; } }
+        public PageView TopPageView { get { return view.ExplorationView.TopPageView; } }
 
-        public PageViewModel DummyPageViewModel { get; set; } // for supressing initial pageview binding warnings
+        public PageViewModel DummyPageViewModel { get; set; } // for surpressing initial pageview binding warnings
 
         private Double pageHeight;
         public Double PageHeight { get { return pageHeight; } set { pageHeight = value; OnPropertyChanged("PageHeight"); } }
 
         private Double pageWidth;
         public Double PageWidth { get { return pageWidth; } set { pageWidth = value; OnPropertyChanged("PageWidth"); } }
-        
+
+        List<PageView> selectedPageViews = new List<PageView>();
+        ColumnViewModel previewingColumnViewModel = null;
         IMainPage view;
 
         public ExplorationViewModel(MainPageViewModel mainPageViewModel, IMainPage view)
@@ -48,23 +51,33 @@ namespace FlexTable.ViewModel
             PageWidth = mainPageViewModel.Bounds.Width / 2;
         }
 
-        public void ShowSummary(ColumnViewModel columnViewModel)
+        public void PreviewColumn(ColumnViewModel columnViewModel)
         {
-            PageViewModel pageViewModel = TopPageView.PageViewModel;
-            //ColumnViewModel = columnViewModel;
+            previewingColumnViewModel = columnViewModel;
 
-            pageViewModel.ShowSummary(columnViewModel);
+            // 현재 선택된 view status를 가져옴
+            ViewStatus selectedViewStatus = ViewStatus.Clone();
+            
+            // 새 컬럼 추가
+            selectedViewStatus.SelectedColumnViewModels.Add(columnViewModel);
+            
+            // 탑 페이지 뷰 모델 가져와서
+            PageViewModel pageViewModel = TopPageView.PageViewModel;
+
+            // 복제한 view status를 추가 한 다음 
+            pageViewModel.ViewStatus = selectedViewStatus;
+
+            // 이걸로 pageView를 채움
+            pageViewModel.Reflect();
         }
 
-        public void PageViewTapped(PageViewModel pageViewModel, View.PageView pageView)
+        public void PageViewTapped(PageViewModel pageViewModel, PageView pageView)
         {
-            ColumnViewModel topPageColumnViewModel = TopPageView.PageViewModel.ColumnViewModel;
-
-            if (pageView == TopPageView && topPageColumnViewModel != null && viewStatus.SelectedColumnViewModels.IndexOf(topPageColumnViewModel) < 0)
+            if (pageView == TopPageView && previewingColumnViewModel != null && ViewStatus.SelectedColumnViewModels.IndexOf(previewingColumnViewModel) < 0)
             {
-                // 선택되었다고 표시
-                viewStatus.SelectedColumnViewModels.Add(topPageColumnViewModel);
-
+                // 현재 탭된 컬럼의 viewStatus에는 previewingColumn이 추가되어 있는 상태임.
+                selectedPageViews.Add(pageView);
+                
                 // column header 업데이트
                 foreach (ColumnViewModel cvm in mainPageViewModel.SheetViewModel.ColumnViewModels)
                 {
@@ -74,6 +87,9 @@ namespace FlexTable.ViewModel
                 // Page View 아래로 보내기                    
                 pageViewModel.GoDown();
 
+                // 차트 새로 반영 (타이틀이 업데이트 될 것임)
+                pageViewModel.Reflect();
+
                 // 새로운 page 만들기
                 view.ExplorationView.AddNewPage();
 
@@ -81,23 +97,22 @@ namespace FlexTable.ViewModel
                 mainPageViewModel.TableViewModel.CancelIndexing();
 
                 // 선택 표시 (컬럼 위 아래 헤더 업데이트)
-                topPageColumnViewModel.IsSelected = true;
+                previewingColumnViewModel.IsSelected = true;
 
-                mainPageViewModel.SheetViewModel.UpdateGroup(viewStatus);
+                mainPageViewModel.SheetViewModel.UpdateGroup(ViewStatus);
                 mainPageViewModel.TableViewModel.UpdateRows();
                 
                 view.TableView.TopColumnHeader.Update();
                 view.TableView.BottomColumnHeader.Update();
                 view.TableView.ScrollToColumnViewModel(mainPageViewModel.SheetViewModel.ColumnViewModels.OrderBy(c => c.Order).First());
             }
-            else if(pageView == TopPageView && pageViewModel.ColumnViewModel != null && viewStatus.SelectedColumnViewModels.IndexOf(pageViewModel.ColumnViewModel) >= 0) {
+            else if(pageView == TopPageView && ViewStatus.SelectedColumnViewModels.IndexOf(previewingColumnViewModel) >= 0) {
                 // 이미 선택된 것 또 선택하는 경우
             }
-            else if (pageViewModel.ColumnViewModel != null && viewStatus.SelectedColumnViewModels.IndexOf(pageViewModel.ColumnViewModel) >= 0)
+            else // 선택해제하는 경우
             {
-                // 선택해제 
-                viewStatus.SelectedColumnViewModels.Remove(pageViewModel.ColumnViewModel);
-                
+                selectedPageViews.Remove(pageView);
+
                 // column header 업데이트
                 foreach (ColumnViewModel cvm in mainPageViewModel.SheetViewModel.ColumnViewModels)
                 {
@@ -114,10 +129,10 @@ namespace FlexTable.ViewModel
                 view.ExplorationView.RemoveTopPage(pageView);
 
                 // 선택 해제 (컬럼 위 아래 헤더 업데이트)
-                pageViewModel.ColumnViewModel.IsSelected = false;
+                pageViewModel.ViewStatus.SelectedColumnViewModels.Last().IsSelected = false;
 
                 // SheetViewModel 에서 ungrouping 하기, 이건 rowViewModels를 업데이트함
-                mainPageViewModel.SheetViewModel.UpdateGroup(viewStatus);
+                mainPageViewModel.SheetViewModel.UpdateGroup(ViewStatus);
 
                 // Table View 업데이트
                 mainPageViewModel.TableViewModel.UpdateRows();

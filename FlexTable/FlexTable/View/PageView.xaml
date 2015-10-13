@@ -15,8 +15,14 @@
     >
 
     <UserControl.Resources>
-        <Style TargetType="Border" x:Key="TitleWrapperStyle">
+        <Style TargetType="Border" x:Key="TitleWrapperStyle2">
             <Setter Property="Height" Value="90" />
+        </Style>
+
+        <Style TargetType="StackPanel" x:Key="TitleWrapperStyle">
+            <Setter Property="Height" Value="90" />
+            <Setter Property="Orientation" Value="Horizontal" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
         </Style>
         
         <Style TargetType="TextBlock" x:Key="TitleStyle">
@@ -89,49 +95,47 @@
                           x:Name="Carousel" Width="{StaticResource ParagraphWidth}" ViewChanged="Carousel_ViewChanged" ViewChanging="Carousel_ViewChanging">
                 <StackPanel Orientation="Horizontal" x:Name="ParagraphContainer" IsHitTestVisible="False">
                     <StackPanel Visibility="{Binding IsBarChartVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Bar Chart">
-                        <Border Style="{StaticResource TitleWrapperStyle}">
-                            <TextBlock Style="{StaticResource TitleStyle}" x:Name="BarChartTitleElement" />
-                        </Border>
+                        <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="BarChartTitleElement"></StackPanel>
                         <d3view:BarChart x:Name="BarChartElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}" />
                     </StackPanel>
 
                     <StackPanel Visibility="{Binding IsLineChartVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Line Chart">
-                        <Border Style="{StaticResource TitleWrapperStyle}">
+                        <Border Style="{StaticResource TitleWrapperStyle2}">
                             <TextBlock Style="{StaticResource TitleStyle}" x:Name="LineChartTitleElement" />
                         </Border>
                         <d3view:LineChart x:Name="LineChartElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}" />
                     </StackPanel>
                     
                     <StackPanel Visibility="{Binding IsDistributionVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Distribution">
-                        <Border Style="{StaticResource TitleWrapperStyle}">
+                        <Border Style="{StaticResource TitleWrapperStyle2}">
                             <TextBlock Style="{StaticResource TitleStyle}" x:Name="DistributionViewTitleElement" />
                         </Border>
                         <local:DistributionView x:Name="DistributionViewElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}"/>
                     </StackPanel>
                     
                     <StackPanel Visibility="{Binding IsDescriptiveStatisticsVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Statistics">
-                        <Border Style="{StaticResource TitleWrapperStyle}">
+                        <Border Style="{StaticResource TitleWrapperStyle2}">
                             <TextBlock Style="{StaticResource TitleStyle}" x:Name="DescriptiveStatisticsTitleElement" />
                         </Border>
                         <local:DescriptiveStatisticsView x:Name="DescriptiveStatisticsViewElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}"/>
                     </StackPanel>
 
                     <StackPanel Visibility="{Binding IsGroupedBarChartVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Grouped Bar Chart">
-                        <Border Style="{StaticResource TitleWrapperStyle}">
+                        <Border Style="{StaticResource TitleWrapperStyle2}">
                             <TextBlock Style="{StaticResource TitleStyle}" x:Name="GroupedBarChartTitleElement" />
                         </Border>
                         <d3view:GroupedBarChart x:Name="GroupedBarChartElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}" />
                     </StackPanel>
 
                     <StackPanel Visibility="{Binding IsScatterplotVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Scatterplot">
-                        <Border Style="{StaticResource TitleWrapperStyle}">
+                        <Border Style="{StaticResource TitleWrapperStyle2}">
                             <TextBlock Style="{StaticResource TitleStyle}" x:Name="ScatterplotTitleElement" />
                         </Border>
                         <d3view:Scatterplot x:Name="ScatterplotElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}" />
                     </StackPanel>
 
                     <StackPanel Visibility="{Binding IsPivotTableVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Pivot Table">
-                        <Border Style="{StaticResource TitleWrapperStyle}">
+                        <Border Style="{StaticResource TitleWrapperStyle2}">
                             <TextBlock Style="{StaticResource TitleStyle}" x:Name="PivotTableTitleElement" />
                         </Border>
                         <local:PivotTableView x:Name="PivotTableViewElement" VerticalAlignment="Center"                                              
@@ -139,7 +143,7 @@
                     </StackPanel>
 
                     <StackPanel Visibility="{Binding IsCorrelationStatisticsVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Statistics">
-                        <Border Style="{StaticResource TitleWrapperStyle}">
+                        <Border Style="{StaticResource TitleWrapperStyle2}">
                             <TextBlock Style="{StaticResource TitleStyle}" x:Name="CorrelationStatisticsTitleElement" />
                         </Border>
                         <local:CorrelationStatisticsView x:Name="CorrelationStatisticsViewElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}"/>

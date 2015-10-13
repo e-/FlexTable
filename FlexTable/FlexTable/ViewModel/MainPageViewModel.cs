@@ -76,16 +76,16 @@ namespace FlexTable.ViewModel
             PageViewModel pageViewModel = new PageViewModel(
                 this,
                 view.ExplorationView.TopPageView
-                );
+                )
+            {
+                ViewStatus = new Model.ViewStatus() // 초기 비어있는 뷰 상태로 초기화
+            };
             view.ExplorationView.TopPageView.DataContext = pageViewModel;
             
             // 메타데이터 초기화
             ExplorationViewModel.MetadataViewModel.Initialize();
         }  
-
-
-     
-
+   
         public void UpdateFiltering()
         {
             /*foreach (Model.Row row in sheet.Rows)

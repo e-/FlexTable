@@ -45,7 +45,7 @@ namespace FlexTable.View
             {
                 columnViewModel.MainPageViewModel.View.TableView.ColumnHighlighter.ColumnViewModel = columnViewModel;
                 columnViewModel.MainPageViewModel.View.TableView.ColumnHighlighter.Update();
-                columnViewModel.MainPageViewModel.ExplorationViewModel.ShowSummary(columnViewModel);
+                columnViewModel.MainPageViewModel.ExplorationViewModel.PreviewColumn(columnViewModel);
             }
         }
     }

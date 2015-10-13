@@ -32,7 +32,7 @@ namespace FlexTable.View
         public d3.View.Scatterplot Scatterplot => ScatterplotElement;
         public PivotTableView PivotTableView => PivotTableViewElement;
 
-        public TextBlock BarChartTitle => BarChartTitleElement;
+        public StackPanel BarChartTitle => BarChartTitleElement;
         public TextBlock LineChartTitle => LineChartTitleElement;
         public TextBlock DistributionViewTitle => DistributionViewTitleElement;
         public TextBlock DescriptiveStatisticsTitle => DescriptiveStatisticsTitleElement;
