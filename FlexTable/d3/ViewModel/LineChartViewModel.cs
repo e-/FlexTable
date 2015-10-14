@@ -10,6 +10,7 @@ using Windows.Foundation;
 using Windows.UI.Xaml.Shapes;
 using Series = System.Tuple<System.String, System.Collections.Generic.List<System.Tuple<System.Object, System.Double>>>;
 using DataPoint = System.Tuple<System.Object, System.Double>;
+using Windows.UI.Xaml.Controls;
 
 namespace d3.ViewModel
 {
@@ -88,6 +89,13 @@ namespace d3.ViewModel
         public Func<Object, Int32, Color> CircleColorGetter { get { return (d, index) => ColorScheme.Category10.Colors[(d as Tuple<Object, Double, Int32>).Item3 % 10]; } }
         public Func<Object, Int32, Double> RadiusGetter { get { return (d, index) => 10; } }
         public Func<Object, Int32, Double> OpacityGetter { get { return (d, index) => 0.8; } }
+        public Func<TextBlock, Double, Double> LabelFontSizeGetter
+        {
+            get
+            {
+                return (textBlock, currentSize) => textBlock.ActualWidth > xScale.RangeBand ? currentSize * xScale.RangeBand / textBlock.ActualWidth * 0.9 : currentSize;
+            }
+        }
 
         public Func<Object, Int32, Double> IndicatorWidthGetter { get { return (d, index) => xScale.RangeBand; } }
         public Func<Object, Int32, String> IndicatorTextGetter { get { return (d, index) => Format.IntegerBalanced.Format((d as DataPoint).Item2); } }

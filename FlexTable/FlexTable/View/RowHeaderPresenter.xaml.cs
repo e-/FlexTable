@@ -63,6 +63,8 @@ namespace FlexTable.View
             }
         }
 
+        Storyboard last = null;
+
         public void SetRowNumber(Int32 n)
         {
             hiddenNumberElement.Children.Clear();
@@ -83,6 +85,8 @@ namespace FlexTable.View
             hiddenNumberElement.Opacity = 0;
             hiddenNumberElement.Visibility = Visibility.Visible;
 
+            if (last != null) last.Pause();
+
             Storyboard sb = new Storyboard();
 
             sb.Children.Add(Util.Animator.Generate(visibleNumberElement, "Opacity", 0));
@@ -90,6 +94,7 @@ namespace FlexTable.View
 
             sb.Completed += sb_Completed;
             sb.Begin();
+            last = sb;
         }
 
         void sb_Completed(object sender, object e)
@@ -99,6 +104,7 @@ namespace FlexTable.View
             temp = visibleNumberElement;
             visibleNumberElement = hiddenNumberElement;
             hiddenNumberElement = temp;
+            last = null;
         }
     }
 }

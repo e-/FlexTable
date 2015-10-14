@@ -33,12 +33,12 @@ namespace FlexTable.View
         public PivotTableView PivotTableView => PivotTableViewElement;
 
         public StackPanel BarChartTitle => BarChartTitleElement;
-        public TextBlock LineChartTitle => LineChartTitleElement;
-        public TextBlock DistributionViewTitle => DistributionViewTitleElement;
-        public TextBlock DescriptiveStatisticsTitle => DescriptiveStatisticsTitleElement;
-        public TextBlock GroupedBarChartTitle => GroupedBarChartTitleElement;
-        public TextBlock ScatterplotTitle => ScatterplotTitleElement;
-        public TextBlock PivotTableTitle => PivotTableTitleElement;
+        public StackPanel LineChartTitle => LineChartTitleElement;
+        public StackPanel DistributionViewTitle => DistributionViewTitleElement;
+        public StackPanel DescriptiveStatisticsTitle => DescriptiveStatisticsTitleElement;
+        public StackPanel GroupedBarChartTitle => GroupedBarChartTitleElement;
+        public StackPanel ScatterplotTitle => ScatterplotTitleElement;
+        public TextBlock PivotTableTitle => new TextBlock(); // PivotTableTitleElement;
         public TextBlock CorrelationStatisticsTitle => CorrelationStatisticsTitleElement;
 
         public PageViewModel PageViewModel => (this.DataContext as PageViewModel);
@@ -78,7 +78,6 @@ namespace FlexTable.View
             PageViewModel pvm = this.DataContext as PageViewModel;
             pvm.MainPageViewModel.TableViewModel.CancelPreviewRows();
         }
-
         
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
@@ -90,16 +89,29 @@ namespace FlexTable.View
             PageViewModel.Tapped(this);
         }
 
+        private void TitleWrapper_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            e.Handled = true;
+        }
+
         public void GoDown()
         {
             GoDownStoryboard.Begin();
-            ParagraphContainer.IsHitTestVisible = true;
+            BarChartElement.IsHitTestVisible = true;
+            LineChartElement.IsHitTestVisible = true;
+            DistributionViewElement.IsHitTestVisible = true;
+            GroupedBarChartElement.IsHitTestVisible = true;
+            ScatterplotElement.IsHitTestVisible = true;
         }
 
         public void GoUp()
         {
             GoUpStoryboard.Begin();
-            ParagraphContainer.IsHitTestVisible = false;
+            BarChartElement.IsHitTestVisible = false;
+            LineChartElement.IsHitTestVisible = false;
+            DistributionViewElement.IsHitTestVisible = false;
+            GroupedBarChartElement.IsHitTestVisible = false;
+            ScatterplotElement.IsHitTestVisible = false;
         }
 
         private void GoUpStoryboard_Completed(object sender, object e)

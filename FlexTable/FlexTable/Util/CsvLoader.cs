@@ -13,7 +13,7 @@ namespace FlexTable.Util
     {
         public async Task<Sheet> Load()
         {
-            String name = "temperature.csv"; // "economic-condition2.csv";// "Insurance.csv"; // "Population-small.csv";
+            String name = "who.csv"; // "economic-condition2.csv";// "Insurance.csv"; // "Population-small.csv";
             var folder = await Windows.ApplicationModel.Package.Current.InstalledLocation.GetFolderAsync("Data");
             var file = await folder.GetFileAsync(name);
             var content = await Windows.Storage.FileIO.ReadTextAsync(file);

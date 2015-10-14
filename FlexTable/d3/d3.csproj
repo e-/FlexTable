@@ -123,6 +123,7 @@
     <Compile Include="Component\Texts.xaml.cs">
       <DependentUpon>Texts.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Const.cs" />
     <Compile Include="Data.cs" />
     <Compile Include="Event.cs" />
     <Compile Include="Format\IntegerBalanced.cs" />

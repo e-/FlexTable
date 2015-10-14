@@ -34,8 +34,8 @@ namespace FlexTable.Util
 
         public Drawable()
         {
-            inkDrawingAttributes.Color = Windows.UI.Colors.Black;
-            inkDrawingAttributes.Size = new Size(10, 10);
+            inkDrawingAttributes.Color = Colors.Black;
+            inkDrawingAttributes.Size = new Size(3, 3);
             inkManager.SetDefaultDrawingAttributes(inkDrawingAttributes);
         }
 
@@ -126,7 +126,7 @@ namespace FlexTable.Util
                                 X2 = point2.X,
                                 Y2 = point2.Y,
                                 Stroke = new SolidColorBrush(Color.FromArgb(200, 0, 0, 0)),
-                                StrokeThickness = inkDrawingAttributes.Size.Width * pointerPoint.Properties.Pressure,
+                                StrokeThickness = inkDrawingAttributes.Size.Width,// * pointerPoint.Properties.Pressure,
                                 StrokeStartLineCap = PenLineCap.Round,
                                 StrokeEndLineCap = PenLineCap.Round
                             };
@@ -214,8 +214,7 @@ namespace FlexTable.Util
                 Path path = new Path
                 {
                     Stroke = brush,
-                    StrokeThickness = inkStroke.DrawingAttributes.Size.Width *
-                    inkSegment.Pressure,
+                    StrokeThickness = inkStroke.DrawingAttributes.Size.Width,// * inkSegment.Pressure,
                     StrokeStartLineCap = PenLineCap.Round,
                     StrokeEndLineCap = PenLineCap.Round,
                     Data = pathGeometry

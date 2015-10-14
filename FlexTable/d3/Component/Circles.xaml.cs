@@ -79,6 +79,16 @@ namespace d3.Component
             set { SetValue(OpacityGetterProperty, value); }
         }
 
+        public static readonly DependencyProperty AllowTransitionProperty =
+            DependencyProperty.Register("AllowTransition", typeof(Boolean), typeof(Circles), new PropertyMetadata(true)
+                );
+
+        public Boolean AllowTransition
+        {
+            get { return (Boolean)GetValue(AllowTransitionProperty); }
+            set { SetValue(AllowTransitionProperty, value); }
+        }
+
         public Circles()
         {
             this.InitializeComponent();
@@ -97,7 +107,7 @@ namespace d3.Component
             Int32 index = 0;
             Storyboard storyboard = new Storyboard()
             {
-                BeginTime = TimeSpan.FromMilliseconds(100)
+                BeginTime = Const.AnimationDelay
             };
         
             if (previousStoryboard != null)
@@ -143,7 +153,7 @@ namespace d3.Component
                     previousCircles.Add(ellipse);
                 }
 
-                if (newbie)
+                if (newbie || !AllowTransition)
                 {
                     Canvas.SetLeft(ellipse, XGetter(datum, index) - RadiusGetter(datum, index) / 2);
                     Canvas.SetTop(ellipse, YGetter(datum, index) - RadiusGetter(datum, index) / 2);
@@ -153,7 +163,6 @@ namespace d3.Component
                     storyboard.Children.Add(Util.GenerateDoubleAnimation(ellipse, "(Canvas.Left)", XGetter(datum, index) - RadiusGetter(datum, index) / 2));
                     storyboard.Children.Add(Util.GenerateDoubleAnimation(ellipse, "(Canvas.Top)", YGetter(datum, index) - RadiusGetter(datum, index) / 2));   
                 }
-                
                 
                 ellipse.Width = RadiusGetter(datum, index);
                 ellipse.Height = RadiusGetter(datum, index);

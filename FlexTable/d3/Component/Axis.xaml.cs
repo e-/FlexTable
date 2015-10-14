@@ -158,7 +158,10 @@ namespace d3.Component
                 List<TextBlock> previousTickLabels = tickLabels;
                 List<Line> previousTickMarkers = tickMarkers;
 
-                Storyboard tickLabelsStoryboard = new Storyboard();
+                Storyboard tickLabelsStoryboard = new Storyboard()
+                {
+                    BeginTime = Const.AnimationDelay
+                };
                 //remove previous ticks
                 if (previousTickLabels != null)
                 {

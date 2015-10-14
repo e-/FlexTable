@@ -93,51 +93,39 @@
             <ScrollViewer HorizontalScrollBarVisibility="Hidden" HorizontalScrollMode="Auto" 
                           VerticalScrollMode="Disabled" VerticalScrollBarVisibility="Hidden"
                           x:Name="Carousel" Width="{StaticResource ParagraphWidth}" ViewChanged="Carousel_ViewChanged" ViewChanging="Carousel_ViewChanging">
-                <StackPanel Orientation="Horizontal" x:Name="ParagraphContainer" IsHitTestVisible="False">
+                <StackPanel Orientation="Horizontal" x:Name="ParagraphContainer">
                     <StackPanel Visibility="{Binding IsBarChartVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Bar Chart">
-                        <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="BarChartTitleElement"></StackPanel>
-                        <d3view:BarChart x:Name="BarChartElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}" />
+                        <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="BarChartTitleElement" Tapped="TitleWrapper_Tapped"></StackPanel>
+                        <d3view:BarChart x:Name="BarChartElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}" IsHitTestVisible="False"/>
                     </StackPanel>
 
                     <StackPanel Visibility="{Binding IsLineChartVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Line Chart">
-                        <Border Style="{StaticResource TitleWrapperStyle2}">
-                            <TextBlock Style="{StaticResource TitleStyle}" x:Name="LineChartTitleElement" />
-                        </Border>
-                        <d3view:LineChart x:Name="LineChartElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}" />
+                        <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="LineChartTitleElement" Tapped="TitleWrapper_Tapped"></StackPanel>
+                        <d3view:LineChart x:Name="LineChartElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}" IsHitTestVisible="False"/>
                     </StackPanel>
                     
                     <StackPanel Visibility="{Binding IsDistributionVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Distribution">
-                        <Border Style="{StaticResource TitleWrapperStyle2}">
-                            <TextBlock Style="{StaticResource TitleStyle}" x:Name="DistributionViewTitleElement" />
-                        </Border>
-                        <local:DistributionView x:Name="DistributionViewElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}"/>
+                        <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="DistributionViewTitleElement" Tapped="TitleWrapper_Tapped"></StackPanel>
+                        <local:DistributionView x:Name="DistributionViewElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}" IsHitTestVisible="False"/>
                     </StackPanel>
                     
                     <StackPanel Visibility="{Binding IsDescriptiveStatisticsVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Statistics">
-                        <Border Style="{StaticResource TitleWrapperStyle2}">
-                            <TextBlock Style="{StaticResource TitleStyle}" x:Name="DescriptiveStatisticsTitleElement" />
-                        </Border>
+                        <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="DescriptiveStatisticsTitleElement" Tapped="TitleWrapper_Tapped"></StackPanel>
                         <local:DescriptiveStatisticsView x:Name="DescriptiveStatisticsViewElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}"/>
                     </StackPanel>
 
                     <StackPanel Visibility="{Binding IsGroupedBarChartVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Grouped Bar Chart">
-                        <Border Style="{StaticResource TitleWrapperStyle2}">
-                            <TextBlock Style="{StaticResource TitleStyle}" x:Name="GroupedBarChartTitleElement" />
-                        </Border>
-                        <d3view:GroupedBarChart x:Name="GroupedBarChartElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}" />
+                        <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="GroupedBarChartTitleElement" Tapped="TitleWrapper_Tapped"></StackPanel>
+                        <d3view:GroupedBarChart x:Name="GroupedBarChartElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}" IsHitTestVisible="False"/>
                     </StackPanel>
 
                     <StackPanel Visibility="{Binding IsScatterplotVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Scatterplot">
-                        <Border Style="{StaticResource TitleWrapperStyle2}">
-                            <TextBlock Style="{StaticResource TitleStyle}" x:Name="ScatterplotTitleElement" />
-                        </Border>
-                        <d3view:Scatterplot x:Name="ScatterplotElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}" />
+                        <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="ScatterplotTitleElement" Tapped="TitleWrapper_Tapped"></StackPanel>
+                        <d3view:Scatterplot x:Name="ScatterplotElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}" IsHitTestVisible="False"/>
                     </StackPanel>
 
                     <StackPanel Visibility="{Binding IsPivotTableVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Pivot Table">
-                        <Border Style="{StaticResource TitleWrapperStyle2}">
-                            <TextBlock Style="{StaticResource TitleStyle}" x:Name="PivotTableTitleElement" />
-                        </Border>
+                        <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="PivotTableTitleElement" Tapped="TitleWrapper_Tapped"></StackPanel>
                         <local:PivotTableView x:Name="PivotTableViewElement" VerticalAlignment="Center"                                              
                            Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}"></local:PivotTableView>
                     </StackPanel>

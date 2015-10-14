@@ -15,6 +15,7 @@ using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.ViewManagement;
 using Windows.Graphics.Display;
 using FlexTable.View;
+using FlexTable.Model;
 
 namespace FlexTable.ViewModel
 {
@@ -53,11 +54,11 @@ namespace FlexTable.ViewModel
         private Boolean isIndexing;
         public Boolean IsIndexing { get { return isIndexing; } set { isIndexing = value; OnPropertyChanged("IsIndexing"); } }
 
-        private Double indexTooltipY;
+        /*private Double indexTooltipY;
         public Double IndexTooltipY { get { return indexTooltipY; } set { indexTooltipY = value; OnPropertyChanged("IndexTooltipY"); } }
 
         private String indexTooltipContent;
-        public String IndexTooltipContent { get { return indexTooltipContent; } set { indexTooltipContent = value; OnPropertyChanged("IndexTooltipContent"); } }
+        public String IndexTooltipContent { get { return indexTooltipContent; } set { indexTooltipContent = value; OnPropertyChanged("IndexTooltipContent"); } }*/
         
         private Boolean isPreviewing = false;
 
@@ -118,9 +119,24 @@ namespace FlexTable.ViewModel
             view.TableView.RowHeaderPresenter.SetRowNumber(SheetViewModel.AllRowViewModels.Count);
         }
 
-        public void UpdateRows()
+        public void Reflect(ViewStatus viewStatus)
         {
-            if (mainPageViewModel.ExplorationViewModel.ViewStatus.SelectedColumnViewModels.Count == 0) // 아무 것도 선택되지 않으면 모든 로우 보여줘야함.
+            UpdateRows(viewStatus);
+
+            // column header 업데이트
+            foreach (ColumnViewModel cvm in mainPageViewModel.SheetViewModel.ColumnViewModels)
+            {
+                cvm.IsSelected = viewStatus.SelectedColumnViewModels.IndexOf(cvm) >= 0;
+                cvm.UpdateHeaderName();
+            }
+
+            view.TableView.TopColumnHeader.Update();
+            view.TableView.BottomColumnHeader.Update();
+        }
+
+        void UpdateRows(ViewStatus viewStatus)
+        {
+            if (viewStatus.SelectedColumnViewModels.Count == 0) // 아무 것도 선택되지 않으면 모든 로우 보여줘야함.
             {
                 rowViewModels = SheetViewModel.AllRowViewModels;
             }
@@ -136,12 +152,12 @@ namespace FlexTable.ViewModel
                 {
                     case Model.SortOption.Ascending:
                         sorted = rowViewModels.OrderBy(
-                            r => r.Cells[sortBy.Index].Content is Model.Category ? r.Cells[sortBy.Index].Content.ToString() : r.Cells[sortBy.Index].Content
+                            r => r.Cells[sortBy.Index].Content is Category ? r.Cells[sortBy.Index].Content.ToString() : r.Cells[sortBy.Index].Content
                             );
                         break;
                     case Model.SortOption.Descending:
                         sorted = rowViewModels.OrderByDescending(
-                            r => r.Cells[sortBy.Index].Content is Model.Category ? r.Cells[sortBy.Index].Content.ToString() : r.Cells[sortBy.Index].Content
+                            r => r.Cells[sortBy.Index].Content is Category ? r.Cells[sortBy.Index].Content.ToString() : r.Cells[sortBy.Index].Content
                             );
                         break;
                 }
@@ -162,7 +178,7 @@ namespace FlexTable.ViewModel
             }
 
 
-            if (mainPageViewModel.ExplorationViewModel.ViewStatus.SelectedColumnViewModels.Count == 0) // 아무 것도 선택되지 않으면 모든 로우 보여줘야함.
+            if (viewStatus.SelectedColumnViewModels.Count == 0) // 아무 것도 선택되지 않으면 모든 로우 보여줘야함.
             {
                 rowPresenters = allRowPresenters;
 
@@ -225,8 +241,8 @@ namespace FlexTable.ViewModel
                 view.TableView.ColumnHighlighter.Update();
 
                 IsIndexing = true;
-                IndexTooltipY = (columnIndex + 0.5) * (totalHeight / SheetViewModel.ColumnViewModels.Count) - 15;
-                IndexTooltipContent = columnViewModel.Column.Name;
+                /*IndexTooltipY = (columnIndex + 0.5) * (totalHeight / SheetViewModel.ColumnViewModels.Count) - 15;
+                IndexTooltipContent = columnViewModel.Column.Name;*/
 
                 mainPageViewModel.ExplorationViewModel.PreviewColumn(columnViewModel);
             }
@@ -237,10 +253,12 @@ namespace FlexTable.ViewModel
         public void CancelIndexing()
         {
             IsIndexing = false;
+
             view.TableView.ColumnHighlighter.ColumnViewModel = null;
             view.TableView.ColumnHighlighter.Update();
-            //view.TableView.ColumnIndexer.HideHelper();
-            view.ExplorationView.TopPageViewModel.Hide();
+
+            mainPageViewModel.ExplorationViewModel.CancelPreviewColumn();
+
             ignoredPointerId = activatedPointerId;
         }
 
@@ -290,7 +308,6 @@ namespace FlexTable.ViewModel
                     columnViewModel.IsXDirty = false;
 
                     foreach(RowPresenter rowPresenter in rowPresenters) {
-                        
                         sb.Children.Add(
                             Util.Animator.Generate(rowPresenter.CellPresenters[columnViewModel.Index], "(Canvas.Left)", columnViewModel.X)
                             );
@@ -321,16 +338,19 @@ namespace FlexTable.ViewModel
             {
                 columnViewModel.IsDescendingSorted = true;
             }
-            UpdateRows();
+            Reflect(mainPageViewModel.ExplorationViewModel.ViewStatus);
         }
 
         public void OnAggregativeFunctionChanged(ColumnViewModel columnViewModel)
         {
-            // 위 아래 컬럼 헤더 업데이트
+            // 위 아래 컬럼 헤더 업데이트 (앞에 min, max 붙는 부분)
             // 는 바인딩으로 자동으로 됨
+            // 여기서 주의점은 나중에 그룹바이시 컬럼 하나에 대해서만 min, max를 하는 경우 min, max 자체를 생략해야 한다는 점이다
+
+            mainPageViewModel.ExplorationViewModel.SelectedPageViews.Last().PageViewModel.Reflect();
 
             mainPageViewModel.SheetViewModel.UpdateGroup(mainPageViewModel.ExplorationViewModel.ViewStatus);
-            UpdateRows();
+            Reflect(mainPageViewModel.ExplorationViewModel.ViewStatus);
         }
     }
 }

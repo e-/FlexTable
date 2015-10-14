@@ -16,10 +16,8 @@ namespace FlexTable.ViewModel
 {
     public class PageViewModel : NotifyViewModel
     {
-        // 이변수가 필요한가?
-        // 뷰에는 변수가 없는 것 같은데
-        // private ColumnViewModel columnViewModel;
-        // public ColumnViewModel ColumnViewModel { get { return columnViewModel; } set { columnViewModel = value; OnPropertyChanged("ColumnViewModel"); } }
+        const Int32 BarChartMaximumRecordNumber = 14;
+        const Int32 GroupedBarChartMaximumRecordNumberInAGroup = 12;
         
         MainPageViewModel mainPageViewModel;
         public MainPageViewModel MainPageViewModel => mainPageViewModel;
@@ -80,7 +78,73 @@ namespace FlexTable.ViewModel
             this.pivotTableViewModel = new PivotTableViewModel(mainPageViewModel, pageView.PivotTableView);
             //this.customHistogramViewModel = new CustomHistogramViewModel(mainPageViewModel, pageView.CustomHistogramView);
         }
-        
+
+        public void Hide()
+        {
+            IsSummaryVisible = false;
+        }
+
+        public void Tapped(PageView pageView)
+        {
+            mainPageViewModel.ExplorationViewModel.PageViewTapped(this, pageView);
+        }
+
+        public void GoUp()
+        {
+            pageView.GoUp();
+            IsSelected = false;
+            pageView.UpdateCarousel();
+        }
+
+        public void GoDown()
+        {
+            pageView.GoDown();
+            IsSelected = true;
+            pageView.UpdateCarousel();
+        }
+
+        public void StrokeAdded(InkStroke stroke)
+        {
+            /*
+            Int32 index = 0;
+            Rect rect = stroke.BoundingRect;
+            Point center = new Point(rect.X + rect.Width / 2, rect.Y + rect.Height / 2);
+
+            foreach (Model.Bin bin in column.Bins.Select(b => b as Object).ToList())
+            {
+                Double x0 = LegendTextXGetter(bin, index),
+                       y0 = LegendPatchYGetter(bin, index) + 10,
+                       y1 = y0 + LegendPatchHeightGetter(bin, index) + 10;
+
+                if (x0 <= center.X - mainPageViewModel.Width / 2 + ChartWidth && y0 <= center.Y && center.Y <= y1)
+                {
+                    bin.IsFilteredOut = !bin.IsFilteredOut;
+                    break;
+                }             
+                index++;
+            }
+
+            d3.Scale.Ordinal xScale = new d3.Scale.Ordinal()
+            {
+                RangeStart = 70,
+                RangeEnd = ChartWidth
+            };
+            foreach (Model.Bin bin in column.Bins.Where(b => !b.IsFilteredOut)) { xScale.Domain.Add(bin.Name); }
+            XScale = xScale;
+
+            Data = new d3.Selection.Data()
+            {
+                Real = column.Bins.Where(b => !b.IsFilteredOut).Select(b => b as Object).ToList()
+            };
+
+            LegendData = new d3.Selection.Data()
+            {
+                Real = column.Bins.Select(b => b as Object).ToList()
+            };
+
+            mainPageViewModel.UpdateFiltering();*/
+        }
+
         public void Reflect()
         {
             IsSummaryVisible = true;
@@ -112,68 +176,17 @@ namespace FlexTable.ViewModel
             }
             else if (categoricalCount == 0 && numericalCount == 1)
             {
-                DrawDescriptiveStatistics(numericalColumns.First());
-                DrawDistributionHistogram(numericalColumns.First());
+                DrawDescriptiveStatistics(numericalColumns.First(), IsSelected);
+                DrawDistributionHistogram(numericalColumns.First(), IsSelected);
             }
             else if (categoricalCount == 2 && numericalCount == 0)
             {
-                IsGroupedBarChartVisible = true;
-
-                Format(pageView.GroupedBarChartTitle, $"Frequency of <b>{categoricalColumns[1].Name}</b> by <b>{categoricalColumns[0].Name}</b>");
-                Int32 categoricalIndex1 = categoricalColumns[0].Index,
-                      categoricalIndex2 = categoricalColumns[1].Index;
-                GroupedBarChartRowSelecter = (c1, c2) => (r => r.Cells[categoricalIndex1].Content == c1 && r.Cells[categoricalIndex2].Content == c2);
-                pageView.GroupedBarChart.YStartsWithZero = true;
-                pageView.GroupedBarChart.HorizontalAxisLabel = categoricalColumns[0].Name;
-                pageView.GroupedBarChart.VerticalAxisLabel = $"Frequency of {categoricalColumns[1].Name}";
-                pageView.GroupedBarChart.Data = groupedRows
-                            .OrderBy(g => (g.Keys[categoricalColumns[0]] as Category).Order * 10000 + (g.Keys[categoricalColumns[1]] as Category).Order)
-                            .Select(g => new Tuple<Object, Object, Double>(
-                                g.Keys[categoricalColumns[0]],
-                                g.Keys[categoricalColumns[1]],
-                                g.Rows.Count
-                            ));
-
-                pageView.GroupedBarChart.Update();
+                DrawGroupedBarChart(categoricalColumns[0], categoricalColumns[1], groupedRows, IsSelected);
             }
             else if (categoricalCount == 1 && numericalCount == 1)
             {
-                // 바 차트로 보고 싶을 때 
-
-                IsBarChartVisible = true;
-
-                //Format(pageView.BarChartTitle, $"<b>{numericalColumns[0].HeaderName}</b> by <b>{categoricalColumns[0].Name}</b>");
-                Int32 categoricalIndex = categoricalColumns[0].Index;
-                BarChartRowSelecter = c => (r => r.Cells[categoricalIndex].Content == c);
-
-                pageView.BarChart.YStartsWithZero = false;
-                pageView.BarChart.HorizontalAxisLabel = categoricalColumns[0].Name;
-                pageView.BarChart.VerticalAxisLabel = numericalColumns[0].HeaderNameWithUnit;
-                pageView.BarChart.Data = groupedRows
-                    .OrderBy(g => (g.Keys[categoricalColumns[0]] as Category).Order)
-                    .Select(g => new Tuple<Object, Double>(
-                        g.Keys[categoricalColumns[0]],
-                        numericalColumns[0].AggregativeFunction.Aggregate(g.Rows.Select(r => (Double)r.Cells[numericalColumns[0].Index].Content))
-                        ));
-                pageView.BarChart.Update();
-
-                //라인 차트로 보고 싶을 때
-                IsLineChartVisible = true;
-
-                Format(pageView.LineChartTitle, $"<b>{numericalColumns[0].HeaderName}</b> by <b>{categoricalColumns[0].Name}</b>");
-
-                pageView.LineChart.YStartsWithZero = false;
-                pageView.LineChart.HorizontalAxisLabel = categoricalColumns[0].Name;
-                pageView.LineChart.VerticalAxisLabel = numericalColumns[0].HeaderNameWithUnit;
-                var rows = groupedRows
-                    .OrderBy(g => (g.Keys[categoricalColumns[0]] as Category).Order)
-                    .Select(grs => new Tuple<Object, Double>(
-                        grs.Keys[categoricalColumns[0]],
-                        numericalColumns[0].AggregativeFunction.Aggregate(grs.Rows.Select(r => (Double)r.Cells[numericalColumns[0].Index].Content))
-                        )).ToList();
-
-                pageView.LineChart.Data = new List<Series>() { new Series(numericalColumns[0].AggregatedName, rows) };
-                pageView.LineChart.Update();
+                DrawBarChart(categoricalColumns.First(), numericalColumns.First(), groupedRows, IsSelected);
+                DrawLineChart(categoricalColumns.First(), numericalColumns.First(), groupedRows, IsSelected);
             }
             else if (categoricalCount == 0 && numericalCount == 2)
             {
@@ -188,16 +201,7 @@ namespace FlexTable.ViewModel
                 IsCorrelationStatisticsVisible = true;
                 pageView.CorrelationStatisticsView.DataContext = result;
 
-                Format(pageView.ScatterplotTitle, $"<b>{numericalColumns[0].Name}</b> vs. <b>{numericalColumns[1].Name}</b>");
-
-                IsScatterplotVisible = true;
-                pageView.Scatterplot.LegendVisibility = Visibility.Collapsed;
-                pageView.Scatterplot.HorizontalAxisLabel = numericalColumns[0].Name;
-                pageView.Scatterplot.VerticalAxisLabel = numericalColumns[1].Name;
-                pageView.Scatterplot.Data = mainPageViewModel.SheetViewModel.Sheet.Rows
-                    .Select(r => new Tuple<Object, Double, Double>(0, (Double)r.Cells[numericalColumns[0].Index].Content, (Double)r.Cells[numericalColumns[1].Index].Content));
-                
-                pageView.Scatterplot.Update();
+                DrawScatterplot(numericalColumns[0], numericalColumns[1], IsSelected);
             }
             else if (categoricalCount == 3 && numericalCount == 0)
             {
@@ -226,82 +230,18 @@ namespace FlexTable.ViewModel
                     groupedRows
                     );
 
-                // 그룹 바 차트를 그린다
-                IsGroupedBarChartVisible = true;
-
-                Format(pageView.GroupedBarChartTitle, $"<b>{numericalColumns[0].HeaderName}</b> by <b>{categoricalColumns[0].Name}</b> and <b>{categoricalColumns[1].Name}</b>");
-                Int32 categoricalIndex1 = categoricalColumns[0].Index,
-                      categoricalIndex2 = categoricalColumns[1].Index;
-                GroupedBarChartRowSelecter = (c1, c2) => (r => r.Cells[categoricalIndex1].Content == c1 && r.Cells[categoricalIndex2].Content == c2);
-
-                pageView.GroupedBarChart.YStartsWithZero = false;
-                pageView.GroupedBarChart.HorizontalAxisLabel = categoricalColumns[0].Name;
-                pageView.GroupedBarChart.VerticalAxisLabel = numericalColumns[0].HeaderNameWithUnit;
-                pageView.GroupedBarChart.Data = groupedRows
-                            .OrderBy(g => (g.Keys[categoricalColumns[0]] as Category).Order * 10000 + (g.Keys[categoricalColumns[1]] as Category).Order)
-                            .Select(g => new Tuple<Object, Object, Double>(
-                                g.Keys[categoricalColumns[0]],
-                                String.Format("{0} {1}", categoricalColumns[1].Name, g.Keys[categoricalColumns[1]]),
-                                numericalColumns[0].AggregativeFunction.Aggregate(g.Rows.Select(row => (Double)row.Cells[numericalColumns[0].Index].Content))
-                            ));
-
-                pageView.GroupedBarChart.Update();
-
-                // 그룹 라인 차트를 그린다.
-                IsLineChartVisible = true;
-
-                Format(
-                    pageView.LineChartTitle,
-                    $"<b>{numericalColumns[0].AggregatedName}</b> by <b>{categoricalColumns[0].Name}</b> and <b>{categoricalColumns[1].Name}</b>"
-                    );
-
-                //LineChartRowSelecter = c => (r => r.Cells[datetimeIndex].Content == c);
-
-                pageView.LineChart.YStartsWithZero = false;
-                pageView.LineChart.HorizontalAxisLabel = categoricalColumns[0].Name;
-                pageView.LineChart.VerticalAxisLabel = String.Format(numericalColumns[0].AggregatedName);
-                var rows =
-                    groupedRows
-                    .GroupBy(grs => grs.Keys[categoricalColumns[0]]) // 먼저 묶고 
-                    .Select(group =>
-                        new Series(
-                            group.Key.ToString(),
-                            group
-                                .GroupBy(g => g.Keys[categoricalColumns[1]])
-                                .Select(g =>
-                                    new DataPoint(
-                                        g.Key,
-                                        numericalColumns[0].AggregativeFunction.Aggregate(
-                                            g
-                                            .SelectMany(grs => grs.Rows)
-                                            .Select(r => (Double)r.Cells[numericalColumns[0].Index].Content)
-                                        )
-                                    )
-                            ).ToList()
-                        )
-                    );
-
-                pageView.LineChart.Data = rows;
-                pageView.LineChart.Update();
-
-
+                DrawGroupedBarChart(categoricalColumns[0], categoricalColumns[1], numericalColumns[0], groupedRows, IsSelected);
+                DrawLineChart(categoricalColumns[0], categoricalColumns[1], numericalColumns[0], groupedRows, IsSelected);
             }
             else if (categoricalCount == 1 && numericalCount == 2)
             {
-                IsScatterplotVisible = true;
-                Format(pageView.ScatterplotTitle, $"<b>{numericalColumns[0].Name}</b> vs. <b>{numericalColumns[1].Name}</b> colored by <b>{categoricalColumns[0].Name}</b>");
+                // 스캐터플롯을 그린다.
+                DrawScatterplot(categoricalColumns.First(), numericalColumns[0], numericalColumns[1], IsSelected);
 
-                pageView.Scatterplot.LegendVisibility = Visibility.Visible;
-                pageView.Scatterplot.HorizontalAxisLabel = numericalColumns[0].Name + numericalColumns[0].UnitString;
-                pageView.Scatterplot.VerticalAxisLabel = numericalColumns[1].Name + numericalColumns[1].UnitString;
-                pageView.Scatterplot.Data = mainPageViewModel.SheetViewModel.Sheet.Rows
-                    .Select(r => new Tuple<Object, Double, Double>(
-                        r.Cells[categoricalColumns[0].Index].Content,
-                        (Double)r.Cells[numericalColumns[0].Index].Content, 
-                        (Double)r.Cells[numericalColumns[1].Index].Content));
-
-                pageView.Scatterplot.Update();
-
+                if(numericalColumns[0].Unit == numericalColumns[1].Unit) // 둘의 단위가 같으면 그룹 바 차트 가능
+                {
+                    DrawGroupedBarChartCNN(categoricalColumns[0], numericalColumns[0], numericalColumns[1], groupedRows, IsSelected);
+                }
                 // 테이블을 그린다
                 IsPivotTableVisible = true;
                 Format(pageView.PivotTableTitle, $"<b>{numericalColumns[0].HeaderName}</b> and <b>{numericalColumns[1].HeaderName}</b> by <b>{categoricalColumns[0].Name}</b>");
@@ -380,71 +320,7 @@ namespace FlexTable.ViewModel
             pageView.UpdateCarousel();
         }
 
-        public void Hide()
-        {
-            IsSummaryVisible = false;
-        }
-
-        public void Tapped(PageView pageView)
-        {
-            mainPageViewModel.ExplorationViewModel.PageViewTapped(this, pageView);
-        }
-
-        public void GoUp()
-        {
-            pageView.GoUp();
-            IsSelected = false;
-            pageView.UpdateCarousel();
-        }
-
-        public void GoDown()
-        {
-            pageView.GoDown();
-            IsSelected = true;
-            pageView.UpdateCarousel();
-        }
-
-        public void StrokeAdded(InkStroke stroke)
-        {
-            /*
-            Int32 index = 0;
-            Rect rect = stroke.BoundingRect;
-            Point center = new Point(rect.X + rect.Width / 2, rect.Y + rect.Height / 2);
-
-            foreach (Model.Bin bin in column.Bins.Select(b => b as Object).ToList())
-            {
-                Double x0 = LegendTextXGetter(bin, index),
-                       y0 = LegendPatchYGetter(bin, index) + 10,
-                       y1 = y0 + LegendPatchHeightGetter(bin, index) + 10;
-
-                if (x0 <= center.X - mainPageViewModel.Width / 2 + ChartWidth && y0 <= center.Y && center.Y <= y1)
-                {
-                    bin.IsFilteredOut = !bin.IsFilteredOut;
-                    break;
-                }             
-                index++;
-            }
-
-            d3.Scale.Ordinal xScale = new d3.Scale.Ordinal()
-            {
-                RangeStart = 70,
-                RangeEnd = ChartWidth
-            };
-            foreach (Model.Bin bin in column.Bins.Where(b => !b.IsFilteredOut)) { xScale.Domain.Add(bin.Name); }
-            XScale = xScale;
-
-            Data = new d3.Selection.Data()
-            {
-                Real = column.Bins.Where(b => !b.IsFilteredOut).Select(b => b as Object).ToList()
-            };
-
-            LegendData = new d3.Selection.Data()
-            {
-                Real = column.Bins.Select(b => b as Object).ToList()
-            };
-
-            mainPageViewModel.UpdateFiltering();*/
-        }
+        
 
         public void Format(TextBlock textBlock, String html)
         {
@@ -531,7 +407,12 @@ namespace FlexTable.ViewModel
             comboBox.SelectionChanged += selectionChanged;
         }
 
-
+        /// <summary>
+        /// FrequencyHistogram의 경우 변수가 하나밖에 없으므로 변수 선택지를 바꾸어도 중복체크나 valid 체크 할 필요가 없다. 
+        /// </summary>
+        /// <param name="categorical"></param>
+        /// <param name="groupedRows"></param>
+        /// <param name="isTitleEditable"></param>
         void DrawFrequencyHistogram(ColumnViewModel categorical, List<GroupedRows> groupedRows, Boolean isTitleEditable)
         {
             IsBarChartVisible = true;
@@ -555,19 +436,15 @@ namespace FlexTable.ViewModel
                             categorical.IsSelected = false;
                             selectedColumnViewModel.IsSelected = true;
 
-                            ViewStatus.SelectedColumnViewModels.Remove(categorical);
+                            ViewStatus.SelectedColumnViewModels.Clear();
                             ViewStatus.SelectedColumnViewModels.Add(selectedColumnViewModel);
 
-                            // 2. 차트 변경
-                            Reflect();
-
-                            // 3. 테이블 변경
+                            // 2. 테이블 변경
                             mainPageViewModel.SheetViewModel.UpdateGroup(ViewStatus);
-                            mainPageViewModel.TableViewModel.UpdateRows();
+                            mainPageViewModel.TableViewModel.Reflect(ViewStatus);
 
-                            // 4. 위 아래 컬럼 헤더 순서 변경
-                            mainPageViewModel.View.TableView.TopColumnHeader.Update();
-                            mainPageViewModel.View.TableView.BottomColumnHeader.Update();
+                            // 3. 차트 변경
+                            Reflect();
                         }) 
                 );
             }
@@ -582,40 +459,866 @@ namespace FlexTable.ViewModel
             pageView.BarChart.YStartsWithZero = true;
             pageView.BarChart.HorizontalAxisLabel = categorical.Name;
             pageView.BarChart.VerticalAxisLabel = String.Format("Frequency");
-            pageView.BarChart.Data = groupedRows.Select(grs => new Tuple<Object, Double>(grs.Keys[categorical], grs.Rows.Count))
-                .OrderBy(t => (t.Item1 as Category).Order);
+            pageView.BarChart.Data = groupedRows
+                .Select(grs => new Tuple<Object, Double>(grs.Keys[categorical], grs.Rows.Count))
+                .OrderBy(t => (t.Item1 as Category).Order)
+                .Take(BarChartMaximumRecordNumber);
             pageView.BarChart.Update();
         }
 
-        void DrawDescriptiveStatistics(ColumnViewModel numerical)
+        void DrawDescriptiveStatistics(ColumnViewModel numerical, Boolean isTitleEditable)
         {
             DescriptiveStatisticsResult result = DescriptiveStatistics.Analyze(
-                    mainPageViewModel.TableViewModel.RowViewModels.Select(r => (Double)r.Cells[numerical.Index].Content)
+                    mainPageViewModel.SheetViewModel.AllRowViewModels.Select(r => (Double)r.Cells[numerical.Index].Content)
                     );
 
-            Format(
-                pageView.DescriptiveStatisticsTitle,
-                $"Descriptive Statistics of <b>{numerical.Name}</b>"
-                );
+            pageView.DescriptiveStatisticsTitle.Children.Clear();
+            if (isTitleEditable/* && mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical).Count() > 1*/) // 선택지가 하나밖에 없으면 셀렉트 박스 보여줄 필요가 없음.
+            {
+                DrawEditableTitleN(pageView.DescriptiveStatisticsTitle, numerical, "Descriptive Statistics of\x00A0");
+            }
+            else
+            {
+                AddText(pageView.DescriptiveStatisticsTitle, $"Descriptive Statistics of <b>{numerical.Name}</b>");
+            }
+
             IsDescriptiveStatisticsVisible = true;
             pageView.DescriptiveStatisticsView.DataContext = result;            
         }
 
-        void DrawDistributionHistogram(ColumnViewModel numerical)
+        void DrawDistributionHistogram(ColumnViewModel numerical, Boolean isTitleEditable)
         {
             DescriptiveStatisticsResult result = DescriptiveStatistics.Analyze(
-                       mainPageViewModel.TableViewModel.RowViewModels.Select(r => (Double)r.Cells[numerical.Index].Content)
+                       mainPageViewModel.SheetViewModel.AllRowViewModels.Select(r => (Double)r.Cells[numerical.Index].Content)
                        );
 
-            Format(
-                    pageView.DistributionViewTitle,
-                    $"Distribution of <b>{numerical.Name}</b>"
-                    );
+            pageView.DistributionViewTitle.Children.Clear();
+
+            if (isTitleEditable/* && mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical).Count() > 1*/) // 선택지가 하나밖에 없으면 selectbox 보여줄 필요 없음
+            {
+                DrawEditableTitleN(pageView.DistributionViewTitle, numerical, "Distribution of\x00A0");
+            }
+            else
+            {
+                AddText(pageView.DistributionViewTitle, $"Distribution of <b>{numerical.Name}</b>");
+            }
+            
             IsDistributionVisible = true;
             pageView.DistributionView.Update(
                 result,
-                mainPageViewModel.TableViewModel.RowViewModels.Select(r => (Double)r.Cells[numerical.Index].Content)
+                mainPageViewModel.SheetViewModel.AllRowViewModels.Select(r => (Double)r.Cells[numerical.Index].Content)
                 ); // 히스토그램 업데이트
+        }
+
+        void DrawGroupedBarChart(ColumnViewModel categorical1, ColumnViewModel categorical2, List<GroupedRows> groupedRows, Boolean isTitleEditable)
+        {
+            IsGroupedBarChartVisible = true;
+
+            pageView.GroupedBarChartTitle.Children.Clear();
+            if(isTitleEditable)
+            {
+                AddText(pageView.GroupedBarChartTitle, "Frequency of\x00A0");
+                AddComboBox(
+                    pageView.GroupedBarChartTitle,
+                    categorical2.Name,
+                    mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).Select(cvm => cvm.Name),
+                        new SelectionChangedEventHandler((sender, args) => {
+                            ComboBox comboBox = sender as ComboBox;
+                            String selectedName = (comboBox.SelectedItem as ComboBoxItem).Content.ToString();
+                            ColumnViewModel selectedColumnViewModel = mainPageViewModel.SheetViewModel.ColumnViewModels.First(cvm => cvm.Name == selectedName);
+
+                            // selectedColumnViewModel로 이제 바꾸면 됨. 이 과정에 대해서는 explorationViewModel의 PageViewTapped를 참고하면 좋다.
+
+                            // 1. 컬럼의 상태 변경 
+
+                            if (selectedColumnViewModel == categorical1)
+                            {
+                                ViewStatus.SelectedColumnViewModels[0] = categorical2;
+                                ViewStatus.SelectedColumnViewModels[1] = categorical1;
+                            }
+                            else
+                            {
+                                categorical2.IsSelected = false;
+                                selectedColumnViewModel.IsSelected = true;
+                                ViewStatus.SelectedColumnViewModels[1] = selectedColumnViewModel;
+                            }
+
+                            // 2. 테이블 변경
+                            mainPageViewModel.SheetViewModel.UpdateGroup(ViewStatus);
+                            mainPageViewModel.TableViewModel.Reflect(ViewStatus);
+
+                            // 3. 차트 변경
+                            Reflect();
+                        })
+                );
+                AddText(pageView.GroupedBarChartTitle, "\x00A0by\x00A0");
+                AddComboBox(
+                    pageView.GroupedBarChartTitle,
+                    categorical1.Name,
+                    mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).Select(cvm => cvm.Name),
+                        new SelectionChangedEventHandler((sender, args) => {
+                            ComboBox comboBox = sender as ComboBox;
+                            String selectedName = (comboBox.SelectedItem as ComboBoxItem).Content.ToString();
+                            ColumnViewModel selectedColumnViewModel = mainPageViewModel.SheetViewModel.ColumnViewModels.First(cvm => cvm.Name == selectedName);
+
+                            // selectedColumnViewModel로 이제 바꾸면 됨. 이 과정에 대해서는 explorationViewModel의 PageViewTapped를 참고하면 좋다.
+
+                            // 1. 컬럼의 상태 변경 
+
+                            if (selectedColumnViewModel == categorical2)
+                            {
+                                ViewStatus.SelectedColumnViewModels[0] = categorical2;
+                                ViewStatus.SelectedColumnViewModels[1] = categorical1;
+                            }
+                            else
+                            {
+                                categorical1.IsSelected = false;
+                                selectedColumnViewModel.IsSelected = true;
+                                ViewStatus.SelectedColumnViewModels[1] = selectedColumnViewModel;
+                            }
+
+                            // 2. 테이블 변경
+                            mainPageViewModel.SheetViewModel.UpdateGroup(ViewStatus);
+                            mainPageViewModel.TableViewModel.Reflect(ViewStatus);
+
+                            // 3. 차트 변경
+                            Reflect();
+                        })
+                );
+            }
+            else
+            {
+                AddText(pageView.GroupedBarChartTitle, $"Frequency of <b>{categorical2.Name}</b> by <b>{categorical1.Name}</b>");
+            }
+
+            GroupedBarChartRowSelecter = (c1, c2) => (r => r.Cells[categorical1.Index].Content == c1 && r.Cells[categorical2.Index].Content == c2);
+            pageView.GroupedBarChart.YStartsWithZero = true;
+            pageView.GroupedBarChart.HorizontalAxisLabel = categorical1.Name;
+            pageView.GroupedBarChart.VerticalAxisLabel = $"Frequency of {categorical2.Name}";
+            pageView.GroupedBarChart.Data = groupedRows
+                        .OrderBy(g => (g.Keys[categorical1] as Category).Order * 10000 + (g.Keys[categorical2] as Category).Order)
+                        .Select(g => new Tuple<Object, Object, Double>(
+                            g.Keys[categorical1],
+                            g.Keys[categorical2],
+                            g.Rows.Count
+                        ));
+
+            pageView.GroupedBarChart.Update();           
+        }
+
+        void DrawEditableTitleN(StackPanel title, ColumnViewModel numerical, String prefix)
+        {
+            AddText(title, prefix);
+            AddComboBox(
+                title,
+                numerical.Name,
+                mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical).Select(cvm => cvm.Name),
+                    new SelectionChangedEventHandler((sender, args) => {
+                        ComboBox comboBox = sender as ComboBox;
+                        String selectedName = (comboBox.SelectedItem as ComboBoxItem).Content.ToString();
+                        ColumnViewModel selectedColumnViewModel = mainPageViewModel.SheetViewModel.ColumnViewModels.First(cvm => cvm.Name == selectedName);
+
+                        // selectedColumnViewModel로 이제 바꾸면 됨. 이 과정에 대해서는 explorationViewModel의 PageViewTapped를 참고하면 좋다.
+
+                        // 1. 컬럼의 상태 변경 
+                        numerical.IsSelected = false;
+                        selectedColumnViewModel.IsSelected = true;
+
+                        ViewStatus.SelectedColumnViewModels.Remove(numerical);
+                        ViewStatus.SelectedColumnViewModels.Add(selectedColumnViewModel);
+
+                        // 2. 테이블 변경
+                        mainPageViewModel.SheetViewModel.UpdateGroup(ViewStatus);
+                        mainPageViewModel.TableViewModel.Reflect(ViewStatus);
+
+                        // 3. 차트 변경
+                        Reflect();
+                    })
+            );
+        }
+
+        void DrawEditableTitleCCN(StackPanel title, ColumnViewModel categorical1, ColumnViewModel categorical2, ColumnViewModel numerical)
+        {
+            AddComboBox(
+                    title,
+                    numerical.HeaderName,
+                    mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical).Select(cvm => cvm.HeaderName),
+                        new SelectionChangedEventHandler((sender, args) => {
+                            ComboBox comboBox = sender as ComboBox;
+                            String selectedName = (comboBox.SelectedItem as ComboBoxItem).Content.ToString();
+                            ColumnViewModel selectedColumnViewModel = mainPageViewModel.SheetViewModel.ColumnViewModels.First(cvm => cvm.HeaderName == selectedName);
+
+                            // selectedColumnViewModel로 이제 바꾸면 됨. 이 과정에 대해서는 explorationViewModel의 PageViewTapped를 참고하면 좋다.
+
+                            // 1. 컬럼의 상태 변경 
+
+                            numerical.IsSelected = false;
+                            selectedColumnViewModel.IsSelected = true;
+
+                            Int32 index = ViewStatus.SelectedColumnViewModels.FindIndex(cvm => cvm == numerical);
+                            ViewStatus.SelectedColumnViewModels[index] = selectedColumnViewModel;
+
+                            // 2. 테이블 변경
+                            mainPageViewModel.SheetViewModel.UpdateGroup(ViewStatus);
+                            mainPageViewModel.TableViewModel.Reflect(ViewStatus);
+
+                            // 3. 차트 변경
+                            Reflect();
+                        })
+                );
+            AddText(title, "\x00A0by\x00A0");
+            AddComboBox(
+                title,
+                categorical1.Name,
+                mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).Select(cvm => cvm.Name),
+                    new SelectionChangedEventHandler((sender, args) => {
+                        ComboBox comboBox = sender as ComboBox;
+                        String selectedName = (comboBox.SelectedItem as ComboBoxItem).Content.ToString();
+                        ColumnViewModel selectedColumnViewModel = mainPageViewModel.SheetViewModel.ColumnViewModels.First(cvm => cvm.Name == selectedName);
+
+                            // selectedColumnViewModel로 이제 바꾸면 됨. 이 과정에 대해서는 explorationViewModel의 PageViewTapped를 참고하면 좋다.
+
+                            // 1. 컬럼의 상태 변경 
+
+                        if (selectedColumnViewModel == categorical2)
+                        {
+                            Int32 index1 = ViewStatus.SelectedColumnViewModels.FindIndex(cvm => cvm == categorical1);
+                            Int32 index2 = ViewStatus.SelectedColumnViewModels.FindIndex(cvm => cvm == categorical2);
+                            ViewStatus.SelectedColumnViewModels[index1] = categorical2;
+                            ViewStatus.SelectedColumnViewModels[index2] = categorical1;
+                        }
+                        else
+                        {
+                            categorical1.IsSelected = false;
+                            selectedColumnViewModel.IsSelected = true;
+
+                            Int32 index = ViewStatus.SelectedColumnViewModels.FindIndex(cvm => cvm == categorical1);
+                            ViewStatus.SelectedColumnViewModels[index] = selectedColumnViewModel;
+                        }
+
+                            // 2. 테이블 변경
+                            mainPageViewModel.SheetViewModel.UpdateGroup(ViewStatus);
+                        mainPageViewModel.TableViewModel.Reflect(ViewStatus);
+
+                            // 3. 차트 변경
+                            Reflect();
+                    })
+            );
+            AddText(title, "\x00A0and\x00A0");
+            AddComboBox(
+               title,
+               categorical2.Name,
+               mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).Select(cvm => cvm.Name),
+                   new SelectionChangedEventHandler((sender, args) => {
+                       ComboBox comboBox = sender as ComboBox;
+                       String selectedName = (comboBox.SelectedItem as ComboBoxItem).Content.ToString();
+                       ColumnViewModel selectedColumnViewModel = mainPageViewModel.SheetViewModel.ColumnViewModels.First(cvm => cvm.Name == selectedName);
+
+                           // selectedColumnViewModel로 이제 바꾸면 됨. 이 과정에 대해서는 explorationViewModel의 PageViewTapped를 참고하면 좋다.
+
+                           // 1. 컬럼의 상태 변경 
+
+                           if (selectedColumnViewModel == categorical1)
+                       {
+                           Int32 index1 = ViewStatus.SelectedColumnViewModels.FindIndex(cvm => cvm == categorical1);
+                           Int32 index2 = ViewStatus.SelectedColumnViewModels.FindIndex(cvm => cvm == categorical2);
+                           ViewStatus.SelectedColumnViewModels[index1] = categorical2;
+                           ViewStatus.SelectedColumnViewModels[index2] = categorical1;
+                       }
+                       else
+                       {
+                           categorical2.IsSelected = false;
+                           selectedColumnViewModel.IsSelected = true;
+
+                           Int32 index = ViewStatus.SelectedColumnViewModels.FindIndex(cvm => cvm == categorical2);
+                           ViewStatus.SelectedColumnViewModels[index] = selectedColumnViewModel;
+                       }
+
+                           // 2. 테이블 변경
+                           mainPageViewModel.SheetViewModel.UpdateGroup(ViewStatus);
+                       mainPageViewModel.TableViewModel.Reflect(ViewStatus);
+
+                           // 3. 차트 변경
+                           Reflect();
+                   })
+           );
+        }
+
+        void DrawEditableTitleCN(StackPanel title, ColumnViewModel categorical, ColumnViewModel numerical)
+        {
+            AddComboBox(
+                   title,
+                   numerical.HeaderName,
+                   mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical).Select(cvm => cvm.HeaderName),
+                       new SelectionChangedEventHandler((sender, args) => {
+                           ComboBox comboBox = sender as ComboBox;
+                           String selectedName = (comboBox.SelectedItem as ComboBoxItem).Content.ToString();
+                           ColumnViewModel selectedColumnViewModel = mainPageViewModel.SheetViewModel.ColumnViewModels.First(cvm => cvm.HeaderName == selectedName);
+
+                            // selectedColumnViewModel로 이제 바꾸면 됨. 이 과정에 대해서는 explorationViewModel의 PageViewTapped를 참고하면 좋다.
+
+                            // 1. 컬럼의 상태 변경 
+
+                           numerical.IsSelected = false;
+                           selectedColumnViewModel.IsSelected = true;
+
+                           Int32 index = ViewStatus.SelectedColumnViewModels.FindIndex(cvm => cvm == numerical);
+                           ViewStatus.SelectedColumnViewModels[index] = selectedColumnViewModel;
+
+                            // 2. 테이블 변경
+                            mainPageViewModel.SheetViewModel.UpdateGroup(ViewStatus);
+                           mainPageViewModel.TableViewModel.Reflect(ViewStatus);
+
+                            // 3. 차트 변경
+                            Reflect();
+                       })
+               );
+            AddText(title, "\x00A0by\x00A0");
+            AddComboBox(
+                title,
+                categorical.Name,
+                mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).Select(cvm => cvm.Name),
+                    new SelectionChangedEventHandler((sender, args) => {
+                        ComboBox comboBox = sender as ComboBox;
+                        String selectedName = (comboBox.SelectedItem as ComboBoxItem).Content.ToString();
+                        ColumnViewModel selectedColumnViewModel = mainPageViewModel.SheetViewModel.ColumnViewModels.First(cvm => cvm.Name == selectedName);
+
+                        // selectedColumnViewModel로 이제 바꾸면 됨. 이 과정에 대해서는 explorationViewModel의 PageViewTapped를 참고하면 좋다.
+
+                        // 1. 컬럼의 상태 변경 
+                        
+                        categorical.IsSelected = false;
+                        selectedColumnViewModel.IsSelected = true;
+
+                        Int32 index = ViewStatus.SelectedColumnViewModels.FindIndex(cvm => cvm == categorical);
+                        ViewStatus.SelectedColumnViewModels[index] = selectedColumnViewModel;
+
+                        // 2. 테이블 변경
+                        mainPageViewModel.SheetViewModel.UpdateGroup(ViewStatus);
+                        mainPageViewModel.TableViewModel.Reflect(ViewStatus);
+
+                        // 3. 차트 변경
+                        Reflect();
+                    })
+            );
+        }
+
+        void DrawGroupedBarChart(ColumnViewModel categorical1, ColumnViewModel categorical2, ColumnViewModel numerical, List<GroupedRows> groupedRows, Boolean isTitleEditable)
+        {
+            IsGroupedBarChartVisible = true;
+
+            pageView.GroupedBarChartTitle.Children.Clear();
+            if (isTitleEditable)
+            {
+                DrawEditableTitleCCN(pageView.GroupedBarChartTitle, categorical1, categorical2, numerical);
+            }
+            else
+            {
+                AddText(pageView.GroupedBarChartTitle, $"<b>{numerical.HeaderName}</b> by <b>{categorical1.Name}</b> and <b>{categorical2.Name}</b>");
+            }
+
+            GroupedBarChartRowSelecter = (c1, c2) => (r => r.Cells[categorical1.Index].Content == c1 && r.Cells[categorical2.Index].Content == c2);
+
+            pageView.GroupedBarChart.YStartsWithZero = false;
+            pageView.GroupedBarChart.HorizontalAxisLabel = categorical1.Name;
+            pageView.GroupedBarChart.VerticalAxisLabel = numerical.HeaderNameWithUnit;
+            pageView.GroupedBarChart.Data = groupedRows
+                        .OrderBy(g => (g.Keys[categorical1] as Category).Order * 10000 + (g.Keys[categorical2] as Category).Order)
+                        .Select(g => new Tuple<Object, Object, Double>(
+                            g.Keys[categorical1],
+                            String.Format("{0} {1}", categorical2.Name, g.Keys[categorical2]),
+                            numerical.AggregativeFunction.Aggregate(g.Rows.Select(row => (Double)row.Cells[numerical.Index].Content))
+                        ));
+
+            pageView.GroupedBarChart.Update();
+        }
+
+        void DrawLineChart(ColumnViewModel categorical1, ColumnViewModel categorical2, ColumnViewModel numerical, List<GroupedRows> groupedRows, Boolean isTitleEditable)
+        {
+            Debug.Assert(categorical1.Type == ColumnType.Categorical);
+            Debug.Assert(categorical2.Type == ColumnType.Categorical);
+            Debug.Assert(numerical.Type == ColumnType.Numerical);
+            // 그룹 라인 차트를 그린다.
+            IsLineChartVisible = true;
+
+            pageView.LineChartTitle.Children.Clear();
+            if (isTitleEditable)
+            {
+                DrawEditableTitleCCN(pageView.LineChartTitle, categorical1, categorical2, numerical);
+            }
+            else
+            {
+                AddText(pageView.LineChartTitle, $"<b>{numerical.HeaderName}</b> by <b>{categorical1.Name}</b> and <b>{categorical2.Name}</b>");
+            }
+
+            //LineChartRowSelecter = c => (r => r.Cells[datetimeIndex].Content == c);
+
+            pageView.LineChart.YStartsWithZero = false;
+            pageView.LineChart.HorizontalAxisLabel = categorical1.Name;
+            pageView.LineChart.VerticalAxisLabel = numerical.HeaderNameWithUnit;
+            var rows =
+                groupedRows
+                .GroupBy(grs => grs.Keys[categorical1]) // 먼저 묶고 
+                .Select(group =>
+                    new Series(
+                        group.Key.ToString(),
+                        group
+                            .GroupBy(g => g.Keys[categorical2])
+                            .Select(g =>
+                                new DataPoint(
+                                    g.Key,
+                                    numerical.AggregativeFunction.Aggregate(
+                                        g
+                                        .SelectMany(grs => grs.Rows)
+                                        .Select(r => (Double)r.Cells[numerical.Index].Content)
+                                    )
+                                )
+                        ).ToList()
+                    )
+                );
+
+            pageView.LineChart.Data = rows;
+            pageView.LineChart.Update();            
+        }
+
+        void DrawBarChart(ColumnViewModel categorical, ColumnViewModel numerical, List<GroupedRows> groupedRows, Boolean isTitleEditable)
+        {
+            IsBarChartVisible = true;
+
+            pageView.BarChartTitle.Children.Clear();
+            if(isTitleEditable)
+            {
+                DrawEditableTitleCN(pageView.BarChartTitle, categorical, numerical);
+            }
+            else
+            {
+                AddText(pageView.BarChartTitle, $"<b>{numerical.HeaderName}</b> by <b>{categorical.Name}</b>");
+            }
+
+            BarChartRowSelecter = c => (r => r.Cells[categorical.Index].Content == c);
+
+            pageView.BarChart.YStartsWithZero = false;
+            pageView.BarChart.HorizontalAxisLabel = categorical.Name;
+            pageView.BarChart.VerticalAxisLabel = numerical.HeaderNameWithUnit;
+            pageView.BarChart.Data = groupedRows
+                .OrderBy(g => (g.Keys[categorical] as Category).Order)
+                .Select(g => new Tuple<Object, Double>(
+                    g.Keys[categorical],
+                    numerical.AggregativeFunction.Aggregate(g.Rows.Select(r => (Double)r.Cells[numerical.Index].Content))
+                    ));
+            pageView.BarChart.Update();
+        }
+
+        void DrawLineChart(ColumnViewModel categorical, ColumnViewModel numerical, List<GroupedRows> groupedRows, Boolean isTitleEditable)
+        {
+            //라인 차트로 보고 싶을 때
+            IsLineChartVisible = true;
+
+            pageView.LineChartTitle.Children.Clear();
+            if (isTitleEditable)
+            {
+                DrawEditableTitleCN(pageView.LineChartTitle, categorical, numerical);
+            }
+            else
+            {
+                AddText(pageView.LineChartTitle, $"<b>{numerical.HeaderName}</b> by <b>{categorical.Name}</b>");
+            }
+
+            pageView.LineChart.YStartsWithZero = false;
+            pageView.LineChart.HorizontalAxisLabel = categorical.Name;
+            pageView.LineChart.VerticalAxisLabel = numerical.HeaderNameWithUnit;
+            var rows = groupedRows
+                .OrderBy(g => (g.Keys[categorical] as Category).Order)
+                .Select(grs => new Tuple<Object, Double>(
+                    grs.Keys[categorical],
+                    numerical.AggregativeFunction.Aggregate(grs.Rows.Select(r => (Double)r.Cells[numerical.Index].Content))
+                    )).ToList();
+
+            pageView.LineChart.Data = new List<Series>() { new Series(numerical.AggregatedName, rows) };
+            pageView.LineChart.Update();
+        }
+
+        void DrawEditableTitleCNvsN(StackPanel title, ColumnViewModel categorical, ColumnViewModel numerical1, ColumnViewModel numerical2)
+        {
+            AddComboBox(
+                title,
+                numerical1.Name,
+                mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical).Select(cvm => cvm.Name),
+                    new SelectionChangedEventHandler((sender, args) => {
+                        ComboBox comboBox = sender as ComboBox;
+                        String selectedName = (comboBox.SelectedItem as ComboBoxItem).Content.ToString();
+                        ColumnViewModel selectedColumnViewModel = mainPageViewModel.SheetViewModel.ColumnViewModels.First(cvm => cvm.Name == selectedName);
+
+                        // selectedColumnViewModel로 이제 바꾸면 됨. 이 과정에 대해서는 explorationViewModel의 PageViewTapped를 참고하면 좋다.
+
+                        // 1. 컬럼의 상태 변경 
+                        if (selectedColumnViewModel == numerical2)
+                        {
+                            Int32 index1 = ViewStatus.SelectedColumnViewModels.FindIndex(cvm => cvm == numerical1);
+                            Int32 index2 = ViewStatus.SelectedColumnViewModels.FindIndex(cvm => cvm == numerical2);
+                            ViewStatus.SelectedColumnViewModels[index1] = numerical2;
+                            ViewStatus.SelectedColumnViewModels[index2] = numerical1;
+                        }
+                        else
+                        {
+                            numerical1.IsSelected = false;
+                            selectedColumnViewModel.IsSelected = true;
+
+                            Int32 index = ViewStatus.SelectedColumnViewModels.FindIndex(cvm => cvm == numerical1);
+                            ViewStatus.SelectedColumnViewModels[index] = selectedColumnViewModel;
+                        }
+
+                        // 2. 테이블 변경
+                        mainPageViewModel.SheetViewModel.UpdateGroup(ViewStatus);
+                        mainPageViewModel.TableViewModel.Reflect(ViewStatus);
+
+                        // 3. 차트 변경
+                        Reflect();
+                    })
+            );
+
+            AddText(title, "\x00A0vs.\x00A0");
+
+            AddComboBox(
+                title,
+                numerical2.Name,
+                mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical).Select(cvm => cvm.Name),
+                    new SelectionChangedEventHandler((sender, args) => {
+                        ComboBox comboBox = sender as ComboBox;
+                        String selectedName = (comboBox.SelectedItem as ComboBoxItem).Content.ToString();
+                        ColumnViewModel selectedColumnViewModel = mainPageViewModel.SheetViewModel.ColumnViewModels.First(cvm => cvm.Name == selectedName);
+
+                        // selectedColumnViewModel로 이제 바꾸면 됨. 이 과정에 대해서는 explorationViewModel의 PageViewTapped를 참고하면 좋다.
+
+                        // 1. 컬럼의 상태 변경 
+                        if (selectedColumnViewModel == numerical1)
+                        {
+                            Int32 index1 = ViewStatus.SelectedColumnViewModels.FindIndex(cvm => cvm == numerical1);
+                            Int32 index2 = ViewStatus.SelectedColumnViewModels.FindIndex(cvm => cvm == numerical2);
+                            ViewStatus.SelectedColumnViewModels[index1] = numerical2;
+                            ViewStatus.SelectedColumnViewModels[index2] = numerical1;
+                        }
+                        else
+                        {
+                            numerical2.IsSelected = false;
+                            selectedColumnViewModel.IsSelected = true;
+
+                            Int32 index = ViewStatus.SelectedColumnViewModels.FindIndex(cvm => cvm == numerical2);
+                            ViewStatus.SelectedColumnViewModels[index] = selectedColumnViewModel;
+                        }
+
+                        // 2. 테이블 변경
+                        mainPageViewModel.SheetViewModel.UpdateGroup(ViewStatus);
+                        mainPageViewModel.TableViewModel.Reflect(ViewStatus);
+
+                        // 3. 차트 변경
+                        Reflect();
+                    })
+            );
+
+            AddText(title, "\x00A0colored by\x00A0");
+
+            AddComboBox(
+               title,
+               categorical.Name,
+               mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).Select(cvm => cvm.Name),
+                   new SelectionChangedEventHandler((sender, args) => {
+                       ComboBox comboBox = sender as ComboBox;
+                       String selectedName = (comboBox.SelectedItem as ComboBoxItem).Content.ToString();
+                       ColumnViewModel selectedColumnViewModel = mainPageViewModel.SheetViewModel.ColumnViewModels.First(cvm => cvm.Name == selectedName);
+
+                       // selectedColumnViewModel로 이제 바꾸면 됨. 이 과정에 대해서는 explorationViewModel의 PageViewTapped를 참고하면 좋다.
+
+                       // 1. 컬럼의 상태 변경 
+                       categorical.IsSelected = false;
+                       selectedColumnViewModel.IsSelected = true;
+
+                       Int32 index = ViewStatus.SelectedColumnViewModels.FindIndex(cvm => cvm == categorical);
+                       ViewStatus.SelectedColumnViewModels[index] = selectedColumnViewModel;
+
+                       // 2. 테이블 변경
+                       mainPageViewModel.SheetViewModel.UpdateGroup(ViewStatus);
+                       mainPageViewModel.TableViewModel.Reflect(ViewStatus);
+
+                       // 3. 차트 변경
+                       Reflect();
+                   })
+           );
+        }
+
+        void DrawEditableTitleNvsN(StackPanel title, ColumnViewModel numerical1, ColumnViewModel numerical2)
+        {
+            AddComboBox(
+                title,
+                numerical1.Name,
+                mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical).Select(cvm => cvm.Name),
+                    new SelectionChangedEventHandler((sender, args) => {
+                        ComboBox comboBox = sender as ComboBox;
+                        String selectedName = (comboBox.SelectedItem as ComboBoxItem).Content.ToString();
+                        ColumnViewModel selectedColumnViewModel = mainPageViewModel.SheetViewModel.ColumnViewModels.First(cvm => cvm.Name == selectedName);
+
+                        // selectedColumnViewModel로 이제 바꾸면 됨. 이 과정에 대해서는 explorationViewModel의 PageViewTapped를 참고하면 좋다.
+
+                        // 1. 컬럼의 상태 변경 
+                        if (selectedColumnViewModel == numerical2)
+                        {
+                            Int32 index1 = ViewStatus.SelectedColumnViewModels.FindIndex(cvm => cvm == numerical1);
+                            Int32 index2 = ViewStatus.SelectedColumnViewModels.FindIndex(cvm => cvm == numerical2);
+                            ViewStatus.SelectedColumnViewModels[index1] = numerical2;
+                            ViewStatus.SelectedColumnViewModels[index2] = numerical1;
+                        }
+                        else
+                        {
+                            numerical1.IsSelected = false;
+                            selectedColumnViewModel.IsSelected = true;
+
+                            Int32 index = ViewStatus.SelectedColumnViewModels.FindIndex(cvm => cvm == numerical1);
+                            ViewStatus.SelectedColumnViewModels[index] = selectedColumnViewModel;
+                        }
+
+                        // 2. 테이블 변경
+                        mainPageViewModel.SheetViewModel.UpdateGroup(ViewStatus);
+                        mainPageViewModel.TableViewModel.Reflect(ViewStatus);
+
+                        // 3. 차트 변경
+                        Reflect();
+                    })
+            );
+
+            AddText(title, "\x00A0vs.\x00A0");
+
+            AddComboBox(
+                title,
+                numerical2.Name,
+                mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical).Select(cvm => cvm.Name),
+                    new SelectionChangedEventHandler((sender, args) =>
+                    {
+                        ComboBox comboBox = sender as ComboBox;
+                        String selectedName = (comboBox.SelectedItem as ComboBoxItem).Content.ToString();
+                        ColumnViewModel selectedColumnViewModel = mainPageViewModel.SheetViewModel.ColumnViewModels.First(cvm => cvm.Name == selectedName);
+
+                        // selectedColumnViewModel로 이제 바꾸면 됨. 이 과정에 대해서는 explorationViewModel의 PageViewTapped를 참고하면 좋다.
+
+                        // 1. 컬럼의 상태 변경 
+                        if (selectedColumnViewModel == numerical1)
+                        {
+                            Int32 index1 = ViewStatus.SelectedColumnViewModels.FindIndex(cvm => cvm == numerical1);
+                            Int32 index2 = ViewStatus.SelectedColumnViewModels.FindIndex(cvm => cvm == numerical2);
+                            ViewStatus.SelectedColumnViewModels[index1] = numerical2;
+                            ViewStatus.SelectedColumnViewModels[index2] = numerical1;
+                        }
+                        else
+                        {
+                            numerical2.IsSelected = false;
+                            selectedColumnViewModel.IsSelected = true;
+
+                            Int32 index = ViewStatus.SelectedColumnViewModels.FindIndex(cvm => cvm == numerical2);
+                            ViewStatus.SelectedColumnViewModels[index] = selectedColumnViewModel;
+                        }
+
+                        // 2. 테이블 변경
+                        mainPageViewModel.SheetViewModel.UpdateGroup(ViewStatus);
+                        mainPageViewModel.TableViewModel.Reflect(ViewStatus);
+
+                        // 3. 차트 변경
+                        Reflect();
+                    })
+            );
+        }
+
+        void DrawScatterplot(ColumnViewModel categorical, ColumnViewModel numerical1, ColumnViewModel numerical2, Boolean isTitleEditable)
+        {
+            IsScatterplotVisible = true;
+
+            pageView.ScatterplotTitle.Children.Clear();
+            if(isTitleEditable)
+            {
+                DrawEditableTitleCNvsN(pageView.ScatterplotTitle, categorical, numerical1, numerical2);
+            }
+            else
+            {
+                AddText(pageView.ScatterplotTitle, $"<b>{numerical1.Name}</b> vs. <b>{numerical2.Name}</b> colored by <b>{categorical.Name}</b>");
+            }
+
+            pageView.Scatterplot.LegendVisibility = Visibility.Visible;
+            pageView.Scatterplot.HorizontalAxisLabel = numerical1.Name + numerical1.UnitString;
+            pageView.Scatterplot.VerticalAxisLabel = numerical2.Name + numerical2.UnitString;
+            pageView.Scatterplot.Data = mainPageViewModel.SheetViewModel.Sheet.Rows
+                .Select(r => new Tuple<Object, Double, Double>(
+                    r.Cells[categorical.Index].Content,
+                    (Double)r.Cells[numerical1.Index].Content,
+                    (Double)r.Cells[numerical2.Index].Content));
+
+            pageView.Scatterplot.Update();
+        }
+
+        void DrawScatterplot(ColumnViewModel numerical1, ColumnViewModel numerical2, Boolean isTitleEditable)
+        {
+            IsScatterplotVisible = true;
+
+            pageView.ScatterplotTitle.Children.Clear();
+            if (isTitleEditable)
+            {
+                DrawEditableTitleNvsN(pageView.ScatterplotTitle, numerical1, numerical2);
+            }
+            else
+            {
+                AddText(pageView.ScatterplotTitle, $"<b>{numerical1.Name}</b> vs. <b>{numerical2.Name}</b>");
+            }
+
+            pageView.Scatterplot.LegendVisibility = Visibility.Collapsed;
+            pageView.Scatterplot.HorizontalAxisLabel = numerical1.Name;
+            pageView.Scatterplot.VerticalAxisLabel = numerical2.Name;
+            pageView.Scatterplot.Data = mainPageViewModel.SheetViewModel.Sheet.Rows
+                .Select(r => new Tuple<Object, Double, Double>(0, (Double)r.Cells[numerical1.Index].Content, (Double)r.Cells[numerical2.Index].Content));
+
+            pageView.Scatterplot.Update();
+        }
+
+        void DrawEditableTitleCNN(StackPanel title, ColumnViewModel categorical, ColumnViewModel numerical1, ColumnViewModel numerical2)
+        {
+            AddComboBox(
+                title,
+                numerical1.HeaderName,
+                mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical && cvm.Unit == numerical1.Unit).Select(cvm => cvm.HeaderName),
+                    new SelectionChangedEventHandler((sender, args) => {
+                        ComboBox comboBox = sender as ComboBox;
+                        String selectedName = (comboBox.SelectedItem as ComboBoxItem).Content.ToString();
+                        ColumnViewModel selectedColumnViewModel = mainPageViewModel.SheetViewModel.ColumnViewModels.First(cvm => cvm.HeaderName == selectedName);
+
+                        // selectedColumnViewModel로 이제 바꾸면 됨. 이 과정에 대해서는 explorationViewModel의 PageViewTapped를 참고하면 좋다.
+
+                        // 1. 컬럼의 상태 변경 
+                        if (selectedColumnViewModel == numerical2)
+                        {
+                            Int32 index1 = ViewStatus.SelectedColumnViewModels.FindIndex(cvm => cvm == numerical1);
+                            Int32 index2 = ViewStatus.SelectedColumnViewModels.FindIndex(cvm => cvm == numerical2);
+                            ViewStatus.SelectedColumnViewModels[index1] = numerical2;
+                            ViewStatus.SelectedColumnViewModels[index2] = numerical1;
+                        }
+                        else
+                        {
+                            numerical1.IsSelected = false;
+                            selectedColumnViewModel.IsSelected = true;
+
+                            Int32 index = ViewStatus.SelectedColumnViewModels.FindIndex(cvm => cvm == numerical1);
+                            ViewStatus.SelectedColumnViewModels[index] = selectedColumnViewModel;
+                        }
+
+                        // 2. 테이블 변경
+                        mainPageViewModel.SheetViewModel.UpdateGroup(ViewStatus);
+                        mainPageViewModel.TableViewModel.Reflect(ViewStatus);
+
+                        // 3. 차트 변경
+                        Reflect();
+                    })
+            );
+
+            AddText(title, "\x00A0and\x00A0");
+
+            AddComboBox(
+                title,
+                numerical2.HeaderName,
+                mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical && cvm.Unit == numerical2.Unit).Select(cvm => cvm.HeaderName),
+                    new SelectionChangedEventHandler((sender, args) => {
+                        ComboBox comboBox = sender as ComboBox;
+                        String selectedName = (comboBox.SelectedItem as ComboBoxItem).Content.ToString();
+                        ColumnViewModel selectedColumnViewModel = mainPageViewModel.SheetViewModel.ColumnViewModels.First(cvm => cvm.HeaderName == selectedName);
+
+                        // selectedColumnViewModel로 이제 바꾸면 됨. 이 과정에 대해서는 explorationViewModel의 PageViewTapped를 참고하면 좋다.
+
+                        // 1. 컬럼의 상태 변경 
+                        if (selectedColumnViewModel == numerical1)
+                        {
+                            Int32 index1 = ViewStatus.SelectedColumnViewModels.FindIndex(cvm => cvm == numerical1);
+                            Int32 index2 = ViewStatus.SelectedColumnViewModels.FindIndex(cvm => cvm == numerical2);
+                            ViewStatus.SelectedColumnViewModels[index1] = numerical2;
+                            ViewStatus.SelectedColumnViewModels[index2] = numerical1;
+                        }
+                        else
+                        {
+                            numerical2.IsSelected = false;
+                            selectedColumnViewModel.IsSelected = true;
+
+                            Int32 index = ViewStatus.SelectedColumnViewModels.FindIndex(cvm => cvm == numerical2);
+                            ViewStatus.SelectedColumnViewModels[index] = selectedColumnViewModel;
+                        }
+
+                        // 2. 테이블 변경
+                        mainPageViewModel.SheetViewModel.UpdateGroup(ViewStatus);
+                        mainPageViewModel.TableViewModel.Reflect(ViewStatus);
+
+                        // 3. 차트 변경
+                        Reflect();
+                    })
+            );
+
+            AddText(title, "\x00A0by\x00A0");
+
+            AddComboBox(
+               title,
+               categorical.Name,
+               mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).Select(cvm => cvm.Name),
+                   new SelectionChangedEventHandler((sender, args) => {
+                       ComboBox comboBox = sender as ComboBox;
+                       String selectedName = (comboBox.SelectedItem as ComboBoxItem).Content.ToString();
+                       ColumnViewModel selectedColumnViewModel = mainPageViewModel.SheetViewModel.ColumnViewModels.First(cvm => cvm.Name == selectedName);
+
+                       // selectedColumnViewModel로 이제 바꾸면 됨. 이 과정에 대해서는 explorationViewModel의 PageViewTapped를 참고하면 좋다.
+
+                       // 1. 컬럼의 상태 변경 
+                       categorical.IsSelected = false;
+                       selectedColumnViewModel.IsSelected = true;
+
+                       Int32 index = ViewStatus.SelectedColumnViewModels.FindIndex(cvm => cvm == categorical);
+                       ViewStatus.SelectedColumnViewModels[index] = selectedColumnViewModel;
+
+                       // 2. 테이블 변경
+                       mainPageViewModel.SheetViewModel.UpdateGroup(ViewStatus);
+                       mainPageViewModel.TableViewModel.Reflect(ViewStatus);
+
+                       // 3. 차트 변경
+                       Reflect();
+                   })
+           );
+        }
+
+        void DrawGroupedBarChartCNN(ColumnViewModel categorical, ColumnViewModel numerical1, ColumnViewModel numerical2, List<GroupedRows> groupedRows, Boolean isTitleEditable)
+        {
+            IsGroupedBarChartVisible = true;
+
+            pageView.GroupedBarChartTitle.Children.Clear();
+            if (isTitleEditable)
+            {
+                DrawEditableTitleCNN(pageView.GroupedBarChartTitle, categorical, numerical1, numerical2);
+            }
+            else
+            {
+                AddText(pageView.GroupedBarChartTitle, $"<b>{numerical1.HeaderName}</b> and <b>{numerical2.HeaderName}</b> by <b>{categorical.Name}</b>");
+            }
+
+            GroupedBarChartRowSelecter = (c1, c2) => (r => r.Cells[categorical.Index].Content == c1);
+
+            pageView.GroupedBarChart.YStartsWithZero = true;
+            pageView.GroupedBarChart.HorizontalAxisLabel = categorical.Name;
+            pageView.GroupedBarChart.VerticalAxisLabel = $"{numerical1.Name} and {numerical2.Name} {numerical1.UnitString}";
+            
+            pageView.GroupedBarChart.Data = groupedRows
+                        .OrderBy(g => (g.Keys[categorical] as Category).Order)
+                        .SelectMany(g => new List<Tuple<Object, Object, Double>>() {
+                            new Tuple<Object, Object, Double>(
+                                g.Keys[categorical],
+                                numerical1.Name,
+                                numerical1.AggregativeFunction.Aggregate(g.Rows.Select(r => (Double)r.Cells[numerical1.Index].Content))
+                            ),
+                            new Tuple<Object, Object, Double>(
+                                g.Keys[categorical],
+                                numerical2.Name,
+                                numerical2.AggregativeFunction.Aggregate(g.Rows.Select(r => (Double)r.Cells[numerical2.Index].Content))
+                            )
+                        });
+
+            pageView.GroupedBarChart.Update();
         }
     }
 }

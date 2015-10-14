@@ -174,9 +174,9 @@ namespace FlexTable.View
                     IndexHelperWrapperElement.Children.Add(path);
                 }
 
-                //path.Stroke = new SolidColorBrush(Color.FromArgb(255, 150, 150, 150));
+                path.Stroke = new SolidColorBrush(Color.FromArgb(255, 150, 150, 150));
                 path.StrokeThickness = 2;
-                path.Fill = new SolidColorBrush(Colors.Transparent);
+                path.Fill = new SolidColorBrush(Color.FromArgb(255, 230, 230, 230));
               
 /*                textBlock.Text = cvm.Column.Name;
                 textBlock.Measure(new Size(Double.MaxValue, Double.MaxValue));
@@ -211,8 +211,12 @@ namespace FlexTable.View
             if (e.GetCurrentPoint(this).PointerDevice.PointerDeviceType != PointerDeviceType.Touch) return;
             //Debug.WriteLine("entered");
             IndexHelperWrapperElement.IsHitTestVisible = true;
-/*            HideHelperStoryboard.Pause();
-            ShowHelperStoryboard.Begin();*/
+
+            HideHelperStoryboard.Pause();
+            ShowHelperStoryboard.Begin();
+
+            /*            HideHelperStoryboard.Pause();
+                        ShowHelperStoryboard.Begin();*/
         }
 
         private void Opener_PointerReleased(object sender, PointerRoutedEventArgs e)
@@ -220,12 +224,16 @@ namespace FlexTable.View
             if (e.GetCurrentPoint(this).PointerDevice.PointerDeviceType != PointerDeviceType.Touch) return;
             //Debug.WriteLine("released");
             IndexHelperWrapperElement.IsHitTestVisible = false;
+            ShowHelperStoryboard.Pause();
+            HideHelperStoryboard.Begin();
         }
 
         private void IndexHelperWrapperElement_PointerExited(object sender, PointerRoutedEventArgs e)
         {
             TableViewModel.CancelIndexing();
             IndexHelperWrapperElement.IsHitTestVisible = false;
+            ShowHelperStoryboard.Pause();
+            HideHelperStoryboard.Begin();
         }
     }
 }

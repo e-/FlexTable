@@ -200,7 +200,9 @@ namespace FlexTable.View
         {
             AllRowsCanvasElement.Visibility = Visibility.Visible;
 
+            HideAllRowsCanvasStoryboard.Pause();
             ShowAllRowsCanvasStoryboard.Begin();
+            ShowTableCanvasStoryboard.Pause();
             HideTableCanvasStoryboard.Begin();
         }
 
@@ -208,7 +210,9 @@ namespace FlexTable.View
         {
             TableCanvasElement.Visibility = Visibility.Visible;
 
+            HideTableCanvasStoryboard.Pause();
             ShowTableCanvasStoryboard.Begin();
+            ShowAllRowsCanvasStoryboard.Pause();
             HideAllRowsCanvasStoryboard.Begin();            
         }
 

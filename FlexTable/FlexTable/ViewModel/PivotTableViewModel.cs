@@ -14,6 +14,8 @@ namespace FlexTable.ViewModel
 {
     public class PivotTableViewModel
     {
+        const Int32 MaximumCellNumber = 500;
+
         private MainPageViewModel mainPageViewModel;
 
         private PivotTableView pivotTableView;
@@ -109,7 +111,9 @@ namespace FlexTable.ViewModel
             }
 
             rowN = permutate + headerRowN;
-            
+
+            Int32 maximumRowNumber = MaximumCellNumber / columnN;
+
             // 개수만큼 추가 컬럼 및 로우 정의 추가. 이중선 말고는 별 특별한 점 없음.
 
             for (i = 0; i < rowN; ++i)
@@ -292,6 +296,11 @@ namespace FlexTable.ViewModel
                     j = 0;
                     foreach (Category category in columnViewModel.Categories)
                     {
+                        if(headerRowN + span * (i * count + j) >= maximumRowNumber)
+                        {
+                            break;
+                        }
+
                         Border border = new Border()
                         {
                             Style = pivotTableView.Resources["RowHeaderBorderStyle"] as Style,
@@ -306,7 +315,8 @@ namespace FlexTable.ViewModel
                         children.Add(border);
                         Grid.SetRow(border, headerRowN + span * (i * count + j));
                         Grid.SetColumn(border, index);
-                        Grid.SetRowSpan(border, span);
+
+                        Grid.SetRowSpan(border, headerRowN + span * (i * count + j) + span >= maximumRowNumber ? maximumRowNumber - headerRowN - span * (i * count + j) : span);
 
                         ++j;
                     }
@@ -318,6 +328,7 @@ namespace FlexTable.ViewModel
             // 이중선
             for (i = 0; i < rowN; ++i)
             {
+                if (i >= maximumRowNumber) break;
                 Border border = new Border()
                 {
                     Style = pivotTableView.Resources["SeparatingBorderStyle"] as Style
@@ -331,6 +342,7 @@ namespace FlexTable.ViewModel
             Dictionary<String, Border> borders = new Dictionary<String, Border>();
             for (i = 0; i < rowN - headerRowN; ++i)
             {
+                if (headerRowN + i >= maximumRowNumber) break;
                 for (j = 0; j < headerColumnN; ++j)
                 {
                     Border border = GetNewBorder(columns.Count > 0 ? "" : "0");
@@ -357,6 +369,9 @@ namespace FlexTable.ViewModel
                     rowIndex *= vertical.Categories.Count;
                     rowIndex += vertical.Categories.IndexOf(groupedRow.Keys[vertical] as Category);
                 }
+
+                if (rowIndex + headerRowN >= maximumRowNumber)
+                    continue;
 
                 // 이제 행을 채운다.
                 if (horizontal != null)

@@ -12,31 +12,15 @@
     <UserControl.Resources>
         <Storyboard x:Name="ShowHelperStoryboard">
             <DoubleAnimation Duration="0:0:0.2" Storyboard.TargetName="IndexHelperWrapperElement"
-                             Storyboard.TargetProperty="Opacity" To="1" EasingFunction="{StaticResource QuarticEaseInOut}">
+                             Storyboard.TargetProperty="Opacity" To="0.5" EasingFunction="{StaticResource QuarticEaseInOut}">
             </DoubleAnimation>
         </Storyboard>
 
         <Storyboard x:Name="HideHelperStoryboard">
-            <DoubleAnimation Duration="0:0:0.5" Storyboard.TargetName="IndexHelperWrapperElement"
+            <DoubleAnimation Duration="0:0:0.2" Storyboard.TargetName="IndexHelperWrapperElement"
                              Storyboard.TargetProperty="Opacity" To="0" EasingFunction="{StaticResource QuarticEaseInOut}">
             </DoubleAnimation>
         </Storyboard>
-        
-        <Style x:Key="LabelStyle" TargetType="TextBlock">
-            <Setter Property="RenderTransform">
-                <Setter.Value>
-                    <TransformGroup>
-                        <!--<RotateTransform Angle="90"/>
-                        <TranslateTransform X="{StaticResource RowHeaderWidth}" />
-                        <TranslateTransform X="-7" />-->
-                    </TransformGroup>
-                </Setter.Value>
-            </Setter>
-            <Setter Property="RenderTransformOrigin" Value="0 0" />
-            <!--<Setter Property="VerticalAlignment" Value="Center"></Setter>-->
-            <Setter Property="TextAlignment" Value="Center" />
-            <Setter Property="Margin" Value="0 3 0 0" />
-        </Style>
     </UserControl.Resources>
 
     <Grid>
@@ -52,6 +36,7 @@
                 Height="{StaticResource ColumnIndexerHeight}"                 
                 IsHitTestVisible="False"
                 PointerExited="IndexHelperWrapperElement_PointerExited"
+                Opacity="0"
                 >
         </Canvas>
     </Grid>

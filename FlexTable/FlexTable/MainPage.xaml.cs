@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.ApplicationModel.Core;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.ViewManagement;
@@ -35,6 +36,8 @@ namespace FlexTable
             mainPageViewModel = new ViewModel.MainPageViewModel(this);
             this.DataContext = mainPageViewModel;
             this.InitializeComponent();
+            
+            CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = true;
         }
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
