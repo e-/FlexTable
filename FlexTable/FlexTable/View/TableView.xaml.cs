@@ -92,14 +92,14 @@ namespace FlexTable.View
                         switch (upperCandidate)
                         {
                             case "MIN":
-                                selectedColumnViewModel.AggregativeFunction = new AggregativeFunctions.MinAggregation();
+                                selectedColumnViewModel.AggregativeFunction = new AggregativeFunction.MinAggregation();
                                 tableViewModel.OnAggregativeFunctionChanged(selectedColumnViewModel);
                                 Debug.WriteLine("Min selected");
                                 drawable.RemoveAllStrokes();
                                 timer.Stop();
                                 return;
                             case "MAX":
-                                selectedColumnViewModel.AggregativeFunction = new AggregativeFunctions.MaxAggregation();
+                                selectedColumnViewModel.AggregativeFunction = new AggregativeFunction.MaxAggregation();
                                 tableViewModel.OnAggregativeFunctionChanged(selectedColumnViewModel);
                                 Debug.WriteLine("Max selected");
                                 drawable.RemoveAllStrokes();
@@ -107,14 +107,14 @@ namespace FlexTable.View
                                 return;
                             case "AVG":
                             case "MEAN":
-                                selectedColumnViewModel.AggregativeFunction = new AggregativeFunctions.AverageAggregation();
+                                selectedColumnViewModel.AggregativeFunction = new AggregativeFunction.AverageAggregation();
                                 tableViewModel.OnAggregativeFunctionChanged(selectedColumnViewModel);
                                 Debug.WriteLine("Mean selected");
                                 drawable.RemoveAllStrokes();
                                 timer.Stop();
                                 return;
                             case "SUM":
-                                selectedColumnViewModel.AggregativeFunction = new AggregativeFunctions.SumAggregation();
+                                selectedColumnViewModel.AggregativeFunction = new AggregativeFunction.SumAggregation();
                                 tableViewModel.OnAggregativeFunctionChanged(selectedColumnViewModel);
                                 Debug.WriteLine("Sum selected");
                                 drawable.RemoveAllStrokes();

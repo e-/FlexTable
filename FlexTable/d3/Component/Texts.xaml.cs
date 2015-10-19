@@ -12,6 +12,7 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 
 // 사용자 정의 컨트롤 항목 템플릿에 대한 설명은 http://go.microsoft.com/fwlink/?LinkId=234236에 나와 있습니다.
@@ -102,9 +103,8 @@ namespace d3.Component
             return textBlocks.Select(tb => tb.ActualWidth).Max(); 
         } }
 
-        List<Border> previousBorders = new List<Border>();
         List<TextBlock> textBlocks = new List<TextBlock>();
-        List<Border> borders = new List<Border>();
+        Storyboard previousStoryboard = null;
 
         public Texts()
         {
@@ -113,49 +113,98 @@ namespace d3.Component
 
         public void Update()
         {
-            foreach (Border border in previousBorders)
+            Update(false);
+        }
+
+        public void Update(Boolean allowTransition)
+        {
+            if (allowTransition)
             {
-                TextCanvas.Children.Remove(border);
-            }
-            previousBorders.Clear();
-            textBlocks.Clear();
+                if (previousStoryboard != null) previousStoryboard.Pause();
+                Storyboard sb = new Storyboard();
 
-            Int32 index = 0;
-            foreach (Object datum in Data.List)
-            {
-                Border border = new Border();
-
-                if (WidthGetter != null) border.Width = WidthGetter(datum, index);
-                if (HeightGetter != null) border.Height = HeightGetter(datum, index);
-
-                TextBlock textBlock = new TextBlock()
+                Int32 index = 0;
+                foreach (Object datum in Data.List)
                 {
-                    HorizontalAlignment = Windows.UI.Xaml.HorizontalAlignment.Center,
-                    VerticalAlignment = Windows.UI.Xaml.VerticalAlignment.Center,
-                    Text = TextGetter(datum, index),
-                    Foreground = ColorGetter == null ? new SolidColorBrush(Colors.Black) : new SolidColorBrush(ColorGetter(datum, index))
-                };
+                    TextBlock textBlock = textBlocks[index];
+                    
+                    if(OpacityGetter != null && textBlock.Opacity != OpacityGetter(textBlock, datum, index))
+                    {
+                        sb.Children.Add(Util.GenerateDoubleAnimation(textBlock, "Opacity", OpacityGetter(textBlock, datum, index)));
+                    }
+                    //TODO
+                    /*Border border = new Border();
 
-                border.Child = textBlock;
+                    if (WidthGetter != null) border.Width = WidthGetter(datum, index);
+                    if (HeightGetter != null) border.Height = HeightGetter(datum, index);
 
-                Canvas.SetLeft(border, XGetter(datum, index));
-                Canvas.SetTop(border, YGetter(datum, index));
-                
+                    TextBlock textBlock = new TextBlock()
+                    {
+                        HorizontalAlignment = HorizontalAlignment.Center,
+                        VerticalAlignment = VerticalAlignment.Center,
+                        Text = TextGetter(datum, index),
+                        Foreground = ColorGetter == null ? new SolidColorBrush(Colors.Black) : new SolidColorBrush(ColorGetter(datum, index))
+                    };
 
-                TextCanvas.Children.Add(border);
-                textBlocks.Add(textBlock);
-                border.Measure(new Size(Double.MaxValue, Double.MaxValue));
-                borders.Add(border);
+                    border.Child = textBlock;
 
-                previousBorders.Add(border);
+                    Canvas.SetLeft(border, XGetter(datum, index));
+                    Canvas.SetTop(border, YGetter(datum, index));
 
-                if (OpacityGetter != null)
-                {
-                    textBlock.Measure(new Size(10000, 10000));
-                    Double opacity = OpacityGetter(textBlock, datum, index);
-                    textBlock.Opacity = opacity;
+                    TextCanvas.Children.Add(border);
+                    textBlocks.Add(textBlock);
+                    border.Measure(new Size(Double.MaxValue, Double.MaxValue));
+
+                    if (OpacityGetter != null)
+                    {
+                        textBlock.Measure(new Size(10000, 10000));
+                        Double opacity = OpacityGetter(textBlock, datum, index);
+                        textBlock.Opacity = opacity;
+                    }*/
+
+                    index++;
                 }
-                index++;
+                previousStoryboard = sb;
+                sb.Begin();
+            }
+            else
+            {
+                TextCanvas.Children.Clear();
+                textBlocks.Clear();
+
+                Int32 index = 0;
+                foreach (Object datum in Data.List)
+                {
+                    Border border = new Border();
+
+                    if (WidthGetter != null) border.Width = WidthGetter(datum, index);
+                    if (HeightGetter != null) border.Height = HeightGetter(datum, index);
+
+                    TextBlock textBlock = new TextBlock()
+                    {
+                        HorizontalAlignment = HorizontalAlignment.Center,
+                        VerticalAlignment = VerticalAlignment.Center,
+                        Text = TextGetter(datum, index),
+                        Foreground = ColorGetter == null ? new SolidColorBrush(Colors.Black) : new SolidColorBrush(ColorGetter(datum, index))
+                    };
+
+                    border.Child = textBlock;
+
+                    Canvas.SetLeft(border, XGetter(datum, index));
+                    Canvas.SetTop(border, YGetter(datum, index));
+
+                    TextCanvas.Children.Add(border);
+                    textBlocks.Add(textBlock);
+                    border.Measure(new Size(Double.MaxValue, Double.MaxValue));
+
+                    if (OpacityGetter != null)
+                    {
+                        textBlock.Measure(new Size(10000, 10000));
+                        Double opacity = OpacityGetter(textBlock, datum, index);
+                        textBlock.Opacity = opacity;
+                    }
+                    index++;
+                }
             }
         }
     }

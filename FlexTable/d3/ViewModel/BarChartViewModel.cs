@@ -48,7 +48,15 @@ namespace d3.ViewModel
         public Func<Object, Int32, Double> HeightGetter { get { return (d, index) => ChartAreaEndY - yScale.Map((d as Tuple<Object, Double>).Item2); } }
         public Func<Object, Int32, Double> XGetter { get { return (d, index) => xScale.Map((d as Tuple<Object, Double>).Item1) - BarWidth / 2; } }
         public Func<Object, Int32, Double> YGetter { get { return (d, index) => yScale.Map((d as Tuple<Object, Double>).Item2); } }
-        //public Func<TextBlock, Double> LabelOpacityGetter { get { return textBlock => textBlock.ActualWidth > xScale.RangeBand ? 0 : 1; } }
+        public Func<Object, Int32, Color> ColorGetter { get { return (bin, index) => (AutoColor ? ColorScheme.Category10.Colors[index % 10] : ColorScheme.Category10.Colors.First()); } }
+        public Func<Object, Int32, Double> OpacityGetter { get { return (d, index) => IsSelecting ? (index == selectedIndex ? 1.0 : 0.2) : 1.0; } }
+
+        public Func<Object, Int32, Double> HandleWidthGetter { get { return (d, index) => xScale.RangeBand; } }
+        public Func<Object, Int32, Double> HandleHeightGetter { get { return (d, index) => ChartAreaEndY - PaddingTop; } }
+        public Func<Object, Int32, Double> HandleXGetter { get { return (d, index) => xScale.Map((d as Tuple<Object, Double>).Item1) - xScale.RangeBand / 2; } }
+        public Func<Object, Int32, Double> HandleYGetter { get { return (d, index) => PaddingTop; } }
+        public Func<Object, Int32, Color> HandleColorGetter { get { return (bin, index) => Colors.Transparent; } }
+
         public Func<TextBlock, Double, Double> LabelFontSizeGetter { get {
                 return (textBlock, currentSize) => textBlock.ActualWidth > xScale.RangeBand ? currentSize * xScale.RangeBand / textBlock.ActualWidth * 0.9 : currentSize;
             } }
@@ -70,16 +78,25 @@ namespace d3.ViewModel
             }
         }
 
+        public Func<Object, Int32, Double> LegendHandleWidthGetter { get { return (d, index) => LegendAreaWidth; } }
+        public Func<Object, Int32, Double> LegendHandleHeightGetter { get { return (d, index) => LegendPatchHeight + LegendPatchSpace; } }
+        public Func<Object, Int32, Double> LegendHandleXGetter { get { return (d, index) => 0; } }
+        public Func<Object, Int32, Double> LegendHandleYGetter { get { return 
+                    (d, index) => (Height - Data.Count() * LegendPatchHeight - (Data.Count() - 1) * LegendPatchSpace) / 2 + index * (LegendPatchHeight + LegendPatchSpace) - LegendPatchSpace / 2;
+        }}
+
         public Func<Object, Int32, Double> LegendTextXGetter { get { return (d, index) => LegendPatchWidth + LegendPatchSpace; } }
         public Func<Object, Int32, String> LegendTextGetter { get { return (d, index) => (d as Tuple<Object, Double>).Item1.ToString(); } }
         public Func<Object, Int32, Color> LegendTextColorGetter { get { return (d, index) => /*(d as Model.Bin).IsFilteredOut ? Colors.LightGray :*/ Colors.Black; } }
-        
-        public Func<Object, Int32, Color> ColorGetter { get { return (bin, index) => (AutoColor ? ColorScheme.Category10.Colors[index % 10] : ColorScheme.Category10.Colors.First()); } }
+                
 
+        public Data indicatorData;
+        public Data IndicatorData { get { return indicatorData; } }
         public Func<Object, Int32, Double> IndicatorWidthGetter { get { return (d, index) => xScale.RangeBand; } }
         public Func<Object, Int32, String> IndicatorTextGetter { get { return (d, index) => Format.IntegerBalanced.Format((d as Tuple<Object, Double>).Item2); } }
         public Func<Object, Int32, Double> IndicatorXGetter { get { return (d, index) => xScale.Map((d as Tuple<Object, Double>).Item1) - xScale.RangeBand / 2; } }
         public Func<Object, Int32, Double> IndicatorYGetter { get { return (d, index) => yScale.Map((d as Tuple<Object, Double>).Item2) - 18; } }
+        public Func<TextBlock, Object, Int32, Double> TextOpacityGetter { get { return (textBlock, d, index) => IsSelecting ? (index == selectedIndex ? 1.0 : 0.2) : 1.0; } }
 
         private Visibility horizontalAxisVisibility;
         public Visibility HorizontalAxisVisibility { get { return horizontalAxisVisibility; } set { horizontalAxisVisibility = value; OnPropertyChanged("HorizontalAxisVisibility"); } }
@@ -122,6 +139,9 @@ namespace d3.ViewModel
         public Boolean AutoColor { get; set; } = true;
         public Boolean YStartsWithZero { get; set; } = false;
 
+        public Boolean IsSelecting { get; set; } = false;
+        private Int32 selectedIndex = -1;
+
         public void Update()
         {
             chartData = new Data()
@@ -145,6 +165,14 @@ namespace d3.ViewModel
             else
             {
                 ChartAreaEndX = width - PaddingRight;
+            }
+
+            if(data.Count() > 20)
+            {
+                indicatorData = new Data() { List = new List<object>() };
+            } else
+            {
+                indicatorData = chartData;
             }
 
             HorizontalAxisLabelCanvasLeft = PaddingLeft + VerticalAxisWidth + VerticalAxisLabelWidth;
@@ -200,7 +228,20 @@ namespace d3.ViewModel
             }
             XScale = xScale;
 
-            OnPropertyChanged("ChartData");            
+            OnPropertyChanged("ChartData");
+            OnPropertyChanged("IndicatorData");
+        }
+
+        public void SelectBar(Int32 index)
+        {
+            IsSelecting = true;
+            selectedIndex = index;
+        }
+
+        public void UnselectBar(Int32 index)
+        {
+            IsSelecting = false;
+            selectedIndex = -1;
         }
     }
 }

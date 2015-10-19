@@ -58,6 +58,7 @@
     </UserControl.Resources>
     
     <StackPanel Padding="30">
+        <!--
         <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
             <StackPanel.Resources>
                 <Style TargetType="TextBlock">
@@ -95,7 +96,7 @@
             <ComboBoxItem>Max</ComboBoxItem>
             <ComboBoxItem>Avg</ComboBoxItem>
         </ComboBox>
-        
+        -->
         <TextBlock Style="{StaticResource TitleStyle}">
             <Run Text="{Binding SheetName}" />
         </TextBlock>

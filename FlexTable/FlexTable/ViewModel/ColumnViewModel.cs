@@ -10,8 +10,8 @@ namespace FlexTable.ViewModel
 {
     public class ColumnViewModel : NotifyViewModel
     {     
-        private ViewModel.MainPageViewModel mainPageViewModel;
-        public ViewModel.MainPageViewModel MainPageViewModel { get { return mainPageViewModel; } }
+        private MainPageViewModel mainPageViewModel;
+        public MainPageViewModel MainPageViewModel { get { return mainPageViewModel; } }
 
         private Column column;
         public Column Column { 
@@ -93,7 +93,7 @@ namespace FlexTable.ViewModel
             get { return FormatAggregatedName(column, Type, aggregativeFunction); }
         }
 
-        public String FormatHeaderName(Column column, ColumnType type, AggregativeFunctions.BaseAggregation aggregativeFunction)
+        public String FormatHeaderName(Column column, ColumnType type, AggregativeFunction.BaseAggregation aggregativeFunction)
         {
             if (type == ColumnType.Categorical)
                 return column.Name;
@@ -113,21 +113,21 @@ namespace FlexTable.ViewModel
             return FormatAggregatedName(column, type, aggregativeFunction);
         }
 
-        public String FormatAggregatedName(Column column, ColumnType type, AggregativeFunctions.BaseAggregation aggregativeFunction)
+        public String FormatAggregatedName(Column column, ColumnType type, AggregativeFunction.BaseAggregation aggregativeFunction)
         {
-            if (aggregativeFunction is AggregativeFunctions.MinAggregation)
+            if (aggregativeFunction is AggregativeFunction.MinAggregation)
             {
                 return $"Min({column.Name})";
             }
-            if (aggregativeFunction is AggregativeFunctions.MaxAggregation)
+            if (aggregativeFunction is AggregativeFunction.MaxAggregation)
             {
                 return $"Max({column.Name})";
             }
-            if (aggregativeFunction is AggregativeFunctions.AverageAggregation)
+            if (aggregativeFunction is AggregativeFunction.AverageAggregation)
             {
                 return $"Avg({column.Name})";
             }
-            if (aggregativeFunction is AggregativeFunctions.SumAggregation)
+            if (aggregativeFunction is AggregativeFunction.SumAggregation)
             {
                 return $"Sum({column.Name})";
             }
@@ -135,14 +135,14 @@ namespace FlexTable.ViewModel
             return column.Name;
         }
 
-        private AggregativeFunctions.BaseAggregation aggregativeFunction = new AggregativeFunctions.AverageAggregation();
-        public AggregativeFunctions.BaseAggregation AggregativeFunction
+        private AggregativeFunction.BaseAggregation aggregativeFunction = new AggregativeFunction.AverageAggregation();
+        public AggregativeFunction.BaseAggregation AggregativeFunction
         {
             get { return aggregativeFunction; }
             set { aggregativeFunction = value; OnPropertyChanged("HeaderName"); OnPropertyChanged("AggregativeFunction"); }
         }
 
-        public ColumnViewModel(ViewModel.MainPageViewModel mainPageViewModel)
+        public ColumnViewModel(MainPageViewModel mainPageViewModel)
         {
             this.mainPageViewModel = mainPageViewModel;
         }

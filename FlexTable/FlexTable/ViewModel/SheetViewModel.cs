@@ -40,7 +40,9 @@ namespace FlexTable.ViewModel
         private List<GroupedRows> groupingResult;
         public List<GroupedRows> GroupingResult => groupingResult;
 
-        ViewModel.MainPageViewModel mainPageViewModel;
+        public Boolean IsAllRowsVisible { get; set; } = false;
+        MainPageViewModel mainPageViewModel;
+
         IMainPage view;
 
         public SheetViewModel(MainPageViewModel mainPageViewModel, IMainPage view)
@@ -321,9 +323,15 @@ namespace FlexTable.ViewModel
 
             // 여기서 상황별로 왼쪽에 보일 rowViewModel을 만들어 줘야함. 여기서 만들면 tableViewModel에서 받아다가 그림
 
-            if (viewStatus.SelectedColumnViewModels.Count == 0) // 아무것도 안된경우 아무것도 안해도됨 어차피 allViewModel에서 다 보여줄 것 
+            IsAllRowsVisible = false;
+            if (viewStatus.SelectedColumnViewModels.Count == 0 ||
+                viewStatus.SelectedColumnViewModels.Count >= 2 && viewStatus.SelectedColumnViewModels.Count(s => s.Type != ColumnType.Numerical) == 0)
             {
-
+                IsAllRowsVisible = true;
+                foreach(RowViewModel rowViewModel in allRowViewModels)
+                {
+                    temporaryRowViewModels.Add(rowViewModel);
+                }
             }
             else if (viewStatus.SelectedColumnViewModels.Count == 1 && viewStatus.SelectedColumnViewModels[0].Type == ColumnType.Numerical) // 이 경우는 뉴메리컬 하나만 선택되어 비닝 된 결과가 보이는 경우이다.
             {
@@ -368,14 +376,6 @@ namespace FlexTable.ViewModel
                         rowViewModel.Cells.Add(cell);
                     }
 
-                    temporaryRowViewModels.Add(rowViewModel);
-                }
-            }
-            else if (viewStatus.SelectedColumnViewModels.Count >= 2 && viewStatus.SelectedColumnViewModels.Count(s => s.Type != ColumnType.Numerical) == 0)
-            // 여러개 골라지고 둘다 뉴메리컬의 경우 모두 보여야함.
-            {
-                foreach (RowViewModel rowViewModel in allRowViewModels)
-                {
                     temporaryRowViewModels.Add(rowViewModel);
                 }
             }

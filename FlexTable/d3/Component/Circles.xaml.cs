@@ -101,7 +101,7 @@ namespace d3.Component
         List<Ellipse> previousCircles = new List<Ellipse>();
 
         Storyboard previousStoryboard;
-
+        
         public void Update()
         {
             Int32 index = 0;
@@ -133,7 +133,7 @@ namespace d3.Component
                     {
                         if (CirclePointerPressed != null)
                         {
-                            CirclePointerPressed(ellipse, datum);
+                            CirclePointerPressed(ellipse, datum, index);
                             e.Handled = true;
                         }
                     };
@@ -142,7 +142,7 @@ namespace d3.Component
                     {
                         if (CirclePointerReleased != null)
                         {
-                            CirclePointerReleased(ellipse, datum);
+                            CirclePointerReleased(ellipse, datum, index);
                             e.Handled = true;
                         }
                     };
@@ -157,18 +157,20 @@ namespace d3.Component
                 {
                     Canvas.SetLeft(ellipse, XGetter(datum, index) - RadiusGetter(datum, index) / 2);
                     Canvas.SetTop(ellipse, YGetter(datum, index) - RadiusGetter(datum, index) / 2);
+                    if(newbie)
+                        ellipse.Opacity = OpacityGetter == null ? 1.0 : OpacityGetter(datum, index);
                 }
                 else
                 {
                     storyboard.Children.Add(Util.GenerateDoubleAnimation(ellipse, "(Canvas.Left)", XGetter(datum, index) - RadiusGetter(datum, index) / 2));
                     storyboard.Children.Add(Util.GenerateDoubleAnimation(ellipse, "(Canvas.Top)", YGetter(datum, index) - RadiusGetter(datum, index) / 2));   
                 }
-                
+
+                storyboard.Children.Add(Util.GenerateDoubleAnimation(ellipse, "Opacity", OpacityGetter == null ? 1.0 : OpacityGetter(datum, index)));
+
                 ellipse.Width = RadiusGetter(datum, index);
                 ellipse.Height = RadiusGetter(datum, index);
                 ellipse.Fill = ColorGetter == null ? new SolidColorBrush(Colors.LightGray) : new SolidColorBrush(ColorGetter(datum, index));
-                ellipse.Opacity = OpacityGetter == null ? 1.0 : OpacityGetter(datum, index);
-
                 
                 index++;
             }

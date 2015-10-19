@@ -235,5 +235,10 @@ namespace FlexTable.View
             ShowHelperStoryboard.Pause();
             HideHelperStoryboard.Begin();
         }
+
+        public void Reset()
+        {
+            IndexHelperWrapperElement.Children.Clear();
+        }
     }
 }

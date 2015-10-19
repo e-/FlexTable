@@ -15,6 +15,7 @@ using d3.Scale;
 using Windows.UI.Xaml.Shapes;
 using Windows.UI;
 using System.Diagnostics;
+using Windows.UI.Xaml.Media.Animation;
 
 // 빈 페이지 항목 템플릿에 대한 설명은 http://go.microsoft.com/fwlink/?LinkId=234238에 나와 있습니다.
 
@@ -64,6 +65,15 @@ namespace d3.Component
             set { SetValue(StrokeThicknessGetterProperty, value); }
         }
 
+        public static readonly DependencyProperty OpacityGetterProperty =
+            DependencyProperty.Register(nameof(OpacityGetter), typeof(Func<Object, Int32, Double>), typeof(Lines), new PropertyMetadata(default(Func<Object, Int32, Double>)));
+
+        public Func<Object, Int32, Double> OpacityGetter
+        {
+            get { return (Func<Object, Int32, Double>)GetValue(OpacityGetterProperty); }
+            set { SetValue(OpacityGetterProperty, value); }
+        }
+
 
         public Lines()
         {
@@ -77,73 +87,104 @@ namespace d3.Component
         }
 
         List<Path> previousPaths = new List<Path>();
+        Storyboard previousStoryboard = null;
 
         public void Update()
         {
-            foreach (Path path in previousPaths)
+            Update(false);
+        }
+
+        public void Update(Boolean allowTransition)
+        {
+            if (allowTransition)
             {
-                LineCanvas.Children.Remove(path);
+                Int32 index = 0;
+                if (previousStoryboard != null) previousStoryboard.Pause();
+                Storyboard sb = new Storyboard()
+                {
+                    BeginTime = Const.AnimationDelay
+                };
+                foreach (Object datum in Data.List)
+                {
+                    Path path = LineCanvas.Children[index] as Path;
+
+                    if (OpacityGetter != null && path.Opacity != OpacityGetter(datum, index))
+                    {
+                        sb.Children.Add(Util.GenerateDoubleAnimation(path, "Opacity", OpacityGetter(datum, index)));
+                    }
+                    index++;
+                }
+                previousStoryboard = sb;
+                sb.Begin();
             }
-            previousPaths.Clear();
-
-            Int32 index = 0;
-            foreach (Object datum in Data.List)
+            else
             {
-                List<Point> points = CoordinateGetter(datum, index);
-
-                if (points.Count == 0)
+                foreach (Path path in previousPaths)
                 {
-                    throw new Exception("No coordinate found");
+                    LineCanvas.Children.Remove(path);
                 }
+                previousPaths.Clear();
 
-                PathFigure pathFigure = new PathFigure();
-
-                pathFigure.StartPoint = points.First();
-
-                foreach(Point point in points.Where((p, i) => i > 0))
+                Int32 index = 0;
+                foreach (Object datum in Data.List)
                 {
-                    LineSegment lineSegment = new LineSegment();
-                    lineSegment.Point = point;
-                    pathFigure.Segments.Add(lineSegment);
+                    List<Point> points = CoordinateGetter(datum, index);
+
+                    if (points.Count == 0)
+                    {
+                        throw new Exception("No coordinate found");
+                    }
+
+                    PathFigure pathFigure = new PathFigure();
+
+                    pathFigure.StartPoint = points.First();
+
+                    foreach (Point point in points.Where((p, i) => i > 0))
+                    {
+                        LineSegment lineSegment = new LineSegment();
+                        lineSegment.Point = point;
+                        pathFigure.Segments.Add(lineSegment);
+                    }
+
+                    PathGeometry pathGeometry = new PathGeometry();
+                    pathGeometry.Figures = new PathFigureCollection();
+
+                    pathGeometry.Figures.Add(pathFigure);
+
+                    Path path = new Path()
+                    {
+                        Data = pathGeometry,
+                        StrokeStartLineCap = PenLineCap.Round,
+                        StrokeEndLineCap = PenLineCap.Round,
+                        Stroke = StrokeGetter == null ? new SolidColorBrush(Colors.LightGray) : new SolidColorBrush(StrokeGetter(datum, index)),
+                        StrokeThickness = StrokeThicknessGetter == null ? 2 : StrokeThicknessGetter(datum, index),
+                        Opacity = OpacityGetter == null ? 1 : OpacityGetter(datum, index)
+                    };
+
+                    path.PointerPressed += delegate (object sender, PointerRoutedEventArgs e)
+                    {
+                        if (LinePointerPressed != null)
+                        {
+                            LinePointerPressed(path, datum, index);
+                            e.Handled = true;
+                        }
+                    };
+
+                    path.PointerReleased += delegate (object sender, PointerRoutedEventArgs e)
+                    {
+                        if (LinePointerReleased != null)
+                        {
+                            LinePointerReleased(path, datum, index);
+                            e.Handled = true;
+                        }
+                    };
+
+                    path.Tapped += rect_Tapped;
+
+                    index++;
+                    LineCanvas.Children.Add(path);
+                    previousPaths.Add(path);
                 }
-
-                PathGeometry pathGeometry = new PathGeometry();
-                pathGeometry.Figures = new PathFigureCollection();
-
-                pathGeometry.Figures.Add(pathFigure);
-                
-                Path path = new Path()
-                {
-                    Data = pathGeometry,
-                    StrokeStartLineCap = PenLineCap.Round,
-                    StrokeEndLineCap = PenLineCap.Round,
-                    Stroke = StrokeGetter == null ? new SolidColorBrush(Colors.LightGray) : new SolidColorBrush(StrokeGetter(datum, index)),
-                    StrokeThickness = StrokeThicknessGetter == null ? 2 : StrokeThicknessGetter(datum, index)
-                };
-
-                path.PointerPressed += delegate(object sender, PointerRoutedEventArgs e)
-                {
-                    if (LinePointerPressed != null)
-                    {
-                        LinePointerPressed(path, datum);
-                        e.Handled = true;
-                    }
-                };
-
-                path.PointerReleased += delegate(object sender, PointerRoutedEventArgs e)
-                {
-                    if (LinePointerReleased != null)
-                    {
-                        LinePointerReleased(path, datum);
-                        e.Handled = true;
-                    }
-                };
-
-                path.Tapped += rect_Tapped;
-
-                index++;
-                LineCanvas.Children.Add(path);
-                previousPaths.Add(path);
             }
         }
 

@@ -25,7 +25,6 @@ namespace FlexTable
     public sealed partial class MainPage : Page, IMainPage
     {
         ViewModel.MainPageViewModel mainPageViewModel;
-        Util.CsvLoader csvLoader = new Util.CsvLoader();
 
         public View.TableView TableView { get { return TableViewElement; } }
         public View.ExplorationView ExplorationView { get { return ExplorationViewElement; } }
@@ -46,7 +45,7 @@ namespace FlexTable
 
             view.TryEnterFullScreenMode();
 
-            Model.Sheet sheet = await csvLoader.Load();
+            Model.Sheet sheet = await Util.CsvLoader.Load("temperature.csv"); // "Population-filtered.csv");
             mainPageViewModel.Sheet = sheet;
 
             mainPageViewModel.Initialize();

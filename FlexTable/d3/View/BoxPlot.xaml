@@ -11,15 +11,15 @@
     d:DesignWidth="400">
     
     <UserControl.Resources>
-        <Style x:Name="WhiskerStyle" TargetType="Line">
+        <Style x:Key="WhiskerStyle" TargetType="Line">
             <Setter Property="Stroke" Value="Black" />
             <Setter Property="StrokeThickness" Value="1.5" />
         </Style>
-        <Style x:Name="MedianStyle" TargetType="Line">
+        <Style x:Key="MedianStyle" TargetType="Line">
             <Setter Property="Stroke" Value="#a91e23" />
             <Setter Property="StrokeThickness" Value="3" />
         </Style>
-        <Style x:Name="MeanStyle" TargetType="Line">
+        <Style x:Key="MeanStyle" TargetType="Line">
             <Setter Property="Stroke" Value="#026699" />
             <Setter Property="StrokeThickness" Value="3" />
             <Setter Property="StrokeDashArray" Value="2,2" />

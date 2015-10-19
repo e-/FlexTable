@@ -71,7 +71,6 @@ namespace FlexTable.View
                 {
                     TableCanvas.Children[i].Visibility = Visibility.Collapsed;
                 }
-
                 
                 Double left = columnViewModel.X - tvm.ScrollLeft;
 

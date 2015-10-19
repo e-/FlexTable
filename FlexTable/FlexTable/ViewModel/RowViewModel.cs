@@ -10,7 +10,7 @@ namespace FlexTable.ViewModel
 {
     public class RowViewModel : NotifyViewModel
     {
-        ViewModel.MainPageViewModel mainPageViewModel;
+        MainPageViewModel mainPageViewModel;
 
         private Int32 index;
         public Int32 Index

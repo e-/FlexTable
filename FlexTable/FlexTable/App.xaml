@@ -67,7 +67,7 @@
                 <!--<Setter Property="Padding" Value="2,2,2,2" />-->
                 <Setter Property="MinWidth" Value="0" /><!-- Value="{ThemeResource ComboBoxThemeMinWidth}" />-->
                 <Setter Property="Foreground" Value="{ThemeResource SystemControlForegroundBaseHighBrush}" />
-                <Setter Property="Background" Value="{ThemeResource SystemControlBackgroundAltMediumLowBrush}" />
+                <Setter Property="Background" Value="Transparent" /> <!--</Setter> Value="{ThemeResource SystemControlBackgroundAltMediumLowBrush}" />-->
                 <Setter Property="BorderBrush" Value="{ThemeResource SystemControlForegroundBaseMediumLowBrush}" />
                 <Setter Property="BorderThickness" Value="0" /> <!--{ThemeResource ComboBoxBorderThemeThickness}" />-->
                 <Setter Property="TabNavigation" Value="Once" />

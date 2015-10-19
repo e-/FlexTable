@@ -15,28 +15,17 @@
     >
 
     <UserControl.Resources>
-        <Style TargetType="Border" x:Key="TitleWrapperStyle2">
-            <Setter Property="Height" Value="90" />
-        </Style>
-
         <Style TargetType="StackPanel" x:Key="TitleWrapperStyle">
             <Setter Property="Height" Value="90" />
             <Setter Property="Orientation" Value="Horizontal" />
             <Setter Property="HorizontalAlignment" Value="Center" />
         </Style>
-        
+
         <Style TargetType="TextBlock" x:Key="TitleStyle">
             <Setter Property="FontSize" Value="42" />
             <Setter Property="TextAlignment" Value="Center"></Setter>
             <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
-        
-        <!-- 
-        <Style TargetType="TextBlock" x:Key="SubtitleStyle">
-            <Setter Property="FontSize" Value="18" />
-            <Setter Property="TextAlignment" Value="Center"></Setter>
-        </Style>
-        -->
         
         <Style TargetType="Border" x:Key="ParagraphLabelBorderStyle">
             <Setter Property="CornerRadius" Value="14" />
@@ -85,6 +74,18 @@
         <Color x:Key="LabelBackgroundColor">#fff</Color>
         <Color x:Key="ActivatedLabelForegroundColor">#000</Color>
         <Color x:Key="ActivatedLabelBackgroundColor">#ddd</Color>
+        <x:String x:Key="TooManyElementsWarningString">There are too many visual elements. Some elements may be hidden.</x:String>
+        <Style x:Key="TooManyElementsWarningStyle" TargetType="TextBlock">
+            <Setter Property="Height" Value="20" />
+            <Setter Property="Margin" Value="0 -20 0 0" />
+            <Setter Property="TextAlignment" Value="Center" />
+            <Setter Property="Width" Value="{StaticResource ParagraphWidth}" />
+            <Setter Property="RenderTransform">
+                <Setter.Value>
+                    <TranslateTransform Y="3" />
+                </Setter.Value>
+            </Setter>
+        </Style>
     </UserControl.Resources>
     
     <StackPanel Opacity="0" x:Name="Wrapper" Tapped="Wrapper_Tapped">
@@ -96,11 +97,19 @@
                 <StackPanel Orientation="Horizontal" x:Name="ParagraphContainer">
                     <StackPanel Visibility="{Binding IsBarChartVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Bar Chart">
                         <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="BarChartTitleElement" Tapped="TitleWrapper_Tapped"></StackPanel>
+                        <TextBlock Style="{StaticResource TooManyElementsWarningStyle}" Visibility="{Binding IsBarChartWarningVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <Run FontFamily="FontAwesome" Foreground="#CC0000">&#xf071;</Run>
+                            <Run Text="{StaticResource TooManyElementsWarningString}"></Run>
+                        </TextBlock>
                         <d3view:BarChart x:Name="BarChartElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}" IsHitTestVisible="False"/>
                     </StackPanel>
 
                     <StackPanel Visibility="{Binding IsLineChartVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Line Chart">
                         <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="LineChartTitleElement" Tapped="TitleWrapper_Tapped"></StackPanel>
+                        <TextBlock Style="{StaticResource TooManyElementsWarningStyle}" Visibility="{Binding IsLineChartWarningVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <Run FontFamily="FontAwesome" Foreground="#CC0000">&#xf071;</Run>
+                            <Run Text="{StaticResource TooManyElementsWarningString}"></Run>
+                        </TextBlock>
                         <d3view:LineChart x:Name="LineChartElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}" IsHitTestVisible="False"/>
                     </StackPanel>
                     
@@ -116,6 +125,10 @@
 
                     <StackPanel Visibility="{Binding IsGroupedBarChartVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Grouped Bar Chart">
                         <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="GroupedBarChartTitleElement" Tapped="TitleWrapper_Tapped"></StackPanel>
+                        <TextBlock Style="{StaticResource TooManyElementsWarningStyle}" Visibility="{Binding IsGroupedBarChartWarningVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <Run FontFamily="FontAwesome" Foreground="#CC0000">&#xf071;</Run>
+                            <Run Text="{StaticResource TooManyElementsWarningString}"></Run>
+                        </TextBlock>
                         <d3view:GroupedBarChart x:Name="GroupedBarChartElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}" IsHitTestVisible="False"/>
                     </StackPanel>
 
@@ -126,19 +139,17 @@
 
                     <StackPanel Visibility="{Binding IsPivotTableVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Pivot Table">
                         <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="PivotTableTitleElement" Tapped="TitleWrapper_Tapped"></StackPanel>
-                        <local:PivotTableView x:Name="PivotTableViewElement" VerticalAlignment="Center"                                              
+                        <local:PivotTableView x:Name="PivotTableViewElement" VerticalAlignment="Center"
                            Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}"></local:PivotTableView>
                     </StackPanel>
 
                     <StackPanel Visibility="{Binding IsCorrelationStatisticsVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Statistics">
-                        <Border Style="{StaticResource TitleWrapperStyle2}">
-                            <TextBlock Style="{StaticResource TitleStyle}" x:Name="CorrelationStatisticsTitleElement" />
-                        </Border>
+                        <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="CorrelationStatisticsTitleElement" Tapped="TitleWrapper_Tapped"></StackPanel>
                         <local:CorrelationStatisticsView x:Name="CorrelationStatisticsViewElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}"/>
                     </StackPanel>
                 </StackPanel>
             </ScrollViewer>
-            <StackPanel x:Name="ParagraphLabelContainer" Height="40" Orientation="Horizontal" HorizontalAlignment="Center"></StackPanel>
+            <StackPanel x:Name="ParagraphLabelContainer" Height="50" Orientation="Horizontal" HorizontalAlignment="Center" Tapped="ParagraphLabelContainer_Tapped"></StackPanel>
         </StackPanel>
         <Border Height="{Binding PageHeight}" Visibility="{Binding IsSummaryVisible, Converter={StaticResource BooleanToInvertedVisibilityConverter}}" Padding="20" Background="White">
             <StackPanel VerticalAlignment="Center">

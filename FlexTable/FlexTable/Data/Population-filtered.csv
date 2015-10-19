@@ -1,4 +1,5 @@
-Region,Country,Year-date,Population
+Region,Country,Year,Population
+nominal,nominal,ordinal,num
 Asia,Australia,2001,19413
 Asia,Australia,2002,19651
 Asia,Australia,2003,19895

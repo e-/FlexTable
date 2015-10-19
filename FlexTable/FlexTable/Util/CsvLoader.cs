@@ -6,23 +6,35 @@ using System.Text;
 using System.Threading.Tasks;
 using CsvHelper;
 using FlexTable.Model;
+using Windows.Storage;
+using Windows.Storage.Streams;
 
 namespace FlexTable.Util
 {
     public class CsvLoader
     {
-        public async Task<Sheet> Load()
+        public static async Task<Sheet> Load(String name)
         {
-            String name = "who.csv"; // "economic-condition2.csv";// "Insurance.csv"; // "Population-small.csv";
+            //String name = "Population-filtered.csv"; // "economic-condition2.csv";// "Insurance.csv"; // "Population-small.csv";
             var folder = await Windows.ApplicationModel.Package.Current.InstalledLocation.GetFolderAsync("Data");
             var file = await folder.GetFileAsync(name);
-            var content = await Windows.Storage.FileIO.ReadTextAsync(file);
+            return await Load(file);
+        }
+
+        public static async Task<Sheet> Load(StorageFile file)
+        {
+            IBuffer buffer = await FileIO.ReadBufferAsync(file);
+            DataReader reader = DataReader.FromBuffer(buffer);
+            byte[] fileContent = new byte[reader.UnconsumedBufferLength];
+            reader.ReadBytes(fileContent);
+            string content = Encoding.UTF8.GetString(fileContent, 0, fileContent.Length);
+
             var ms = new MemoryStream(Encoding.UTF8.GetBytes(content));
             StreamReader sr = new StreamReader(ms);
             var parser = new CsvParser(sr);
             Sheet sheet = new Sheet()
             {
-                Name = name
+                Name = file.Name
             };
 
             var header = parser.Read();
@@ -88,7 +100,7 @@ namespace FlexTable.Util
             return sheet;
         }
 
-        private Boolean CheckColumnInfo(String[] values, List<Column> columns)
+        private static Boolean CheckColumnInfo(String[] values, List<Column> columns)
         {
             return true;
             /*if (values.Length != columns.Count) return false;

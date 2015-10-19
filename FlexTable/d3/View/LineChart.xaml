@@ -16,13 +16,13 @@
                    CoordinateGetter="{Binding CoordinateGetter}"
                    StrokeGetter="{Binding StrokeGetter}"
                    StrokeThicknessGetter="{Binding StrokeThicknessGetter}"
-                   Opacity="0.7"
+                   OpacityGetter="{Binding OpacityGetter}"
                    x:Name="LineElement"/>
         
         <com:Circles 
             Data="{Binding CircleData}" RadiusGetter="{Binding RadiusGetter}" 
             XGetter="{Binding XGetter}" YGetter="{Binding YGetter}" 
-            ColorGetter="{Binding CircleColorGetter}" OpacityGetter="{Binding OpacityGetter}"
+            ColorGetter="{Binding CircleColorGetter}" OpacityGetter="{Binding CircleOpacityGetter}"
             AllowTransition="False"
             x:Name="CircleElement"/>
         
@@ -41,18 +41,26 @@
         </TextBlock>
         
         <Canvas x:Name="LegendPanel">
+            <com:Rectangles Data="{Binding ChartData}" WidthGetter="{Binding LegendHandleWidthGetter}" 
+                                   HeightGetter="{Binding LegendHandleHeightGetter}" XGetter="{Binding LegendHandleXGetter}" 
+                                   YGetter="{Binding LegendHandleYGetter}" ColorGetter="{Binding LegendHandleColorGetter}"
+                                   x:Name="LegendHandleRectangleElement" 
+                                   Visibility="{Binding LegendVisibility}"
+                            />
+            
             <com:Rectangles Data="{Binding ChartData}" WidthGetter="{Binding LegendPatchWidthGetter}" 
-                                   HeightGetter="{Binding LegendPatchHeightGetter}" XGetter="{Binding LegendPatchXGetter}" 
-                                   YGetter="{Binding LegendPatchYGetter}" ColorGetter="{Binding ColorGetter}"
-                                   x:Name="LegendRectangleElement"
-                            Visibility="{Binding LegendVisibility}"
+                            HeightGetter="{Binding LegendPatchHeightGetter}" XGetter="{Binding LegendPatchXGetter}" 
+                            YGetter="{Binding LegendPatchYGetter}" ColorGetter="{Binding ColorGetter}"
+                            x:Name="LegendRectangleElement" Opacity="{Binding LegendPatchOpacityGetter}"
+                            Visibility="{Binding LegendVisibility}" IsHitTestVisible="False"
                             />
 
             <com:Texts Data="{Binding ChartData}" TextGetter="{Binding LegendTextGetter}"
-                              HeightGetter="{Binding LegendPatchHeightGetter}"
-                              XGetter="{Binding LegendTextXGetter}" YGetter="{Binding LegendPatchYGetter}" 
-                              ColorGetter="{Binding LegendTextColorGetter}" x:Name="LegendTextElement"
-                       Visibility="{Binding LegendVisibility}"
+                       HeightGetter="{Binding LegendPatchHeightGetter}"
+                       XGetter="{Binding LegendTextXGetter}" YGetter="{Binding LegendPatchYGetter}" 
+                       ColorGetter="{Binding LegendTextColorGetter}" x:Name="LegendTextElement"
+                       Visibility="{Binding LegendVisibility}" IsHitTestVisible="False"
+                       Opacity="{Binding LegendTextOpacityGetter}"
                        />
         </Canvas>
         

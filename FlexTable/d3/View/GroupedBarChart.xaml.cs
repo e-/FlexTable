@@ -25,6 +25,7 @@ namespace d3.View
 
         public IEnumerable<Tuple<Object, Object, Double>> Data
         {
+            get { return viewModel.Data; }
             set
             {
                 viewModel.Data = value;
@@ -84,20 +85,39 @@ namespace d3.View
             this.InitializeComponent();
             this.DataContext = viewModel;
 
-            RectangleElement.RectanglePointerPressed += RectangleElement_RectanglePointerPressed;
-            RectangleElement.RectanglePointerReleased += RectangleElement_RectanglePointerReleased;
+            HandleRectangleElement.RectanglePointerPressed += RectangleElement_RectanglePointerPressed;
+            HandleRectangleElement.RectanglePointerReleased += RectangleElement_RectanglePointerReleased;
         }
 
-        void RectangleElement_RectanglePointerPressed(object sender, object datum)
+        void RectangleElement_RectanglePointerPressed(object sender, object datum, Int32 index)
         {
             if (BarPointerPressed != null)
-                BarPointerPressed(sender, datum);
+                BarPointerPressed(sender, datum, index);
+
+            viewModel.SelectBar(datum);
+            RectangleElement.Update(true);
+            IndicatorTextElement.Update(true);
+            if (viewModel.IsLegendVisible)
+            {
+                LegendRectangleElement.Update(true);
+                LegendTextElement.Update(true);
+            }
         }
 
-        void RectangleElement_RectanglePointerReleased(object sender, object datum)
+        void RectangleElement_RectanglePointerReleased(object sender, object datum, Int32 index)
         {
             if (BarPointerReleased != null)
-                BarPointerReleased(sender, datum);
+                BarPointerReleased(sender, datum, index);
+
+            viewModel.UnselectBar(datum);
+
+            RectangleElement.Update(true);
+            IndicatorTextElement.Update(true);
+            if (viewModel.IsLegendVisible)
+            {
+                LegendRectangleElement.Update(true);
+                LegendTextElement.Update(true);
+            }
         }
 
         public void Update()
@@ -129,6 +149,7 @@ namespace d3.View
             viewModel.LegendAreaWidth = legendAreaWidth;
             viewModel.Update();
 
+            HandleRectangleElement.Update();
             RectangleElement.Update();
             IndicatorTextElement.Update();
             HorizontalAxis.Update();

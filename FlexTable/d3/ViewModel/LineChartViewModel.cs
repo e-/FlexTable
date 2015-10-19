@@ -64,7 +64,33 @@ namespace d3.ViewModel
 
         private IEnumerable<Series> data;
         public IEnumerable<Series> Data { get { return data; } set { data = value; } }
-        
+
+        public Func<Object, Int32, Color> ColorGetter { get { return (bin, index) => (AutoColor ? ColorScheme.Category10.Colors[index % 10] : ColorScheme.Category10.Colors.First()); } }
+        public Func<Object, Int32, Color> StrokeGetter { get { return (bin, index) => (AutoColor ? ColorScheme.Category10.Colors[index % 10] : ColorScheme.Category10.Colors.First()); } }
+        public Func<Object, Int32, Double> StrokeThicknessGetter { get { return (bin, index) => 3.0; } }
+        public Func<Object, Int32, Double> OpacityGetter { get { return (d, index) => IsSelecting ? (index == selectedIndex ? 0.64 : 0.05) : 0.64; } }
+
+        public Func<Object, Int32, Double> XGetter { get { return (d, index) => xScale.Map((d as Tuple<Object, Double, Int32, Int32>).Item1); } }
+        public Func<Object, Int32, Double> YGetter { get { return (d, index) => yScale.Map((d as Tuple<Object, Double, Int32, Int32>).Item2); } }
+        public Func<Object, Int32, Color> CircleColorGetter { get { return (d, index) => ColorScheme.Category10.Colors[(d as Tuple<Object, Double, Int32, Int32>).Item3 % 10]; } }
+        public Func<Object, Int32, Double> RadiusGetter { get { return (d, index) => 10; } }
+        public Func<Object, Int32, Double> CircleOpacityGetter { get { return (d, index) => IsSelecting ? ((d as Tuple<Object, Double, Int32, Int32>).Item4 == selectedIndex ? 0.8 : 0.1) : 0.8; } }
+
+        public Func<Object, Int32, Double> LegendHandleWidthGetter { get { return (d, index) => LegendAreaWidth; } }
+        public Func<Object, Int32, Double> LegendHandleHeightGetter { get { return (d, index) => LegendPatchHeight + LegendPatchSpace; } }
+        public Func<Object, Int32, Double> LegendHandleXGetter { get { return (d, index) => 0; } }
+        public Func<Object, Int32, Double> LegendHandleYGetter
+        {
+            get
+            {
+                return
+(d, index) => (Height - Data.Count() * LegendPatchHeight - (Data.Count() - 1) * LegendPatchSpace) / 2 + index * (LegendPatchHeight + LegendPatchSpace) - LegendPatchSpace / 2;
+            }
+        }
+        public Func<Object, Int32, Color> LegendHandleColorGetter { get { return (d, index) => Colors.Transparent; } }
+
+
+
         public Func<Object, Int32, Double> LegendPatchWidthGetter { get { return (d, index) => LegendPatchWidth; } }
         public Func<Object, Int32, Double> LegendPatchHeightGetter { get { return (d, index) => LegendPatchHeight; } }
         public Func<Object, Int32, Double> LegendPatchXGetter { get { return (d, index) => 0; } }
@@ -75,20 +101,15 @@ namespace d3.ViewModel
                 return (d, index) => (Height - Data.Count() * LegendPatchHeight - (Data.Count() - 1) * LegendPatchSpace) / 2 + index * (LegendPatchHeight + LegendPatchSpace);
             }
         }
+        public Func<Object, Int32, Double> LegendPatchOpacityGetter { get { return (d, index) => IsSelecting ? (index == selectedIndex ? 1.0 : 0.2) : 1.0; } }
+
+        
 
         public Func<Object, Int32, Double> LegendTextXGetter { get { return (d, index) => LegendPatchWidth + LegendPatchSpace; } }
         public Func<Object, Int32, String> LegendTextGetter { get { return (d, index) => (d as Series).Item1.ToString(); } }
         public Func<Object, Int32, Color> LegendTextColorGetter { get { return (d, index) => Colors.Black; } }
-        
-        public Func<Object, Int32, Color> ColorGetter { get { return (bin, index) => (AutoColor ? ColorScheme.Category10.Colors[index % 10] : ColorScheme.Category10.Colors.First()); } }
-        public Func<Object, Int32, Color> StrokeGetter { get { return (bin, index) => (AutoColor ? ColorScheme.Category10.Colors[index % 10] : ColorScheme.Category10.Colors.First()); } }
-        public Func<Object, Int32, Double> StrokeThicknessGetter { get { return (bin, index) => 3.0; } }
+        public Func<TextBlock, Object, Int32, Double> LegendTextOpacityGetter { get { return (textBlock, d, index) => IsSelecting ? (index == selectedIndex ? 1.0 : 0.2) : 1.0; } }
 
-        public Func<Object, Int32, Double> XGetter { get { return (d, index) => xScale.Map((d as Tuple<Object, Double, Int32>).Item1); } }
-        public Func<Object, Int32, Double> YGetter { get { return (d, index) => yScale.Map((d as Tuple<Object, Double, Int32>).Item2); } }
-        public Func<Object, Int32, Color> CircleColorGetter { get { return (d, index) => ColorScheme.Category10.Colors[(d as Tuple<Object, Double, Int32>).Item3 % 10]; } }
-        public Func<Object, Int32, Double> RadiusGetter { get { return (d, index) => 10; } }
-        public Func<Object, Int32, Double> OpacityGetter { get { return (d, index) => 0.8; } }
         public Func<TextBlock, Double, Double> LabelFontSizeGetter
         {
             get
@@ -97,10 +118,14 @@ namespace d3.ViewModel
             }
         }
 
+        
+
+        
         public Func<Object, Int32, Double> IndicatorWidthGetter { get { return (d, index) => xScale.RangeBand; } }
         public Func<Object, Int32, String> IndicatorTextGetter { get { return (d, index) => Format.IntegerBalanced.Format((d as DataPoint).Item2); } }
         public Func<Object, Int32, Double> IndicatorXGetter { get { return (d, index) => xScale.Map((d as DataPoint).Item1) - xScale.RangeBand / 2; } }
         public Func<Object, Int32, Double> IndicatorYGetter { get { return (d, index) => yScale.Map((d as DataPoint).Item2) - 18; } }
+        
 
         private Visibility horizontalAxisVisibility;
         public Visibility HorizontalAxisVisibility { get { return horizontalAxisVisibility; } set { horizontalAxisVisibility = value; OnPropertyChanged("HorizontalAxisVisibility"); } }
@@ -144,6 +169,21 @@ namespace d3.ViewModel
 
         public Boolean YStartsWithZero { get; set; } = false;
 
+        public Boolean IsSelecting { get; set; } = false;
+        private Int32 selectedIndex = -1;
+
+        public void SelectLine(Int32 index)
+        {
+            IsSelecting = true;
+            selectedIndex = index;
+        }
+
+        public void UnselectLine(Int32 index)
+        {
+            IsSelecting = false;
+            selectedIndex = -1;
+        }
+
         public void Update()
         {
             chartData = new Data()
@@ -157,7 +197,7 @@ namespace d3.ViewModel
             {
                 foreach(DataPoint dp in ser.Item2)
                 {
-                    circleList.Add(new Tuple<Object, Double, Int32>(dp.Item1, dp.Item2, index));
+                    circleList.Add(new Tuple<Object, Double, Int32, Int32>(dp.Item1, dp.Item2, index, index));
                 }
                 index++;
             }
@@ -234,9 +274,13 @@ namespace d3.ViewModel
                 RangeStart = VerticalAxisCanvasLeft,
                 RangeEnd = ChartAreaEndX + PaddingLeft
             };
-            foreach (DataPoint d in (data.First() as Series).Item2)
+            foreach(Series series in data)
             {
-                xScale.Domain.Add(d.Item1);
+                foreach (DataPoint d in series.Item2)
+                {
+                    if(xScale.Domain.IndexOf(d.Item1) < 0)
+                        xScale.Domain.Add(d.Item1);
+                }
             }
             XScale = xScale;
 

@@ -12,9 +12,14 @@
     >
     
     <Canvas Width="{Binding Width}" Height="{Binding Height}">
+        <com:Rectangles Data="{Binding ChartData}" WidthGetter="{Binding HandleWidthGetter}" HeightGetter="{Binding HandleHeightGetter}" 
+                               XGetter="{Binding HandleXGetter}" YGetter="{Binding HandleYGetter}" ColorGetter="{Binding HandleColorGetter}"
+                        x:Name="HandleRectangleElement"/>
+        
         <com:Rectangles Data="{Binding ChartData}" WidthGetter="{Binding WidthGetter}" HeightGetter="{Binding HeightGetter}" 
                                XGetter="{Binding XGetter}" YGetter="{Binding YGetter}" ColorGetter="{Binding ColorGetter}"
-                        x:Name="RectangleElement"/>
+                        OpacityGetter="{Binding OpacityGetter}"
+                        IsHitTestVisible="False" x:Name="RectangleElement"/>
         
         <com:Axis Orientation="Horizontal" Scale="{Binding XScale}" Canvas.Top="{Binding ChartAreaEndY}" Canvas.Left="0" x:Name="HorizontalAxis"
                   Visibility="{Binding HorizontalAxisVisibility}" LabelFontSizeGetter="{Binding LabelFontSizeGetter}"/>
@@ -32,25 +37,36 @@
         </TextBlock>
         
         <Canvas x:Name="LegendPanel">
+            <com:Rectangles Data="{Binding ChartData}" WidthGetter="{Binding LegendHandleWidthGetter}" 
+                                   HeightGetter="{Binding LegendHandleHeightGetter}" XGetter="{Binding LegendHandleXGetter}" 
+                                   YGetter="{Binding LegendHandleYGetter}" ColorGetter="{Binding HandleColorGetter}"
+                                   x:Name="LegendHandleRectangleElement" 
+                                   Visibility="{Binding LegendVisibility}"
+                            />
+            
             <com:Rectangles Data="{Binding ChartData}" WidthGetter="{Binding LegendPatchWidthGetter}" 
                                    HeightGetter="{Binding LegendPatchHeightGetter}" XGetter="{Binding LegendPatchXGetter}" 
                                    YGetter="{Binding LegendPatchYGetter}" ColorGetter="{Binding ColorGetter}"
-                                   x:Name="LegendRectangleElement"
+                                    OpacityGetter="{Binding OpacityGetter}"
+                                   x:Name="LegendRectangleElement" IsHitTestVisible="False"
                             Visibility="{Binding LegendVisibility}"
                             />
 
             <com:Texts Data="{Binding ChartData}" TextGetter="{Binding LegendTextGetter}"
-                              HeightGetter="{Binding LegendPatchHeightGetter}"
-                              XGetter="{Binding LegendTextXGetter}" YGetter="{Binding LegendPatchYGetter}" 
-                              ColorGetter="{Binding LegendTextColorGetter}" x:Name="LegendTextElement"
-                       Visibility="{Binding LegendVisibility}"
+                       HeightGetter="{Binding LegendPatchHeightGetter}"
+                       XGetter="{Binding LegendTextXGetter}" YGetter="{Binding LegendPatchYGetter}" 
+                       ColorGetter="{Binding LegendTextColorGetter}" x:Name="LegendTextElement"
+                       OpacityGetter="{Binding TextOpacityGetter}"
+                       Visibility="{Binding LegendVisibility}" IsHitTestVisible="False"
                        />
         </Canvas>
         
-        <com:Texts Data="{Binding ChartData}" TextGetter="{Binding IndicatorTextGetter}"
-                         WidthGetter="{Binding IndicatorWidthGetter}"
-                         XGetter="{Binding IndicatorXGetter}" YGetter="{Binding IndicatorYGetter}" 
-                         Foreground="Black" FontSize="14" x:Name="IndicatorTextElement"
+        <com:Texts Data="{Binding IndicatorData}" TextGetter="{Binding IndicatorTextGetter}"
+                   WidthGetter="{Binding IndicatorWidthGetter}"
+                   XGetter="{Binding IndicatorXGetter}" YGetter="{Binding IndicatorYGetter}" 
+                   OpacityGetter="{Binding TextOpacityGetter}"
+                   Foreground="Black" FontSize="14" x:Name="IndicatorTextElement"
+                   
                    />
     </Canvas>
 </UserControl>

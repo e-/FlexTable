@@ -99,18 +99,53 @@ namespace d3.View
 
             LineElement.LinePointerPressed += LineElement_LinePointerPressed;
             LineElement.LinePointerReleased += LineElement_LinePointerReleased;
+
+            LegendHandleRectangleElement.RectanglePointerPressed += LegendHandleRectangleElement_RectanglePointerPressed;
+            LegendHandleRectangleElement.RectanglePointerReleased += LegendHandleRectangleElement_RectanglePointerReleased;
         }
 
-        void LineElement_LinePointerPressed(object sender, object datum)
+        private void LegendHandleRectangleElement_RectanglePointerPressed(object sender, object datum, int index)
         {
             if (LinePointerPressed != null)
-                LinePointerPressed(sender, datum);
+                LinePointerPressed(sender, datum, index);
+
+            viewModel.SelectLine(index);
+            LineElement.Update(true);
+            CircleElement.Update();
+            IndicatorTextElement.Update(true);
+            if (viewModel.IsLegendVisible)
+            {
+                LegendRectangleElement.Update(true);
+                LegendTextElement.Update(true);
+            }
         }
 
-        void LineElement_LinePointerReleased(object sender, object datum)
+        private void LegendHandleRectangleElement_RectanglePointerReleased(object sender, object datum, int index)
         {
             if (LinePointerReleased != null)
-                LinePointerReleased(sender, datum);
+                LinePointerReleased(sender, datum, index);
+
+            viewModel.UnselectLine(index);
+            LineElement.Update(true);
+            CircleElement.Update();
+            IndicatorTextElement.Update(true);
+            if (viewModel.IsLegendVisible)
+            {
+                LegendRectangleElement.Update(true);
+                LegendTextElement.Update(true);
+            }
+        }       
+
+        void LineElement_LinePointerPressed(object sender, object datum, Int32 index)
+        {
+            if (LinePointerPressed != null)
+                LinePointerPressed(sender, datum, index);
+        }
+
+        void LineElement_LinePointerReleased(object sender, object datum, Int32 index)
+        {
+            if (LinePointerReleased != null)
+                LinePointerReleased(sender, datum, index);
         }
 
         public void Update()
@@ -147,7 +182,8 @@ namespace d3.View
 
             viewModel.LegendAreaWidth = legendAreaWidth;
             viewModel.Update();
-           
+
+            LegendHandleRectangleElement.Update();
             LineElement.Update();
             CircleElement.Update();
             IndicatorTextElement.Update();

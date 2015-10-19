@@ -202,7 +202,7 @@ namespace d3.Component
                         Storyboard.SetTargetProperty(positionAnimation2, linePrimary2String);
 
 
-                        if (previousScale.GetType() == Scale.GetType() && !(Scale is Scale.Ordinal)) // 같고 ordinal이 아니어야 (linear)야 position animation 가능
+                        if (previousScale.GetType() == Scale.GetType() && !(Scale is Ordinal)) // 같고 ordinal이 아니어야 (linear)야 position animation 가능
                         {
                             tickLabelsStoryboard.Children.Add(positionAnimation);
                             tickLabelsStoryboard.Children.Add(positionAnimation1);

@@ -38,6 +38,9 @@
                 PointerExited="IndexHelperWrapperElement_PointerExited"
                 Opacity="0"
                 >
+            <Canvas.RenderTransform>
+                <ScaleTransform ScaleX="0.5" />
+            </Canvas.RenderTransform>
         </Canvas>
     </Grid>
 </UserControl>

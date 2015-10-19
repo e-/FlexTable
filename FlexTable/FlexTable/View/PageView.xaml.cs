@@ -16,6 +16,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 using FlexTable.ViewModel;
+using Series = System.Tuple<System.String, System.Collections.Generic.List<System.Tuple<System.Object, System.Double>>>;
 
 // 사용자 정의 컨트롤 항목 템플릿에 대한 설명은 http://go.microsoft.com/fwlink/?LinkId=234236에 나와 있습니다.
 
@@ -38,8 +39,8 @@ namespace FlexTable.View
         public StackPanel DescriptiveStatisticsTitle => DescriptiveStatisticsTitleElement;
         public StackPanel GroupedBarChartTitle => GroupedBarChartTitleElement;
         public StackPanel ScatterplotTitle => ScatterplotTitleElement;
-        public TextBlock PivotTableTitle => new TextBlock(); // PivotTableTitleElement;
-        public TextBlock CorrelationStatisticsTitle => CorrelationStatisticsTitleElement;
+        public StackPanel PivotTableTitle => PivotTableTitleElement;
+        public StackPanel CorrelationStatisticsTitle => CorrelationStatisticsTitleElement;
 
         public PageViewModel PageViewModel => (this.DataContext as PageViewModel);
         public Storyboard HideStoryboard => HideStoryboardElement;
@@ -55,9 +56,28 @@ namespace FlexTable.View
 
             GroupedBarChartElement.BarPointerPressed += GroupedBarChartElement_BarPointerPressed;
             GroupedBarChartElement.BarPointerReleased += BarChartElement_BarPointerReleased;
+
+            LineChartElement.LinePointerPressed += LineChartElement_LinePointerPressed;
+            LineChartElement.LinePointerReleased += LineChartElement_LinePointerReleased;
         }
-        
-        private void GroupedBarChartElement_BarPointerPressed(object sender, object d)
+
+        private void LineChartElement_LinePointerPressed(object sender, object datum, int index)
+        {
+            PageViewModel pvm = this.DataContext as PageViewModel;
+
+            Series series = datum as Series;
+            pvm.MainPageViewModel.TableViewModel.PreviewRows(pvm.LineChartRowSelector(series));
+        }
+
+
+        private void LineChartElement_LinePointerReleased(object sender, object datum, int index)
+        {
+            PageViewModel pvm = this.DataContext as PageViewModel;
+            pvm.MainPageViewModel.TableViewModel.CancelPreviewRows();
+        }
+
+
+        private void GroupedBarChartElement_BarPointerPressed(object sender, object d, Int32 index)
         {
             PageViewModel pvm = this.DataContext as PageViewModel;
 
@@ -65,7 +85,7 @@ namespace FlexTable.View
             pvm.MainPageViewModel.TableViewModel.PreviewRows(pvm.GroupedBarChartRowSelecter(datum.Item1 as Model.Category, datum.Item2 as Model.Category));
         }
 
-        void BarChartElement_BarPointerPressed(object sender, object d)
+        void BarChartElement_BarPointerPressed(object sender, object d, Int32 index)
         {
             PageViewModel pvm = this.DataContext as PageViewModel;
             
@@ -73,7 +93,7 @@ namespace FlexTable.View
             pvm.MainPageViewModel.TableViewModel.PreviewRows(pvm.BarChartRowSelecter(datum.Item1 as Model.Category));
         }
 
-        void BarChartElement_BarPointerReleased(object sender, object d)
+        void BarChartElement_BarPointerReleased(object sender, object d, Int32 index)
         {
             PageViewModel pvm = this.DataContext as PageViewModel;
             pvm.MainPageViewModel.TableViewModel.CancelPreviewRows();
@@ -90,6 +110,11 @@ namespace FlexTable.View
         }
 
         private void TitleWrapper_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            e.Handled = true;
+        }
+
+        private void ParagraphLabelContainer_Tapped(object sender, TappedRoutedEventArgs e)
         {
             e.Handled = true;
         }
@@ -125,7 +150,6 @@ namespace FlexTable.View
             ParagraphLabelContainer.Children.Clear();
             paragraphLabels.Clear();
             Carousel.UpdateLayout();
-
 
             Int32 index = 0;
             foreach (UIElement child in ParagraphContainer.Children)

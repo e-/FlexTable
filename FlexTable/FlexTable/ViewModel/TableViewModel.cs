@@ -178,7 +178,7 @@ namespace FlexTable.ViewModel
             }
 
 
-            if (viewStatus.SelectedColumnViewModels.Count == 0) // 아무 것도 선택되지 않으면 모든 로우 보여줘야함.
+            if (SheetViewModel.IsAllRowsVisible) // 아무 것도 선택되지 않으면 모든 로우 보여줘야함.
             {
                 rowPresenters = allRowPresenters;
 

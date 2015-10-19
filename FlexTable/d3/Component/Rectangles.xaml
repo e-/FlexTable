@@ -9,7 +9,7 @@
     d:DesignHeight="300"
     d:DesignWidth="400">
 
-    <Canvas x:Name="RectanglesCanvas">
+    <Canvas x:Name="RectangleCanvas">
             
     </Canvas>
 </UserControl>
