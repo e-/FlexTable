@@ -23,7 +23,7 @@
             Data="{Binding CircleData}" RadiusGetter="{Binding RadiusGetter}" 
             XGetter="{Binding XGetter}" YGetter="{Binding YGetter}" 
             ColorGetter="{Binding CircleColorGetter}" OpacityGetter="{Binding CircleOpacityGetter}"
-            AllowTransition="False"
+            ReusePreviousElement="False"
             x:Name="CircleElement"/>
         
         <com:Axis Orientation="Horizontal" Scale="{Binding XScale}" Canvas.Top="{Binding ChartAreaEndY}" Canvas.Left="0" x:Name="HorizontalAxis"
@@ -51,7 +51,7 @@
             <com:Rectangles Data="{Binding ChartData}" WidthGetter="{Binding LegendPatchWidthGetter}" 
                             HeightGetter="{Binding LegendPatchHeightGetter}" XGetter="{Binding LegendPatchXGetter}" 
                             YGetter="{Binding LegendPatchYGetter}" ColorGetter="{Binding ColorGetter}"
-                            x:Name="LegendRectangleElement" Opacity="{Binding LegendPatchOpacityGetter}"
+                            x:Name="LegendRectangleElement" OpacityGetter="{Binding LegendPatchOpacityGetter}"
                             Visibility="{Binding LegendVisibility}" IsHitTestVisible="False"
                             />
 
@@ -60,7 +60,7 @@
                        XGetter="{Binding LegendTextXGetter}" YGetter="{Binding LegendPatchYGetter}" 
                        ColorGetter="{Binding LegendTextColorGetter}" x:Name="LegendTextElement"
                        Visibility="{Binding LegendVisibility}" IsHitTestVisible="False"
-                       Opacity="{Binding LegendTextOpacityGetter}"
+                       OpacityGetter="{Binding LegendTextOpacityGetter}"
                        />
         </Canvas>
         

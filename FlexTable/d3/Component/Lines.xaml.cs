@@ -94,15 +94,15 @@ namespace d3.Component
             Update(false);
         }
 
-        public void Update(Boolean allowTransition)
+        public void Update(Boolean useTransition)
         {
-            if (allowTransition)
+            if (useTransition)
             {
                 Int32 index = 0;
                 if (previousStoryboard != null) previousStoryboard.Pause();
                 Storyboard sb = new Storyboard()
                 {
-                    BeginTime = Const.AnimationDelay
+                    ///BeginTime = Const.AnimationDelay
                 };
                 foreach (Object datum in Data.List)
                 {

@@ -50,7 +50,7 @@ namespace FlexTable.Util
             }
 
             Boolean firstRow = true;
-
+            Int32 id = 0;
             while (true) // body
             {
                 var cellValues = parser.Read();
@@ -84,7 +84,10 @@ namespace FlexTable.Util
                     continue;
                 }
 
-                Row row = new Row();
+                Row row = new Row()
+                {
+                    Index = id++
+                };
 
                 sheet.Rows.Add(row);
 

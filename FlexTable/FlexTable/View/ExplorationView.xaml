@@ -11,14 +11,18 @@
     d:DesignWidth="400">
 
     <Grid x:Name="Wrapper">
-        <Canvas x:Name="PageViewsElement">
-            <Border Canvas.Top="{Binding PageHeight}" Width="{Binding PageWidth}">
-                <local:MetedataView DataContext="{Binding MetadataViewModel}"></local:MetedataView>
+        <Canvas x:Name="PageViewElement">
+            <Border Canvas.Top="0" Width="{Binding MainPageViewModel.PageWidth}">
+                <StackPanel>
+                    <Border Height="{Binding MainPageViewModel.PageHeight}">
+                        <local:MetedataView DataContext="{Binding MetadataViewModel}"></local:MetedataView>
+                    </Border>
+                    <Image Source="ms-appx:///Assets/horizontal-separator.png" Width="{Binding MainPageViewModel.PageWidth}" Height="8"></Image>
+                </StackPanel>
             </Border>
-            
-            <local:PageView x:Name="InitialPageViewElement" DataContext="{Binding DummyPageViewModel}" Width="{Binding PageWidth}"></local:PageView>
+
+            <local:PageView x:Name="InitialPageViewElement" DataContext="{Binding DummyPageViewModel}" Width="{Binding MainPageViewModel.PageWidth}"
+                            Canvas.Top="{Binding MainPageViewModel.PageOffset}"></local:PageView>
         </Canvas>
-        <Grid x:Name="StrokeGrid" IsHitTestVisible="False"></Grid>
-        <Grid x:Name="NewStrokeGrid" IsHitTestVisible="False"></Grid>
     </Grid>
 </UserControl>

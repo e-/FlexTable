@@ -13,6 +13,10 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using d3.ViewModel;
+using DataPoint = System.Tuple<System.Object, System.Double, System.Double, System.Int32>;
+using LegendDataPoint = System.Tuple<System.Object, System.Int32>;
+using Windows.UI.Input.Inking;
+using System.Diagnostics;
 
 // 사용자 정의 컨트롤 항목 템플릿에 대한 설명은 http://go.microsoft.com/fwlink/?LinkId=234236에 나와 있습니다.
 
@@ -22,7 +26,7 @@ namespace d3.View
     {
         ViewModel.ScatterplotViewModel viewModel = new ViewModel.ScatterplotViewModel();
 
-        public IEnumerable<Tuple<Object, Double, Double>> Data
+        public IEnumerable<DataPoint> Data
         {
             set
             {
@@ -66,10 +70,86 @@ namespace d3.View
             set { SetValue(VerticalAxisLabelProperty, value); }
         }
 
+        public event Event.EventHandler CategoryPointerPressed;
+        public event Event.EventHandler CategoryPointerReleased;
+        public event Event.EventHandler LassoSelected;
+        public event Event.EventHandler LassoUnselected;
+
+        Drawable drawable = new Drawable()
+        {
+            IgnoreSmallStrokes = false
+        };
+
         public Scatterplot()
         {
             this.InitializeComponent();
             this.DataContext = viewModel;
+
+            drawable.Attach(RootCanvas, StrokeGrid, NewStrokeGrid);
+            drawable.StrokeAdded += Drawable_StrokeAdded;
+            LegendHandleRectangleElement.RectanglePointerPressed += LegendHandleRectangleElement_RectanglePointerPressed;
+            LegendHandleRectangleElement.RectanglePointerReleased += LegendHandleRectangleElement_RectanglePointerReleased;
+        }
+
+        private void Drawable_StrokeAdded(InkManager inkManager)
+        {
+            List<Point> points = inkManager.GetStrokes()[0].GetInkPoints().Select(ip => ip.Position).ToList();
+            Boolean isLassoSelecting = viewModel.IsLassoSelecting;
+
+            viewModel.SelectLasso(points);
+
+            if (viewModel.SelectedIndices.Count == 0)
+            {
+                viewModel.UnselectLasso();
+                if (isLassoSelecting)
+                {
+                    if (LassoUnselected != null) LassoUnselected(null, null, 0);
+                }
+            }
+            else
+            {
+                if (LassoSelected != null) LassoSelected(null, viewModel.SelectedIndices, 0);
+            }
+            
+            CircleElement.Update(true, false);
+
+            drawable.RemoveAllStrokes();
+        }
+
+        private void LegendHandleRectangleElement_RectanglePointerPressed(object sender, object datum, int index)
+        {
+
+            if (viewModel.IsLassoSelecting)
+            {
+                viewModel.UnselectLasso();
+                if (LassoUnselected != null) LassoUnselected(null, null, 0);
+            }
+
+            viewModel.SelectCategory((datum as LegendDataPoint).Item1);
+            CircleElement.Update(true, false);
+            if (viewModel.IsLegendVisible)
+            {
+                LegendRectangleElement.Update(true);
+                LegendTextElement.Update(true);
+            }
+
+            if (CategoryPointerPressed != null)
+                CategoryPointerPressed(sender, datum, index);
+        }
+
+        private void LegendHandleRectangleElement_RectanglePointerReleased(object sender, object datum, int index)
+        {
+            viewModel.UnselectCategory((datum as LegendDataPoint).Item1);
+            CircleElement.Update(true, false);
+            if (viewModel.IsLegendVisible)
+            {
+                LegendRectangleElement.Update(true);
+                LegendTextElement.Update(true);
+            }
+
+            if (CategoryPointerReleased != null)
+                CategoryPointerReleased(sender, datum, index);
+
         }
 
         public void Update()
@@ -99,7 +179,8 @@ namespace d3.View
 
             viewModel.Update();
 
-            CircleElement.Update();
+            LegendHandleRectangleElement.Update();
+            CircleElement.Update(true, true);
             HorizontalAxis.Update();
             VerticalAxis.Update();
         }

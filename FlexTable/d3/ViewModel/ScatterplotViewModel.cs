@@ -4,8 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using d3.Scale;
+using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using DataPoint = System.Tuple<System.Object, System.Double, System.Double, System.Int32>;
+using LegendDataPoint = System.Tuple<System.Object, System.Int32>;
 
 namespace d3.ViewModel
 {
@@ -44,19 +48,34 @@ namespace d3.ViewModel
         private Double chartAreaEndY = 300;
         public Double ChartAreaEndY { get { return chartAreaEndY; } set { chartAreaEndY = value; OnPropertyChanged("ChartAreaEndY"); } }
 
-        public Func<Object, Int32, Double> XGetter { get { return (d, index) => xScale.Map((d as Tuple<Object, Double, Double>).Item2); } }
-        public Func<Object, Int32, Double> YGetter { get { return (d, index) => yScale.Map((d as Tuple<Object, Double, Double>).Item3); } }
+        public Func<Object, Int32, Double> XGetter { get { return (d, index) => xScale.Map((d as DataPoint).Item2); } }
+        public Func<Object, Int32, Double> YGetter { get { return (d, index) => yScale.Map((d as DataPoint).Item3); } }
         public Func<Object, Int32, Double> RadiusGetter { get { return (d, index) => 5; } }
-        public Func<Object, Int32, Double> OpacityGetter { get { return (d, index) => 0.8; } }
+        public Func<Object, Int32, Double> OpacityGetter { get {
+                return (d, index) =>
+                    (!IsCategorySelecting || (d as DataPoint).Item1 == selectedCategory) && (!IsLassoSelecting || selectedIndices.IndexOf(index) >= 0) ? 0.8 : 0.1;
+        } }
 
         private Data chartData;
         public Data ChartData { get { return chartData; } }
 
-        private IEnumerable<Tuple<Object, Double, Double>> data;
-        public IEnumerable<Tuple<Object, Double, Double>> Data { get { return data; } set { data = value; } }
+        private IEnumerable<DataPoint> data;
+        public IEnumerable<DataPoint> Data { get { return data; } set { data = value; } }
 
         private Data legendData;
         public Data LegendData { get { return legendData; } }
+
+        public Func<Object, Int32, Double> LegendHandleWidthGetter { get { return (d, index) => LegendAreaWidth; } }
+        public Func<Object, Int32, Double> LegendHandleHeightGetter { get { return (d, index) => LegendPatchHeight + LegendPatchSpace; } }
+        public Func<Object, Int32, Double> LegendHandleXGetter { get { return (d, index) => 0; } }
+        public Func<Object, Int32, Double> LegendHandleYGetter {
+            get {
+                return
+                    (d, index) => (Height - LegendData.List.Count * LegendPatchHeight - (LegendData.List.Count - 1) * LegendPatchSpace) / 2 + index * (LegendPatchHeight + LegendPatchSpace) - LegendPatchSpace / 2;
+            }
+        }
+        public Func<Object, Int32, Color> LegendHandleColorGetter { get { return (d, index) => Colors.Transparent; } }
+
 
         public Func<Object, Int32, Double> LegendPatchWidthGetter { get { return (d, index) => 20; } }
         public Func<Object, Int32, Double> LegendPatchHeightGetter { get { return (d, index) => 20; } }
@@ -68,17 +87,18 @@ namespace d3.ViewModel
                 return (d, index) => (Height - colorScale.Count() * LegendPatchHeight - (colorScale.Count() - 1) * LegendPatchSpace) / 2 + index * (LegendPatchHeight + LegendPatchSpace);
             }
         }
+        public Func<Object, Int32, Double> LegendPatchOpacityGetter { get { return (d, index) => IsCategorySelecting ? ((d as LegendDataPoint).Item1 == selectedCategory ? 1.0 : 0.2) : 1.0; } }
 
         public Func<Object, Int32, Double> LegendTextXGetter { get { return (d, index) => 25; } }
         public Func<Object, Int32, String> LegendTextGetter { get { return (d, index) => (d as Tuple<Object, Int32>).Item1.ToString(); } }
         public Func<Object, Int32, Color> LegendTextColorGetter { get { return (d, index) => /*(d as Model.Bin).IsFilteredOut ? Colors.LightGray :*/ Colors.Black; } }
-
+        public Func<TextBlock, Object, Int32, Double> LegendTextOpacityGetter { get { return (textBlock, d, index) => IsCategorySelecting ? ((d as LegendDataPoint).Item1 == selectedCategory ? 1.0 : 0.2) : 1.0; } }
 
         public Func<Object, Int32, Color> ColorGetter
         {
             get
             {
-                return (bin, index) => ColorScheme.Category10.Colors[colorScale[(bin as Tuple<Object, Double, Double>).Item1] % 10];
+                return (bin, index) => ColorScheme.Category10.Colors[colorScale[(bin as DataPoint).Item1] % 10];
             }
         }
 
@@ -129,11 +149,47 @@ namespace d3.ViewModel
         private String verticalAxisLabel;
         public String VerticalAxisLabel { get { return verticalAxisLabel; } set { verticalAxisLabel = value; OnPropertyChanged("VerticalAxisLabel"); } }
 
+        public Boolean IsCategorySelecting { get; set; } = false;
+        private Object selectedCategory = null;
+
+        public Boolean IsLassoSelecting { get; set; } = false;
+        List<Int32> selectedIndices = null;
+        public List<Int32> SelectedIndices => selectedIndices;
+
+        public void SelectLasso(List<Point> points)
+        {
+            IsLassoSelecting = true;
+
+            selectedIndices = ChartData.List
+                .Select((d, i) => new Tuple<Point, Int32>(new Point(XGetter(d, i), YGetter(d, i)), (d as DataPoint).Item4))
+                .Where(d => Util.TestPointInPolygon((d as Tuple<Point, Int32>).Item1, points))
+                .Select((d, i) => (d as Tuple<Point, Int32>).Item2)
+                .ToList()
+                ;
+        }
+
+        public void UnselectLasso()
+        {
+            IsLassoSelecting = false;
+        }
+
+        public void SelectCategory(Object category)
+        {
+            IsCategorySelecting = true;
+            selectedCategory = category;
+        }
+
+        public void UnselectCategory(Object category)
+        {
+            IsCategorySelecting = false;
+            selectedCategory = null;
+        }
+
         public void UpdateLegendData()
         {
             colorScale = new Dictionary<Object, Int32>();
             Int32 index = 0;
-            foreach (Tuple<Object, Double, Double> tuple in data)
+            foreach (DataPoint tuple in data)
             {
                 if (!colorScale.ContainsKey(tuple.Item1))
                 {

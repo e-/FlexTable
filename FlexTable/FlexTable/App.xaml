@@ -63,7 +63,7 @@
             <QuarticEase EasingMode="EaseInOut" x:Key="QuarticEaseInOut" />
 
             <Style x:Key="SeamlessComboBoxStyle" TargetType="ComboBox">
-                <Setter Property="Padding" Value="2,0,2,0" />
+                <Setter Property="Padding" Value="2,0,-6,0" />
                 <!--<Setter Property="Padding" Value="2,2,2,2" />-->
                 <Setter Property="MinWidth" Value="0" /><!-- Value="{ThemeResource ComboBoxThemeMinWidth}" />-->
                 <Setter Property="Foreground" Value="{ThemeResource SystemControlForegroundBaseHighBrush}" />
@@ -274,8 +274,7 @@
                                         CornerRadius="3"/>
                                 <!--Margin="{TemplateBinding Padding}"-->
                                 <ContentPresenter x:Name="ContentPresenter"
-                                      Grid.Row="1"
-                                      
+                                      Grid.Row="1"                                      
                                       HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                       VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                                                   FontWeight="Bold"

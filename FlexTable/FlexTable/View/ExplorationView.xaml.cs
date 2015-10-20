@@ -23,7 +23,6 @@ namespace FlexTable.View
         public PageView TopPageView { get { return topPageView; } }
         public ViewModel.PageViewModel TopPageViewModel { get { return topPageView.PageViewModel; } }
         
-
         public ExplorationView()
         {
             this.InitializeComponent();
@@ -40,7 +39,8 @@ namespace FlexTable.View
                 );
             topPageView = page;
             page.DataContext = pageViewModel;
-            PageViewsElement.Children.Add(page);
+            Canvas.SetTop(page, mainPageViewModel.PageOffset);
+            PageViewElement.Children.Add(page);
         }
 
         public void RemoveTopPage(PageView nextTopPageView)
@@ -48,7 +48,7 @@ namespace FlexTable.View
             PageView currentTopPageView = topPageView;
             currentTopPageView.HideStoryboard.Completed += delegate
             {
-                PageViewsElement.Children.Remove(currentTopPageView);
+                PageViewElement.Children.Remove(currentTopPageView);
             };
             currentTopPageView.HideStoryboard.Begin();
 

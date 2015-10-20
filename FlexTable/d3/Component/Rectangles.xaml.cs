@@ -205,9 +205,19 @@ namespace d3.Component
 
                     rect.PointerPressed += delegate (object sender, PointerRoutedEventArgs e)
                     {
+                        rect.CapturePointer(e.Pointer);
                         if (RectanglePointerPressed != null)
                         {
                             RectanglePointerPressed(rect, datum, localIndex);
+                            e.Handled = true;
+                        }
+                    };
+                    
+                    rect.PointerCaptureLost += delegate (object sender, PointerRoutedEventArgs e)
+                    {
+                        if (RectanglePointerReleased != null)
+                        {
+                            RectanglePointerReleased(rect, datum, localIndex);
                             e.Handled = true;
                         }
                     };

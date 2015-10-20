@@ -37,12 +37,22 @@ namespace FlexTable.ViewModel
 
         private ExplorationViewModel explorationViewModel;
         public ExplorationViewModel ExplorationViewModel { get { return explorationViewModel; } set { explorationViewModel = value; OnPropertyChanged("ExplorationViewModel"); } }
+
+        private Double pageHeight;
+        public Double PageHeight { get { return pageHeight; } set { pageHeight = value; OnPropertyChanged("PageHeight"); } }
         
+        private Double pageWidth;
+        public Double PageWidth { get { return pageWidth; } set { pageWidth = value; OnPropertyChanged("PageWidth"); } }
+
+        private Double pageOffset;
+        public Double PageOffset { get { return pageOffset; } set { pageOffset = value; OnPropertyChanged("PageOffset"); } }
+
         public MainPageViewModel(IMainPage view)
         {
             this.view = view;
 
             var bounds = ApplicationView.GetForCurrentView().VisibleBounds;
+
             var scaleFactor = 1.0; // DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel;
             this.bounds = new Size(bounds.Width * scaleFactor, bounds.Height * scaleFactor);
 
@@ -53,6 +63,10 @@ namespace FlexTable.ViewModel
 
         public void Initialize()
         {
+            PageHeight = Bounds.Height / 2 - 4;
+            PageOffset = PageHeight + 8;
+            PageWidth = Bounds.Width / 2;
+
             // rowViewModels 계산
             sheetViewModel.Initialize(sheet);
             
@@ -84,45 +98,15 @@ namespace FlexTable.ViewModel
             
             // 메타데이터 초기화
             ExplorationViewModel.MetadataViewModel.Initialize();
-        }  
-   
-        public void UpdateFiltering()
-        {
-            /*foreach (Model.Row row in sheet.Rows)
-            {
-                row.IsFilteredOut = false;
-            }
 
-            foreach (Model.Column column in Sheet.Columns)
-            {
-                foreach (Model.Bin bin in column.Bins.Where(b => b.IsFilteredOut))
-                {
-                    foreach (Model.Row row in bin.Rows)
-                    {
-                        row.IsFilteredOut = true;
-                    }
-                }
-            }
+            ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[1]);
+            ExplorationViewModel.PageViewTapped(ExplorationViewModel.TopPageView.PageViewModel, ExplorationViewModel.TopPageView);
 
-            Int32 index = 0;
-            foreach (Model.Row row in sheet.Rows)
-            {
-                if (!row.IsFilteredOut)
-                {
-                    row.Index = index++;
-                }
-            }
+            ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[4]);
+            ExplorationViewModel.PageViewTapped(ExplorationViewModel.TopPageView.PageViewModel, ExplorationViewModel.TopPageView);
 
-            foreach (Model.Row row in sheet.Rows)
-            {
-                row.OnPropertyChanged("Y");
-                row.OnPropertyChanged("IsFilteredOut");
-            }
-
-            foreach (View.RowPresenter rowPresenter in rowPresenters)
-            {
-                rowPresenter.Update();
-            }*/
-        }
+            ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[6]);
+            ExplorationViewModel.PageViewTapped(ExplorationViewModel.TopPageView.PageViewModel, ExplorationViewModel.TopPageView);
+        }    
     }
 }

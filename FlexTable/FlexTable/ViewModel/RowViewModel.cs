@@ -13,6 +13,8 @@ namespace FlexTable.ViewModel
         MainPageViewModel mainPageViewModel;
 
         private Int32 index;
+
+        // Index의 경우 초기 모든 row에는 row의 ID와 일치하나 뒤에 동적으로 생성된 rvm에 대해서는 해당하는 row가 없으므로 0부터 새로 붙인다.
         public Int32 Index
         {
             get { return index; }

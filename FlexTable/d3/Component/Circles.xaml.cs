@@ -23,7 +23,7 @@ namespace d3.Component
     public sealed partial class Circles : UserControl
     {
         public static readonly DependencyProperty DataProperty =
-            DependencyProperty.Register("Data", typeof(Data), typeof(Circles), new PropertyMetadata(null, new PropertyChangedCallback(DataChanged)));
+            DependencyProperty.Register("Data", typeof(Data), typeof(Circles), new PropertyMetadata(null));
         
         public event Event.EventHandler CirclePointerPressed;
         public event Event.EventHandler CirclePointerReleased;
@@ -79,7 +79,27 @@ namespace d3.Component
             set { SetValue(OpacityGetterProperty, value); }
         }
 
-        public static readonly DependencyProperty AllowTransitionProperty =
+        public static readonly DependencyProperty ReusePreviousElementProperty =
+            DependencyProperty.Register("ReusePreviousElement", typeof(Boolean), typeof(Circles), new PropertyMetadata(true)
+                );
+
+        public Boolean ReusePreviousElement
+        {
+            get { return (Boolean)GetValue(ReusePreviousElementProperty); }
+            set { SetValue(ReusePreviousElementProperty, value); }
+        }
+
+        /*public static readonly DependencyProperty DeferredTransitionProperty =
+            DependencyProperty.Register("DeferredTransition", typeof(Boolean), typeof(Circles), new PropertyMetadata(true)
+                );
+    
+        public Boolean DeferredTransition
+        {
+            get { return (Boolean)GetValue(DeferredTransitionProperty); }
+            set { SetValue(DeferredTransitionProperty, value); }
+        }*/
+
+        /*public static readonly DependencyProperty AllowTransitionProperty =
             DependencyProperty.Register("AllowTransition", typeof(Boolean), typeof(Circles), new PropertyMetadata(true)
                 );
 
@@ -87,49 +107,109 @@ namespace d3.Component
         {
             get { return (Boolean)GetValue(AllowTransitionProperty); }
             set { SetValue(AllowTransitionProperty, value); }
-        }
+        }*/
 
         public Circles()
         {
             this.InitializeComponent();
-        }
-
-        private static void DataChanged(DependencyObject source, DependencyPropertyChangedEventArgs e)
-        {
-        }
-
-        List<Ellipse> previousCircles = new List<Ellipse>();
+        }        
 
         Storyboard previousStoryboard;
         
-        public void Update()
+        /*public void Update()
+        {
+            Update(false);
+        }*/
+
+        public void Update(Boolean useTransition, Boolean deferredTransition)
         {
             Int32 index = 0;
-            Storyboard storyboard = new Storyboard()
-            {
-                BeginTime = Const.AnimationDelay
-            };
-        
+            Storyboard storyboard = new Storyboard();
+
             if (previousStoryboard != null)
                 previousStoryboard.Pause();
 
-            foreach (Object datum in Data.List)
+            if(deferredTransition)
             {
-                Ellipse ellipse = null;
-                Boolean newbie = false;
+                storyboard.BeginTime = Const.AnimationDelay;
+            }
 
-                if (index < CirclesCanvas.Children.Count)
+            if (ReusePreviousElement || useTransition)
+            {
+                foreach (Object datum in Data.List)
                 {
-                    ellipse = CirclesCanvas.Children[index] as Ellipse;
-                }
-                else
-                {
-                    newbie = true;
-                    ellipse = new Ellipse()
+                    Ellipse ellipse = null;
+                    Boolean newbie = false;
+
+                    if (index < CircleCanvas.Children.Count)
                     {
-                    };
+                        ellipse = CircleCanvas.Children[index] as Ellipse;
+                    }
+                    else
+                    {
+                        newbie = true;
+                        ellipse = new Ellipse();
 
-                    ellipse.PointerPressed += delegate(object sender, PointerRoutedEventArgs e)
+                        ellipse.PointerPressed += delegate (object sender, PointerRoutedEventArgs e)
+                        {
+                            if (CirclePointerPressed != null)
+                            {
+                                CirclePointerPressed(ellipse, datum, index);
+                                e.Handled = true;
+                            }
+                        };
+
+                        ellipse.PointerReleased += delegate (object sender, PointerRoutedEventArgs e)
+                        {
+                            if (CirclePointerReleased != null)
+                            {
+                                CirclePointerReleased(ellipse, datum, index);
+                                e.Handled = true;
+                            }
+                        };
+
+                        ellipse.Tapped += circle_Tapped;
+
+                        CircleCanvas.Children.Add(ellipse);
+                    }
+
+                    if (newbie)
+                    {
+                        Canvas.SetLeft(ellipse, XGetter(datum, index) - RadiusGetter(datum, index) / 2);
+                        Canvas.SetTop(ellipse, YGetter(datum, index) - RadiusGetter(datum, index) / 2);
+                        ellipse.Opacity = OpacityGetter == null ? 1.0 : OpacityGetter(datum, index);
+                    }
+                    else
+                    {
+                        storyboard.Children.Add(Util.GenerateDoubleAnimation(ellipse, "(Canvas.Left)", XGetter(datum, index) - RadiusGetter(datum, index) / 2));
+                        storyboard.Children.Add(Util.GenerateDoubleAnimation(ellipse, "(Canvas.Top)", YGetter(datum, index) - RadiusGetter(datum, index) / 2));
+                        storyboard.Children.Add(Util.GenerateDoubleAnimation(ellipse, "Opacity", OpacityGetter == null ? 1.0 : OpacityGetter(datum, index)));
+                    }                    
+
+                    ellipse.Width = RadiusGetter(datum, index);
+                    ellipse.Height = RadiusGetter(datum, index);
+                    ellipse.Fill = ColorGetter == null ? new SolidColorBrush(Colors.LightGray) : new SolidColorBrush(ColorGetter(datum, index));
+
+                    index++;
+                }
+                storyboard.Begin();
+                previousStoryboard = storyboard;
+
+                for (Int32 i = CircleCanvas.Children.Count - 1; i >= index; --i)
+                {
+                    Ellipse child = CircleCanvas.Children[i] as Ellipse;
+                    CircleCanvas.Children.Remove(child);
+                }
+            }
+            else
+            {
+                CircleCanvas.Children.Clear();
+
+                foreach (Object datum in Data.List)
+                {
+                    Ellipse ellipse = new Ellipse();
+
+                    ellipse.PointerPressed += delegate (object sender, PointerRoutedEventArgs e)
                     {
                         if (CirclePointerPressed != null)
                         {
@@ -138,7 +218,7 @@ namespace d3.Component
                         }
                     };
 
-                    ellipse.PointerReleased += delegate(object sender, PointerRoutedEventArgs e)
+                    ellipse.PointerReleased += delegate (object sender, PointerRoutedEventArgs e)
                     {
                         if (CirclePointerReleased != null)
                         {
@@ -149,39 +229,17 @@ namespace d3.Component
 
                     ellipse.Tapped += circle_Tapped;
 
-                    CirclesCanvas.Children.Add(ellipse);
-                    previousCircles.Add(ellipse);
-                }
+                    CircleCanvas.Children.Add(ellipse);
 
-                if (newbie || !AllowTransition)
-                {
                     Canvas.SetLeft(ellipse, XGetter(datum, index) - RadiusGetter(datum, index) / 2);
                     Canvas.SetTop(ellipse, YGetter(datum, index) - RadiusGetter(datum, index) / 2);
-                    if(newbie)
-                        ellipse.Opacity = OpacityGetter == null ? 1.0 : OpacityGetter(datum, index);
+                    ellipse.Opacity = OpacityGetter == null ? 1.0 : OpacityGetter(datum, index);
+                    ellipse.Width = RadiusGetter(datum, index);
+                    ellipse.Height = RadiusGetter(datum, index);
+                    ellipse.Fill = ColorGetter == null ? new SolidColorBrush(Colors.LightGray) : new SolidColorBrush(ColorGetter(datum, index));
+
+                    index++;
                 }
-                else
-                {
-                    storyboard.Children.Add(Util.GenerateDoubleAnimation(ellipse, "(Canvas.Left)", XGetter(datum, index) - RadiusGetter(datum, index) / 2));
-                    storyboard.Children.Add(Util.GenerateDoubleAnimation(ellipse, "(Canvas.Top)", YGetter(datum, index) - RadiusGetter(datum, index) / 2));   
-                }
-
-                storyboard.Children.Add(Util.GenerateDoubleAnimation(ellipse, "Opacity", OpacityGetter == null ? 1.0 : OpacityGetter(datum, index)));
-
-                ellipse.Width = RadiusGetter(datum, index);
-                ellipse.Height = RadiusGetter(datum, index);
-                ellipse.Fill = ColorGetter == null ? new SolidColorBrush(Colors.LightGray) : new SolidColorBrush(ColorGetter(datum, index));
-                
-                index++;
-            }
-            storyboard.Begin();
-            previousStoryboard = storyboard;
-
-            for (Int32 i = CirclesCanvas.Children.Count - 1; i >= index; --i)
-            {
-                Ellipse child = CirclesCanvas.Children[i] as Ellipse;
-                CirclesCanvas.Children.Remove(child);
-                previousCircles.Remove(child);
             }
         }
 

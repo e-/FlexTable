@@ -111,7 +111,7 @@ namespace d3.View
 
             viewModel.SelectLine(index);
             LineElement.Update(true);
-            CircleElement.Update();
+            CircleElement.Update(true, false);
             IndicatorTextElement.Update(true);
             if (viewModel.IsLegendVisible)
             {
@@ -127,7 +127,7 @@ namespace d3.View
 
             viewModel.UnselectLine(index);
             LineElement.Update(true);
-            CircleElement.Update();
+            CircleElement.Update(true, false);
             IndicatorTextElement.Update(true);
             if (viewModel.IsLegendVisible)
             {
@@ -185,7 +185,7 @@ namespace d3.View
 
             LegendHandleRectangleElement.Update();
             LineElement.Update();
-            CircleElement.Update();
+            CircleElement.Update(false, false);
             IndicatorTextElement.Update();
             HorizontalAxis.Update();
             VerticalAxis.Update();

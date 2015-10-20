@@ -56,47 +56,8 @@
             <Setter Property="Margin" Value="0 5" />
         </Style>
     </UserControl.Resources>
-    
-    <StackPanel Padding="30">
-        <!--
-        <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
-            <StackPanel.Resources>
-                <Style TargetType="TextBlock">
-                    <Setter Property="FontSize" Value="30" />
-                </Style>
-            </StackPanel.Resources>
-            <ComboBox Style="{StaticResource SeamlessComboBoxStyle}" FontSize="40">
-                <ComboBoxItem IsSelected="True">Max</ComboBoxItem>
-                <ComboBoxItem>Avg</ComboBoxItem>
-                <ComboBoxItem>Avgoijoijoij</ComboBoxItem>
-            </ComboBox>
-            <TextBlock>(</TextBlock>
-            <ComboBox Style="{StaticResource SeamlessComboBoxStyle}" FontSize="40">
-                <ComboBoxItem IsSelected="True">Height</ComboBoxItem>
-                <ComboBoxItem>Weight</ComboBoxItem>
-                <ComboBoxItem>Salary</ComboBoxItem>
-            </ComboBox>
-            <TextBlock>)</TextBlock>
-            <TextBlock> by </TextBlock>
-            <ComboBox Style="{StaticResource SeamlessComboBoxStyle}" FontSize="40">
-                <ComboBoxItem IsSelected="True">Name</ComboBoxItem>
-                <ComboBoxItem>Country</ComboBoxItem>
-                <ComboBoxItem>Same</ComboBoxItem>
-            </ComboBox>
-        </StackPanel>
 
-        <ComboBox FontSize="30" Style="{StaticResource SeamlessComboBoxStyle}">
-            <ComboBoxItem IsSelected="True">Min</ComboBoxItem>
-            <ComboBoxItem>Max</ComboBoxItem>
-            <ComboBoxItem>Avg</ComboBoxItem>
-        </ComboBox>
-        
-        <ComboBox FontSize="30">
-            <ComboBoxItem IsSelected="True">Min</ComboBoxItem>
-            <ComboBoxItem>Max</ComboBoxItem>
-            <ComboBoxItem>Avg</ComboBoxItem>
-        </ComboBox>
-        -->
+    <StackPanel Padding="30">
         <TextBlock Style="{StaticResource TitleStyle}">
             <Run Text="{Binding SheetName}" />
         </TextBlock>

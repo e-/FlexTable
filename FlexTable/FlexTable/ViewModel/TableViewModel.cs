@@ -150,12 +150,12 @@ namespace FlexTable.ViewModel
                 IOrderedEnumerable<RowViewModel> sorted = null;
                 switch (sortOption)
                 {
-                    case Model.SortOption.Ascending:
+                    case SortOption.Ascending:
                         sorted = rowViewModels.OrderBy(
                             r => r.Cells[sortBy.Index].Content is Category ? r.Cells[sortBy.Index].Content.ToString() : r.Cells[sortBy.Index].Content
                             );
                         break;
-                    case Model.SortOption.Descending:
+                    case SortOption.Descending:
                         sorted = rowViewModels.OrderByDescending(
                             r => r.Cells[sortBy.Index].Content is Category ? r.Cells[sortBy.Index].Content.ToString() : r.Cells[sortBy.Index].Content
                             );
@@ -291,9 +291,7 @@ namespace FlexTable.ViewModel
         public void CancelPreviewRows()
         {
             isPreviewing = false;
-            PaddedSheetHeight = SheetViewModel.SheetHeight > SheetViewHeight ? SheetViewModel.SheetHeight : SheetViewHeight;
-            view.TableView.RowHeaderPresenter.SetRowNumber(rowViewModels.Count);
-            view.TableView.ShowTableCanvas();
+            UpdateRows(mainPageViewModel.ExplorationViewModel.ViewStatus);
             view.TableView.TableScrollViewer.ChangeView(null, 0, null);
         }
 
@@ -330,11 +328,11 @@ namespace FlexTable.ViewModel
                 cvm.IsDescendingSorted= false;
             }
 
-            if (sortOption == Model.SortOption.Ascending)
+            if (sortOption == SortOption.Ascending)
             {
                 columnViewModel.IsAscendingSorted = true;
             }
-            else if(sortOption == Model.SortOption.Descending)
+            else if(sortOption == SortOption.Descending)
             {
                 columnViewModel.IsDescendingSorted = true;
             }

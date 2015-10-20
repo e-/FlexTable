@@ -74,7 +74,7 @@
     <ScrollViewer IsHorizontalRailEnabled="False" IsHorizontalScrollChainingEnabled="False"
                   HorizontalScrollBarVisibility="Hidden" HorizontalScrollMode="Disabled"
                   VerticalScrollBarVisibility="Auto" VerticalScrollMode="Auto" 
-                  Margin="0 10 0 10"
+                  Margin="5 10 5 10"
                   >        
         <Grid x:Name="PivotTableElement">
         </Grid>

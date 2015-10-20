@@ -325,7 +325,9 @@ namespace FlexTable.ViewModel
 
             IsAllRowsVisible = false;
             if (viewStatus.SelectedColumnViewModels.Count == 0 ||
-                viewStatus.SelectedColumnViewModels.Count >= 2 && viewStatus.SelectedColumnViewModels.Count(s => s.Type != ColumnType.Numerical) == 0)
+                viewStatus.SelectedColumnViewModels.Count >= 2 && viewStatus.SelectedColumnViewModels.Count(s => s.Type != ColumnType.Numerical) == 0 ||
+                viewStatus.SelectedColumnViewModels.Count == 3 && viewStatus.SelectedColumnViewModels.Count(s => s.Type == ColumnType.Numerical) == 2
+                )
             {
                 IsAllRowsVisible = true;
                 foreach(RowViewModel rowViewModel in allRowViewModels)

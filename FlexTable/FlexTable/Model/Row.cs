@@ -12,5 +12,7 @@ namespace FlexTable.Model
     {
         private ObservableCollection<Cell> cells = new ObservableCollection<Cell>();
         public ObservableCollection<Cell> Cells { get { return cells; } }
+
+        public Int32 Index { get; set; }
     }
 }

@@ -17,6 +17,8 @@ using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 using FlexTable.ViewModel;
 using Series = System.Tuple<System.String, System.Collections.Generic.List<System.Tuple<System.Object, System.Double>>>;
+using FlexTable.Model;
+using Windows.Devices.Input;
 
 // 사용자 정의 컨트롤 항목 템플릿에 대한 설명은 http://go.microsoft.com/fwlink/?LinkId=234236에 나와 있습니다.
 
@@ -59,6 +61,41 @@ namespace FlexTable.View
 
             LineChartElement.LinePointerPressed += LineChartElement_LinePointerPressed;
             LineChartElement.LinePointerReleased += LineChartElement_LinePointerReleased;
+
+            ScatterplotElement.CategoryPointerPressed += ScatterplotElement_CategoryPointerPressed;
+            ScatterplotElement.CategoryPointerReleased += ScatterplotElement_CategoryPointerReleased;
+            ScatterplotElement.LassoSelected += ScatterplotElement_LassoSelected;
+            ScatterplotElement.LassoUnselected += ScatterplotElement_LassoUnselected;
+        }
+
+        private void ScatterplotElement_LassoSelected(object sender, object datum, int index)
+        {
+            PageViewModel pvm = this.DataContext as PageViewModel;
+
+            List<Int32> indices = datum as List<Int32>;
+            pvm.MainPageViewModel.TableViewModel.PreviewRows(
+                r => indices.IndexOf(r.Index) >= 0
+            );
+        }
+
+        private void ScatterplotElement_LassoUnselected(object sender, object datum, int index)
+        {
+            PageViewModel pvm = this.DataContext as PageViewModel;
+            pvm.MainPageViewModel.TableViewModel.CancelPreviewRows();
+        }
+
+        private void ScatterplotElement_CategoryPointerPressed(object sender, object datum, int index)
+        {
+            PageViewModel pvm = this.DataContext as PageViewModel;
+
+            Category category = (datum as Tuple<Object, Int32>).Item1 as Category;
+            pvm.MainPageViewModel.TableViewModel.PreviewRows(pvm.ScatterplotRowSelecter(category));
+        }
+
+        private void ScatterplotElement_CategoryPointerReleased(object sender, object datum, int index)
+        {
+            PageViewModel pvm = this.DataContext as PageViewModel;
+            pvm.MainPageViewModel.TableViewModel.CancelPreviewRows();
         }
 
         private void LineChartElement_LinePointerPressed(object sender, object datum, int index)
@@ -66,16 +103,14 @@ namespace FlexTable.View
             PageViewModel pvm = this.DataContext as PageViewModel;
 
             Series series = datum as Series;
-            pvm.MainPageViewModel.TableViewModel.PreviewRows(pvm.LineChartRowSelector(series));
+            pvm.MainPageViewModel.TableViewModel.PreviewRows(pvm.LineChartRowSelecter(series));
         }
-
 
         private void LineChartElement_LinePointerReleased(object sender, object datum, int index)
         {
             PageViewModel pvm = this.DataContext as PageViewModel;
             pvm.MainPageViewModel.TableViewModel.CancelPreviewRows();
         }
-
 
         private void GroupedBarChartElement_BarPointerPressed(object sender, object d, Int32 index)
         {
@@ -106,7 +141,8 @@ namespace FlexTable.View
 
         private void Wrapper_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            PageViewModel.Tapped(this);
+            if(e.PointerDeviceType == PointerDeviceType.Touch)
+                PageViewModel.Tapped(this);
         }
 
         private void TitleWrapper_Tapped(object sender, TappedRoutedEventArgs e)
@@ -119,9 +155,9 @@ namespace FlexTable.View
             e.Handled = true;
         }
 
-        public void GoDown()
+        public void Select()
         {
-            GoDownStoryboard.Begin();
+            SelectStoryboard.Begin();
             BarChartElement.IsHitTestVisible = true;
             LineChartElement.IsHitTestVisible = true;
             DistributionViewElement.IsHitTestVisible = true;
@@ -129,9 +165,9 @@ namespace FlexTable.View
             ScatterplotElement.IsHitTestVisible = true;
         }
 
-        public void GoUp()
+        public void Unselect()
         {
-            GoUpStoryboard.Begin();
+            UnselectStoryboard.Begin();
             BarChartElement.IsHitTestVisible = false;
             LineChartElement.IsHitTestVisible = false;
             DistributionViewElement.IsHitTestVisible = false;
@@ -139,7 +175,7 @@ namespace FlexTable.View
             ScatterplotElement.IsHitTestVisible = false;
         }
 
-        private void GoUpStoryboard_Completed(object sender, object e)
+        private void UnselectStoryboard_Completed(object sender, object e)
         {
             ChartWrapper.Opacity = 1;
             PageViewModel.Hide();
@@ -268,11 +304,6 @@ namespace FlexTable.View
             }
 
             paragraphLabelStoryboard.Begin();
-        }
-
-        public void BarPointerPressed(Object sender, Object datum)
-        {
-
         }
     }
 }

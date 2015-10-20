@@ -17,7 +17,7 @@ namespace FlexTable.ViewModel
     public class PageViewModel : NotifyViewModel
     {
         const Int32 BarChartMaximumRecordNumber = 12;
-        const Int32 GroupedBarChartMaximumRecordNumber = 32;
+        const Int32 GroupedBarChartMaximumRecordNumber = 48;
         const Int32 LineChartMaximumSeriesNumber = BarChartMaximumRecordNumber;
         const Int32 LineChartMaximumPointNumberInASeries = 14;
 
@@ -65,16 +65,11 @@ namespace FlexTable.ViewModel
 
         private Boolean isSelected = false;
         public Boolean IsSelected { get { return isSelected; } set { isSelected = value; OnPropertyChanged("IsSelected"); } }
-
-        private Double pageHeight;
-        public Double PageHeight { get { return pageHeight; } set { pageHeight = value;  OnPropertyChanged("PageHeight"); } }
-
-        private Double pageWidth;
-        public Double PageWidth { get { return pageWidth; } set { pageWidth = value; OnPropertyChanged("PageWidth"); } }
-
+        
         public Func<Category, Func<RowViewModel, Boolean>> BarChartRowSelecter { get; set; }
         public Func<Category, Category, Func<RowViewModel, Boolean>> GroupedBarChartRowSelecter { get; set; }
-        public Func<Series, Func<RowViewModel, Boolean>> LineChartRowSelector { get; set; }
+        public Func<Series, Func<RowViewModel, Boolean>> LineChartRowSelecter { get; set; }
+        public Func<Category, Func<RowViewModel, Boolean>> ScatterplotRowSelecter { get; set; }
 
         PageView pageView;
 
@@ -82,9 +77,6 @@ namespace FlexTable.ViewModel
         
         public PageViewModel(MainPageViewModel mainPageViewModel, PageView pageView)
         {
-            PageHeight = mainPageViewModel.Bounds.Height / 2;
-            PageWidth = mainPageViewModel.Bounds.Width / 2;
-
             this.mainPageViewModel = mainPageViewModel;
             this.pageView = pageView;
             this.pivotTableViewModel = new PivotTableViewModel(mainPageViewModel, pageView.PivotTableView);
@@ -101,15 +93,15 @@ namespace FlexTable.ViewModel
             mainPageViewModel.ExplorationViewModel.PageViewTapped(this, pageView);
         }
 
-        public void GoUp()
+        public void Unselect()
         {
-            pageView.GoUp();
+            pageView.Unselect();
             pageView.UpdateCarousel();
         }
 
-        public void GoDown()
+        public void Select()
         {
-            pageView.GoDown();
+            pageView.Select();
             pageView.UpdateCarousel();
         }
 
@@ -656,7 +648,7 @@ namespace FlexTable.ViewModel
                 CreateColumnChangedHandler(numerical1)
             );
 
-            AddText(title, ") \x00A0and\x00A0");
+            AddText(title, ")\x00A0and\x00A0");
 
             AddComboBox(
                    title,
@@ -672,7 +664,7 @@ namespace FlexTable.ViewModel
                 CreateColumnChangedHandler(numerical2)
             );
 
-            AddText(title, ") \x00A0by\x00A0");
+            AddText(title, ")\x00A0by\x00A0");
 
             AddComboBox(
                title,
@@ -984,6 +976,7 @@ namespace FlexTable.ViewModel
             {
                 AddText(pageView.LineChartTitle, $"<b>{numerical.HeaderName}</b> by <b>{categorical.Name}</b>");
             }
+            LineChartRowSelecter = series => (r => true); // r.Cells[categorical.Index].Content.ToString() == series.Item1);
 
             pageView.LineChart.YStartsWithZero = false;
             pageView.LineChart.HorizontalAxisLabel = categorical.Name;
@@ -1022,7 +1015,7 @@ namespace FlexTable.ViewModel
                 AddText(pageView.LineChartTitle, $"<b>{numerical.HeaderName}</b> by <b>{categorical1.Name}</b> and <b>{categorical2.Name}</b>");
             }
             
-            LineChartRowSelector = series => (r => r.Cells[categorical2.Index].Content.ToString() == series.Item1);
+            LineChartRowSelecter = series => (r => r.Cells[categorical2.Index].Content.ToString() == series.Item1);
 
             pageView.LineChart.YStartsWithZero = false;
             pageView.LineChart.HorizontalAxisLabel = categorical1.Name;
@@ -1071,15 +1064,19 @@ namespace FlexTable.ViewModel
             {
                 AddText(pageView.ScatterplotTitle, $"<b>{numerical1.Name}</b> vs. <b>{numerical2.Name}</b> colored by <b>{categorical.Name}</b>");
             }
+            
+            ScatterplotRowSelecter = c => (r => r.Cells[categorical.Index].Content == c);
 
             pageView.Scatterplot.LegendVisibility = Visibility.Visible;
             pageView.Scatterplot.HorizontalAxisLabel = numerical1.Name + numerical1.UnitString;
             pageView.Scatterplot.VerticalAxisLabel = numerical2.Name + numerical2.UnitString;
             pageView.Scatterplot.Data = mainPageViewModel.SheetViewModel.Sheet.Rows
-                .Select(r => new Tuple<Object, Double, Double>(
+                .Select(r => new Tuple<Object, Double, Double, Int32>(
                     r.Cells[categorical.Index].Content,
                     (Double)r.Cells[numerical1.Index].Content,
-                    (Double)r.Cells[numerical2.Index].Content));
+                    (Double)r.Cells[numerical2.Index].Content,
+                    r.Index
+                    ));
 
             pageView.Scatterplot.Update();
         }
@@ -1098,11 +1095,13 @@ namespace FlexTable.ViewModel
                 AddText(pageView.ScatterplotTitle, $"<b>{numerical1.Name}</b> vs. <b>{numerical2.Name}</b>");
             }
 
+            ScatterplotRowSelecter = c => (r => true);
+
             pageView.Scatterplot.LegendVisibility = Visibility.Collapsed;
             pageView.Scatterplot.HorizontalAxisLabel = numerical1.Name + numerical1.UnitString;
             pageView.Scatterplot.VerticalAxisLabel = numerical2.Name + numerical2.UnitString;
             pageView.Scatterplot.Data = mainPageViewModel.SheetViewModel.Sheet.Rows
-                .Select(r => new Tuple<Object, Double, Double>(0, (Double)r.Cells[numerical1.Index].Content, (Double)r.Cells[numerical2.Index].Content));
+                .Select(r => new Tuple<Object, Double, Double, Int32>(0, (Double)r.Cells[numerical1.Index].Content, (Double)r.Cells[numerical2.Index].Content, r.Index));
 
             pageView.Scatterplot.Update();
         }       

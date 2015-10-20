@@ -125,6 +125,7 @@
     </Compile>
     <Compile Include="Const.cs" />
     <Compile Include="Data.cs" />
+    <Compile Include="Drawable.cs" />
     <Compile Include="Event.cs" />
     <Compile Include="Format\IntegerBalanced.cs" />
     <Compile Include="Format\SIPrefix.cs" />

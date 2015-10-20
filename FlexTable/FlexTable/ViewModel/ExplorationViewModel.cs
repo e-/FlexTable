@@ -19,24 +19,25 @@ namespace FlexTable.ViewModel
     public class ExplorationViewModel : NotifyViewModel
     {
         MainPageViewModel mainPageViewModel;
-        public MainPageViewModel MainPageViewModel { get { return mainPageViewModel; } }
+        public MainPageViewModel MainPageViewModel
+        {
+            get { return mainPageViewModel; }
+            set { mainPageViewModel = value; OnPropertyChanged(nameof(MainPageViewModel)); }
+        }
 
         MetadataViewModel metadataViewModel;
         public MetadataViewModel MetadataViewModel { get { return metadataViewModel; } set { metadataViewModel = value; OnPropertyChanged("MetadataViewModel"); } }
 
-        private ViewStatus initialViewStatus = new ViewStatus(); 
-        public ViewStatus ViewStatus => selectedPageViews.Count == 0 ? initialViewStatus : selectedPageViews.Last().PageViewModel.ViewStatus; // 이 view status는 이미 선택된 컬럼들을 가지는 view status 임
+        private ViewStatus initialViewStatus = new ViewStatus();
+        /// <summary>
+        /// 이 view status는 이미 선택된 컬럼들을 가지는 view status 임
+        /// </summary>
+        public ViewStatus ViewStatus => selectedPageViews.Count == 0 ? initialViewStatus : selectedPageViews.Last().PageViewModel.ViewStatus; 
 
         public PageView TopPageView { get { return view.ExplorationView.TopPageView; } }
 
         public PageViewModel DummyPageViewModel { get; set; } // for surpressing initial pageview binding warnings
-
-        private Double pageHeight;
-        public Double PageHeight { get { return pageHeight; } set { pageHeight = value; OnPropertyChanged("PageHeight"); } }
-
-        private Double pageWidth;
-        public Double PageWidth { get { return pageWidth; } set { pageWidth = value; OnPropertyChanged("PageWidth"); } }
-
+        
         List<PageView> selectedPageViews = new List<PageView>();
         public List<PageView> SelectedPageViews => selectedPageViews;
         ColumnViewModel previewingColumnViewModel = null;
@@ -44,12 +45,9 @@ namespace FlexTable.ViewModel
 
         public ExplorationViewModel(MainPageViewModel mainPageViewModel, IMainPage view)
         {
-            this.mainPageViewModel = mainPageViewModel;
+            this.MainPageViewModel = mainPageViewModel;
             MetadataViewModel = new MetadataViewModel(mainPageViewModel);
             this.view = view;
-
-            PageHeight = mainPageViewModel.Bounds.Height / 2;
-            PageWidth = mainPageViewModel.Bounds.Width / 2;
         }
 
         public void PreviewColumn(ColumnViewModel columnViewModel)
@@ -105,7 +103,7 @@ namespace FlexTable.ViewModel
                 mainPageViewModel.TableViewModel.CancelIndexing();
 
                 // Page View 아래로 보내기                    
-                pageViewModel.GoDown();
+                pageViewModel.Select();
             }
             else if(pageView == TopPageView && ViewStatus.SelectedColumnViewModels.IndexOf(previewingColumnViewModel) >= 0) {
                 // 이미 선택된 것 또 선택하는 경우
@@ -130,50 +128,8 @@ namespace FlexTable.ViewModel
                 view.TableView.ScrollToColumnViewModel(mainPageViewModel.SheetViewModel.ColumnViewModels.OrderBy(c => c.Order).First());
 
                 // Page View 위로 올리기
-                pageViewModel.GoUp();
+                pageViewModel.Unselect();
             }            
-        }
-
-        public void StrokeAdded(InkStroke stroke)
-        {
-            /*
-            Int32 index = 0;
-            Rect rect = stroke.BoundingRect;
-            Point center = new Point(rect.X + rect.Width / 2, rect.Y + rect.Height / 2);
-
-            foreach (Model.Bin bin in column.Bins.Select(b => b as Object).ToList())
-            {
-                Double x0 = LegendTextXGetter(bin, index),
-                       y0 = LegendPatchYGetter(bin, index) + 10,
-                       y1 = y0 + LegendPatchHeightGetter(bin, index) + 10;
-
-                if (x0 <= center.X - mainPageViewModel.Width / 2 + ChartWidth && y0 <= center.Y && center.Y <= y1)
-                {
-                    bin.IsFilteredOut = !bin.IsFilteredOut;
-                    break;
-                }             
-                index++;
-            }
-
-            d3.Scale.Ordinal xScale = new d3.Scale.Ordinal()
-            {
-                RangeStart = 70,
-                RangeEnd = ChartWidth
-            };
-            foreach (Model.Bin bin in column.Bins.Where(b => !b.IsFilteredOut)) { xScale.Domain.Add(bin.Name); }
-            XScale = xScale;
-
-            Data = new d3.Selection.Data()
-            {
-                Real = column.Bins.Where(b => !b.IsFilteredOut).Select(b => b as Object).ToList()
-            };
-
-            LegendData = new d3.Selection.Data()
-            {
-                Real = column.Bins.Select(b => b as Object).ToList()
-            };
-
-            mainPageViewModel.UpdateFiltering();*/
-        }
+        }        
     }
 }

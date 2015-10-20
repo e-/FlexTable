@@ -55,15 +55,15 @@
                              />
         </Storyboard>
 
-        <Storyboard x:Name="GoDownStoryboard">
+        <Storyboard x:Name="SelectStoryboard">
             <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.5"
-                             Storyboard.TargetName="UserControl" Storyboard.TargetProperty="(Canvas.Top)" To="{Binding PageHeight}">
+                             Storyboard.TargetName="UserControl" Storyboard.TargetProperty="(Canvas.Top)" To="0">
             </DoubleAnimation>
         </Storyboard>
 
-        <Storyboard x:Name="GoUpStoryboard" Completed="GoUpStoryboard_Completed">
+        <Storyboard x:Name="UnselectStoryboard" Completed="UnselectStoryboard_Completed">
             <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.5"
-                             Storyboard.TargetName="UserControl" Storyboard.TargetProperty="(Canvas.Top)" To="0">
+                             Storyboard.TargetName="UserControl" Storyboard.TargetProperty="(Canvas.Top)" To="{Binding MainPageViewModel.PageOffset}">
             </DoubleAnimation>
             <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.2" BeginTime="00:00:00.3"
                              Storyboard.TargetName="ChartWrapper" Storyboard.TargetProperty="Opacity" To="0">
@@ -89,7 +89,7 @@
     </UserControl.Resources>
     
     <StackPanel Opacity="0" x:Name="Wrapper" Tapped="Wrapper_Tapped">
-        <StackPanel Height="{Binding PageHeight}" Visibility="{Binding IsSummaryVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Background="White" 
+        <StackPanel Height="{Binding MainPageViewModel.PageHeight}" Visibility="{Binding IsSummaryVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Background="White" 
                     x:Name="ChartWrapper" Padding="20">
             <ScrollViewer HorizontalScrollBarVisibility="Hidden" HorizontalScrollMode="Auto" 
                           VerticalScrollMode="Disabled" VerticalScrollBarVisibility="Hidden"
@@ -151,11 +151,11 @@
             </ScrollViewer>
             <StackPanel x:Name="ParagraphLabelContainer" Height="50" Orientation="Horizontal" HorizontalAlignment="Center" Tapped="ParagraphLabelContainer_Tapped"></StackPanel>
         </StackPanel>
-        <Border Height="{Binding PageHeight}" Visibility="{Binding IsSummaryVisible, Converter={StaticResource BooleanToInvertedVisibilityConverter}}" Padding="20" Background="White">
+        <Border Height="{Binding MainPageViewModel.PageHeight}" Visibility="{Binding IsSummaryVisible, Converter={StaticResource BooleanToInvertedVisibilityConverter}}" Padding="20" Background="White">
             <StackPanel VerticalAlignment="Center">
                 <TextBlock FontSize="25" TextAlignment="Center">Please select a column to preview.</TextBlock>
             </StackPanel>
         </Border>
-        <Image Source="ms-appx:///Assets/horizontal-separator.png" Width="{Binding PageWidth}" Height="8"></Image>
+        <Image Source="ms-appx:///Assets/horizontal-separator.png" Width="{Binding MainPageViewModel.PageWidth}" Height="8"></Image>
     </StackPanel>
 </UserControl>

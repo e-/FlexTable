@@ -101,9 +101,7 @@ namespace d3.ViewModel
                 return (d, index) => (Height - Data.Count() * LegendPatchHeight - (Data.Count() - 1) * LegendPatchSpace) / 2 + index * (LegendPatchHeight + LegendPatchSpace);
             }
         }
-        public Func<Object, Int32, Double> LegendPatchOpacityGetter { get { return (d, index) => IsSelecting ? (index == selectedIndex ? 1.0 : 0.2) : 1.0; } }
-
-        
+        public Func<Object, Int32, Double> LegendPatchOpacityGetter { get { return (d, index) => IsSelecting ? (index == selectedIndex ? 1.0 : 0.2) : 1.0; } }        
 
         public Func<Object, Int32, Double> LegendTextXGetter { get { return (d, index) => LegendPatchWidth + LegendPatchSpace; } }
         public Func<Object, Int32, String> LegendTextGetter { get { return (d, index) => (d as Series).Item1.ToString(); } }
@@ -116,10 +114,7 @@ namespace d3.ViewModel
             {
                 return (textBlock, currentSize) => textBlock.ActualWidth > xScale.RangeBand ? currentSize * xScale.RangeBand / textBlock.ActualWidth * 0.9 : currentSize;
             }
-        }
-
-        
-
+        }      
         
         public Func<Object, Int32, Double> IndicatorWidthGetter { get { return (d, index) => xScale.RangeBand; } }
         public Func<Object, Int32, String> IndicatorTextGetter { get { return (d, index) => Format.IntegerBalanced.Format((d as DataPoint).Item2); } }
