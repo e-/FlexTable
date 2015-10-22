@@ -14,7 +14,7 @@ namespace FlexTable.ViewModel
 {
     public class PivotTableViewModel
     {
-        const Int32 MaximumCellNumber = 500;
+        const Int32 MaximumCellNumber = 100;
 
         private MainPageViewModel mainPageViewModel;
 

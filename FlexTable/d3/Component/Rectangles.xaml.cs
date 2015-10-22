@@ -222,14 +222,14 @@ namespace d3.Component
                         }
                     };
 
-                    rect.PointerReleased += delegate (object sender, PointerRoutedEventArgs e)
+                    /*rect.PointerReleased += delegate (object sender, PointerRoutedEventArgs e)
                     {
                         if (RectanglePointerReleased != null)
                         {
                             RectanglePointerReleased(rect, datum, localIndex);
                             e.Handled = true;
                         }
-                    };
+                    };*/
 
                     rect.Tapped += rect_Tapped;
 

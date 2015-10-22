@@ -20,6 +20,7 @@ namespace FlexTable.ViewModel
         const Int32 GroupedBarChartMaximumRecordNumber = 48;
         const Int32 LineChartMaximumSeriesNumber = BarChartMaximumRecordNumber;
         const Int32 LineChartMaximumPointNumberInASeries = 14;
+        const Int32 ScatterplotMaximumCategoryNumber = BarChartMaximumRecordNumber;
 
         MainPageViewModel mainPageViewModel;
         public MainPageViewModel MainPageViewModel => mainPageViewModel;
@@ -27,8 +28,23 @@ namespace FlexTable.ViewModel
         PivotTableViewModel pivotTableViewModel;
         public PivotTableViewModel PivotTableViewModel => pivotTableViewModel; 
 
-        private Boolean isSummaryVisible = false;
-        public Boolean IsSummaryVisible { get { return isSummaryVisible; } set { isSummaryVisible = value; OnPropertyChanged("IsSummaryVisible"); } }
+        /// <summary>
+        /// 선택되어서 투명하지 않게 완전히 보일때 
+        /// </summary>
+        private Boolean isPreviewVisible = false; 
+        public Boolean IsPreviewVisible { get { return isPreviewVisible; } set { isPreviewVisible = value; OnPropertyChanged(nameof(IsPreviewVisible)); } }
+
+        /// <summary>
+        /// 선택되어서 투명하지 않게 완전히 보일때 
+        /// </summary>
+        private Boolean isUndoing = false;
+        public Boolean IsUndoing { get { return isUndoing; } set { isUndoing = value; OnPropertyChanged(nameof(IsUndoing)); } }
+
+        /// <summary>
+        /// 선택되어서 투명하지 않게 완전히 보일때 
+        /// </summary>
+        private Boolean isEmpty = true;
+        public Boolean IsEmpty { get { return isEmpty; } set { isEmpty = value; OnPropertyChanged(nameof(IsEmpty)); } }
 
         private Boolean isBarChartVisible = false;
         public Boolean IsBarChartVisible { get { return isBarChartVisible; } set { isBarChartVisible = value; OnPropertyChanged("IsBarChartVisible"); } }
@@ -61,7 +77,10 @@ namespace FlexTable.ViewModel
         public Boolean IsLineChartWarningVisible { get { return isLineChartWarningVisible; } set { isLineChartWarningVisible = value; OnPropertyChanged(nameof(IsLineChartWarningVisible)); } }
 
         private Boolean isGroupedBarChartWarningVisible = false;
-        public Boolean IsGroupedBarChartWarningVisible { get { return isGroupedBarChartWarningVisible; } set { isGroupedBarChartWarningVisible = value; OnPropertyChanged(nameof(isGroupedBarChartWarningVisible)); } }
+        public Boolean IsGroupedBarChartWarningVisible { get { return isGroupedBarChartWarningVisible; } set { isGroupedBarChartWarningVisible = value; OnPropertyChanged(nameof(IsGroupedBarChartWarningVisible)); } }
+
+        private Boolean isScatterplotWarningVisible = false;
+        public Boolean IsScatterplotWarningVisible { get { return isScatterplotWarningVisible; } set { isScatterplotWarningVisible = value; OnPropertyChanged(nameof(IsScatterplotWarningVisible)); } }
 
         private Boolean isSelected = false;
         public Boolean IsSelected { get { return isSelected; } set { isSelected = value; OnPropertyChanged("IsSelected"); } }
@@ -80,76 +99,28 @@ namespace FlexTable.ViewModel
             this.mainPageViewModel = mainPageViewModel;
             this.pageView = pageView;
             this.pivotTableViewModel = new PivotTableViewModel(mainPageViewModel, pageView.PivotTableView);
-            //this.customHistogramViewModel = new CustomHistogramViewModel(mainPageViewModel, pageView.CustomHistogramView);
         }
 
-        public void Hide()
+        public void HideSummary()
         {
-            IsSummaryVisible = false;
+            IsPreviewVisible = false;
+            IsEmpty = true;
         }
 
-        public void Tapped(PageView pageView)
+        public void Tapped(PageView pageView, Boolean isUndo)
         {
-            mainPageViewModel.ExplorationViewModel.PageViewTapped(this, pageView);
+            mainPageViewModel.ExplorationViewModel.PageViewTapped(this, pageView, isUndo);
         }
-
-        public void Unselect()
+        
+        public void Reflect(Boolean trackPreviousParagraph)
         {
-            pageView.Unselect();
-            pageView.UpdateCarousel();
-        }
-
-        public void Select()
-        {
-            pageView.Select();
-            pageView.UpdateCarousel();
-        }
-
-        public void StrokeAdded(InkStroke stroke)
-        {
-            /*
-            Int32 index = 0;
-            Rect rect = stroke.BoundingRect;
-            Point center = new Point(rect.X + rect.Width / 2, rect.Y + rect.Height / 2);
-
-            foreach (Model.Bin bin in column.Bins.Select(b => b as Object).ToList())
+            if(IsUndoing)
             {
-                Double x0 = LegendTextXGetter(bin, index),
-                       y0 = LegendPatchYGetter(bin, index) + 10,
-                       y1 = y0 + LegendPatchHeightGetter(bin, index) + 10;
-
-                if (x0 <= center.X - mainPageViewModel.Width / 2 + ChartWidth && y0 <= center.Y && center.Y <= y1)
-                {
-                    bin.IsFilteredOut = !bin.IsFilteredOut;
-                    break;
-                }             
-                index++;
+                pageView.CancelUndoStoryboard.Begin();
+                IsUndoing = false;
             }
 
-            d3.Scale.Ordinal xScale = new d3.Scale.Ordinal()
-            {
-                RangeStart = 70,
-                RangeEnd = ChartWidth
-            };
-            foreach (Model.Bin bin in column.Bins.Where(b => !b.IsFilteredOut)) { xScale.Domain.Add(bin.Name); }
-            XScale = xScale;
-
-            Data = new d3.Selection.Data()
-            {
-                Real = column.Bins.Where(b => !b.IsFilteredOut).Select(b => b as Object).ToList()
-            };
-
-            LegendData = new d3.Selection.Data()
-            {
-                Real = column.Bins.Select(b => b as Object).ToList()
-            };
-
-            mainPageViewModel.UpdateFiltering();*/
-        }
-
-        public void Reflect()
-        {
-            IsSummaryVisible = true;
+            IsPreviewVisible = true;
             IsBarChartVisible = false;
             IsLineChartVisible = false;
             IsDescriptiveStatisticsVisible = false;
@@ -162,6 +133,7 @@ namespace FlexTable.ViewModel
             IsBarChartWarningVisible = false;
             IsLineChartWarningVisible = false;
             IsGroupedBarChartWarningVisible = false;
+            IsScatterplotWarningVisible = false;
 
             List<ColumnViewModel> selectedColumnViewModels = ViewStatus.SelectedColumnViewModels;
             List<ColumnViewModel> numericalColumns = selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical).ToList();
@@ -170,6 +142,7 @@ namespace FlexTable.ViewModel
             List<GroupedRows> groupedRows = null;
             Int32 numericalCount = numericalColumns.Count;
             Int32 categoricalCount = categoricalColumns.Count;
+            Object firstChartTag = "dummy tag wer";
 
             if (categoricalColumns.Count > 0)
             {
@@ -193,6 +166,8 @@ namespace FlexTable.ViewModel
             {
                 DrawBarChart(categoricalColumns.First(), numericalColumns.First(), groupedRows, IsSelected);
                 DrawLineChart(categoricalColumns.First(), numericalColumns.First(), groupedRows, IsSelected);
+
+                firstChartTag = categoricalColumns[0].CategoricalType == CategoricalType.Ordinal ? pageView.LineChart.Tag : pageView.BarChart.Tag;
             }
             else if (categoricalCount == 0 && numericalCount == 2)
             {
@@ -251,6 +226,7 @@ namespace FlexTable.ViewModel
 
                 DrawGroupedBarChart(categoricalColumns[0], categoricalColumns[1], numericalColumns[0], groupedRows, IsSelected);
                 DrawLineChart(categoricalColumns[0], categoricalColumns[1], numericalColumns[0], groupedRows, IsSelected);
+                firstChartTag = categoricalColumns[0].CategoricalType == CategoricalType.Ordinal ? pageView.LineChart.Tag : pageView.BarChart.Tag;
             }
             else if (categoricalCount == 1 && numericalCount == 2)
             {
@@ -374,8 +350,9 @@ namespace FlexTable.ViewModel
             {
                 IsBarChartVisible = true;
             }
-            
-            pageView.UpdateCarousel();
+
+            pageView.UpdateCarousel(trackPreviousParagraph, firstChartTag?.ToString());
+            pageView.UpdatePageLabelContainer();
         }
        
         public String Concatenate(IEnumerable<String> words)
@@ -492,7 +469,7 @@ namespace FlexTable.ViewModel
                 mainPageViewModel.TableViewModel.Reflect(ViewStatus);
 
                 // 3. 차트 변경
-                Reflect();
+                Reflect(true);
             });
         }
 
@@ -511,7 +488,7 @@ namespace FlexTable.ViewModel
                 mainPageViewModel.TableViewModel.Reflect(ViewStatus);
 
                 // 3. 차트 변경
-                Reflect();
+                Reflect(true);
             });
         }
 
@@ -889,15 +866,29 @@ namespace FlexTable.ViewModel
             pageView.GroupedBarChart.YStartsWithZero = true;
             pageView.GroupedBarChart.HorizontalAxisLabel = categorical1.Name;
             pageView.GroupedBarChart.VerticalAxisLabel = $"Frequency of {categorical2.Name}";
-            pageView.GroupedBarChart.Data = groupedRows
+            
+            var data = groupedRows
                         .OrderBy(g => (g.Keys[categorical1] as Category).Order * 10000 + (g.Keys[categorical2] as Category).Order)
-                        .Select(g => new Tuple<Object, Object, Double>(
+                        .Select(g => new Tuple<Object, Object, Double, Object>(
                             g.Keys[categorical1],
                             g.Keys[categorical2],
-                            g.Rows.Count
+                            g.Rows.Count,
+                            g.Keys[categorical2]
                         ))
                         .Take(GroupedBarChartMaximumRecordNumber);
+            
             if (groupedRows.Count > GroupedBarChartMaximumRecordNumber) IsGroupedBarChartWarningVisible = true;
+            if (data.Select(d => (d as Tuple<Object, Object, Double, Object>).Item2).Distinct().Count() > BarChartMaximumRecordNumber)
+            {
+                // number of categories in legend
+                IsGroupedBarChartWarningVisible = true;
+                var distinct = data.Select(d => (d as Tuple<Object, Object, Double, Object>).Item2).Distinct().Take(BarChartMaximumRecordNumber).ToList();
+                
+                data = data.Where(d => distinct.IndexOf((d as Tuple<Object, Object, Double, Object>).Item2) >= 0);
+            }
+
+            pageView.GroupedBarChart.Data = data;
+
             pageView.GroupedBarChart.Update();           
         }
 
@@ -922,10 +913,11 @@ namespace FlexTable.ViewModel
             pageView.GroupedBarChart.VerticalAxisLabel = numerical.HeaderNameWithUnit;
             pageView.GroupedBarChart.Data = groupedRows
                         .OrderBy(g => (g.Keys[categorical1] as Category).Order * 10000 + (g.Keys[categorical2] as Category).Order)
-                        .Select(g => new Tuple<Object, Object, Double>(
+                        .Select(g => new Tuple<Object, Object, Double, Object>(
                             g.Keys[categorical1],
                             String.Format("{0} {1}", categorical2.Name, g.Keys[categorical2]),
-                            numerical.AggregativeFunction.Aggregate(g.Rows.Select(row => (Double)row.Cells[numerical.Index].Content))
+                            numerical.AggregativeFunction.Aggregate(g.Rows.Select(row => (Double)row.Cells[numerical.Index].Content)),
+                            g.Keys[categorical2]
                         ))
                         .Take(GroupedBarChartMaximumRecordNumber);
             if (groupedRows.Count > GroupedBarChartMaximumRecordNumber) IsGroupedBarChartWarningVisible = true;
@@ -1070,13 +1062,22 @@ namespace FlexTable.ViewModel
             pageView.Scatterplot.LegendVisibility = Visibility.Visible;
             pageView.Scatterplot.HorizontalAxisLabel = numerical1.Name + numerical1.UnitString;
             pageView.Scatterplot.VerticalAxisLabel = numerical2.Name + numerical2.UnitString;
-            pageView.Scatterplot.Data = mainPageViewModel.SheetViewModel.Sheet.Rows
+            
+            var data = mainPageViewModel.SheetViewModel.Sheet.Rows
                 .Select(r => new Tuple<Object, Double, Double, Int32>(
                     r.Cells[categorical.Index].Content,
                     (Double)r.Cells[numerical1.Index].Content,
                     (Double)r.Cells[numerical2.Index].Content,
                     r.Index
                     ));
+
+            if (data.Select(d => (d as Tuple<Object, Double, Double, Int32>).Item1).Distinct().Count() > ScatterplotMaximumCategoryNumber) {
+                IsScatterplotWarningVisible = true;
+                var categories = data.Select(d => (d as Tuple<Object, Double, Double, Int32>).Item1).Distinct().Take(ScatterplotMaximumCategoryNumber).ToList();
+                data = data.Where(d => categories.IndexOf((d as Tuple<Object, Double, Double, Int32>).Item1) >= 0);
+            }
+
+            pageView.Scatterplot.Data = data;
 
             pageView.Scatterplot.Update();
         }
@@ -1117,7 +1118,7 @@ namespace FlexTable.ViewModel
             }
             else
             {
-                AddText(pageView.GroupedBarChartTitle, $"<b>{numerical1.HeaderName}</b> and <b>{numerical2.HeaderName}</b> by <b>{categorical.Name}</b>");
+                AddText(pageView.GroupedBarChartTitle, $"<b>{numerical1.AggregatedName}</b> and <b>{numerical2.AggregatedName}</b> by <b>{categorical.Name}</b>");
             }
 
             GroupedBarChartRowSelecter = (c1, c2) => (r => r.Cells[categorical.Index].Content == c1);
@@ -1125,26 +1126,28 @@ namespace FlexTable.ViewModel
             pageView.GroupedBarChart.YStartsWithZero = true;
             pageView.GroupedBarChart.HorizontalAxisLabel = categorical.Name;
             pageView.GroupedBarChart.VerticalAxisLabel = $"{numerical1.Name} and {numerical2.Name} {numerical1.UnitString}";
-            
-            pageView.GroupedBarChart.Data = groupedRows
+                        
+            var data = groupedRows
                         .OrderBy(g => (g.Keys[categorical] as Category).Order)
-                        .SelectMany(g => new List<Tuple<Object, Object, Double>>() {
-                            new Tuple<Object, Object, Double>(
+                        .SelectMany(g => new List<Tuple<Object, Object, Double, Object>>() {
+                            new Tuple<Object, Object, Double, Object>(
                                 g.Keys[categorical],
                                 numerical1.Name,
-                                numerical1.AggregativeFunction.Aggregate(g.Rows.Select(r => (Double)r.Cells[numerical1.Index].Content))
+                                numerical1.AggregativeFunction.Aggregate(g.Rows.Select(r => (Double)r.Cells[numerical1.Index].Content)),
+                                null
                             ),
-                            new Tuple<Object, Object, Double>(
+                            new Tuple<Object, Object, Double, Object>(
                                 g.Keys[categorical],
                                 numerical2.Name,
-                                numerical2.AggregativeFunction.Aggregate(g.Rows.Select(r => (Double)r.Cells[numerical2.Index].Content))
+                                numerical2.AggregativeFunction.Aggregate(g.Rows.Select(r => (Double)r.Cells[numerical2.Index].Content)),
+                                null
                             )
                         })
-                        .Take(GroupedBarChartMaximumRecordNumber)
                         ;
 
 
-            if (pageView.GroupedBarChart.Data.Count() > GroupedBarChartMaximumRecordNumber) IsGroupedBarChartWarningVisible = true;
+            if (data.Count() > GroupedBarChartMaximumRecordNumber) IsGroupedBarChartWarningVisible = true;
+            pageView.GroupedBarChart.Data = data.Take(GroupedBarChartMaximumRecordNumber);
 
             pageView.GroupedBarChart.Update();
         }

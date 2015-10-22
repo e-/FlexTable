@@ -67,18 +67,40 @@ namespace FlexTable.ViewModel
             pageViewModel.ViewStatus = selectedViewStatus;
 
             // 이걸로 pageView를 채움
-            pageViewModel.Reflect();
+            pageViewModel.Reflect(false);
         }
 
         public void CancelPreviewColumn()
         {
             previewingColumnViewModel = null;
-            TopPageView.PageViewModel.Hide();
+            TopPageView.PageViewModel.HideSummary();
         }
 
-        public void PageViewTapped(PageViewModel pageViewModel, PageView pageView)
+        public void PageViewTapped(PageViewModel pageViewModel, PageView pageView, Boolean isUndo)
         {
-            if (pageView == TopPageView && previewingColumnViewModel != null && ViewStatus.SelectedColumnViewModels.IndexOf(previewingColumnViewModel) < 0)
+            if(isUndo && selectedPageViews.IndexOf(pageView) < 0)
+            {
+                selectedPageViews.Add(pageView);
+                pageViewModel.IsSelected = true;
+
+                // 차트 새로 반영할 필요는 없다 이미 있으므로
+                // pageViewModel.Reflect(true);
+
+                // 새로운 page 만들기
+                view.ExplorationView.AddNewPage();
+
+                mainPageViewModel.SheetViewModel.UpdateGroup(ViewStatus);
+                mainPageViewModel.TableViewModel.Reflect(ViewStatus);
+
+                view.TableView.ScrollToColumnViewModel(mainPageViewModel.SheetViewModel.ColumnViewModels.OrderBy(c => c.Order).First());
+
+                // Preview 풀기
+                mainPageViewModel.TableViewModel.CancelIndexing();
+
+                // Page View 아래로 보내기                    
+                pageView.Select();
+            }
+            else if (pageView == TopPageView && previewingColumnViewModel != null && ViewStatus.SelectedColumnViewModels.IndexOf(previewingColumnViewModel) < 0)
             {
                 // 현재 탭된 컬럼의 viewStatus에는 previewingColumn이 추가되어 있는 상태임.
                 selectedPageViews.Add(pageView);
@@ -86,13 +108,10 @@ namespace FlexTable.ViewModel
                 pageViewModel.IsSelected = true;
                                 
                 // 차트 새로 반영 (타이틀이 업데이트 될 것임)
-                pageViewModel.Reflect();
+                pageViewModel.Reflect(true);
 
                 // 새로운 page 만들기
                 view.ExplorationView.AddNewPage();
-
-                // 선택 표시 (컬럼 위 아래 헤더 업데이트)
-                previewingColumnViewModel.IsSelected = true;
 
                 mainPageViewModel.SheetViewModel.UpdateGroup(ViewStatus);
                 mainPageViewModel.TableViewModel.Reflect(ViewStatus);               
@@ -103,7 +122,7 @@ namespace FlexTable.ViewModel
                 mainPageViewModel.TableViewModel.CancelIndexing();
 
                 // Page View 아래로 보내기                    
-                pageViewModel.Select();
+                pageView.Select();
             }
             else if(pageView == TopPageView && ViewStatus.SelectedColumnViewModels.IndexOf(previewingColumnViewModel) >= 0) {
                 // 이미 선택된 것 또 선택하는 경우
@@ -113,6 +132,7 @@ namespace FlexTable.ViewModel
                 selectedPageViews.Remove(pageView);
 
                 pageViewModel.IsSelected = false;
+
                 // Preview 풀기 (만약 되어있다면)
                 mainPageViewModel.TableViewModel.CancelIndexing();
 
@@ -128,7 +148,7 @@ namespace FlexTable.ViewModel
                 view.TableView.ScrollToColumnViewModel(mainPageViewModel.SheetViewModel.ColumnViewModels.OrderBy(c => c.Order).First());
 
                 // Page View 위로 올리기
-                pageViewModel.Unselect();
+                pageView.Unselect();
             }            
         }        
     }

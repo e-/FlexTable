@@ -40,7 +40,10 @@ namespace FlexTable.ViewModel
 
         private Double pageHeight;
         public Double PageHeight { get { return pageHeight; } set { pageHeight = value; OnPropertyChanged("PageHeight"); } }
-        
+
+        private Double negativePageHeight;
+        public Double NegativePageHeight { get { return negativePageHeight; } set { negativePageHeight = value; OnPropertyChanged("NegativePageHeight"); } }
+
         private Double pageWidth;
         public Double PageWidth { get { return pageWidth; } set { pageWidth = value; OnPropertyChanged("PageWidth"); } }
 
@@ -64,6 +67,7 @@ namespace FlexTable.ViewModel
         public void Initialize()
         {
             PageHeight = Bounds.Height / 2 - 4;
+            NegativePageHeight = -PageHeight;
             PageOffset = PageHeight + 8;
             PageWidth = Bounds.Width / 2;
 
@@ -95,18 +99,20 @@ namespace FlexTable.ViewModel
                 ViewStatus = new Model.ViewStatus() // 초기 비어있는 뷰 상태로 초기화
             };
             view.ExplorationView.TopPageView.DataContext = pageViewModel;
-            
+
             // 메타데이터 초기화
             ExplorationViewModel.MetadataViewModel.Initialize();
 
-            ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[1]);
-            ExplorationViewModel.PageViewTapped(ExplorationViewModel.TopPageView.PageViewModel, ExplorationViewModel.TopPageView);
+            
+            //ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[1]);
+            //ExplorationViewModel.PageViewTapped(ExplorationViewModel.TopPageView.PageViewModel, ExplorationViewModel.TopPageView, false);
 
-            ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[4]);
+            /*ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[4]);
             ExplorationViewModel.PageViewTapped(ExplorationViewModel.TopPageView.PageViewModel, ExplorationViewModel.TopPageView);
 
             ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[6]);
             ExplorationViewModel.PageViewTapped(ExplorationViewModel.TopPageView.PageViewModel, ExplorationViewModel.TopPageView);
+            */
         }    
     }
 }

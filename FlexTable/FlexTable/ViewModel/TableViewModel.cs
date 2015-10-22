@@ -345,7 +345,7 @@ namespace FlexTable.ViewModel
             // 는 바인딩으로 자동으로 됨
             // 여기서 주의점은 나중에 그룹바이시 컬럼 하나에 대해서만 min, max를 하는 경우 min, max 자체를 생략해야 한다는 점이다
 
-            mainPageViewModel.ExplorationViewModel.SelectedPageViews.Last().PageViewModel.Reflect();
+            mainPageViewModel.ExplorationViewModel.SelectedPageViews.Last().PageViewModel.Reflect(true);
 
             mainPageViewModel.SheetViewModel.UpdateGroup(mainPageViewModel.ExplorationViewModel.ViewStatus);
             Reflect(mainPageViewModel.ExplorationViewModel.ViewStatus);

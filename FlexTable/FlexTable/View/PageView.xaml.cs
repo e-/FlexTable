@@ -46,8 +46,12 @@ namespace FlexTable.View
 
         public PageViewModel PageViewModel => (this.DataContext as PageViewModel);
         public Storyboard HideStoryboard => HideStoryboardElement;
+        public Storyboard CancelUndoStoryboard => CancelUndoOpacityStoryboardElement;
         private Int32 activatedParagraphIndex = 0;
+        public String ActivatedParagraphTag { get; set; }
         private List<Border> paragraphLabels = new List<Border>();
+        private List<StackPanel> paragraphs = new List<StackPanel>();
+        
 
         public PageView()
         {
@@ -68,6 +72,7 @@ namespace FlexTable.View
             ScatterplotElement.LassoUnselected += ScatterplotElement_LassoUnselected;
         }
 
+        #region Event Handlers
         private void ScatterplotElement_LassoSelected(object sender, object datum, int index)
         {
             PageViewModel pvm = this.DataContext as PageViewModel;
@@ -116,8 +121,8 @@ namespace FlexTable.View
         {
             PageViewModel pvm = this.DataContext as PageViewModel;
 
-            Tuple<Object, Object, Double> datum = d as Tuple<Object, Object, Double>;
-            pvm.MainPageViewModel.TableViewModel.PreviewRows(pvm.GroupedBarChartRowSelecter(datum.Item1 as Model.Category, datum.Item2 as Model.Category));
+            Tuple<Object, Object, Double, Object> datum = d as Tuple<Object, Object, Double, Object>;
+            pvm.MainPageViewModel.TableViewModel.PreviewRows(pvm.GroupedBarChartRowSelecter(datum.Item1 as Category, datum.Item4 as Category));
         }
 
         void BarChartElement_BarPointerPressed(object sender, object d, Int32 index)
@@ -125,7 +130,7 @@ namespace FlexTable.View
             PageViewModel pvm = this.DataContext as PageViewModel;
             
             Tuple<Object, Double> datum = d as Tuple<Object, Double>;
-            pvm.MainPageViewModel.TableViewModel.PreviewRows(pvm.BarChartRowSelecter(datum.Item1 as Model.Category));
+            pvm.MainPageViewModel.TableViewModel.PreviewRows(pvm.BarChartRowSelecter(datum.Item1 as Category));
         }
 
         void BarChartElement_BarPointerReleased(object sender, object d, Int32 index)
@@ -133,16 +138,16 @@ namespace FlexTable.View
             PageViewModel pvm = this.DataContext as PageViewModel;
             pvm.MainPageViewModel.TableViewModel.CancelPreviewRows();
         }
-        
+
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            Show.Begin();
+            ShowStoryboardElement.Begin();
         }
 
         private void Wrapper_Tapped(object sender, TappedRoutedEventArgs e)
         {
             if(e.PointerDeviceType == PointerDeviceType.Touch)
-                PageViewModel.Tapped(this);
+                PageViewModel.Tapped(this, false);
         }
 
         private void TitleWrapper_Tapped(object sender, TappedRoutedEventArgs e)
@@ -155,6 +160,8 @@ namespace FlexTable.View
             e.Handled = true;
         }
 
+        #endregion
+
         public void Select()
         {
             SelectStoryboard.Begin();
@@ -163,6 +170,8 @@ namespace FlexTable.View
             DistributionViewElement.IsHitTestVisible = true;
             GroupedBarChartElement.IsHitTestVisible = true;
             ScatterplotElement.IsHitTestVisible = true;
+            PageViewModel.IsUndoing = false;
+            PageViewModel.IsEmpty = false;
         }
 
         public void Unselect()
@@ -177,56 +186,115 @@ namespace FlexTable.View
 
         private void UnselectStoryboard_Completed(object sender, object e)
         {
-            ChartWrapper.Opacity = 1;
-            PageViewModel.Hide();
+            PageViewModel.IsUndoing = true;
+
+            // PageViewModel.HideSummary(); // 이걸하면 바로 사라지기 때문에 하면 안됨.
         }
 
-        public void UpdateCarousel()
+        public void UpdateCarousel(Boolean trackPreviousParagraph, String firstChartTag)
         {
-            ParagraphLabelContainer.Children.Clear();
-            paragraphLabels.Clear();
-            Carousel.UpdateLayout();
+            paragraphs.Clear();
 
-            Int32 index = 0;
-            foreach (UIElement child in ParagraphContainer.Children)
+            //first chart tag에 해당하는 차트 먼저 추가
+            foreach (UIElement child in ParagraphContainerCanvasElement.Children)
             {
-                if (child.Visibility == Visibility.Visible)
+                child.UpdateLayout();
+                if (child.Visibility == Visibility.Visible && (child as StackPanel).Tag?.ToString() == firstChartTag)
                 {
-                    Border border = new Border()
-                    {
-                        Style = this.Resources["ParagraphLabelBorderStyle"] as Style,
-                        Background = new SolidColorBrush((Color)this.Resources["LabelBackgroundColor"])
-                    };
-
-                    TextBlock textBlock = new TextBlock()
-                    {
-                        Text = (child as FrameworkElement).Tag.ToString(),
-                        Style = this.Resources["ParagraphLabelTextBlockStyle"] as Style,
-                        Foreground = new SolidColorBrush((Color)this.Resources["LabelForegroundColor"])
-                    };
-
-                    Int32 copiedIndex = index;
-                    border.Tapped += delegate (object sender, TappedRoutedEventArgs e)
-                    {
-                        GoToParagraph(copiedIndex);
-                        e.Handled = true;
-                    };
-
-                    border.Child = textBlock;
-
-                    ParagraphLabelContainer.Children.Add(border);
-                    paragraphLabels.Add(border);
-                    index++;
+                    paragraphs.Add(child as StackPanel);
                 }
             }
 
-            Double offset = Carousel.HorizontalOffset;
-            Double width = Carousel.ActualWidth;
+            //그 다음 나머지 보이는 차트 추가
+            foreach (UIElement child in ParagraphContainerCanvasElement.Children)
+            {
+                if (child.Visibility == Visibility.Visible && (child as StackPanel).Tag?.ToString() != firstChartTag)
+                {
+                    paragraphs.Add(child as StackPanel);
+                }
+            }
 
-            activatedParagraphIndex = (Int32)Math.Ceiling((offset - width / 2) / width);
+            Int32 index = 0;
+            foreach(StackPanel paragraph in paragraphs)
+            {
+                Canvas.SetLeft(paragraph, (Double)App.Current.Resources["ParagraphWidth"] * index);
+                index++;
+            }
+            ParagraphContainerCanvasElement.Width = index * (Double)App.Current.Resources["ParagraphWidth"] * index;
+
+            // 먼저 전에 보이던 시각화와 같은 시각화가 있는지 본다. 있으면 그걸 먼저 보여줌 (바, 산점도)에서 산점도를 보다 바가 없어지면 그대로 산점도를 보여주고 싶음
+
+            index = 0;
+            Int32 sameIndex = 0;
+            StackPanel sameParagraph = null;
+            foreach(StackPanel paragraph in paragraphs)
+            {
+                if (paragraph.Tag?.ToString() == ActivatedParagraphTag)
+                {
+                    sameParagraph = paragraph;
+                    sameIndex = index;
+                }
+                index++;
+            }
+
+            if (sameParagraph != null && trackPreviousParagraph)
+            {
+                activatedParagraphIndex = sameIndex;
+                Carousel.ChangeView(sameIndex * (Double)App.Current.Resources["ParagraphWidth"], null, null, true);
+            }
+            else
+            {
+                // 아니면 현재 위치를 유지해보자
+                // 0으로 초기화
+
+                Double offset = Carousel.HorizontalOffset;
+                Double width = Carousel.ActualWidth;
+
+                Carousel.ChangeView(0, null, null, true);
+                activatedParagraphIndex = 0;
+                ActivatedParagraphTag = paragraphs[activatedParagraphIndex].Tag.ToString();
+                /*activatedParagraphIndex = (Int32)Math.Ceiling((offset - width / 2) / width);
+                ActivatedParagraphTag = paragraphs[activatedParagraphIndex].Tag.ToString();*/
+            }
+        }
+
+        public void UpdatePageLabelContainer()
+        {
+            ParagraphLabelContainer.Children.Clear();
+            paragraphLabels.Clear();            
+
+            Int32 index = 0;
+            foreach (StackPanel paragraph in paragraphs)
+            {
+                Border border = new Border()
+                {
+                    Style = this.Resources["ParagraphLabelBorderStyle"] as Style,
+                    Background = new SolidColorBrush((Color)this.Resources["LabelBackgroundColor"])
+                };
+
+                TextBlock textBlock = new TextBlock()
+                {
+                    Text = (paragraph as FrameworkElement).Tag.ToString(),
+                    Style = this.Resources["ParagraphLabelTextBlockStyle"] as Style,
+                    Foreground = new SolidColorBrush((Color)this.Resources["LabelForegroundColor"])
+                };
+
+                Int32 copiedIndex = index;
+                border.Tapped += delegate (object sender, TappedRoutedEventArgs e)
+                {
+                    GoToParagraph(copiedIndex);
+                    e.Handled = true;
+                };
+
+                border.Child = textBlock;
+
+                ParagraphLabelContainer.Children.Add(border);
+                paragraphLabels.Add(border);
+                index++;
+            }
+
             paragraphLabels[activatedParagraphIndex].Background = new SolidColorBrush((Color)this.Resources["ActivatedLabelBackgroundColor"]);
             (paragraphLabels[activatedParagraphIndex].Child as TextBlock).Foreground = new SolidColorBrush((Color)this.Resources["ActivatedLabelForegroundColor"]);
-
             highlightedParagraphIndex = activatedParagraphIndex;
         }
 
@@ -238,9 +306,13 @@ namespace FlexTable.View
                 Double width = Carousel.ActualWidth;
 
                 activatedParagraphIndex = (Int32)Math.Ceiling((offset - width / 2) / width);
+                ActivatedParagraphTag = paragraphs[activatedParagraphIndex].Tag.ToString();
                 Double newOffset = activatedParagraphIndex * width;
 
                 Carousel.ChangeView(newOffset, null, null);
+
+                if (highlightedParagraphIndex != activatedParagraphIndex)
+                    HighlightParagraphLabel(activatedParagraphIndex);
             }
         }
 
@@ -250,14 +322,12 @@ namespace FlexTable.View
             Double width = Carousel.ActualWidth;
 
             Int32 paragraphIndex = (Int32)Math.Ceiling((offset - width / 2) / width);
-
-            if (highlightedParagraphIndex != paragraphIndex)
-                HighlightParagraphLabel(paragraphIndex);
         }
 
         public void GoToParagraph(Int32 index)
         {
             activatedParagraphIndex = index;
+            ActivatedParagraphTag = paragraphs[activatedParagraphIndex].Tag.ToString();
             HighlightParagraphLabel(index);
             Double width = Carousel.ActualWidth;
             Double newOffset = activatedParagraphIndex * width;
@@ -304,6 +374,13 @@ namespace FlexTable.View
             }
 
             paragraphLabelStoryboard.Begin();
+        }
+
+        private void Undo_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            e.Handled = true;
+            PageViewModel.IsUndoing = false;
+            PageViewModel.Tapped(this, true);
         }
     }
 }

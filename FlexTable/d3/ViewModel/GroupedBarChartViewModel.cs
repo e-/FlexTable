@@ -7,7 +7,7 @@ using Windows.UI;
 using d3.Scale;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using DataPoint = System.Tuple<object, object, double>;
+using DataPoint = System.Tuple<object, object, double, object>;
 
 namespace d3.ViewModel
 {
@@ -87,12 +87,12 @@ namespace d3.ViewModel
                 return (d, index) => (Height - LegendData.List.Count() * LegendPatchHeight - (LegendData.List.Count() - 1) * LegendPatchSpace) / 2 + index * (LegendPatchHeight + LegendPatchSpace);
             }
         }
+        public Func<Object, Int32, Double> LegendPatchOpacityGetter { get { return (d, index) => IsSelecting ? (d.ToString() == selectedKey2.ToString() ? 1.0 : 0.2) : 1.0; } }
 
         public Func<Object, Int32, Double> LegendTextXGetter { get { return (d, index) => LegendPatchWidth + LegendPatchSpace; } }
         public Func<Object, Int32, String> LegendTextGetter { get { return (d, index) => d.ToString(); } }
         public Func<Object, Int32, Color> LegendTextColorGetter { get { return (d, index) => /*(d as Model.Bin).IsFilteredOut ? Colors.LightGray :*/ Colors.Black; } }
-        public Func<Object, Int32, Double> LegendOpacityGetter { get { return (d, index) => IsSelecting ? (d == selectedKey2 ? 1.0 : 0.2) : 1.0; } }
-        public Func<TextBlock, Object, Int32, Double> LegendTextOpacityGetter { get { return (textBlock, d, index) => IsSelecting ? (d == selectedKey2 ? 1.0 : 0.2) : 1.0; } }
+        public Func<TextBlock, Object, Int32, Double> LegendTextOpacityGetter { get { return (textBlock, d, index) => IsSelecting ? (d.ToString() == selectedKey2.ToString() ? 1.0 : 0.2) : 1.0; } }
 
         public Func<Object, Int32, Color> ColorGetter
         {

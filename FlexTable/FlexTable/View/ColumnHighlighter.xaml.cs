@@ -210,7 +210,7 @@ namespace FlexTable.View
             {
                 tvm.MainPageViewModel.View.TableView.ColumnHighlighter.ColumnViewModel = null;
                 tvm.MainPageViewModel.View.TableView.ColumnHighlighter.Update();
-                tvm.MainPageViewModel.View.ExplorationView.TopPageViewModel.Hide();
+                tvm.MainPageViewModel.View.ExplorationView.TopPageViewModel.HideSummary();
             }
         }
 
@@ -225,7 +225,7 @@ namespace FlexTable.View
             {
                 tvm.MainPageViewModel.View.TableView.ColumnHighlighter.ColumnViewModel = null;
                 tvm.MainPageViewModel.View.TableView.ColumnHighlighter.Update();
-                tvm.MainPageViewModel.View.ExplorationView.TopPageViewModel.Hide();
+                tvm.MainPageViewModel.View.ExplorationView.TopPageViewModel.HideSummary();
             }
         }
 
@@ -355,7 +355,7 @@ namespace FlexTable.View
             {
                 tvm.MainPageViewModel.View.TableView.ColumnHighlighter.ColumnViewModel = null;
                 tvm.MainPageViewModel.View.TableView.ColumnHighlighter.Update();
-                tvm.MainPageViewModel.View.ExplorationView.TopPageViewModel.Hide();
+                tvm.MainPageViewModel.View.ExplorationView.TopPageViewModel.HideSummary();
             }
         }
 
@@ -370,7 +370,7 @@ namespace FlexTable.View
             {
                 tvm.MainPageViewModel.View.TableView.ColumnHighlighter.ColumnViewModel = null;
                 tvm.MainPageViewModel.View.TableView.ColumnHighlighter.Update();
-                tvm.MainPageViewModel.View.ExplorationView.TopPageViewModel.Hide();
+                tvm.MainPageViewModel.View.ExplorationView.TopPageViewModel.HideSummary();
             }
         }
 

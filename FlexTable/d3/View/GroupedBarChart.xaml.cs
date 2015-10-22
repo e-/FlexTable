@@ -14,6 +14,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using d3.ViewModel;
+using DataPoint = System.Tuple<object, object, double, object>;
 
 // 사용자 정의 컨트롤 항목 템플릿에 대한 설명은 http://go.microsoft.com/fwlink/?LinkId=234236에 나와 있습니다.
 
@@ -23,7 +24,7 @@ namespace d3.View
     {
         ViewModel.GroupedBarChartViewModel viewModel = new ViewModel.GroupedBarChartViewModel();
 
-        public IEnumerable<Tuple<Object, Object, Double>> Data
+        public IEnumerable<DataPoint> Data
         {
             get { return viewModel.Data; }
             set

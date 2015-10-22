@@ -41,7 +41,7 @@
             <com:Rectangles Data="{Binding LegendData}" WidthGetter="{Binding LegendPatchWidthGetter}" 
                             HeightGetter="{Binding LegendPatchHeightGetter}" XGetter="{Binding LegendPatchXGetter}" 
                             YGetter="{Binding LegendPatchYGetter}" ColorGetter="{Binding LegendColorGetter}"
-                            OpacityGetter="{Binding LegendOpacityGetter}"
+                            OpacityGetter="{Binding LegendPatchOpacityGetter}"
                             x:Name="LegendRectangleElement"/>
 
             <com:Texts Data="{Binding LegendData}" TextGetter="{Binding LegendTextGetter}"
