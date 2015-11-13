@@ -17,6 +17,7 @@ using Windows.UI.Xaml.Navigation;
 
 using FlexTable.ViewModel;
 using Windows.Devices.Input;
+using Windows.UI.Xaml.Media.Animation;
 
 // 사용자 정의 컨트롤 항목 템플릿에 대한 설명은 http://go.microsoft.com/fwlink/?LinkId=234236에 나와 있습니다.
 
@@ -30,7 +31,7 @@ namespace FlexTable.View
         {
             this.InitializeComponent();
         }
-
+        
         public void Update()
         {
             ColumnViewModel columnViewModel = ColumnViewModel;
@@ -55,12 +56,12 @@ namespace FlexTable.View
                     {
                         cell = new TextBlock()
                         {
-                            Style = App.Current.Resources["CellStyle"] as Style
+                            Style = App.Current.Resources["CellStyle"] as Style,
                         };
                         TableCanvas.Children.Add(cell);
                     }
 
-                    String text = rowViewModel.Cells[columnIndex].Content.ToString();                    
+                    String text = rowViewModel.Cells[columnIndex].Content.ToString();
                     cell.Text = text;
                     cell.Width = columnViewModel.Width;
                     Canvas.SetTop(cell, rowViewModel.Y);
@@ -71,7 +72,7 @@ namespace FlexTable.View
                 {
                     TableCanvas.Children[i].Visibility = Visibility.Collapsed;
                 }
-                
+
                 Double left = columnViewModel.X - tvm.ScrollLeft;
 
                 if (left - columnViewModel.Width / 2 <= 0)
@@ -79,7 +80,7 @@ namespace FlexTable.View
                     UpperColumn.RenderTransformOrigin = new Point(0, 0);
                     LowerColumnHeaderWrapperElement.RenderTransformOrigin = new Point(0, 1);
                 }
-                else if(left + columnViewModel.Width * 3 / 2 >= tvm.SheetViewWidth)
+                else if (left + columnViewModel.Width * 3 / 2 >= tvm.SheetViewWidth)
                 {
                     UpperColumn.RenderTransformOrigin = new Point(1, 0);
                     LowerColumnHeaderWrapperElement.RenderTransformOrigin = new Point(1, 1);
@@ -103,7 +104,6 @@ namespace FlexTable.View
                 Wrapper.Visibility = Visibility.Visible;
 
                 TableScrollViewer.Height = tvm.SheetViewHeight;
-                TableScrollViewer.UpdateLayout();
                 TableScrollViewer.ChangeView(null, tvm.ScrollTop, null, true);
 
 
@@ -123,24 +123,31 @@ namespace FlexTable.View
                 }
 
                 Brighten.Pause();
-                Darken.Pause();
-                Darken.Begin();
+                if (isDarkenPlaying)
+                {
+                    isDarkenPlaying = false;
+                    Darken.SkipToFill();
+                }
+                else
+                {
+                    isDarkenPlaying = true;
+                    Darken.Begin();
+                }
             }
             else
             {
-                Darken.Pause();
-                Brighten.Pause();
                 TableScrollViewer.Height = tvm.SheetViewHeight;
-                TableScrollViewer.UpdateLayout();
                 Brighten.Begin();
+                Darken.Pause();
             }
         }
 
-
+        Boolean isDarkenPlaying = false;
         private void Darken_Completed(object sender, object e)
         {
+            isDarkenPlaying = false;
             TableViewModel tvm = (this.DataContext as TableViewModel);
-            TableScrollViewer.Height = tvm.SheetViewHeight / 2 - (Double)App.Current.Resources["ColumnHeaderHeight"];
+            TableScrollViewer.Height = tvm.SheetViewHeight / (Double)this.Resources["ZoomScale"] - (Double)App.Current.Resources["ColumnHeaderHeight"] / 2 / (Double)this.Resources["ZoomScale"];
         }
 
         private void Brighten_Completed(object sender, object e)

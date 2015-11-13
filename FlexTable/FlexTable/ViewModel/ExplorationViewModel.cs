@@ -76,7 +76,7 @@ namespace FlexTable.ViewModel
             TopPageView.PageViewModel.HideSummary();
         }
 
-        public void PageViewTapped(PageViewModel pageViewModel, PageView pageView, Boolean isUndo)
+        public void StatusChanged(PageViewModel pageViewModel, PageView pageView, Boolean isUndo)
         {
             if(isUndo && selectedPageViews.IndexOf(pageView) < 0)
             {
@@ -98,7 +98,8 @@ namespace FlexTable.ViewModel
                 mainPageViewModel.TableViewModel.CancelIndexing();
 
                 // Page View 아래로 보내기                    
-                pageView.Select();
+                pageView.MoveToSelectedPosition(isUndo);
+                pageView.EnterSelectedMode();
             }
             else if (pageView == TopPageView && previewingColumnViewModel != null && ViewStatus.SelectedColumnViewModels.IndexOf(previewingColumnViewModel) < 0)
             {
@@ -122,7 +123,8 @@ namespace FlexTable.ViewModel
                 mainPageViewModel.TableViewModel.CancelIndexing();
 
                 // Page View 아래로 보내기                    
-                pageView.Select();
+                pageView.MoveToSelectedPosition(isUndo);
+                pageView.EnterSelectedMode();
             }
             else if(pageView == TopPageView && ViewStatus.SelectedColumnViewModels.IndexOf(previewingColumnViewModel) >= 0) {
                 // 이미 선택된 것 또 선택하는 경우
@@ -148,7 +150,8 @@ namespace FlexTable.ViewModel
                 view.TableView.ScrollToColumnViewModel(mainPageViewModel.SheetViewModel.ColumnViewModels.OrderBy(c => c.Order).First());
 
                 // Page View 위로 올리기
-                pageView.Unselect();
+                pageView.MoveToUnselectedPosition();
+                pageView.EnterUndoMode();
             }            
         }        
     }

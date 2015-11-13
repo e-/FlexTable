@@ -72,7 +72,7 @@ namespace FlexTable.View
             ScatterplotElement.LassoUnselected += ScatterplotElement_LassoUnselected;
         }
 
-        #region Event Handlers
+        #region Visualization Event Handlers
         private void ScatterplotElement_LassoSelected(object sender, object datum, int index)
         {
             PageViewModel pvm = this.DataContext as PageViewModel;
@@ -146,25 +146,26 @@ namespace FlexTable.View
 
         private void Wrapper_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            if(e.PointerDeviceType == PointerDeviceType.Touch)
+            /*if(e.PointerDeviceType == PointerDeviceType.Touch)
                 PageViewModel.Tapped(this, false);
+                */
         }
-
-        private void TitleWrapper_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            e.Handled = true;
-        }
-
-        private void ParagraphLabelContainer_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            e.Handled = true;
-        }
-
+        
         #endregion
-
-        public void Select()
+        
+        public void MoveToSelectedPosition(Boolean isUndo)
         {
-            SelectStoryboard.Begin();
+            if (isUndo) UndoSelectStoryboard.Begin();
+            else SelectStoryboard.Begin();
+        }
+        
+        public void MoveToUnselectedPosition()
+        {
+            UnselectStoryboard.Begin();
+        }
+
+        public void EnterSelectedMode()
+        {
             BarChartElement.IsHitTestVisible = true;
             LineChartElement.IsHitTestVisible = true;
             DistributionViewElement.IsHitTestVisible = true;
@@ -174,9 +175,11 @@ namespace FlexTable.View
             PageViewModel.IsEmpty = false;
         }
 
-        public void Unselect()
+        public void EnterUndoMode()
         {
-            UnselectStoryboard.Begin();
+            UndoStoryboard.Begin();
+
+            PageViewModel.IsPrimaryUndoMessageVisible = true;
             BarChartElement.IsHitTestVisible = false;
             LineChartElement.IsHitTestVisible = false;
             DistributionViewElement.IsHitTestVisible = false;
@@ -184,13 +187,12 @@ namespace FlexTable.View
             ScatterplotElement.IsHitTestVisible = false;
         }
 
-        private void UnselectStoryboard_Completed(object sender, object e)
+        private void UndoStoryboard_Completed(object sender, object e)
         {
             PageViewModel.IsUndoing = true;
-
-            // PageViewModel.HideSummary(); // 이걸하면 바로 사라지기 때문에 하면 안됨.
         }
 
+        #region Carousel 
         public void UpdateCarousel(Boolean trackPreviousParagraph, String firstChartTag)
         {
             paragraphs.Clear();
@@ -376,11 +378,103 @@ namespace FlexTable.View
             paragraphLabelStoryboard.Begin();
         }
 
+        #endregion
+
         private void Undo_Tapped(object sender, TappedRoutedEventArgs e)
         {
             e.Handled = true;
             PageViewModel.IsUndoing = false;
-            PageViewModel.Tapped(this, true);
+            PageViewModel.StatusChanged(this, true);
         }
+
+        private void Wrapper_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            if (e.PointerDeviceType != PointerDeviceType.Touch) return;
+            if (PageViewModel.IsEmpty) { }
+            else if(PageViewModel.IsUndoing)
+            {
+                Double delta = e.Cumulative.Translation.Y;
+                if (delta >= 0) delta = 0;
+                if (delta < -PageViewModel.MainPageViewModel.PageOffset) { delta = -PageViewModel.MainPageViewModel.PageOffset; }
+                Canvas.SetTop(this, PageViewModel.MainPageViewModel.PageOffset + delta);
+                ChartWrapper.Opacity = 0.2 - 0.8 * delta / PageViewModel.MainPageViewModel.PageOffset;
+                PageViewModel.IsPrimaryUndoMessageVisible = delta > -50;
+            }
+            else if (PageViewModel.IsSelected) // 선택 된 경우 내릴수만 있음
+            {
+                Double delta = e.Cumulative.Translation.Y;
+                if (delta <= 0) delta = 0;
+                if (delta > PageViewModel.MainPageViewModel.PageHeight) { delta = PageViewModel.MainPageViewModel.PageHeight; }
+                Canvas.SetTop(this, delta);
+                ChartWrapper.Opacity = 0.2 + 0.8 * (1 - delta / PageViewModel.MainPageViewModel.PageHeight);
+                Canvas.SetZIndex(this, 10);
+            }
+            else // 선택되지 않은 경우 올릴수만 있음
+            {
+                Double delta = e.Cumulative.Translation.Y;
+                if (delta >= 0) delta = 0;
+                if (delta < -PageViewModel.MainPageViewModel.PageOffset) { delta = -PageViewModel.MainPageViewModel.PageOffset; }
+                Canvas.SetTop(this, PageViewModel.MainPageViewModel.PageOffset + delta);
+            }            
+        }
+
+        private void Wrapper_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
+        {
+            if (e.PointerDeviceType != PointerDeviceType.Touch) return;
+            if (PageViewModel.IsEmpty) { }
+            else if (PageViewModel.IsUndoing)
+            {
+                Double delta = e.Cumulative.Translation.Y;
+                if (delta < -Const.PageViewToggleThreshold) // 많이 올라간 경우
+                {
+                    Undo_Tapped(sender, new TappedRoutedEventArgs());
+                }
+                else
+                {
+                    MoveToUnselectedPosition();
+                    EnterUndoMode();
+                }
+            }
+            else if (PageViewModel.IsSelected) // 선택 된 경우 내릴수만 있음
+            {
+                Double delta = e.Cumulative.Translation.Y;
+                if (delta > Const.PageViewToggleThreshold) // 많이 내려간 경우
+                {
+                    MoveToUnselectedPosition();
+                    EnterUndoMode();
+                    PageViewModel.StatusChanged(this, false);
+                }
+                else
+                {
+                    MoveToSelectedPosition(false);
+                }
+                Canvas.SetZIndex(this, 0);
+            }
+            else // 선택되지 않은 경우 올릴수만 있음
+            {
+                Double delta = e.Cumulative.Translation.Y;
+                if(delta < -Const.PageViewToggleThreshold) // 많이 올라간 경우
+                {
+                    MoveToSelectedPosition(false);
+                    EnterSelectedMode();
+                    PageViewModel.StatusChanged(this, false);
+                }
+                else
+                {
+                    MoveToUnselectedPosition();
+                }
+            }
+        }
+
+        private void Carousel_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            Wrapper_ManipulationDelta(sender, e);
+        }
+
+        private void Carousel_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
+        {
+            Wrapper_ManipulationCompleted(sender, e);
+        }
+
     }
 }

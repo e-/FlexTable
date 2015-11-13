@@ -14,24 +14,35 @@
     >
     <UserControl.Resources>
         <QuadraticEase x:Name="EasingFunction" EasingMode="EaseInOut" />
+        <x:Double x:Key="ZoomScale">1.2</x:Double>
         <Storyboard x:Name="Darken" Completed="Darken_Completed">
-            <ColorAnimation Storyboard.TargetProperty="(Canvas.Background).(SolidColorBrush.Color)" To="#66000000"
+            <ColorAnimation Storyboard.TargetProperty="(Canvas.Background).(SolidColorBrush.Color)" To="#66333333"
                             EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2" Storyboard.TargetName="Wrapper" 
                             ></ColorAnimation>
+
+            <ColorAnimation Storyboard.TargetProperty="(StackPanel.Background).(SolidColorBrush.Color)" To="#FFFFFFFF"
+                            EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.05" Storyboard.TargetName="UpperColumn" 
+                            ></ColorAnimation>
+            
             <DoubleAnimation Storyboard.TargetProperty="ScaleX" Storyboard.TargetName="UpperCompositeTransform"
-                             To="2" EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2"></DoubleAnimation>
+                             To="{StaticResource ZoomScale}" EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2"></DoubleAnimation>
             <DoubleAnimation Storyboard.TargetProperty="ScaleY" Storyboard.TargetName="UpperCompositeTransform"
-                             To="2" EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2"></DoubleAnimation>
+                             To="{StaticResource ZoomScale}" EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2"></DoubleAnimation>
 
             <DoubleAnimation Storyboard.TargetProperty="ScaleX" Storyboard.TargetName="LowerCompositeTransform"
-                             To="2" EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2"></DoubleAnimation>
+                             To="{StaticResource ZoomScale}" EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2"></DoubleAnimation>
             <DoubleAnimation Storyboard.TargetProperty="ScaleY" Storyboard.TargetName="LowerCompositeTransform"
-                             To="2" EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2"></DoubleAnimation>
+                             To="{StaticResource ZoomScale}" EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2"></DoubleAnimation>
         </Storyboard>
         <Storyboard x:Name="Brighten" Completed="Brighten_Completed">
             <ColorAnimation Storyboard.TargetProperty="(Canvas.Background).(SolidColorBrush.Color)" To="#00000000"
                             EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2" Storyboard.TargetName="Wrapper" 
                             ></ColorAnimation>
+            
+            <ColorAnimation Storyboard.TargetProperty="(StackPanel.Background).(SolidColorBrush.Color)" To="#00FFFFFF"
+                            EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.05" BeginTime="0:0:0.15" Storyboard.TargetName="UpperColumn" 
+                            ></ColorAnimation>
+            
             <DoubleAnimation Storyboard.TargetProperty="ScaleX" Storyboard.TargetName="UpperCompositeTransform"
                              To="1" EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2"></DoubleAnimation>
             <DoubleAnimation Storyboard.TargetProperty="ScaleY" Storyboard.TargetName="UpperCompositeTransform"
@@ -44,13 +55,14 @@
 
             <DoubleAnimation Storyboard.TargetProperty="Height" Storyboard.TargetName="TableScrollViewer"
                              To="3000" EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2"></DoubleAnimation>
-        </Storyboard>        
+        </Storyboard>
         <util:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </UserControl.Resources>
-    
-    <Canvas Background="#00000000" x:Name="Wrapper" Visibility="Collapsed">
-        <Canvas x:Name="MagnifiedColumn"> <!-- x position -->            
-            <StackPanel Background="White" x:Name="UpperColumn">
+
+    <Canvas Background="#00000000" x:Name="Wrapper" Visibility="Collapsed" d:IsHidden="True">
+        <Canvas x:Name="MagnifiedColumn" d:IsHidden="True">
+            <!-- x position -->
+            <StackPanel Background="#00FFFFFF" x:Name="UpperColumn" d:IsHidden="True">
                 <StackPanel.RenderTransformOrigin>0.5 0</StackPanel.RenderTransformOrigin>
                 <StackPanel.RenderTransform>
                     <CompositeTransform ScaleX="1" ScaleY="1" x:Name="UpperCompositeTransform"></CompositeTransform>
@@ -61,47 +73,47 @@
                         PointerReleased="UpperColumnHeaderWrapperElement_PointerReleased"
                         ManipulationMode="All"
                         ManipulationCompleted="UpperColumnHeaderWrapperElement_ManipulationCompleted"
-                        ManipulationDelta="UpperColumnHeaderWrapperElement_ManipulationDelta"
+                        ManipulationDelta="UpperColumnHeaderWrapperElement_ManipulationDelta" d:IsHidden="True"
                         >
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
-                        Background="Transparent"
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
+                        Background="Transparent" d:IsHidden="True"
                         >
-                            <Grid Width="13">
-                                <TextBlock FontFamily="FontAwesome" Foreground="{StaticResource HighlightBrush1}" 
+                        <Grid Width="13" d:IsHidden="True">
+                            <TextBlock FontFamily="FontAwesome" Foreground="{StaticResource HighlightBrush1}" 
                                 FontSize="10" TextAlignment="Right" VerticalAlignment="Center" 
                                 Padding="0 0 3 0" 
-                                Visibility="{Binding IsSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                Visibility="{Binding IsSelected, Converter={StaticResource BooleanToVisibilityConverter}}" d:IsHidden="True">
                         &#xf00c;
-                                </TextBlock>
-                            </Grid>
-                            <TextBlock Text="{Binding HeaderName}" VerticalAlignment="Center" FontWeight="Bold"
+                            </TextBlock>
+                        </Grid>
+                        <TextBlock Text="{Binding HeaderName}" VerticalAlignment="Center" FontWeight="Bold" d:IsHidden="True"
                            />
-                            <Grid Width="10">
-                                <TextBlock FontFamily="FontAwesome"
+                        <Grid Width="10" d:IsHidden="True">
+                            <TextBlock FontFamily="FontAwesome"
                                FontSize="10" TextAlignment="Left" VerticalAlignment="Center" 
                                Padding="3 0 0 0"
-                               Visibility="{Binding IsDescendingSorted, Converter={StaticResource BooleanToVisibilityConverter}}">
+                               Visibility="{Binding IsDescendingSorted, Converter={StaticResource BooleanToVisibilityConverter}}" d:IsHidden="True">
                         &#xf0d7;
-                                </TextBlock>
-                                <TextBlock FontFamily="FontAwesome"
+                            </TextBlock>
+                            <TextBlock FontFamily="FontAwesome"
                                FontSize="10" TextAlignment="Left" VerticalAlignment="Center" 
                                Padding="3 0 0 0"
-                               Visibility="{Binding IsAscendingSorted, Converter={StaticResource BooleanToVisibilityConverter}}">
+                               Visibility="{Binding IsAscendingSorted, Converter={StaticResource BooleanToVisibilityConverter}}" d:IsHidden="True">
                         &#xf0d8;
-                                </TextBlock>
-                            </Grid>
-                        </StackPanel>
+                            </TextBlock>
+                        </Grid>
+                    </StackPanel>
                 </Border>
 
                 <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" 
                               ZoomMode="Disabled" Grid.Row="1" Grid.Column="1"
                               ManipulationMode="All"
-                              x:Name="TableScrollViewer"
+                              x:Name="TableScrollViewer" d:IsHidden="True"
                               >
-                    <Canvas x:Name="TableCanvas" Height="{Binding PaddedSheetHeight}">
+                    <Canvas x:Name="TableCanvas" Height="{Binding PaddedSheetHeight}" d:IsHidden="True">
                     </Canvas>
                 </ScrollViewer>
-                <Border Height="1000" Background="White" />
+                <Border Height="1000" Background="Transparent" d:IsHidden="True" />
             </StackPanel>
 
             <Border Background="{StaticResource GridLineBrush}" Height="{StaticResource ColumnHeaderHeight}" 
@@ -110,7 +122,7 @@
                     PointerReleased="LowerColumnHeaderWrapperElement_PointerReleased"
                     ManipulationMode="All"
                     ManipulationCompleted="LowerColumnHeaderWrapperElement_ManipulationCompleted"
-                    ManipulationDelta="LowerColumnHeaderWrapperElement_ManipulationDelta"
+                    ManipulationDelta="LowerColumnHeaderWrapperElement_ManipulationDelta" d:IsHidden="True"
                     >
                 <Border.RenderTransformOrigin>0.5 1</Border.RenderTransformOrigin>
                 <Border.RenderTransform>
@@ -118,47 +130,47 @@
                 </Border.RenderTransform>
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
-                    Background="Transparent"
+                    Background="Transparent" d:IsHidden="True"
                     >
-                    <Grid Width="13">
+                    <Grid Width="13" d:IsHidden="True">
                         <TextBlock FontFamily="FontAwesome" Foreground="{StaticResource HighlightBrush1}" 
                             FontSize="10" TextAlignment="Right" VerticalAlignment="Center" 
                             Padding="0 0 3 0" 
-                            Visibility="{Binding IsSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            Visibility="{Binding IsSelected, Converter={StaticResource BooleanToVisibilityConverter}}" d:IsHidden="True">
                     &#xf00c;
                         </TextBlock>
                     </Grid>
-                    <TextBlock Text="{Binding HeaderName}" VerticalAlignment="Center" FontWeight="Bold"
+                    <TextBlock Text="{Binding HeaderName}" VerticalAlignment="Center" FontWeight="Bold" d:IsHidden="True"
                         />
-                    <Grid Width="10">
+                    <Grid Width="10" d:IsHidden="True">
                         <TextBlock FontFamily="FontAwesome"
                             FontSize="10" TextAlignment="Left" VerticalAlignment="Center" 
                             Padding="3 0 0 0"
-                            Visibility="{Binding IsDescendingSorted, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            Visibility="{Binding IsDescendingSorted, Converter={StaticResource BooleanToVisibilityConverter}}" d:IsHidden="True">
                     &#xf0d7;
                         </TextBlock>
                         <TextBlock FontFamily="FontAwesome"
                             FontSize="10" TextAlignment="Left" VerticalAlignment="Center" 
                             Padding="3 0 0 0"
-                            Visibility="{Binding IsAscendingSorted, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            Visibility="{Binding IsAscendingSorted, Converter={StaticResource BooleanToVisibilityConverter}}" d:IsHidden="True">
                     &#xf0d8;
                         </TextBlock>
                     </Grid>
                 </StackPanel>
             </Border>
 
-            <Grid x:Name="UpperPopupElement">
-                <menu:Down x:Name="UpperDownMenuElement"></menu:Down>
-                <menu:Right x:Name="UpperRightMenuElement"></menu:Right>
-                <menu:Left x:Name="UpperLeftMenuElement"></menu:Left>
+            <Grid x:Name="UpperPopupElement" d:IsHidden="True">
+                <menu:Down x:Name="UpperDownMenuElement" d:IsHidden="True"></menu:Down>
+                <menu:Right x:Name="UpperRightMenuElement" d:IsHidden="True"></menu:Right>
+                <menu:Left x:Name="UpperLeftMenuElement" d:IsHidden="True"></menu:Left>
             </Grid>
 
-            <Grid x:Name="LowerPopupElement">
-                <menu:Up x:Name="LowerUpMenuElement"></menu:Up>
-                <menu:Right x:Name="LowerRightMenuElement"></menu:Right>
-                <menu:Left x:Name="LowerLeftMenuElement"></menu:Left>
+            <Grid x:Name="LowerPopupElement" d:IsHidden="True">
+                <menu:Up x:Name="LowerUpMenuElement" d:IsHidden="True"></menu:Up>
+                <menu:Right x:Name="LowerRightMenuElement" d:IsHidden="True"></menu:Right>
+                <menu:Left x:Name="LowerLeftMenuElement" d:IsHidden="True"></menu:Left>
             </Grid>
         </Canvas>
     </Canvas>
-    
+
 </UserControl>

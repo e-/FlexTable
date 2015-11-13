@@ -27,21 +27,18 @@ namespace FlexTable.ViewModel
 
         PivotTableViewModel pivotTableViewModel;
         public PivotTableViewModel PivotTableViewModel => pivotTableViewModel; 
-
+        
         /// <summary>
-        /// 선택되어서 투명하지 않게 완전히 보일때 
+        /// 현재 preview가 보이고 있는 상태
         /// </summary>
         private Boolean isPreviewVisible = false; 
         public Boolean IsPreviewVisible { get { return isPreviewVisible; } set { isPreviewVisible = value; OnPropertyChanged(nameof(IsPreviewVisible)); } }
-
-        /// <summary>
-        /// 선택되어서 투명하지 않게 완전히 보일때 
-        /// </summary>
+        
         private Boolean isUndoing = false;
         public Boolean IsUndoing { get { return isUndoing; } set { isUndoing = value; OnPropertyChanged(nameof(IsUndoing)); } }
-
+        
         /// <summary>
-        /// 선택되어서 투명하지 않게 완전히 보일때 
+        /// 아무것도 선택되어 있지 않고 초기 상태면 (select a column to preview라는 메세지가 보이는) true
         /// </summary>
         private Boolean isEmpty = true;
         public Boolean IsEmpty { get { return isEmpty; } set { isEmpty = value; OnPropertyChanged(nameof(IsEmpty)); } }
@@ -82,8 +79,14 @@ namespace FlexTable.ViewModel
         private Boolean isScatterplotWarningVisible = false;
         public Boolean IsScatterplotWarningVisible { get { return isScatterplotWarningVisible; } set { isScatterplotWarningVisible = value; OnPropertyChanged(nameof(IsScatterplotWarningVisible)); } }
 
+        private Boolean isPrimaryUndoMessageVisible = true;
+        public Boolean IsPrimaryUndoMessageVisible { get { return isPrimaryUndoMessageVisible; } set { isPrimaryUndoMessageVisible = value; OnPropertyChanged(nameof(IsPrimaryUndoMessageVisible)); } }
+
+        /// <summary>
+        /// 현재 페이지가 선택된 상태
+        /// </summary>
         private Boolean isSelected = false;
-        public Boolean IsSelected { get { return isSelected; } set { isSelected = value; OnPropertyChanged("IsSelected"); } }
+        public Boolean IsSelected { get { return isSelected; } set { isSelected = value; OnPropertyChanged(nameof(IsSelected)); } }
         
         public Func<Category, Func<RowViewModel, Boolean>> BarChartRowSelecter { get; set; }
         public Func<Category, Category, Func<RowViewModel, Boolean>> GroupedBarChartRowSelecter { get; set; }
@@ -107,9 +110,9 @@ namespace FlexTable.ViewModel
             IsEmpty = true;
         }
 
-        public void Tapped(PageView pageView, Boolean isUndo)
+        public void StatusChanged(PageView pageView, Boolean isUndo)
         {
-            mainPageViewModel.ExplorationViewModel.PageViewTapped(this, pageView, isUndo);
+            mainPageViewModel.ExplorationViewModel.StatusChanged(this, pageView, isUndo);
         }
         
         public void Reflect(Boolean trackPreviousParagraph)
@@ -119,6 +122,8 @@ namespace FlexTable.ViewModel
                 pageView.CancelUndoStoryboard.Begin();
                 IsUndoing = false;
             }
+
+            IsEmpty = false;
 
             IsPreviewVisible = true;
             IsBarChartVisible = false;

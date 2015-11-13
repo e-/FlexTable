@@ -14,4 +14,8 @@
     <RemoteDebugMachine>hcil-surface</RemoteDebugMachine>
     <RemoteDebugEnabled>true</RemoteDebugEnabled>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <RemoteDebugMachine>hcil-surface</RemoteDebugMachine>
+    <RemoteDebugEnabled>false</RemoteDebugEnabled>
+  </PropertyGroup>
 </Project>

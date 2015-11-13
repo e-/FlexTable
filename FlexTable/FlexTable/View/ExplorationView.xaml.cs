@@ -46,13 +46,17 @@ namespace FlexTable.View
         public void RemoveTopPage(PageView nextTopPageView)
         {
             PageView currentTopPageView = topPageView;
-            currentTopPageView.HideStoryboard.Completed += delegate
+            //PageViewElement.Children.Remove(currentTopPageView);
+            topPageView = nextTopPageView;
+
+            PageViewElement.Children.Remove(currentTopPageView);
+
+            /*currentTopPageView.HideStoryboard.Completed += delegate
             {
                 PageViewElement.Children.Remove(currentTopPageView);
             };
-            currentTopPageView.HideStoryboard.Begin();
+            currentTopPageView.HideStoryboard.Begin();*/
 
-            topPageView = nextTopPageView;
         }
     }
 }

@@ -41,6 +41,10 @@ namespace FlexTable.View
             mpvm.View.TableView.TopColumnHeader.Reset();
             mpvm.View.TableView.BottomColumnHeader.Reset();
             mpvm.View.TableView.ColumnIndexer.Reset();
+            mpvm.ExplorationViewModel.TopPageView.PageViewModel.IsUndoing = false;
+            mpvm.ExplorationViewModel.TopPageView.PageViewModel.IsPreviewVisible = false;
+            mpvm.ExplorationViewModel.TopPageView.PageViewModel.IsEmpty = true;
+            mpvm.ExplorationViewModel.TopPageView.CancelUndoStoryboard.Begin();
             mpvm.Sheet = sheet;
             mpvm.Initialize();
         }

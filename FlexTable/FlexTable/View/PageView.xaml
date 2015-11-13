@@ -55,20 +55,38 @@
                              />
         </Storyboard>
 
-        <Storyboard x:Name="SelectStoryboard">
+        <Storyboard x:Name="CancelSelectStoryboard">
             <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.8"
+                             Storyboard.TargetName="UserControl" Storyboard.TargetProperty="(Canvas.Top)" To="{Binding MainPageViewModel.PageOffset}">
+            </DoubleAnimation>
+        </Storyboard>
+        
+        <Storyboard x:Name="SelectStoryboard">
+            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.4"
                              Storyboard.TargetName="UserControl" Storyboard.TargetProperty="(Canvas.Top)" To="0">
             </DoubleAnimation>
-            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.4" BeginTime="00:00:00.4"
+            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.4" BeginTime="00:00:00.0"
                              Storyboard.TargetName="ChartWrapper" Storyboard.TargetProperty="Opacity" To="1">
             </DoubleAnimation>
         </Storyboard>
 
-        <Storyboard x:Name="UnselectStoryboard" Completed="UnselectStoryboard_Completed">
-            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.8"
+        <Storyboard x:Name="UndoSelectStoryboard">
+            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.7"
+                             Storyboard.TargetName="UserControl" Storyboard.TargetProperty="(Canvas.Top)" To="0">
+            </DoubleAnimation>
+            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.7"
+                             Storyboard.TargetName="ChartWrapper" Storyboard.TargetProperty="Opacity" To="1">
+            </DoubleAnimation>
+        </Storyboard>
+
+        <Storyboard x:Name="UnselectStoryboard">
+            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.4"
                              Storyboard.TargetName="UserControl" Storyboard.TargetProperty="(Canvas.Top)" To="{Binding MainPageViewModel.PageOffset}">
             </DoubleAnimation>
-            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.4" BeginTime="00:00:00.4"
+        </Storyboard>
+
+        <Storyboard x:Name="UndoStoryboard" Completed="UndoStoryboard_Completed">
+            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.4" BeginTime="00:00:00.2"
                              Storyboard.TargetName="ChartWrapper" Storyboard.TargetProperty="Opacity" To="0.2">
             </DoubleAnimation>
         </Storyboard>
@@ -98,104 +116,114 @@
         </Style>
     </UserControl.Resources>
     
-    <StackPanel Opacity="0" x:Name="Wrapper" Tapped="Wrapper_Tapped">
-        <StackPanel Height="{Binding MainPageViewModel.PageHeight}" Visibility="{Binding IsPreviewVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Background="White" 
-                    x:Name="ChartWrapper" Padding="20">
-            <ScrollViewer HorizontalScrollBarVisibility="Hidden" HorizontalScrollMode="Auto" 
-                          VerticalScrollMode="Disabled" VerticalScrollBarVisibility="Hidden"
-                          x:Name="Carousel" 
-                          Width="{StaticResource ParagraphWidth}"
-                          ViewChanged="Carousel_ViewChanged" ViewChanging="Carousel_ViewChanging">
-                <Canvas x:Name="ParagraphContainerCanvasElement" Height="{StaticResource ParagraphContainerHeight}">
-                    <StackPanel Visibility="{Binding IsBarChartVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Bar Chart">
-                        <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="BarChartTitleElement" Tapped="TitleWrapper_Tapped"></StackPanel>
-                        <TextBlock Style="{StaticResource TooManyElementsWarningStyle}" Visibility="{Binding IsBarChartWarningVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
-                            <Run FontFamily="FontAwesome" Foreground="#CC0000">&#xf071;</Run>
-                            <Run Text="{StaticResource TooManyElementsWarningString}"></Run>
-                        </TextBlock>
-                        <d3view:BarChart x:Name="BarChartElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}" 
-                                         IsHitTestVisible="False" Tag="Bar Chart"/>
-                    </StackPanel>
+    <StackPanel Opacity="0" x:Name="Wrapper" Tapped="Wrapper_Tapped" 
+                ManipulationMode="TranslateY" 
+                ManipulationDelta="Wrapper_ManipulationDelta"
+                ManipulationCompleted="Wrapper_ManipulationCompleted">
+        <Grid>
+            <StackPanel Height="{Binding MainPageViewModel.PageHeight}" Visibility="{Binding IsPreviewVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Background="White" 
+                        x:Name="ChartWrapper" Padding="20">
+                <ScrollViewer HorizontalScrollBarVisibility="Hidden" HorizontalScrollMode="Auto" 
+                              VerticalScrollBarVisibility="Hidden" VerticalScrollMode="Disabled"
+                              x:Name="Carousel" 
+                              Width="{StaticResource ParagraphWidth}"
+                              ViewChanged="Carousel_ViewChanged" ViewChanging="Carousel_ViewChanging">
+                    <Canvas x:Name="ParagraphContainerCanvasElement" Height="{StaticResource ParagraphContainerHeight}"
+                            ManipulationMode="TranslateY,System"
+                              ManipulationDelta="Carousel_ManipulationDelta"
+                              ManipulationCompleted="Carousel_ManipulationCompleted"
+                            >
+                        <StackPanel Visibility="{Binding IsBarChartVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Bar Chart" Background="Transparent">
+                            <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="BarChartTitleElement"></StackPanel>
+                            <TextBlock Style="{StaticResource TooManyElementsWarningStyle}" Visibility="{Binding IsBarChartWarningVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <Run FontFamily="FontAwesome" Foreground="#CC0000">&#xf071;</Run>
+                                <Run Text="{StaticResource TooManyElementsWarningString}"></Run>
+                            </TextBlock>
+                            <d3view:BarChart x:Name="BarChartElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}" 
+                                             IsHitTestVisible="False" Tag="Bar Chart"/>
+                        </StackPanel>
 
-                    <StackPanel Visibility="{Binding IsLineChartVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Line Chart">
-                        <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="LineChartTitleElement" Tapped="TitleWrapper_Tapped"></StackPanel>
-                        <TextBlock Style="{StaticResource TooManyElementsWarningStyle}" Visibility="{Binding IsLineChartWarningVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
-                            <Run FontFamily="FontAwesome" Foreground="#CC0000">&#xf071;</Run>
-                            <Run Text="{StaticResource TooManyElementsWarningString}"></Run>
-                        </TextBlock>
-                        <d3view:LineChart x:Name="LineChartElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}" 
-                                          IsHitTestVisible="False" Tag="Line Chart"/>
-                    </StackPanel>
-                    
-                    <StackPanel Visibility="{Binding IsDistributionVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Distribution">
-                        <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="DistributionViewTitleElement" Tapped="TitleWrapper_Tapped"></StackPanel>
-                        <local:DistributionView x:Name="DistributionViewElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}"
-                                                IsHitTestVisible="False" Tag="Distribution"/>
-                    </StackPanel>
-                    
-                    <StackPanel Visibility="{Binding IsDescriptiveStatisticsVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Statistics">
-                        <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="DescriptiveStatisticsTitleElement" Tapped="TitleWrapper_Tapped"></StackPanel>
-                        <local:DescriptiveStatisticsView x:Name="DescriptiveStatisticsViewElement" Width="{StaticResource ParagraphWidth}" 
-                                                         Height="{StaticResource ParagraphHeight}" Tag="Statistics"/>
-                    </StackPanel>
+                        <StackPanel Visibility="{Binding IsLineChartVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Line Chart" Background="Transparent">
+                            <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="LineChartTitleElement"></StackPanel>
+                            <TextBlock Style="{StaticResource TooManyElementsWarningStyle}" Visibility="{Binding IsLineChartWarningVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <Run FontFamily="FontAwesome" Foreground="#CC0000">&#xf071;</Run>
+                                <Run Text="{StaticResource TooManyElementsWarningString}"></Run>
+                            </TextBlock>
+                            <d3view:LineChart x:Name="LineChartElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}" 
+                                              IsHitTestVisible="False" Tag="Line Chart"/>
+                        </StackPanel>
 
-                    <StackPanel Visibility="{Binding IsGroupedBarChartVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Grouped Bar Chart">
-                        <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="GroupedBarChartTitleElement" Tapped="TitleWrapper_Tapped"></StackPanel>
-                        <TextBlock Style="{StaticResource TooManyElementsWarningStyle}" Visibility="{Binding IsGroupedBarChartWarningVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
-                            <Run FontFamily="FontAwesome" Foreground="#CC0000">&#xf071;</Run>
-                            <Run Text="{StaticResource TooManyElementsWarningString}"></Run>
-                        </TextBlock>
-                        <d3view:GroupedBarChart x:Name="GroupedBarChartElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}" 
-                                                IsHitTestVisible="False" Tag="Grouped Bar Chart"/>
-                    </StackPanel>
+                        <StackPanel Visibility="{Binding IsDistributionVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Distribution" Background="Transparent">
+                            <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="DistributionViewTitleElement"></StackPanel>
+                            <local:DistributionView x:Name="DistributionViewElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}"
+                                                    IsHitTestVisible="False" Tag="Distribution"/>
+                        </StackPanel>
 
-                    <StackPanel Visibility="{Binding IsScatterplotVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Scatterplot">
-                        <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="ScatterplotTitleElement" Tapped="TitleWrapper_Tapped"></StackPanel>
-                        <TextBlock Style="{StaticResource TooManyElementsWarningStyle}" Visibility="{Binding IsScatterplotWarningVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
-                            <Run FontFamily="FontAwesome" Foreground="#CC0000">&#xf071;</Run>
-                            <Run Text="{StaticResource TooManyElementsWarningString}"></Run>
-                        </TextBlock>
-                        <d3view:Scatterplot x:Name="ScatterplotElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}" 
-                                            IsHitTestVisible="False" Tag="Scatterplot"/>
-                    </StackPanel>
+                        <StackPanel Visibility="{Binding IsDescriptiveStatisticsVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Statistics" Background="Transparent">
+                            <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="DescriptiveStatisticsTitleElement"></StackPanel>
+                            <local:DescriptiveStatisticsView x:Name="DescriptiveStatisticsViewElement" Width="{StaticResource ParagraphWidth}" 
+                                                             Height="{StaticResource ParagraphHeight}" Tag="Statistics"/>
+                        </StackPanel>
 
-                    <StackPanel Visibility="{Binding IsPivotTableVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Pivot Table">
-                        <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="PivotTableTitleElement" Tapped="TitleWrapper_Tapped"></StackPanel>
-                        <local:PivotTableView x:Name="PivotTableViewElement" VerticalAlignment="Center"
-                                              Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}"
-                                              Tag="Pivot Table"
-                                              ></local:PivotTableView>
-                    </StackPanel>
+                        <StackPanel Visibility="{Binding IsGroupedBarChartVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Grouped Bar Chart" Background="Transparent">
+                            <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="GroupedBarChartTitleElement"></StackPanel>
+                            <TextBlock Style="{StaticResource TooManyElementsWarningStyle}" Visibility="{Binding IsGroupedBarChartWarningVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <Run FontFamily="FontAwesome" Foreground="#CC0000">&#xf071;</Run>
+                                <Run Text="{StaticResource TooManyElementsWarningString}"></Run>
+                            </TextBlock>
+                            <d3view:GroupedBarChart x:Name="GroupedBarChartElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}" 
+                                                    IsHitTestVisible="False" Tag="Grouped Bar Chart"/>
+                        </StackPanel>
 
-                    <StackPanel Visibility="{Binding IsCorrelationStatisticsVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="CorrStatistics">
-                        <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="CorrelationStatisticsTitleElement" Tapped="TitleWrapper_Tapped"></StackPanel>
-                        <local:CorrelationStatisticsView x:Name="CorrelationStatisticsViewElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}"
-                                                         Tag="CorrStatistics"/>
-                    </StackPanel>
-                </Canvas>
-            </ScrollViewer>
-            <StackPanel x:Name="ParagraphLabelContainer" Height="50" Orientation="Horizontal" HorizontalAlignment="Center" Tapped="ParagraphLabelContainer_Tapped"></StackPanel>
-        </StackPanel>
-        <Border Height="{Binding MainPageViewModel.PageHeight}" Visibility="{Binding IsUndoing, Converter={StaticResource BooleanToVisibilityConverter}}" Padding="20" 
-                Background="Transparent" Tapped="Undo_Tapped">
-            <Border.RenderTransform>
-                <TranslateTransform Y="{Binding MainPageViewModel.NegativePageHeight}"></TranslateTransform>
-            </Border.RenderTransform>
-            <StackPanel VerticalAlignment="Center">
-                <TextBlock FontSize="25" TextAlignment="Center">
-                    <Run FontFamily="FontAwesome">&#xf0e2;</Run>
-                    <Run>Tap here to undo.</Run>
-                </TextBlock>
+                        <StackPanel Visibility="{Binding IsScatterplotVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Scatterplot" Background="Transparent">
+                            <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="ScatterplotTitleElement"></StackPanel>
+                            <TextBlock Style="{StaticResource TooManyElementsWarningStyle}" Visibility="{Binding IsScatterplotWarningVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <Run FontFamily="FontAwesome" Foreground="#CC0000">&#xf071;</Run>
+                                <Run Text="{StaticResource TooManyElementsWarningString}"></Run>
+                            </TextBlock>
+                            <d3view:Scatterplot x:Name="ScatterplotElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}" 
+                                                IsHitTestVisible="False" Tag="Scatterplot"/>
+                        </StackPanel>
+
+                        <StackPanel Visibility="{Binding IsPivotTableVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Pivot Table" Background="Transparent">
+                            <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="PivotTableTitleElement"></StackPanel>
+                            <local:PivotTableView x:Name="PivotTableViewElement" VerticalAlignment="Center"
+                                                  Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}"
+                                                  Tag="Pivot Table"
+                                                  ></local:PivotTableView>
+                        </StackPanel>
+
+                        <StackPanel Visibility="{Binding IsCorrelationStatisticsVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="CorrStatistics" Background="Transparent">
+                            <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="CorrelationStatisticsTitleElement"></StackPanel>
+                            <local:CorrelationStatisticsView x:Name="CorrelationStatisticsViewElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}"
+                                                             Tag="CorrStatistics"/>
+                        </StackPanel>
+                    </Canvas>
+                </ScrollViewer>
+                <StackPanel x:Name="ParagraphLabelContainer" Height="50" Orientation="Horizontal" HorizontalAlignment="Center"></StackPanel>
             </StackPanel>
-        </Border>
-        <Border Height="{Binding MainPageViewModel.PageHeight}" Visibility="{Binding IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" Padding="20" Background="White">
-            <StackPanel VerticalAlignment="Center">
-                <TextBlock FontSize="25" TextAlignment="Center">
-                    <Run FontFamily="FontAwesome">&#xf25a;</Run>
-                    <Run>Select a column to preview.</Run>
-                </TextBlock>
-            </StackPanel>
-        </Border>
+            <Border Height="{Binding MainPageViewModel.PageHeight}" Visibility="{Binding IsUndoing, Converter={StaticResource BooleanToVisibilityConverter}}" Padding="20" 
+                    Background="Transparent" Tapped="Undo_Tapped">
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock FontSize="25" TextAlignment="Center"  Visibility="{Binding IsPrimaryUndoMessageVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Run FontFamily="FontAwesome">&#xf0e2;</Run>
+                        <Run>Tap here to undo.</Run>
+                    </TextBlock>
+                    <TextBlock FontSize="25" TextAlignment="Center"  Visibility="{Binding IsPrimaryUndoMessageVisible, Converter={StaticResource BooleanToInvertedVisibilityConverter}}">
+                        <Run FontFamily="FontAwesome">&#xf062;</Run>
+                        <Run>Swipe up to undo.</Run>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+            <Border Height="{Binding MainPageViewModel.PageHeight}" Visibility="{Binding IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" Padding="20" Background="White">
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock FontSize="25" TextAlignment="Center">
+                        <Run FontFamily="FontAwesome">&#xf25a;</Run>
+                        <Run>Select a column to preview.</Run>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+        </Grid>
         <Image Source="ms-appx:///Assets/horizontal-separator.png" Width="{Binding MainPageViewModel.PageWidth}" Height="8"></Image>
     </StackPanel>
 </UserControl>
