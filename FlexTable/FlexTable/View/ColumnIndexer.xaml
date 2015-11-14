@@ -24,23 +24,28 @@
     </UserControl.Resources>
 
     <Grid>
-        <Border Width="{StaticResource RowHeaderWidth}" Height="{StaticResource ColumnIndexerHeight}"
+        <Border Width="{StaticResource RowHeaderWidth}" 
                 x:Name="Opener" 
                 Background="Transparent"
+                HorizontalAlignment="Left"
                 PointerEntered="Opener_PointerEntered"
                 PointerReleased="Opener_PointerReleased"
-                HorizontalAlignment="Left"
                 >
         </Border>
-        <Canvas x:Name="IndexHelperWrapperElement" Width="{StaticResource ColumnIndexerWidth}" 
+        <Canvas x:Name="IndexHelperWrapperElement" 
+                Width="{StaticResource ColumnIndexerWidth}" 
                 Height="{StaticResource ColumnIndexerHeight}"                 
                 IsHitTestVisible="False"
                 PointerExited="IndexHelperWrapperElement_PointerExited"
+                VerticalAlignment="Top"
                 Opacity="0"
                 >
             <Canvas.RenderTransform>
-                <ScaleTransform ScaleX="0.5" />
+                <TranslateTransform x:Name="IndexHelperTransform" />
             </Canvas.RenderTransform>
+            <!--<Canvas.RenderTransform>
+                <ScaleTransform ScaleX="0.5" />
+            </Canvas.RenderTransform>-->
         </Canvas>
     </Grid>
 </UserControl>

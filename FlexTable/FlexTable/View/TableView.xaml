@@ -73,24 +73,8 @@
 
             <view:ColumnHighlighter Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" x:Name="ColumnHighlighterElement"></view:ColumnHighlighter>
 
-            <view:ColumnIndexer Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" x:Name="ColumnIndexerElement"
-                                Width="{StaticResource ColumnIndexerWidth}"
-                                Height="{StaticResource ColumnIndexerHeight}"
-                                Margin="30 0 0 0"
-                                HorizontalAlignment="Left"
-                                VerticalAlignment="Bottom"
-                                ></view:ColumnIndexer>
-
-
-            <!--<Canvas Grid.Row="1" Grid.Column="1">
-                <Border Opacity="{Binding IsIndexing,Converter={StaticResource BooleanToOpacityConverter}}"
-                           Background="#CC000000" CornerRadius="3">
-                    <Border.RenderTransform>
-                        <TranslateTransform X="5" Y="{Binding IndexTooltipY}" />
-                    </Border.RenderTransform>
-                    <TextBlock FontSize="20" Foreground="White" Padding="20 5" Text="{Binding IndexTooltipContent}"/>
-                </Border>
-            </Canvas>-->
+            <view:ColumnIndexer Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" x:Name="ColumnIndexerElement" 
+                                HorizontalAlignment="Left"></view:ColumnIndexer>
         </Grid>
 
         <Grid x:Name="StrokeGrid" Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" IsHitTestVisible="False"></Grid>

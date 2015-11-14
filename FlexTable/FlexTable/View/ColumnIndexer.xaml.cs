@@ -11,6 +11,7 @@ using System;
 using Windows.UI;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
+using Windows.UI.Input;
 
 // 사용자 정의 컨트롤 항목 템플릿에 대한 설명은 http://go.microsoft.com/fwlink/?LinkId=234236에 나와 있습니다.
 
@@ -24,53 +25,7 @@ namespace FlexTable.View
         {
             this.InitializeComponent();
         }
-
-        /*private void Border_PointerMoved(object sender, PointerRoutedEventArgs e)
-        {
-            if(e.GetCurrentPoint(this).PointerDevice.PointerDeviceType != PointerDeviceType.Touch) return; 
-            Point point = e.GetCurrentPoint(this).Position;
-            (DataContext as TableViewModel).IndexColumn(e.GetCurrentPoint(this).PointerId, point.Y);
-        }
-
-        private void Border_PointerReleased(object sender, PointerRoutedEventArgs e)
-        {
-            if (e.GetCurrentPoint(this).PointerDevice.PointerDeviceType != PointerDeviceType.Touch) return;
-            (DataContext as TableViewModel).CancelIndexing();
-            ShowHelperStoryboard.Pause();
-            HideHelperStoryboard.Begin();
-        }
-
-        private void Border_PointerCaptureLost(object sender, PointerRoutedEventArgs e)
-        {
-            if (e.GetCurrentPoint(this).PointerDevice.PointerDeviceType != PointerDeviceType.Touch) return;
-            (DataContext as TableViewModel).CancelIndexing();
-            ShowHelperStoryboard.Pause();
-            HideHelperStoryboard.Begin();
-        }
-
-        private void Border_PointerExited(object sender, PointerRoutedEventArgs e)
-        {
-            if (e.GetCurrentPoint(this).PointerDevice.PointerDeviceType != PointerDeviceType.Touch) return;
-            (DataContext as TableViewModel).CancelIndexing();
-            ShowHelperStoryboard.Pause();
-            HideHelperStoryboard.Begin();
-        }
         
-        private void Grid_PointerEntered(object sender, PointerRoutedEventArgs e)
-        {
-            if (e.GetCurrentPoint(this).PointerDevice.PointerDeviceType != PointerDeviceType.Touch) return;
-            Point point = e.GetCurrentPoint(this).Position;
-            (DataContext as TableViewModel).IndexColumn(e.GetCurrentPoint(this).PointerId, point.Y);
-            Update();
-            HideHelperStoryboard.Pause();
-            ShowHelperStoryboard.Begin();
-        }
-
-        public void HideHelper()
-        {
-            HideHelperStoryboard.Begin();
-        }
-        */
         public static Point CalculateCartesianCoordinate(Double angle, Double radius)
         {
             return new Point(radius * Math.Sin(angle), -radius * Math.Cos(angle));
@@ -148,7 +103,11 @@ namespace FlexTable.View
                 }
                 else
                 {
-                    if (index < sorted.Count - 1)
+                    if(index == 0)
+                    {
+                        path = DrawArc((Double)App.Current.Resources["ColumnIndexerHeight"], -Math.PI / 18, anglePerMenu * (index + 1));
+                    }
+                    else if (index < sorted.Count - 1)
                     {
                         path = DrawArc((Double)App.Current.Resources["ColumnIndexerHeight"], anglePerMenu * index, anglePerMenu * (index + 1));
                     }
@@ -176,25 +135,7 @@ namespace FlexTable.View
 
                 path.Stroke = new SolidColorBrush(Color.FromArgb(255, 150, 150, 150));
                 path.StrokeThickness = 2;
-                path.Fill = new SolidColorBrush(Color.FromArgb(255, 230, 230, 230));
-              
-/*                textBlock.Text = cvm.Column.Name;
-                textBlock.Measure(new Size(Double.MaxValue, Double.MaxValue));
-                Double perHeight = (tvm.SheetViewHeight + 10) / sorted.Count;
-                if (textBlock.ActualWidth <= perHeight)
-                {
-                    textBlock.Width = (Double)App.Current.Resources["RowHeaderWidth"] - 1;
-                    textBlock.TextAlignment = TextAlignment.Center;
-                }
-                else
-                {
-                    textBlock.Width = 1000;
-                    textBlock.TextAlignment = TextAlignment.Left;
-                }
-
-                path.Height = perHeight;
-                path.Width = (Double)App.Current.Resources["RowHeaderWidth"] - 1;
-                path.Background = index % 2 == 0 ? (App.Current.Resources["GridLineBrush"] as SolidColorBrush) : (new SolidColorBrush(Colors.White)); */
+                path.Fill = new SolidColorBrush(Color.FromArgb(255, 230, 230, 230));              
                 index++;
             }
 
@@ -203,26 +144,23 @@ namespace FlexTable.View
                 IndexHelperWrapperElement.Children.RemoveAt(j);
             }
 
-            //tvm.SheetViewModel.ColumnViewModels.Or
         }
 
         private void Opener_PointerEntered(object sender, PointerRoutedEventArgs e)
         {
-            if (e.GetCurrentPoint(this).PointerDevice.PointerDeviceType != PointerDeviceType.Touch) return;
-            //Debug.WriteLine("entered");
-            IndexHelperWrapperElement.IsHitTestVisible = true;
+            PointerPoint point = e.GetCurrentPoint(this);
 
+            if (point.PointerDevice.PointerDeviceType != PointerDeviceType.Touch) return;
+            IndexHelperWrapperElement.IsHitTestVisible = true;
+            IndexHelperTransform.X = point.Position.X;
+            IndexHelperTransform.Y = point.Position.Y - 20;
             HideHelperStoryboard.Pause();
             ShowHelperStoryboard.Begin();
-
-            /*            HideHelperStoryboard.Pause();
-                        ShowHelperStoryboard.Begin();*/
         }
 
         private void Opener_PointerReleased(object sender, PointerRoutedEventArgs e)
         {
             if (e.GetCurrentPoint(this).PointerDevice.PointerDeviceType != PointerDeviceType.Touch) return;
-            //Debug.WriteLine("released");
             IndexHelperWrapperElement.IsHitTestVisible = false;
             ShowHelperStoryboard.Pause();
             HideHelperStoryboard.Begin();
