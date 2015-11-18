@@ -30,7 +30,7 @@ namespace FlexTable.View
         };
 
         public Canvas AllRowsTableCanvas => AllRowsCanvasElement;
-        public Canvas TableCanvas { get { return TableCanvasElement; } }
+        public Canvas GroupByTableCanvas { get { return TableCanvasElement; } }
         public Grid ScrollViewerContentWrapper { get { return ScrollViewerContentWrapperElement; } }
         public ColumnHeaderPresenter TopColumnHeader { get { return TopColumnHeaderElement; } }
         public ColumnHeaderPresenter BottomColumnHeader { get { return BottomColumnHeaderElement; } }
@@ -206,7 +206,7 @@ namespace FlexTable.View
             HideTableCanvasStoryboard.Begin();
         }
 
-        public void ShowTableCanvas()
+        public void ShowGroupByTableCanvas()
         {
             TableCanvasElement.Visibility = Visibility.Visible;
 
@@ -223,7 +223,7 @@ namespace FlexTable.View
 
         private void HideTableCanvasStoryboard_Completed(object sender, object e)
         {
-            TableCanvas.Visibility = Visibility.Collapsed;
+            GroupByTableCanvas.Visibility = Visibility.Collapsed;
         }
     }
 }

@@ -28,12 +28,12 @@ namespace FlexTable.ViewModel
         public List<ColumnViewModel> ColumnViewModels => columnViewModels;
 
         // 모든 로우에 대한 정보 가지고 있음 속도 위함
-        private List<RowViewModel> allRowViewModels = new List<RowViewModel>();
-        public List<RowViewModel> AllRowViewModels => allRowViewModels;
+        private ObservableCollection<RowViewModel> allRowViewModels = new ObservableCollection<RowViewModel>();
+        public ObservableCollection<RowViewModel> AllRowViewModels => allRowViewModels;
 
         // group된 일시적인 테이블
-        private List<RowViewModel> temporaryRowViewModels = new List<RowViewModel>();
-        public List<RowViewModel> TemporaryRowViewModels => temporaryRowViewModels;
+        private List<RowViewModel> groupByRowViewModels = new List<RowViewModel>();
+        public List<RowViewModel> GroupByRowViewModels => groupByRowViewModels;
 
         //ViewStatus viewStatus = new ViewStatus();
 
@@ -117,21 +117,6 @@ namespace FlexTable.ViewModel
             foreach (ColumnViewModel columnViewModel in columnViewModels)
             {
                 index = columnViewModel.Index;
-                /*if(columnViewModel.Column.Name.EndsWith("-num"))
-                {
-                    columnViewModel.Column.Name = columnViewModel.Column.Name.Replace("-num", "");
-                    columnViewModel.Type = ColumnType.Numerical;
-                }
-                else if (columnViewModel.Column.Name.EndsWith("-date"))
-                {
-                    columnViewModel.Column.Name = columnViewModel.Column.Name.Replace("-date", "");
-                    columnViewModel.Type = ColumnType.Datetime;
-                }
-                else
-                {
-                    columnViewModel.Type = GuessColumnType(sheet.Rows.Select(r => r.Cells[index].RawContent));
-                }*/
-
                 columnViewModel.Type = columnViewModel.Column.Type;
                 columnViewModel.CategoricalType = columnViewModel.Column.CategoricalType;
                 columnViewModel.Unit = columnViewModel.Column.Unit;
@@ -317,7 +302,7 @@ namespace FlexTable.ViewModel
             UpdateColumnX();
 
             // table에 추가하는 것은 tableViewModel이 할 것이고 여기는 rowViewModels만 만들어주면 됨
-            temporaryRowViewModels.Clear();
+            groupByRowViewModels.Clear();
 
             Int32 index = 0;
 
@@ -332,7 +317,7 @@ namespace FlexTable.ViewModel
                 IsAllRowsVisible = true;
                 foreach(RowViewModel rowViewModel in allRowViewModels)
                 {
-                    temporaryRowViewModels.Add(rowViewModel);
+                    groupByRowViewModels.Add(rowViewModel);
                 }
             }
             else if (viewStatus.SelectedColumnViewModels.Count == 1 && viewStatus.SelectedColumnViewModels[0].Type == ColumnType.Numerical) // 이 경우는 뉴메리컬 하나만 선택되어 비닝 된 결과가 보이는 경우이다.
@@ -378,7 +363,7 @@ namespace FlexTable.ViewModel
                         rowViewModel.Cells.Add(cell);
                     }
 
-                    temporaryRowViewModels.Add(rowViewModel);
+                    groupByRowViewModels.Add(rowViewModel);
                 }
             }
             else // 이 경우는 categorical이든 datetime이든 뭔가로 그룹핑이 된 경우 
@@ -422,10 +407,10 @@ namespace FlexTable.ViewModel
                         rowViewModel.Cells.Add(cell);
                     }
 
-                    temporaryRowViewModels.Add(rowViewModel);
+                    groupByRowViewModels.Add(rowViewModel);
                 }
             }
-            SheetHeight = temporaryRowViewModels.Count * (Double)App.Current.Resources["RowHeight"];
+            SheetHeight = groupByRowViewModels.Count * (Double)App.Current.Resources["RowHeight"];
         }
 
         public static List<GroupedRows> GroupRecursive(List<Row> rows, List<ColumnViewModel> groupedColumnViewModels, Int32 pivotIndex)

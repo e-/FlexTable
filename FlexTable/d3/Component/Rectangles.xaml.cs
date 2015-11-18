@@ -32,6 +32,7 @@ namespace d3.Component
         
         public event Event.EventHandler RectanglePointerPressed;
         public event Event.EventHandler RectanglePointerReleased;
+        public event Event.EventHandler RectangleTapped;
 
         public Data Data
         {
@@ -56,7 +57,6 @@ namespace d3.Component
             get { return (Func<Object, Int32, Double>)GetValue(HeightGetterProperty); }
             set { SetValue(HeightGetterProperty, value); }
         }
-
 
         public static readonly DependencyProperty XGetterProperty =
             DependencyProperty.Register("XGetter", typeof(Func<Object, Int32, Double>), typeof(Rectangles), new PropertyMetadata(default(Func<Object, Double>)));
@@ -93,6 +93,8 @@ namespace d3.Component
             get { return (Func<Object, Int32, Double>)GetValue(OpacityGetterProperty); }
             set { SetValue(OpacityGetterProperty, value); }
         }
+
+        public IEnumerable<Rectangle> Children { get { return RectangleCanvas.Children.Select(child => child as Rectangle); } }
 
         public Rectangles()
         {
@@ -133,8 +135,8 @@ namespace d3.Component
                         {
                             if (RectanglePointerPressed != null)
                             {
-                                RectanglePointerPressed(rect, datum, localIndex);
-                                e.Handled = true;
+                                RectanglePointerPressed(rect, e, datum, localIndex);
+                                //e.Handled = true;
                             }
                         };
 
@@ -142,11 +144,19 @@ namespace d3.Component
                         {
                             if (RectanglePointerReleased != null)
                             {
-                                RectanglePointerReleased(rect, datum, localIndex);
-                                e.Handled = true;
+                                RectanglePointerReleased(rect, e, datum, localIndex);
+                                //e.Handled = true;
                             }
                         };
-                        rect.Tapped += rect_Tapped;
+
+                        rect.Tapped += delegate (object sender, TappedRoutedEventArgs e)
+                        {
+                            if (RectangleTapped != null)
+                            {
+                                RectangleTapped(rect, e, datum, localIndex);
+                            }
+                        };
+                        //rect.Tapped += rect_Tapped;
                         RectangleCanvas.Children.Add(rect);
                     }
                     else
@@ -208,8 +218,7 @@ namespace d3.Component
                         rect.CapturePointer(e.Pointer);
                         if (RectanglePointerPressed != null)
                         {
-                            RectanglePointerPressed(rect, datum, localIndex);
-                            e.Handled = true;
+                            RectanglePointerPressed(rect, e, datum, localIndex);
                         }
                     };
                     
@@ -217,21 +226,18 @@ namespace d3.Component
                     {
                         if (RectanglePointerReleased != null)
                         {
-                            RectanglePointerReleased(rect, datum, localIndex);
-                            e.Handled = true;
+                            RectanglePointerReleased(rect, e, datum, localIndex);
                         }
                     };
 
-                    /*rect.PointerReleased += delegate (object sender, PointerRoutedEventArgs e)
+                    rect.Tapped += delegate (object sender, TappedRoutedEventArgs e)
                     {
-                        if (RectanglePointerReleased != null)
+                        if (RectangleTapped != null)
                         {
-                            RectanglePointerReleased(rect, datum, localIndex);
-                            e.Handled = true;
+                            RectangleTapped(rect, e, datum, localIndex);
                         }
-                    };*/
-
-                    rect.Tapped += rect_Tapped;
+                    };
+                    //rect.Tapped += rect_Tapped;
 
 
                     Canvas.SetLeft(rect, XGetter(datum, index));
@@ -242,9 +248,9 @@ namespace d3.Component
             }
         }
 
-        void rect_Tapped(object sender, TappedRoutedEventArgs e)
+        /*void rect_Tapped(object sender, TappedRoutedEventArgs e)
         {
             e.Handled = true;
-        }
+        }*/
     }
 }

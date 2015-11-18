@@ -78,7 +78,7 @@ namespace FlexTable.ViewModel
 
         public void StatusChanged(PageViewModel pageViewModel, PageView pageView, Boolean isUndo)
         {
-            if(isUndo && selectedPageViews.IndexOf(pageView) < 0)
+            if(isUndo && selectedPageViews.IndexOf(pageView) < 0) // undo 하는 경우
             {
                 selectedPageViews.Add(pageView);
                 pageViewModel.IsSelected = true;
@@ -90,7 +90,7 @@ namespace FlexTable.ViewModel
                 view.ExplorationView.AddNewPage();
 
                 mainPageViewModel.SheetViewModel.UpdateGroup(ViewStatus);
-                mainPageViewModel.TableViewModel.Reflect(ViewStatus);
+                //mainPageViewModel.TableViewModel.Reflect(ViewStatus);
 
                 view.TableView.ScrollToColumnViewModel(mainPageViewModel.SheetViewModel.ColumnViewModels.OrderBy(c => c.Order).First());
 
@@ -145,7 +145,7 @@ namespace FlexTable.ViewModel
                 mainPageViewModel.SheetViewModel.UpdateGroup(ViewStatus);
 
                 // Table View 업데이트
-                mainPageViewModel.TableViewModel.Reflect(ViewStatus);
+                //mainPageViewModel.TableViewModel.Reflect(ViewStatus);
 
                 view.TableView.ScrollToColumnViewModel(mainPageViewModel.SheetViewModel.ColumnViewModels.OrderBy(c => c.Order).First());
 

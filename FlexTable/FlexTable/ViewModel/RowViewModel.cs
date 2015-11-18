@@ -11,6 +11,7 @@ namespace FlexTable.ViewModel
     public class RowViewModel : NotifyViewModel
     {
         MainPageViewModel mainPageViewModel;
+        public MainPageViewModel MainPageViewModel { get { return mainPageViewModel; } }
 
         private Int32 index;
 

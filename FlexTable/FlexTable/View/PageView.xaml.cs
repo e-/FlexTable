@@ -19,6 +19,12 @@ using FlexTable.ViewModel;
 using Series = System.Tuple<System.String, System.Collections.Generic.List<System.Tuple<System.Object, System.Double>>>;
 using FlexTable.Model;
 using Windows.Devices.Input;
+using Windows.ApplicationModel.DataTransfer;
+using Windows.Storage;
+using Windows.Storage.Streams;
+using Windows.UI.Xaml.Media.Imaging;
+using Windows.Graphics.Imaging;
+using FlexTable.Crayon.Chart;
 
 // 사용자 정의 컨트롤 항목 템플릿에 대한 설명은 http://go.microsoft.com/fwlink/?LinkId=234236에 나와 있습니다.
 
@@ -26,7 +32,7 @@ namespace FlexTable.View
 {
     public sealed partial class PageView : UserControl
     {
-        public d3.View.BarChart BarChart => BarChartElement;
+        public Crayon.Chart.BarChart BarChart => BarChartElement;
         public d3.View.LineChart LineChart => LineChartElement;
         public DescriptiveStatisticsView DescriptiveStatisticsView => DescriptiveStatisticsViewElement;
         public CorrelationStatisticsView CorrelationStatisticsView => CorrelationStatisticsViewElement;
@@ -49,6 +55,8 @@ namespace FlexTable.View
         public Storyboard CancelUndoStoryboard => CancelUndoOpacityStoryboardElement;
         private Int32 activatedParagraphIndex = 0;
         public String ActivatedParagraphTag { get; set; }
+        public object PixelFormats { get; private set; }
+
         private List<Border> paragraphLabels = new List<Border>();
         private List<StackPanel> paragraphs = new List<StackPanel>();
         
@@ -57,8 +65,8 @@ namespace FlexTable.View
         {
             this.InitializeComponent();
 
-            BarChartElement.BarPointerPressed += BarChartElement_BarPointerPressed;
-            BarChartElement.BarPointerReleased += BarChartElement_BarPointerReleased;
+            /*BarChartElement.BarPointerPressed += BarChartElement_BarPointerPressed;
+            BarChartElement.BarPointerReleased += BarChartElement_BarPointerReleased;*/
 
             GroupedBarChartElement.BarPointerPressed += GroupedBarChartElement_BarPointerPressed;
             GroupedBarChartElement.BarPointerReleased += BarChartElement_BarPointerReleased;
@@ -73,7 +81,7 @@ namespace FlexTable.View
         }
 
         #region Visualization Event Handlers
-        private void ScatterplotElement_LassoSelected(object sender, object datum, int index)
+        private void ScatterplotElement_LassoSelected(object sender, object e, object datum, int index)
         {
             PageViewModel pvm = this.DataContext as PageViewModel;
 
@@ -83,13 +91,13 @@ namespace FlexTable.View
             );
         }
 
-        private void ScatterplotElement_LassoUnselected(object sender, object datum, int index)
+        private void ScatterplotElement_LassoUnselected(object sender, object e, object datum, int index)
         {
             PageViewModel pvm = this.DataContext as PageViewModel;
             pvm.MainPageViewModel.TableViewModel.CancelPreviewRows();
         }
 
-        private void ScatterplotElement_CategoryPointerPressed(object sender, object datum, int index)
+        private void ScatterplotElement_CategoryPointerPressed(object sender, object e, object datum, int index)
         {
             PageViewModel pvm = this.DataContext as PageViewModel;
 
@@ -97,13 +105,13 @@ namespace FlexTable.View
             pvm.MainPageViewModel.TableViewModel.PreviewRows(pvm.ScatterplotRowSelecter(category));
         }
 
-        private void ScatterplotElement_CategoryPointerReleased(object sender, object datum, int index)
+        private void ScatterplotElement_CategoryPointerReleased(object sender, object e, object datum, int index)
         {
             PageViewModel pvm = this.DataContext as PageViewModel;
             pvm.MainPageViewModel.TableViewModel.CancelPreviewRows();
         }
 
-        private void LineChartElement_LinePointerPressed(object sender, object datum, int index)
+        private void LineChartElement_LinePointerPressed(object sender, object e, object datum, int index)
         {
             PageViewModel pvm = this.DataContext as PageViewModel;
 
@@ -111,13 +119,13 @@ namespace FlexTable.View
             pvm.MainPageViewModel.TableViewModel.PreviewRows(pvm.LineChartRowSelecter(series));
         }
 
-        private void LineChartElement_LinePointerReleased(object sender, object datum, int index)
+        private void LineChartElement_LinePointerReleased(object sender, object e, object datum, int index)
         {
             PageViewModel pvm = this.DataContext as PageViewModel;
             pvm.MainPageViewModel.TableViewModel.CancelPreviewRows();
         }
 
-        private void GroupedBarChartElement_BarPointerPressed(object sender, object d, Int32 index)
+        private void GroupedBarChartElement_BarPointerPressed(object sender, object e, object d, Int32 index)
         {
             PageViewModel pvm = this.DataContext as PageViewModel;
 
@@ -125,15 +133,15 @@ namespace FlexTable.View
             pvm.MainPageViewModel.TableViewModel.PreviewRows(pvm.GroupedBarChartRowSelecter(datum.Item1 as Category, datum.Item4 as Category));
         }
 
-        void BarChartElement_BarPointerPressed(object sender, object d, Int32 index)
+        /*void BarChartElement_BarPointerPressed(object sender, object d, Int32 index)
         {
             PageViewModel pvm = this.DataContext as PageViewModel;
             
-            Tuple<Object, Double> datum = d as Tuple<Object, Double>;
-            pvm.MainPageViewModel.TableViewModel.PreviewRows(pvm.BarChartRowSelecter(datum.Item1 as Category));
-        }
+            BarChartDatum datum = d as BarChartDatum;
+            pvm.MainPageViewModel.TableViewModel.PreviewRows(pvm.BarChartRowSelecter(datum.Key as Category));
+        }*/
 
-        void BarChartElement_BarPointerReleased(object sender, object d, Int32 index)
+        void BarChartElement_BarPointerReleased(object sender, object e, object d, Int32 index)
         {
             PageViewModel pvm = this.DataContext as PageViewModel;
             pvm.MainPageViewModel.TableViewModel.CancelPreviewRows();
@@ -157,11 +165,26 @@ namespace FlexTable.View
         {
             if (isUndo) UndoSelectStoryboard.Begin();
             else SelectStoryboard.Begin();
+            HideBottomToolBar.Pause();
+            ShowBottomToolBar.Begin();
+
+            ShowTopToolBar.Pause();
+            HideTopToolBar.Begin();
         }
-        
+
+        private void SelectStoryboard_Completed(object sender, object e)
+        {
+            
+        }
+
         public void MoveToUnselectedPosition()
         {
             UnselectStoryboard.Begin();
+            HideTopToolBar.Pause();
+            ShowTopToolBar.Begin();
+
+            ShowBottomToolBar.Pause();
+            HideBottomToolBar.Begin();
         }
 
         public void EnterSelectedMode()
@@ -389,6 +412,7 @@ namespace FlexTable.View
 
         private void Wrapper_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
+            return; // does nothing
             if (e.PointerDeviceType != PointerDeviceType.Touch) return;
             if (PageViewModel.IsEmpty) { }
             else if(PageViewModel.IsUndoing)
@@ -420,6 +444,7 @@ namespace FlexTable.View
 
         private void Wrapper_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
+            return; // does nothing
             if (e.PointerDeviceType != PointerDeviceType.Touch) return;
             if (PageViewModel.IsEmpty) { }
             else if (PageViewModel.IsUndoing)
@@ -476,5 +501,44 @@ namespace FlexTable.View
             Wrapper_ManipulationCompleted(sender, e);
         }
 
+        private void Select_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            MoveToSelectedPosition(false);
+            EnterSelectedMode();
+            PageViewModel.StatusChanged(this, false);
+        }
+
+        private void Unselect_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            MoveToUnselectedPosition();
+            EnterUndoMode();
+            PageViewModel.StatusChanged(this, false);
+        }
+
+        private async void Clipboard_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            RenderTargetBitmap renderBitmap = new RenderTargetBitmap();
+            uint width = (uint)Carousel.ActualWidth + 1;
+            uint height = (uint)Carousel.ActualHeight;
+            Carousel.Measure(new Size(width, height));
+            //Carousel.Arrange(new Rect(0, 0, width, height));
+
+            await renderBitmap.RenderAsync(Carousel, (int)width, (int)height);
+            var pixels = await renderBitmap.GetPixelsAsync();
+
+            InMemoryRandomAccessStream stream = new InMemoryRandomAccessStream()
+            {
+                Size = width * height * 4
+            };
+            BitmapEncoder encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.BmpEncoderId, stream);
+            encoder.SetPixelData(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Straight, (uint)renderBitmap.PixelWidth, (uint)renderBitmap.PixelHeight, 96d, 96d, pixels.ToArray());
+            await encoder.FlushAsync();
+            stream.Seek(0);
+
+            var dataPackage = new DataPackage();
+            dataPackage.SetBitmap(RandomAccessStreamReference.CreateFromStream(stream));
+
+            Clipboard.SetContent(dataPackage);
+        }
     }
 }

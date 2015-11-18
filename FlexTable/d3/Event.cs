@@ -8,6 +8,6 @@ namespace d3
 {
     public class Event
     {
-        public delegate void EventHandler(object sender, object datum, Int32 index);
+        public delegate void EventHandler(object sender, object e, object datum, Int32 index);
     }
 }

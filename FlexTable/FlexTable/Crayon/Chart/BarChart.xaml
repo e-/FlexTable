@@ -1,0 +1,44 @@
+﻿<UserControl
+    x:Class="FlexTable.Crayon.Chart.BarChart"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:FlexTable.Crayon.Chart"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:com="using:d3.Component"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400">
+
+    <Canvas x:Name="RootCanvas">
+        <com:Rectangles x:Name="HandleRectangleElement"/>
+
+        <com:Rectangles IsHitTestVisible="False" x:Name="RectangleElement"/>
+
+        <com:Axis Orientation="Horizontal" Canvas.Left="0" x:Name="HorizontalAxis" />
+
+        <TextBlock TextAlignment="Center" FontSize="12" x:Name="HorizontalAxisTitleElement"></TextBlock>
+
+        <com:Axis Orientation="Vertical" Canvas.Top="0" x:Name="VerticalAxis"/>
+        <TextBlock TextAlignment="Center" x:Name="VerticalAxisTitleElement" FontSize="12">
+            <TextBlock.RenderTransformOrigin>0.5 0.5</TextBlock.RenderTransformOrigin>
+            <TextBlock.RenderTransform>
+                <RotateTransform Angle="-90"/>
+            </TextBlock.RenderTransform>
+        </TextBlock>
+        <Canvas x:Name="LegendPanel">
+            <com:Rectangles x:Name="LegendHandleRectangleElement" />
+
+            <com:Rectangles x:Name="LegendRectangleElement" IsHitTestVisible="False" />
+
+            <com:Texts x:Name="LegendTextElement" IsHitTestVisible="False" />
+        </Canvas>
+
+        <com:Texts Foreground="Black" FontSize="14" x:Name="IndicatorTextElement" />
+
+        <Grid x:Name="StrokeGrid" IsHitTestVisible="False"></Grid>
+        <Grid x:Name="NewStrokeGrid" IsHitTestVisible="False"></Grid>
+        
+        
+    </Canvas>
+</UserControl>

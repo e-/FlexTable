@@ -6,11 +6,14 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:util="using:FlexTable.Util"
+    xmlns:model="using:FlexTable.Model"
     mc:Ignorable="d"
     d:DesignHeight="300"
-    d:DesignWidth="400">
-
-    <UserControl.Resources>
+    d:DesignWidth="400"
+    
+    >
+    <!--Loaded="UserControl_Loaded"-->
+    <!--<UserControl.Resources>
         <util:BooleanToInvertedOpacityConverter x:Name="BooleanToInvertedOpacityConverter" />
         
         <Storyboard x:Name="UpdateStoryboard">
@@ -23,11 +26,26 @@
                              Duration="00:00:00.3" EasingFunction="{StaticResource QuarticEaseInOut}">
             </DoubleAnimation>
         </Storyboard>
-    </UserControl.Resources>
-    <StackPanel Orientation="Horizontal" x:Name="Wrapper">
+    </UserControl.Resources>-->
+    <ListView ItemsSource="{Binding Cells}"
+              SelectionMode="None">
+        <ListView.ItemsPanel>
+            <ItemsPanelTemplate>
+                <StackPanel Orientation="Horizontal" />
+            </ItemsPanelTemplate>
+        </ListView.ItemsPanel>
+        <ListView.RenderTransform>
+            <CompositeTransform x:Name="CompositeTransform"/>
+        </ListView.RenderTransform>
+        <ListView.ItemTemplate>
+            <DataTemplate x:DataType="model:Cell">
+                <TextBlock Text="{x:Bind Path=RawContent}" Width="{x:Bind Path=ColumnViewModel.Width}" Style="{StaticResource CellStyle}"/>
+            </DataTemplate>
+        </ListView.ItemTemplate>
+    </ListView>
+    <!--<StackPanel Orientation="Horizontal" x:Name="Wrapper">
         <StackPanel.RenderTransform>
             <CompositeTransform x:Name="CompositeTransform"/>
         </StackPanel.RenderTransform>
-        <Canvas x:Name="CellCanvas"></Canvas>
-    </StackPanel>
+    </StackPanel>-->
 </UserControl>

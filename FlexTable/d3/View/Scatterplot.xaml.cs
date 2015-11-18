@@ -103,12 +103,12 @@ namespace d3.View
                 viewModel.UnselectLasso();
                 if (isLassoSelecting)
                 {
-                    if (LassoUnselected != null) LassoUnselected(null, null, 0);
+                    if (LassoUnselected != null) LassoUnselected(null, null, null, 0);
                 }
             }
             else
             {
-                if (LassoSelected != null) LassoSelected(null, viewModel.SelectedIndices, 0);
+                if (LassoSelected != null) LassoSelected(null, null, viewModel.SelectedIndices, 0);
             }
             
             CircleElement.Update(true, false);
@@ -116,13 +116,13 @@ namespace d3.View
             drawable.RemoveAllStrokes();
         }
 
-        private void LegendHandleRectangleElement_RectanglePointerPressed(object sender, object datum, int index)
+        private void LegendHandleRectangleElement_RectanglePointerPressed(object sender, object e, object datum, int index)
         {
 
             if (viewModel.IsLassoSelecting)
             {
                 viewModel.UnselectLasso();
-                if (LassoUnselected != null) LassoUnselected(null, null, 0);
+                if (LassoUnselected != null) LassoUnselected(null, e, null, 0);
             }
 
             viewModel.SelectCategory((datum as LegendDataPoint).Item1);
@@ -134,10 +134,10 @@ namespace d3.View
             }
 
             if (CategoryPointerPressed != null)
-                CategoryPointerPressed(sender, datum, index);
+                CategoryPointerPressed(sender, e, datum, index);
         }
 
-        private void LegendHandleRectangleElement_RectanglePointerReleased(object sender, object datum, int index)
+        private void LegendHandleRectangleElement_RectanglePointerReleased(object sender, object e, object datum, int index)
         {
             viewModel.UnselectCategory((datum as LegendDataPoint).Item1);
             CircleElement.Update(true, false);
@@ -148,7 +148,7 @@ namespace d3.View
             }
 
             if (CategoryPointerReleased != null)
-                CategoryPointerReleased(sender, datum, index);
+                CategoryPointerReleased(sender, e, datum, index);
 
         }
 

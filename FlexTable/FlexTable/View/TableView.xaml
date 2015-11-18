@@ -7,6 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:view="using:FlexTable.View"
     xmlns:util="using:FlexTable.Util"
+    xmlns:viewModel="using:FlexTable.ViewModel"
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400">
@@ -51,16 +52,38 @@
             <view:ColumnHeaderPresenter Grid.Row="0" Grid.Column="1" x:Name="TopColumnHeaderElement"></view:ColumnHeaderPresenter>            
 
             <view:RowHeaderPresenter Grid.Row="1" Grid.Column="0" x:Name="RowHeaderPresenterElement"></view:RowHeaderPresenter>
-            
+
+            <ListView Grid.Row="1" Grid.Column="1" 
+                      ItemsSource="{Binding SheetViewModel.AllRowViewModels}"
+                      ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                      ScrollViewer.VerticalScrollBarVisibility="Auto"
+                      ScrollViewer.HorizontalScrollMode="Enabled"
+                      ScrollViewer.VerticalScrollMode="Enabled"
+                      ScrollViewer.ZoomMode="Disabled"
+                      SelectionMode="None">
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="viewModel:RowViewModel">
+                        <local:RowPresenter Width="{x:Bind Path=MainPageViewModel.SheetViewModel.SheetWidth}"/>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
         
             <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" 
                               ZoomMode="Disabled" Grid.Row="1" Grid.Column="1"
                               ViewChanged="ScrollViewer_ViewChanged"
                               ManipulationMode="All"
                               x:Name="TableScrollViewerElement"
+                          Visibility="Collapsed"
                               >
                 <Grid x:Name="ScrollViewerContentWrapperElement" Width="{Binding PaddedSheetWidth}" Height="{Binding PaddedSheetHeight}">
                     <StackPanel x:Name="GuidelineElement" IsHitTestVisible="False"></StackPanel>
+                    <!--<ListView Opacity="1" x:Name="AllRowsListViewElement">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <local:RowPresenter></local:RowPresenter>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>-->
                     <Canvas x:Name="AllRowsCanvasElement" Opacity="1">
                     </Canvas>
                     <Canvas x:Name="TableCanvasElement" Visibility="Collapsed" Opacity="0">

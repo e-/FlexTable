@@ -104,10 +104,10 @@ namespace d3.View
             LegendHandleRectangleElement.RectanglePointerReleased += LegendHandleRectangleElement_RectanglePointerReleased;
         }
 
-        private void LegendHandleRectangleElement_RectanglePointerPressed(object sender, object datum, int index)
+        private void LegendHandleRectangleElement_RectanglePointerPressed(object sender, object e, object datum, int index)
         {
             if (LinePointerPressed != null)
-                LinePointerPressed(sender, datum, index);
+                LinePointerPressed(sender, e, datum, index);
 
             viewModel.SelectLine(index);
             LineElement.Update(true);
@@ -120,10 +120,10 @@ namespace d3.View
             }
         }
 
-        private void LegendHandleRectangleElement_RectanglePointerReleased(object sender, object datum, int index)
+        private void LegendHandleRectangleElement_RectanglePointerReleased(object sender, object e, object datum, int index)
         {
             if (LinePointerReleased != null)
-                LinePointerReleased(sender, datum, index);
+                LinePointerReleased(sender, e, datum, index);
 
             viewModel.UnselectLine(index);
             LineElement.Update(true);
@@ -136,16 +136,16 @@ namespace d3.View
             }
         }       
 
-        void LineElement_LinePointerPressed(object sender, object datum, Int32 index)
+        void LineElement_LinePointerPressed(object sender, object e, object datum, Int32 index)
         {
             if (LinePointerPressed != null)
-                LinePointerPressed(sender, datum, index);
+                LinePointerPressed(sender, e, datum, index);
         }
 
-        void LineElement_LinePointerReleased(object sender, object datum, Int32 index)
+        void LineElement_LinePointerReleased(object sender, object e, object datum, Int32 index)
         {
             if (LinePointerReleased != null)
-                LinePointerReleased(sender, datum, index);
+                LinePointerReleased(sender, e, datum, index);
         }
 
         public void Update()

@@ -90,10 +90,10 @@ namespace d3.View
             HandleRectangleElement.RectanglePointerReleased += RectangleElement_RectanglePointerReleased;
         }
 
-        void RectangleElement_RectanglePointerPressed(object sender, object datum, Int32 index)
+        void RectangleElement_RectanglePointerPressed(object sender, object e, object datum, Int32 index)
         {
             if (BarPointerPressed != null)
-                BarPointerPressed(sender, datum, index);
+                BarPointerPressed(sender, e, datum, index);
 
             viewModel.SelectBar(datum);
             RectangleElement.Update(true);
@@ -105,10 +105,10 @@ namespace d3.View
             }
         }
 
-        void RectangleElement_RectanglePointerReleased(object sender, object datum, Int32 index)
+        void RectangleElement_RectanglePointerReleased(object sender, object e, object datum, Int32 index)
         {
             if (BarPointerReleased != null)
-                BarPointerReleased(sender, datum, index);
+                BarPointerReleased(sender, e, datum, index);
 
             viewModel.UnselectBar(datum);
 

@@ -7,7 +7,7 @@ using Windows.UI;
 
 namespace d3.ColorScheme
 {
-    class Category10
+    public class Category10
     {
         public static List<Color> Colors = new List<Color>()
         {

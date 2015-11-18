@@ -73,7 +73,9 @@ namespace FlexTable.ViewModel
 
             // rowViewModels 계산
             sheetViewModel.Initialize(sheet);
-            
+
+            return;
+
             // 가이드라인 및 헤더 컬럼 추가
             tableViewModel.Initialize();
 
@@ -104,14 +106,12 @@ namespace FlexTable.ViewModel
             ExplorationViewModel.MetadataViewModel.Initialize();
 
             
-            //ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[1]);
-            //ExplorationViewModel.PageViewTapped(ExplorationViewModel.TopPageView.PageViewModel, ExplorationViewModel.TopPageView, false);
+            
+            ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[0]);
+            ExplorationViewModel.StatusChanged(ExplorationViewModel.TopPageView.PageViewModel, ExplorationViewModel.TopPageView, false);
 
             /*ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[4]);
-            ExplorationViewModel.PageViewTapped(ExplorationViewModel.TopPageView.PageViewModel, ExplorationViewModel.TopPageView);
-
-            ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[6]);
-            ExplorationViewModel.PageViewTapped(ExplorationViewModel.TopPageView.PageViewModel, ExplorationViewModel.TopPageView);
+            ExplorationViewModel.StatusChanged(ExplorationViewModel.TopPageView.PageViewModel, ExplorationViewModel.TopPageView, false);
             */
         }    
     }

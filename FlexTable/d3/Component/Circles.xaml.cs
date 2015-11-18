@@ -154,7 +154,7 @@ namespace d3.Component
                         {
                             if (CirclePointerPressed != null)
                             {
-                                CirclePointerPressed(ellipse, datum, index);
+                                CirclePointerPressed(ellipse, e, datum, index);
                                 e.Handled = true;
                             }
                         };
@@ -163,7 +163,7 @@ namespace d3.Component
                         {
                             if (CirclePointerReleased != null)
                             {
-                                CirclePointerReleased(ellipse, datum, index);
+                                CirclePointerReleased(ellipse, e, datum, index);
                                 e.Handled = true;
                             }
                         };
@@ -213,7 +213,7 @@ namespace d3.Component
                     {
                         if (CirclePointerPressed != null)
                         {
-                            CirclePointerPressed(ellipse, datum, index);
+                            CirclePointerPressed(ellipse, e, datum, index);
                             e.Handled = true;
                         }
                     };
@@ -222,7 +222,7 @@ namespace d3.Component
                     {
                         if (CirclePointerReleased != null)
                         {
-                            CirclePointerReleased(ellipse, datum, index);
+                            CirclePointerReleased(ellipse, e, datum, index);
                             e.Handled = true;
                         }
                     };

@@ -16,6 +16,8 @@ using Windows.UI.ViewManagement;
 using Windows.Graphics.Display;
 using FlexTable.View;
 using FlexTable.Model;
+using System.Threading;
+using Windows.UI.Core;
 
 namespace FlexTable.ViewModel
 {
@@ -45,20 +47,14 @@ namespace FlexTable.ViewModel
         private List<RowPresenter> allRowPresenters = new List<RowPresenter>();
         public List<RowPresenter> AllRowPresenters => allRowPresenters;
 
-        private List<RowPresenter> temporaryRowPresenters = new List<RowPresenter>();
-        public List<RowPresenter> TemporaryRowPresenters => temporaryRowPresenters;
+        private List<RowPresenter> groupByRowPresenters = new List<RowPresenter>();
+        public List<RowPresenter> GroupByRowPresenters => groupByRowPresenters;
 
         private List<RowPresenter> rowPresenters;
         public List<RowPresenter> RowPresenters => rowPresenters;
 
         private Boolean isIndexing;
         public Boolean IsIndexing { get { return isIndexing; } set { isIndexing = value; OnPropertyChanged("IsIndexing"); } }
-
-        /*private Double indexTooltipY;
-        public Double IndexTooltipY { get { return indexTooltipY; } set { indexTooltipY = value; OnPropertyChanged("IndexTooltipY"); } }
-
-        private String indexTooltipContent;
-        public String IndexTooltipContent { get { return indexTooltipContent; } set { indexTooltipContent = value; OnPropertyChanged("IndexTooltipContent"); } }*/
         
         private Boolean isPreviewing = false;
 
@@ -68,8 +64,8 @@ namespace FlexTable.ViewModel
         private ColumnViewModel sortBy;
         public ColumnViewModel SortBy { get { return sortBy; } set { sortBy = value; } }
 
-        private Model.SortOption sortOption;
-        public Model.SortOption SortOption { get { return sortOption; } set { sortOption = value; } }
+        private SortOption sortOption;
+        public SortOption SortOption { get { return sortOption; } set { sortOption = value; } }
 
         public TableViewModel(MainPageViewModel mainPageViewModel, IMainPage view)
         {
@@ -104,7 +100,10 @@ namespace FlexTable.ViewModel
             view.TableView.AllRowsTableCanvas.Children.Clear();
             foreach (RowViewModel rowViewModel in SheetViewModel.AllRowViewModels)
             {
-                RowPresenter rowPresenter = new RowPresenter(rowViewModel);
+                RowPresenter rowPresenter = new RowPresenter()
+                {
+                    DataContext = rowViewModel
+                };
 
                 view.TableView.AllRowsTableCanvas.Children.Add(rowPresenter);
                 rowPresenter.Y = rowViewModel.Y;
@@ -113,8 +112,22 @@ namespace FlexTable.ViewModel
                 allRowPresenters.Add(rowPresenter);
             }
 
+            // group by table canvas는 미리 최대 개수만큼 다 만들어 둔다. 
+            view.TableView.GroupByTableCanvas.Children.Clear();
+            foreach (RowViewModel rowViewModel in SheetViewModel.AllRowViewModels)
+            {
+                RowPresenter rowPresenter = new RowPresenter()
+                {
+                    DataContext = rowViewModel
+                };
+
+                view.TableView.GroupByTableCanvas.Children.Add(rowPresenter);
+
+                groupByRowPresenters.Add(rowPresenter);
+            }
+
             rowPresenters = allRowPresenters;
-            rowViewModels = SheetViewModel.AllRowViewModels;
+            rowViewModels = SheetViewModel.AllRowViewModels.ToList();
 
             view.TableView.RowHeaderPresenter.SetRowNumber(SheetViewModel.AllRowViewModels.Count);
         }
@@ -138,11 +151,11 @@ namespace FlexTable.ViewModel
         {
             if (viewStatus.SelectedColumnViewModels.Count == 0) // 아무 것도 선택되지 않으면 모든 로우 보여줘야함.
             {
-                rowViewModels = SheetViewModel.AllRowViewModels;
+                rowViewModels = SheetViewModel.AllRowViewModels.ToList();
             }
             else
             {
-                rowViewModels = SheetViewModel.TemporaryRowViewModels;
+                rowViewModels = SheetViewModel.GroupByRowViewModels;
             }
 
             if (sortBy != null)
@@ -197,21 +210,28 @@ namespace FlexTable.ViewModel
             }
             else
             {
-                view.TableView.ShowTableCanvas();
-                rowPresenters = temporaryRowPresenters;
-                temporaryRowPresenters.Clear();
-                view.TableView.TableCanvas.Children.Clear();
+                view.TableView.ShowGroupByTableCanvas();
+                rowPresenters = groupByRowPresenters;
 
                 PaddedSheetHeight = SheetViewModel.SheetHeight > SheetViewHeight ? SheetViewModel.SheetHeight : SheetViewHeight;
 
-                foreach (RowViewModel rowViewModel in SheetViewModel.TemporaryRowViewModels)
-                {
-                    RowPresenter rowPresenter = new RowPresenter(rowViewModel);
-                    temporaryRowPresenters.Add(rowPresenter);
+                Int32 index = 0;
 
-                    view.TableView.TableCanvas.Children.Add(rowPresenter);
+                foreach (RowViewModel rowViewModel in SheetViewModel.GroupByRowViewModels)
+                {
+                    RowPresenter rowPresenter = groupByRowPresenters[index];
+                    rowPresenter.DataContext = rowViewModel;
+                    rowPresenter.Visibility = Visibility.Visible;
+
                     rowPresenter.Y = rowViewModel.Y;
                     rowPresenter.Update();
+
+                    index++;
+                }
+
+                for(;index < groupByRowPresenters.Count; ++index)
+                {
+                    groupByRowPresenters[index].Visibility = Visibility.Collapsed;
                 }
 
                 view.TableView.RowHeaderPresenter.SetRowNumber(rowViewModels.Count);
@@ -316,7 +336,7 @@ namespace FlexTable.ViewModel
             sb.Begin();
         }
 
-        public void Sort(ColumnViewModel columnViewModel, Model.SortOption sortOption)
+        public void Sort(ColumnViewModel columnViewModel, SortOption sortOption)
         {
             // 하나의 컬럼으로만 소트가 가능하다 현재는
             sortBy = columnViewModel;

@@ -165,7 +165,7 @@ namespace d3.Component
                     {
                         if (LinePointerPressed != null)
                         {
-                            LinePointerPressed(path, datum, index);
+                            LinePointerPressed(path, e, datum, index);
                             e.Handled = true;
                         }
                     };
@@ -174,7 +174,7 @@ namespace d3.Component
                     {
                         if (LinePointerReleased != null)
                         {
-                            LinePointerReleased(path, datum, index);
+                            LinePointerReleased(path, e,datum, index);
                             e.Handled = true;
                         }
                     };

@@ -45,6 +45,11 @@ namespace d3
             return da;
         }
 
+        public static Func<Object, Int32, T> CreateConstantGetter<T>(T constant)
+        {
+            return (d, i) => constant;
+        }
+        
         public static bool TestPointInPolygon(Point point, List<Point> points)
         {
             // Get the angle between the point and the

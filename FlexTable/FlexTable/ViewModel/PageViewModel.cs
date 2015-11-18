@@ -11,6 +11,7 @@ using DataPoint = System.Tuple<System.Object, System.Double>;
 using Windows.UI.Xaml.Documents;
 using Windows.UI.Text;
 using System.Diagnostics;
+using FlexTable.Crayon.Chart;
 
 namespace FlexTable.ViewModel
 {
@@ -771,8 +772,8 @@ namespace FlexTable.ViewModel
             {
                 AddText(pageView.BarChartTitle, "Frequency of\x00A0");
                 AddComboBox(
-                    pageView.BarChartTitle, 
-                    categorical.Name,                     
+                    pageView.BarChartTitle,
+                    categorical.Name,
                     mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).Select(cvm => cvm.Name),
                     CreateColumnChangedHandler(categorical)
                 );
@@ -785,13 +786,13 @@ namespace FlexTable.ViewModel
             Int32 index = categorical.Index;
             BarChartRowSelecter = c => (r => r.Cells[index].Content == c);
 
-            pageView.BarChart.YStartsWithZero = true;
-            pageView.BarChart.HorizontalAxisLabel = categorical.Name;
-            pageView.BarChart.VerticalAxisLabel = String.Format("Frequency");
+            pageView.BarChart.YStartsFromZero = true;
+            pageView.BarChart.HorizontalAxisTitle = categorical.Name;
+            pageView.BarChart.VerticalAxisTitle = String.Format("Frequency");
             pageView.BarChart.Data = groupedRows
-                .Select(grs => new Tuple<Object, Double>(grs.Keys[categorical], grs.Rows.Count))
-                .OrderBy(t => (t.Item1 as Category).Order)
-                .Take(BarChartMaximumRecordNumber);
+                .Select(grs => new BarChartDatum() { Key = grs.Keys[categorical], Value = grs.Rows.Count })
+                .OrderBy(t => (t.Key as Category).Order)
+                .Take(BarChartMaximumRecordNumber).ToList();
             if (groupedRows.Count > BarChartMaximumRecordNumber) IsBarChartWarningVisible = true;
             pageView.BarChart.Update();
         }
@@ -945,16 +946,17 @@ namespace FlexTable.ViewModel
 
             BarChartRowSelecter = c => (r => r.Cells[categorical.Index].Content == c);
 
-            pageView.BarChart.YStartsWithZero = false;
-            pageView.BarChart.HorizontalAxisLabel = categorical.Name;
-            pageView.BarChart.VerticalAxisLabel = numerical.HeaderNameWithUnit;
+            pageView.BarChart.YStartsFromZero = false;
+            pageView.BarChart.HorizontalAxisTitle = categorical.Name;
+            pageView.BarChart.VerticalAxisTitle = numerical.HeaderNameWithUnit;
             pageView.BarChart.Data = groupedRows
                 .OrderBy(g => (g.Keys[categorical] as Category).Order)
-                .Select(g => new Tuple<Object, Double>(
-                    g.Keys[categorical],
-                    numerical.AggregativeFunction.Aggregate(g.Rows.Select(r => (Double)r.Cells[numerical.Index].Content))
-                    ))
-                .Take(BarChartMaximumRecordNumber);
+                .Select(g => new BarChartDatum()
+                {
+                    Key = g.Keys[categorical],
+                    Value = numerical.AggregativeFunction.Aggregate(g.Rows.Select(r => (Double)r.Cells[numerical.Index].Content))
+                })
+                .Take(BarChartMaximumRecordNumber).ToList();
             if (groupedRows.Count > BarChartMaximumRecordNumber) IsBarChartWarningVisible = true;
             pageView.BarChart.Update();
         }

@@ -154,7 +154,7 @@ namespace FlexTable.ViewModel
             {
                 rowPresenter.CellPresenters[index].Opacity = 0.15;
             }
-            foreach (View.RowPresenter rowPresenter in mainPageViewModel.TableViewModel.TemporaryRowPresenters)
+            foreach (View.RowPresenter rowPresenter in mainPageViewModel.TableViewModel.GroupByRowPresenters)
             {
                 rowPresenter.CellPresenters[index].Opacity = 0.15;
             }
@@ -167,7 +167,7 @@ namespace FlexTable.ViewModel
             {
                 rowPresenter.CellPresenters[index].Opacity = 1;
             }
-            foreach (View.RowPresenter rowPresenter in mainPageViewModel.TableViewModel.TemporaryRowPresenters)
+            foreach (View.RowPresenter rowPresenter in mainPageViewModel.TableViewModel.GroupByRowPresenters)
             {
                 rowPresenter.CellPresenters[index].Opacity = 1;
             }

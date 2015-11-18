@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using FlexTable.ViewModel;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -19,8 +20,7 @@ namespace FlexTable.View
 {
     public sealed partial class RowPresenter : UserControl
     {
-        private ViewModel.RowViewModel rowViewModel;
-        public ViewModel.RowViewModel RowViewModel { get { return rowViewModel; } }
+        public ViewModel.RowViewModel RowViewModel { get { return this.DataContext as RowViewModel; } }
 
         private List<TextBlock> cellPresenters = new List<TextBlock>();
         public List<TextBlock> CellPresenters { get { return cellPresenters; } }
@@ -30,44 +30,54 @@ namespace FlexTable.View
             set { CompositeTransform.TranslateY = value; }
         }
 
-        public RowPresenter(ViewModel.RowViewModel rowViewModel)
+        public RowPresenter()
         {
-            this.rowViewModel = rowViewModel;
-            this.DataContext = rowViewModel;
-            this.InitializeComponent();
-
-            Style style = App.Current.Resources["CellStyle"] as Style;
-
-            foreach (Model.Cell cell in rowViewModel.Cells)
-            {
-                TextBlock cellPresenter = new TextBlock(){
-                    Text = cell.RawContent,
-                    Width = cell.ColumnViewModel.Width,
-                    Style = style
-                };
-
-                CellCanvas.Children.Add(cellPresenter);
-                cellPresenters.Add(cellPresenter);
-
-                Canvas.SetLeft(cellPresenter, cell.ColumnViewModel.X);
-
-                if (cell.ColumnViewModel.IsHidden)
-                    cellPresenter.Opacity = 0.15;
-            }
+            this.InitializeComponent();            
         }
 
         public void Update()
         {
-            UpdateStoryboard.Begin();
+            //UpdateStoryboard.Begin();
+            UpdateCellsWithoutAnimation();
         }
 
         public void UpdateCellsWithoutAnimation()
         {
             Int32 index = 0;
-            foreach (Model.Cell cell in rowViewModel.Cells)
+            foreach (Model.Cell cell in RowViewModel.Cells.OrderBy(c => c.ColumnViewModel.X))
             {
-                Canvas.SetLeft(cellPresenters[index], cell.ColumnViewModel.X);
+                cellPresenters[index].Text = cell.RawContent;
+                cellPresenters[index].Width = cell.ColumnViewModel.Width;
+                //Canvas.SetLeft(cellPresenters[index], cell.ColumnViewModel.X);
+                if (cell.ColumnViewModel.IsHidden)
+                    cellPresenters[index].Opacity = 0.15;
+                else
+                    cellPresenters[index].Opacity = 1;
+
                 index++;
+            }
+        }
+
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            Style style = App.Current.Resources["CellStyle"] as Style;
+
+            foreach (Model.Cell cell in RowViewModel.Cells.OrderBy(c => c.ColumnViewModel.X))
+            {
+                TextBlock cellPresenter = new TextBlock()
+                {
+                    Text = cell.RawContent,
+                    Width = cell.ColumnViewModel.Width,
+                    Style = style
+                };
+
+                // Wrapper.Children.Add(cellPresenter);
+                cellPresenters.Add(cellPresenter);
+
+                //Canvas.SetLeft(cellPresenter, cell.ColumnViewModel.X);
+
+                if (cell.ColumnViewModel.IsHidden)
+                    cellPresenter.Opacity = 0.15;
             }
         }
     }
