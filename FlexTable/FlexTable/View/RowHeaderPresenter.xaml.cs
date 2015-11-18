@@ -44,24 +44,6 @@ namespace FlexTable.View
             visibleNumberElement = NumberElement0;
             hiddenNumberElement = NumberElement1;
         }
-        
-        public void SetMaximumRowNumber(Int32 n)
-        {
-            Int32 maxN = n;
-
-            if (maxN < 50) maxN = 50;
-            Double rowHeight = (Double)App.Current.Resources["RowHeight"];
-
-            for (Int32 i = 0; i < maxN; ++i)
-            {
-                Border border = new Border(){
-                    Height = rowHeight,
-                    Background = (SolidColorBrush)App.Current.Resources["RowGuidelineBrush" + i % 2]
-                };
-
-                GuidelineElement.Children.Add(border);
-            }
-        }
 
         Storyboard last = null;
 

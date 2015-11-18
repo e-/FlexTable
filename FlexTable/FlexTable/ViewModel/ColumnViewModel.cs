@@ -149,7 +149,8 @@ namespace FlexTable.ViewModel
 
         public void Hide()
         {
-            isHidden = true;
+            IsHidden = true;
+            /*
             foreach (View.RowPresenter rowPresenter in mainPageViewModel.TableViewModel.AllRowPresenters)
             {
                 rowPresenter.CellPresenters[index].Opacity = 0.15;
@@ -157,20 +158,20 @@ namespace FlexTable.ViewModel
             foreach (View.RowPresenter rowPresenter in mainPageViewModel.TableViewModel.GroupByRowPresenters)
             {
                 rowPresenter.CellPresenters[index].Opacity = 0.15;
-            }
+            }*/
         }
 
         public void Show()
         {
-            isHidden = false;
-            foreach (View.RowPresenter rowPresenter in mainPageViewModel.TableViewModel.AllRowPresenters)
+            IsHidden = false;
+            /*foreach (View.RowPresenter rowPresenter in mainPageViewModel.TableViewModel.AllRowPresenters)
             {
                 rowPresenter.CellPresenters[index].Opacity = 1;
             }
             foreach (View.RowPresenter rowPresenter in mainPageViewModel.TableViewModel.GroupByRowPresenters)
             {
                 rowPresenter.CellPresenters[index].Opacity = 1;
-            }
+            }*/
         }
 
         public void UpdateHeaderName()

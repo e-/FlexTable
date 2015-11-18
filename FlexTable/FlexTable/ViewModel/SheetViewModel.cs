@@ -32,8 +32,8 @@ namespace FlexTable.ViewModel
         public ObservableCollection<RowViewModel> AllRowViewModels => allRowViewModels;
 
         // group된 일시적인 테이블
-        private List<RowViewModel> groupByRowViewModels = new List<RowViewModel>();
-        public List<RowViewModel> GroupByRowViewModels => groupByRowViewModels;
+        private ObservableCollection<RowViewModel> groupByRowViewModels = new ObservableCollection<RowViewModel>();
+        public ObservableCollection<RowViewModel> GroupByRowViewModels => groupByRowViewModels;
 
         //ViewStatus viewStatus = new ViewStatus();
 
@@ -234,10 +234,14 @@ namespace FlexTable.ViewModel
 
             UpdateColumnX();
 
+            // TODO
+
+            /*
             foreach (View.RowPresenter rowPresenter in mainPageViewModel.TableViewModel.RowPresenters)
             {
                 rowPresenter.UpdateCellsWithoutAnimation();
             }
+            */
 
             mainPageViewModel.View.TableView.TopColumnHeader.Update();
             mainPageViewModel.View.TableView.BottomColumnHeader.Update();
@@ -262,10 +266,14 @@ namespace FlexTable.ViewModel
 
             UpdateColumnX();
 
+            // TODO
+
+            /*
             foreach (View.RowPresenter rowPresenter in mainPageViewModel.TableViewModel.RowPresenters)
             {
                 rowPresenter.UpdateCellsWithoutAnimation();
             }
+            */
 
             mainPageViewModel.View.TableView.TopColumnHeader.Update();
             mainPageViewModel.View.TableView.BottomColumnHeader.Update();

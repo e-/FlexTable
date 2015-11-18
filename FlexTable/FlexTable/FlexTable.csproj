@@ -158,6 +158,8 @@
     <Compile Include="Util\Formatter.cs" />
     <Compile Include="Util\HistogramCalculator.cs" />
     <Compile Include="Util\HtmlToTextBlockFormatter.cs" />
+    <Compile Include="Util\IndexToRowBackgroundConverter.cs" />
+    <Compile Include="Util\ParityConverter.cs" />
     <Compile Include="ViewModel\ColumnViewModel.cs" />
     <Compile Include="ViewModel\CustomHistogramViewModel.cs" />
     <Compile Include="ViewModel\ExplorationViewModel.cs" />
@@ -199,6 +201,9 @@
     </Compile>
     <Compile Include="View\ExplorationView.xaml.cs">
       <DependentUpon>ExplorationView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\GuidelinePresenter.xaml.cs">
+      <DependentUpon>GuidelinePresenter.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\MetedataView.xaml.cs">
       <DependentUpon>MetedataView.xaml</DependentUpon>
@@ -302,6 +307,10 @@
     <Page Include="View\ExplorationView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\GuidelinePresenter.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\MetedataView.xaml">
       <Generator>MSBuild:Compile</Generator>

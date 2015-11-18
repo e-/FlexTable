@@ -18,6 +18,7 @@ using FlexTable.View;
 using FlexTable.Model;
 using System.Threading;
 using Windows.UI.Core;
+using System.Collections.ObjectModel;
 
 namespace FlexTable.ViewModel
 {
@@ -44,23 +45,32 @@ namespace FlexTable.ViewModel
         private Double paddedSheetHeight;
         public Double PaddedSheetHeight { get { return paddedSheetHeight; } set { paddedSheetHeight = value; OnPropertyChanged("PaddedSheetHeight"); } }
 
+        /*
         private List<RowPresenter> allRowPresenters = new List<RowPresenter>();
         public List<RowPresenter> AllRowPresenters => allRowPresenters;
 
         private List<RowPresenter> groupByRowPresenters = new List<RowPresenter>();
         public List<RowPresenter> GroupByRowPresenters => groupByRowPresenters;
+        */
 
+        private ObservableCollection<RowViewModel> rowViewModels;
+        public ObservableCollection<RowViewModel> RowViewModels
+        {
+            get { return rowViewModels; }
+            set { rowViewModels = value; OnPropertyChanged(nameof(RowViewModels)); }
+        }
+
+        /*
         private List<RowPresenter> rowPresenters;
         public List<RowPresenter> RowPresenters => rowPresenters;
+        */
 
         private Boolean isIndexing;
         public Boolean IsIndexing { get { return isIndexing; } set { isIndexing = value; OnPropertyChanged("IsIndexing"); } }
         
         private Boolean isPreviewing = false;
 
-        private List<RowViewModel> rowViewModels;
-        public List<RowViewModel> RowViewModels => rowViewModels;
-
+        
         private ColumnViewModel sortBy;
         public ColumnViewModel SortBy { get { return sortBy; } set { sortBy = value; } }
 
@@ -80,15 +90,17 @@ namespace FlexTable.ViewModel
 
         public void Initialize()
         {
+            // TODO
             // guideline 추가
-            view.TableView.AddGuidelines(SheetViewModel.Sheet.Rows.Count);
+            // view.TableView.AddGuidelines(SheetViewModel.Sheet.Rows.Count);
 
             // 최대 row header 추가
-            view.TableView.RowHeaderPresenter.SetMaximumRowNumber(SheetViewModel.AllRowViewModels.Count);
+            view.TableView.GuidelinePresenter.SetMaximumRowNumber(SheetViewModel.AllRowViewModels.Count);
             view.TableView.TopColumnHeader.Update();
             view.TableView.BottomColumnHeader.Update();
 
-          
+            view.TableView.Initialize();
+
             view.TableView.ColumnIndexer.Update();
         }
 
@@ -97,7 +109,7 @@ namespace FlexTable.ViewModel
             PaddedSheetHeight = SheetViewModel.AllRowsSheetHeight > SheetViewHeight ? SheetViewModel.AllRowsSheetHeight : SheetViewHeight;
             PaddedSheetWidth = SheetViewModel.SheetWidth > SheetViewWidth ? SheetViewModel.SheetWidth : SheetViewWidth;
 
-            view.TableView.AllRowsTableCanvas.Children.Clear();
+            /*view.TableView.AllRowsTableCanvas.Children.Clear();
             foreach (RowViewModel rowViewModel in SheetViewModel.AllRowViewModels)
             {
                 RowPresenter rowPresenter = new RowPresenter()
@@ -124,10 +136,10 @@ namespace FlexTable.ViewModel
                 view.TableView.GroupByTableCanvas.Children.Add(rowPresenter);
 
                 groupByRowPresenters.Add(rowPresenter);
-            }
+            }*/
 
-            rowPresenters = allRowPresenters;
-            rowViewModels = SheetViewModel.AllRowViewModels.ToList();
+            //rowPresenters = allRowPresenters;
+            RowViewModels = SheetViewModel.AllRowViewModels;
 
             view.TableView.RowHeaderPresenter.SetRowNumber(SheetViewModel.AllRowViewModels.Count);
         }
@@ -151,14 +163,14 @@ namespace FlexTable.ViewModel
         {
             if (viewStatus.SelectedColumnViewModels.Count == 0) // 아무 것도 선택되지 않으면 모든 로우 보여줘야함.
             {
-                rowViewModels = SheetViewModel.AllRowViewModels.ToList();
+                RowViewModels = SheetViewModel.AllRowViewModels;
             }
             else
             {
-                rowViewModels = SheetViewModel.GroupByRowViewModels;
+                RowViewModels = SheetViewModel.GroupByRowViewModels;
             }
 
-            if (sortBy != null)
+            /*if (sortBy != null)
             {
                 IOrderedEnumerable<RowViewModel> sorted = null;
                 switch (sortOption)
@@ -188,9 +200,10 @@ namespace FlexTable.ViewModel
                 {
                     rowViewModel.Index = index++;
                 }
-            }
+            }*/
 
-
+           
+            /*
             if (SheetViewModel.IsAllRowsVisible) // 아무 것도 선택되지 않으면 모든 로우 보여줘야함.
             {
                 rowPresenters = allRowPresenters;
@@ -235,7 +248,7 @@ namespace FlexTable.ViewModel
                 }
 
                 view.TableView.RowHeaderPresenter.SetRowNumber(rowViewModels.Count);
-            }
+            }    */       
         }
 
         uint ignoredPointerId;
@@ -288,6 +301,8 @@ namespace FlexTable.ViewModel
 
             Int32 index = 0;
             Double rowHeight = (Double)App.Current.Resources["RowHeight"];
+
+            /*
             foreach (RowPresenter rowPresenter in allRowPresenters)
             {
                 if(condition(rowPresenter.RowViewModel))
@@ -301,6 +316,7 @@ namespace FlexTable.ViewModel
                     rowPresenter.Visibility = Visibility.Collapsed;
                 }
             }
+            */
 
             Double sheetHeight = index * rowHeight;
             PaddedSheetHeight = sheetHeight > SheetViewHeight ? sheetHeight : SheetViewHeight;
@@ -312,7 +328,7 @@ namespace FlexTable.ViewModel
         {
             isPreviewing = false;
             UpdateRows(mainPageViewModel.ExplorationViewModel.ViewStatus);
-            view.TableView.TableScrollViewer.ChangeView(null, 0, null);
+            // TODO view.TableView.TableScrollViewer.ChangeView(null, 0, null);
         }
 
         public void UpdateCellXPosition()
@@ -325,11 +341,13 @@ namespace FlexTable.ViewModel
                 {
                     columnViewModel.IsXDirty = false;
 
+                    /*
                     foreach(RowPresenter rowPresenter in rowPresenters) {
                         sb.Children.Add(
                             Util.Animator.Generate(rowPresenter.CellPresenters[columnViewModel.Index], "(Canvas.Left)", columnViewModel.X)
                             );
                     }
+                    */
                 }
             }
 

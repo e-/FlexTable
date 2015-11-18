@@ -24,20 +24,24 @@ namespace FlexTable.View
 {
     public sealed partial class TableView : UserControl
     {
+        public TableViewModel ViewModel { get { return (TableViewModel)DataContext;} }
+        
+        /*public Canvas AllRowsTableCanvas => AllRowsCanvasElement;
+        public Canvas GroupByTableCanvas { get { return TableCanvasElement; } }
+        public Grid ScrollViewerContentWrapper { get { return ScrollViewerContentWrapperElement; } }*/
+        public ColumnHeaderPresenter TopColumnHeader { get { return TopColumnHeaderElement; } }
+        public ColumnHeaderPresenter BottomColumnHeader { get { return BottomColumnHeaderElement; } }
+        public RowHeaderPresenter RowHeaderPresenter { get { return RowHeaderPresenterElement; } }
+        public GuidelinePresenter GuidelinePresenter { get { return GuidlineElement; } }
+        /*public ScrollViewer TableScrollViewer { get { return TableScrollViewerElement; } }*/
+        public ColumnIndexer ColumnIndexer { get { return ColumnIndexerElement; } }
+        public ColumnHighlighter ColumnHighlighter { get { return ColumnHighlighterElement; } }
+        public ScrollViewer TableScrollViewer { get; set; }
+
         Drawable drawable = new Drawable()
         {
             IgnoreSmallStrokes = false
         };
-
-        public Canvas AllRowsTableCanvas => AllRowsCanvasElement;
-        public Canvas GroupByTableCanvas { get { return TableCanvasElement; } }
-        public Grid ScrollViewerContentWrapper { get { return ScrollViewerContentWrapperElement; } }
-        public ColumnHeaderPresenter TopColumnHeader { get { return TopColumnHeaderElement; } }
-        public ColumnHeaderPresenter BottomColumnHeader { get { return BottomColumnHeaderElement; } }
-        public RowHeaderPresenter RowHeaderPresenter { get { return RowHeaderPresenterElement; } }
-        public ScrollViewer TableScrollViewer { get { return TableScrollViewerElement; } }
-        public ColumnIndexer ColumnIndexer { get { return ColumnIndexerElement; } }
-        public ColumnHighlighter ColumnHighlighter { get { return ColumnHighlighterElement; } }
 
         DispatcherTimer timer = new DispatcherTimer()
         {
@@ -51,7 +55,39 @@ namespace FlexTable.View
             
             drawable.Attach(SheetView, StrokeGrid, NewStrokeGrid);
             drawable.StrokeAdded += RecognizeStrokes;
-            timer.Tick += timer_Tick;
+            timer.Tick += timer_Tick;            
+        }
+
+        public void Initialize()
+        {
+            TableScrollViewer = GetScrollViewer(TableViewer);
+
+            TableScrollViewer.ViewChanged += ScrollViewer_ViewChanged;
+        }
+
+        public ScrollViewer GetScrollViewer(DependencyObject o)
+        {
+            // Return the DependencyObject if it is a ScrollViewer
+            if (o is ScrollViewer)
+            {
+                return o as ScrollViewer;
+            }
+
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(o); i++)
+            {
+                var child = VisualTreeHelper.GetChild(o, i);
+
+                var result = GetScrollViewer(child);
+                if (result == null)
+                {
+                    continue;
+                }
+                else
+                {
+                    return result;
+                }
+            }
+            return null;
         }
 
         async void timer_Tick(object sender, object e)
@@ -61,8 +97,10 @@ namespace FlexTable.View
                 return;
 
             IReadOnlyList<InkStroke> strokes = this.inkManager.GetStrokes();
+            
             Double centerX = strokes[0].BoundingRect.X + strokes[0].BoundingRect.Width / 2 -
                 (Double)App.Current.Resources["RowHeaderWidth"] + TableScrollViewer.HorizontalOffset;
+
             TableViewModel tableViewModel = this.DataContext as TableViewModel;
             ColumnViewModel selectedColumnViewModel = null;
 
@@ -127,21 +165,7 @@ namespace FlexTable.View
             drawable.RemoveAllStrokes();
         }
 
-        public void AddGuidelines(Int32 count)
-        {
-            GuidelineElement.Children.Clear();
-            if (count < 50) count = 50;
-
-            for (Int32 i = 0; i < count - 1; ++i)
-            {
-                Rectangle rectangle = new Rectangle()
-                {
-                    Style = (Style)App.Current.Resources["RowGuidelineStyle" + (i % 2).ToString()]
-                };
-                GuidelineElement.Children.Add(rectangle);
-            }
-        }
-
+        
         void RecognizeStrokes(InkManager inkManager)
         {
             timer.Start();
@@ -151,7 +175,7 @@ namespace FlexTable.View
         public void ScrollToColumnViewModel(ColumnViewModel columnViewModel)
         {
             TableViewModel tableViewModel = this.DataContext as TableViewModel;
-            Double offset = TableScrollViewerElement.HorizontalOffset,
+            Double offset = TableScrollViewer.HorizontalOffset,
                    width = tableViewModel.SheetViewWidth,
                    x1 = columnViewModel.X,
                    x2 = columnViewModel.X + columnViewModel.Width;
@@ -169,11 +193,11 @@ namespace FlexTable.View
 
             if (to < 0) to = 0;
 
-            TableScrollViewerElement.ChangeView(to, null, null);
+            TableScrollViewer.ChangeView(to, null, null);
 
             if (to == null)
             {
-                tableViewModel.ScrollLeft = TableScrollViewerElement.HorizontalOffset;
+                tableViewModel.ScrollLeft = TableScrollViewer.HorizontalOffset;
             }
             else
             {
@@ -188,6 +212,7 @@ namespace FlexTable.View
             ScrollViewer sv = sender as ScrollViewer;
 
             RowHeaderPresenterElement.VerticalOffset = sv.VerticalOffset;
+            GuidlineElement.VerticalOffset = sv.VerticalOffset;
             TopColumnHeader.HorizontalOffset = sv.HorizontalOffset;
             BottomColumnHeader.HorizontalOffset = sv.HorizontalOffset;
 
@@ -198,7 +223,7 @@ namespace FlexTable.View
         
         public void ShowAllRowsCanvas()
         {
-            AllRowsCanvasElement.Visibility = Visibility.Visible;
+            //AllRowsCanvasElement.Visibility = Visibility.Visible;
 
             HideAllRowsCanvasStoryboard.Pause();
             ShowAllRowsCanvasStoryboard.Begin();
@@ -208,7 +233,7 @@ namespace FlexTable.View
 
         public void ShowGroupByTableCanvas()
         {
-            TableCanvasElement.Visibility = Visibility.Visible;
+            //TableCanvasElement.Visibility = Visibility.Visible;
 
             HideTableCanvasStoryboard.Pause();
             ShowTableCanvasStoryboard.Begin();
@@ -218,12 +243,12 @@ namespace FlexTable.View
 
         private void HideAllRowsCanvasStoryboard_Completed(object sender, object e)
         {
-            AllRowsCanvasElement.Visibility = Visibility.Collapsed;
+            //AllRowsCanvasElement.Visibility = Visibility.Collapsed;
         }
 
         private void HideTableCanvasStoryboard_Completed(object sender, object e)
         {
-            GroupByTableCanvas.Visibility = Visibility.Collapsed;
+            //GroupByTableCanvas.Visibility = Visibility.Collapsed;
         }
     }
 }

@@ -10,42 +10,64 @@
     mc:Ignorable="d"
     d:DesignHeight="300"
     d:DesignWidth="400"
-    
+    Loaded="UserControl_Loaded"
     >
-    <!--Loaded="UserControl_Loaded"-->
-    <!--<UserControl.Resources>
-        <util:BooleanToInvertedOpacityConverter x:Name="BooleanToInvertedOpacityConverter" />
-        
-        <Storyboard x:Name="UpdateStoryboard">
-            <DoubleAnimation Storyboard.TargetName="CompositeTransform" Storyboard.TargetProperty="TranslateY" 
-                             To="{Binding Y}" Duration="00:00:00.3" EasingFunction="{StaticResource QuarticEaseInOut}">
-                
-            </DoubleAnimation>
-            <DoubleAnimation Storyboard.TargetName="Wrapper" Storyboard.TargetProperty="Opacity" 
-                             To="{Binding IsFilteredOut, Converter={StaticResource BooleanToInvertedOpacityConverter}}" 
-                             Duration="00:00:00.3" EasingFunction="{StaticResource QuarticEaseInOut}">
-            </DoubleAnimation>
-        </Storyboard>
-    </UserControl.Resources>-->
-    <ListView ItemsSource="{Binding Cells}"
-              SelectionMode="None">
-        <ListView.ItemsPanel>
+    <UserControl.Resources>
+        <util:IndexToRowBackgroundConverter x:Name="IndexToRowBackgroundConverter" />
+    </UserControl.Resources>
+
+
+    <!--<ItemsControl ItemsSource="{Binding Cells}"
+              Height="{StaticResource RowHeight}"
+              Margin="0"
+              Padding="0"
+              Background="{Binding Path=Index, Converter={StaticResource IndexToRowBackgroundConverter}, Mode=OneWay}"
+                  IsHitTestVisible="False"
+              >
+        <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
-                <StackPanel Orientation="Horizontal" />
+                <ItemsStackPanel Orientation="Horizontal" />
             </ItemsPanelTemplate>
-        </ListView.ItemsPanel>
-        <ListView.RenderTransform>
-            <CompositeTransform x:Name="CompositeTransform"/>
-        </ListView.RenderTransform>
-        <ListView.ItemTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.ItemTemplate>
             <DataTemplate x:DataType="model:Cell">
                 <TextBlock Text="{x:Bind Path=RawContent}" Width="{x:Bind Path=ColumnViewModel.Width}" Style="{StaticResource CellStyle}"/>
             </DataTemplate>
+        </ItemsControl.ItemTemplate>
+    </ItemsControl>-->
+
+    <!--<TextBlock Text="{Binding Path=Test}"></TextBlock>-->
+    <!--<ListView ItemsSource="{x:Bind Path=RowViewModel.Cells, Mode=OneWay}"
+              SelectionMode="None"
+              Height="{StaticResource RowHeight}"
+              Margin="0"
+              Padding="0"              
+              >
+        <ListView.ItemContainerStyle>
+            <Style TargetType="ListViewItem">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ListViewItem">
+                            <ContentPresenter Margin="0" />
+                            
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="Padding" Value="0" />
+                <Setter Property="Margin" Value="0" />
+            </Style>
+        </ListView.ItemContainerStyle>
+        <ListView.ItemsPanel>
+            <ItemsPanelTemplate>
+                <ItemsStackPanel Orientation="Horizontal" />
+            </ItemsPanelTemplate>
+        </ListView.ItemsPanel
+        <ListView.ItemTemplate>
+            <DataTemplate>
+                x:DataType="model:Cell"
+                <TextBlock>abc</TextBlock>
+                <TextBlock Text="{x:Bind Path=RawContent}" Width="{x:Bind Path=ColumnViewModel.Width}" Style="{StaticResource CellStyle}"/>
+            </DataTemplate>
         </ListView.ItemTemplate>
-    </ListView>
-    <!--<StackPanel Orientation="Horizontal" x:Name="Wrapper">
-        <StackPanel.RenderTransform>
-            <CompositeTransform x:Name="CompositeTransform"/>
-        </StackPanel.RenderTransform>
-    </StackPanel>-->
+    </ListView>-->
 </UserControl>

@@ -20,15 +20,17 @@ namespace FlexTable.View
 {
     public sealed partial class RowPresenter : UserControl
     {
-        public ViewModel.RowViewModel RowViewModel { get { return this.DataContext as RowViewModel; } }
+        public RowViewModel RowViewModel { get { return (RowViewModel)DataContext; } }
 
-        private List<TextBlock> cellPresenters = new List<TextBlock>();
-        public List<TextBlock> CellPresenters { get { return cellPresenters; } }
+        /*private List<TextBlock> cellPresenters = new List<TextBlock>();
+        public List<TextBlock> CellPresenters { get { return cellPresenters; } }*/
 
+        /*
         public Double Y
         {
             set { CompositeTransform.TranslateY = value; }
         }
+        */
 
         public RowPresenter()
         {
@@ -37,13 +39,12 @@ namespace FlexTable.View
 
         public void Update()
         {
-            //UpdateStoryboard.Begin();
-            UpdateCellsWithoutAnimation();
+            //UpdateCellsWithoutAnimation();
         }
 
         public void UpdateCellsWithoutAnimation()
         {
-            Int32 index = 0;
+            /*Int32 index = 0;
             foreach (Model.Cell cell in RowViewModel.Cells.OrderBy(c => c.ColumnViewModel.X))
             {
                 cellPresenters[index].Text = cell.RawContent;
@@ -55,10 +56,15 @@ namespace FlexTable.View
                     cellPresenters[index].Opacity = 1;
 
                 index++;
-            }
+            }*/
         }
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        /*private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             Style style = App.Current.Resources["CellStyle"] as Style;
 
@@ -79,6 +85,6 @@ namespace FlexTable.View
                 if (cell.ColumnViewModel.IsHidden)
                     cellPresenter.Opacity = 0.15;
             }
-        }
+        } */
     }
 }

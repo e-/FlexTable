@@ -16,7 +16,6 @@
             <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden" 
                             VerticalScrollMode="Enabled" Height="{Binding SheetViewHeight}" Name="HeaderScrollViewer">
                 <Grid>
-                    <StackPanel x:Name="GuidelineElement"></StackPanel>
                     <StackPanel x:Name="NumberElement0"></StackPanel>
                     <StackPanel x:Name="NumberElement1" Visibility="Collapsed"></StackPanel>
                 </Grid>                
