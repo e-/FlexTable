@@ -327,42 +327,6 @@ namespace FlexTable.Crayon.Chart
             drawable.RemoveAllStrokes();
         }
 
-        /*private void LegendHandleRectangleElement_RectanglePointerPressed(object sender, object e, object datum, int index)
-        {
-
-            if (viewModel.IsLassoSelecting)
-            {
-                viewModel.UnselectLasso();
-                if (LassoUnselected != null) LassoUnselected(null, null, 0);
-            }
-
-            viewModel.SelectCategory((datum as LegendDataPoint).Item1);
-            CircleElement.Update(true, false);
-            if (viewModel.IsLegendVisible)
-            {
-                LegendRectangleElement.Update(true);
-                LegendTextElement.Update(true);
-            }
-
-            if (CategoryPointerPressed != null)
-                CategoryPointerPressed(sender, datum, index);
-        }
-
-        private void LegendHandleRectangleElement_RectanglePointerReleased(object sender, object e, object datum, int index)
-        {
-            viewModel.UnselectCategory((datum as LegendDataPoint).Item1);
-            CircleElement.Update(true, false);
-            if (viewModel.IsLegendVisible)
-            {
-                LegendRectangleElement.Update(true);
-                LegendTextElement.Update(true);
-            }
-
-            if (CategoryPointerReleased != null)
-                CategoryPointerReleased(sender, datum, index);
-
-        }*/
-
         void RectangleElement_RectangleTapped(object sender, object e, object datum, Int32 index)
         {
             TappedRoutedEventArgs args = e as TappedRoutedEventArgs;
@@ -540,6 +504,22 @@ namespace FlexTable.Crayon.Chart
             IndicatorTextElement.Update();
             HorizontalAxis.Update();
             VerticalAxis.Update();
+        }
+
+        public void ClearSelection()
+        {
+            selectedKeys.Clear();
+
+            if (SelectionChanged != null)
+                SelectionChanged(null, null, selectedKeys, 0);
+
+            RectangleElement.Update(true);
+            IndicatorTextElement.Update(true);
+            if (LegendVisibility == Visibility.Visible)
+            {
+                LegendRectangleElement.Update(true);
+                LegendTextElement.Update(true);
+            }
         }
     }
 }

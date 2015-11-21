@@ -56,7 +56,7 @@
                              />
         </Storyboard>
 
-        <Storyboard x:Name="SelectStoryboard" Completed="SelectStoryboard_Completed">
+        <Storyboard x:Name="SelectStoryboard">
             <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.8"
                              Storyboard.TargetName="UserControl" Storyboard.TargetProperty="(Canvas.Top)" To="0">
             </DoubleAnimation>
@@ -116,7 +116,40 @@
                              Storyboard.TargetName="BottomToolBar" Storyboard.TargetProperty="Opacity" To="0">
             </DoubleAnimation>
         </Storyboard>
+
+        <Storyboard x:Name="ShowSelectionIndicatorStoryboard">
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="SelectionIndicator"
+                                           Storyboard.TargetProperty="Visibility">
+                <DiscreteObjectKeyFrame KeyTime="0" Value="Visible" />
+            </ObjectAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="SelectionIndicatorTemporaryTransform"
+                                           Storyboard.TargetProperty="X">
+                <DiscreteObjectKeyFrame KeyTime="0" Value="0" />
+            </ObjectAnimationUsingKeyFrames>
+            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.3"
+                             Storyboard.TargetName="SelectionIndicator" Storyboard.TargetProperty="Opacity" To="1">
+            </DoubleAnimation>
+        </Storyboard>
+
+        <Storyboard x:Name="HideSelectionIndicatorStoryboard">
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="SelectionIndicator"
+                                           Storyboard.TargetProperty="Visibility">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.5" Value="Collapsed" />
+            </ObjectAnimationUsingKeyFrames>
+            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.3"
+                             Storyboard.TargetName="SelectionIndicator" Storyboard.TargetProperty="Opacity" To="0">
+            </DoubleAnimation>
+        </Storyboard>
         
+        <Storyboard x:Name="ResetSelectionIndicatorPositionStoryboard">
+            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.3"
+                             Storyboard.TargetName="SelectionIndicator" Storyboard.TargetProperty="Opacity" To="1">
+            </DoubleAnimation>
+            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.3"
+                             Storyboard.TargetName="SelectionIndicatorTemporaryTransform" Storyboard.TargetProperty="X" To="0">
+            </DoubleAnimation>
+        </Storyboard>
+
         <Color x:Key="LabelForegroundColor">#333</Color>
         <Color x:Key="LabelBackgroundColor">#fff</Color>
         <Color x:Key="ActivatedLabelForegroundColor">#000</Color>
@@ -134,8 +167,8 @@
             </Setter>
         </Style>
     </UserControl.Resources>
-    
-    <StackPanel Opacity="0" x:Name="Wrapper" Tapped="Wrapper_Tapped" 
+    <!--Tapped="Wrapper_Tapped"-->
+    <StackPanel Opacity="0" x:Name="Wrapper"
                 ManipulationMode="TranslateY" 
                 ManipulationDelta="Wrapper_ManipulationDelta"
                 ManipulationCompleted="Wrapper_ManipulationCompleted">
@@ -221,6 +254,30 @@
                 </ScrollViewer>
                 <StackPanel x:Name="ParagraphLabelContainer" Height="50" Orientation="Horizontal" HorizontalAlignment="Center"></StackPanel>
             </StackPanel>
+
+            <Border Background="#ddd" CornerRadius="10" HorizontalAlignment="Center" VerticalAlignment="Top" 
+                    x:Name="SelectionIndicator"
+                    ManipulationMode="TranslateX" ManipulationDelta="SelectionIndicator_ManipulationDelta"
+                    ManipulationCompleted="SelectionIndicator_ManipulationCompleted"
+                    Visibility="Collapsed" Opacity="0">
+                <Border.RenderTransform>
+                    <TransformGroup>
+                        <TranslateTransform Y="400" X="-100" />
+                        <TranslateTransform x:Name="SelectionIndicatorTemporaryTransform" />
+                    </TransformGroup>
+                </Border.RenderTransform>
+                <Grid>
+                    <Border Background="#eee" CornerRadius="10">
+                        <Border.RenderTransform>
+                            <TranslateTransform X="0" Y="-1" />
+                        </Border.RenderTransform>
+                    </Border>
+                    <TextBlock Margin="15 10" FontSize="16">
+                        <Run x:Name="SelectedRowCountIndicator" FontWeight="Bold" Foreground="{StaticResource HighlightBrush1}"></Run>
+                        <Run x:Name="SelectionMessage"/>
+                    </TextBlock>
+                </Grid>
+            </Border>
             
             <StackPanel HorizontalAlignment="Right" VerticalAlignment="Top" Orientation="Horizontal" x:Name="TopToolBar" Opacity="0">
                 <Button Style="{StaticResource FlatIconButtonStyle}" Margin="0 0 2 0" Tapped="Select_Tapped">&#xf00c;</Button>

@@ -65,8 +65,7 @@ namespace FlexTable.View
         {
             this.InitializeComponent();
 
-            /*BarChartElement.BarPointerPressed += BarChartElement_BarPointerPressed;
-            BarChartElement.BarPointerReleased += BarChartElement_BarPointerReleased;*/
+            BarChartElement.SelectionChanged += BarChartElement_SelectionChanged;
 
             GroupedBarChartElement.BarPointerPressed += GroupedBarChartElement_BarPointerPressed;
             GroupedBarChartElement.BarPointerReleased += BarChartElement_BarPointerReleased;
@@ -78,6 +77,26 @@ namespace FlexTable.View
             ScatterplotElement.CategoryPointerReleased += ScatterplotElement_CategoryPointerReleased;
             ScatterplotElement.LassoSelected += ScatterplotElement_LassoSelected;
             ScatterplotElement.LassoUnselected += ScatterplotElement_LassoUnselected;
+        }
+
+        private void BarChartElement_SelectionChanged(object sender, object e, object datum, int index)
+        {
+            List<BarChartDatum> selection = (datum as List<Object>).Select(d => d as BarChartDatum).ToList();
+            Int32 count = selection.Count;
+
+            if(count == 0)
+            {
+                ShowSelectionIndicatorStoryboard.Pause();
+                HideSelectionIndicatorStoryboard.Begin();
+            }
+            else
+            {
+                HideSelectionIndicatorStoryboard.Pause();
+                ShowSelectionIndicatorStoryboard.Begin();
+                SelectedRowCountIndicator.Text = count.ToString();
+                SelectionMessage.Text = count == 1 ? "row selected" : "rows selected";
+            }
+            
         }
 
         #region Visualization Event Handlers
@@ -132,15 +151,7 @@ namespace FlexTable.View
             Tuple<Object, Object, Double, Object> datum = d as Tuple<Object, Object, Double, Object>;
             pvm.MainPageViewModel.TableViewModel.PreviewRows(pvm.GroupedBarChartRowSelecter(datum.Item1 as Category, datum.Item4 as Category));
         }
-
-        /*void BarChartElement_BarPointerPressed(object sender, object d, Int32 index)
-        {
-            PageViewModel pvm = this.DataContext as PageViewModel;
-            
-            BarChartDatum datum = d as BarChartDatum;
-            pvm.MainPageViewModel.TableViewModel.PreviewRows(pvm.BarChartRowSelecter(datum.Key as Category));
-        }*/
-
+        
         void BarChartElement_BarPointerReleased(object sender, object e, object d, Int32 index)
         {
             PageViewModel pvm = this.DataContext as PageViewModel;
@@ -151,14 +162,6 @@ namespace FlexTable.View
         {
             ShowStoryboardElement.Begin();
         }
-
-        private void Wrapper_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            /*if(e.PointerDeviceType == PointerDeviceType.Touch)
-                PageViewModel.Tapped(this, false);
-                */
-        }
-        
         #endregion
         
         public void MoveToSelectedPosition(Boolean isUndo)
@@ -170,11 +173,6 @@ namespace FlexTable.View
 
             ShowTopToolBar.Pause();
             HideTopToolBar.Begin();
-        }
-
-        private void SelectStoryboard_Completed(object sender, object e)
-        {
-            
         }
 
         public void MoveToUnselectedPosition()
@@ -539,6 +537,30 @@ namespace FlexTable.View
             dataPackage.SetBitmap(RandomAccessStreamReference.CreateFromStream(stream));
 
             Clipboard.SetContent(dataPackage);
+        }
+
+        const Double SelectionDismissThreshold = 100;
+
+        private void SelectionIndicator_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            Double delta = e.Cumulative.Translation.X;
+            if (delta < 0) delta = 0;
+            if (delta > SelectionDismissThreshold) delta = SelectionDismissThreshold;
+            SelectionIndicatorTemporaryTransform.X = delta;
+            SelectionIndicator.Opacity = (SelectionDismissThreshold - delta) / SelectionDismissThreshold;
+        }
+
+        private void SelectionIndicator_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
+        {
+            Double delta = e.Cumulative.Translation.X;
+            if (delta > SelectionDismissThreshold)
+            {
+                BarChartElement.ClearSelection();
+            }
+            else
+            {
+                ResetSelectionIndicatorPositionStoryboard.Begin();
+            }
         }
     }
 }

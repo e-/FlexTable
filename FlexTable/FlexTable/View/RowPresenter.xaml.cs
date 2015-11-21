@@ -61,7 +61,7 @@ namespace FlexTable.View
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-
+            
         }
 
         /*private void UserControl_Loaded(object sender, RoutedEventArgs e)

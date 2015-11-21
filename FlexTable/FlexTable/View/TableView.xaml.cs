@@ -95,7 +95,7 @@ namespace FlexTable.View
             timer.Stop();
             if (this.inkManager == null)
                 return;
-
+            
             IReadOnlyList<InkStroke> strokes = this.inkManager.GetStrokes();
             
             Double centerX = strokes[0].BoundingRect.X + strokes[0].BoundingRect.Width / 2 -

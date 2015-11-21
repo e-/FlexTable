@@ -105,10 +105,10 @@ namespace FlexTable.ViewModel
 
             
             
-            /*ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[0]);
+            ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[1]);
             ExplorationViewModel.StatusChanged(ExplorationViewModel.TopPageView.PageViewModel, ExplorationViewModel.TopPageView, false);
 
-            ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[4]);
+            /*ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[4]);
             ExplorationViewModel.StatusChanged(ExplorationViewModel.TopPageView.PageViewModel, ExplorationViewModel.TopPageView, false);
             */
         }    

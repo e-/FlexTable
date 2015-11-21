@@ -166,8 +166,7 @@
                                   SelectionMode="None"
                                   Height="{StaticResource RowHeight}"
                                   Margin="0"
-                                  Width="{x:Bind Path=MainPageViewModel.SheetViewModel.SheetWidth}"
-                                  
+                                  Width="{x:Bind Path=MainPageViewModel.SheetViewModel.SheetWidth}"                                  
                                   IsHitTestVisible="False"
                                   Padding="0">
                             <!-- -Background="{x:Bind Path=Index, Converter={StaticResource IndexToRowBackgroundConverter}, Mode=OneWay}" -->
