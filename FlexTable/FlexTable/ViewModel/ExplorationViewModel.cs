@@ -66,22 +66,40 @@ namespace FlexTable.ViewModel
             // 복제한 view status를 추가 한 다음 
             pageViewModel.ViewStatus = selectedViewStatus;
 
+            pageViewModel.State = PageViewModel.PageViewState.Previewing;
+
             // 이걸로 pageView를 채움
             pageViewModel.Reflect(false);
+            TopPageView.ReflectState();
         }
 
         public void CancelPreviewColumn()
         {
             previewingColumnViewModel = null;
-            TopPageView.PageViewModel.HideSummary();
+            if (TopPageView.PageViewModel.State == PageViewModel.PageViewState.Previewing)
+            {
+                TopPageView.PageViewModel.State = PageViewModel.PageViewState.Empty;
+                TopPageView.PageViewModel.Reflect(false);
+                TopPageView.ReflectState();
+            }
         }
 
-        public void StatusChanged(PageViewModel pageViewModel, PageView pageView, Boolean isUndo)
+        /// <summary>
+        /// 바뀐 state는 이미 pageViewModel.State에 할당된 상태임. 이전 상태는 OldState에서 확인할 수 있음
+        /// </summary>
+        /// <param name="pageViewModel"></param>
+        /// <param name="pageView"></param>
+        /// <param name="isUndo"></param>
+        public void PageViewStateChanged(PageViewModel pageViewModel, PageView pageView/*, Boolean isUndo*/)
         {
-            if(isUndo && selectedPageViews.IndexOf(pageView) < 0) // undo 하는 경우
+            PageViewModel.PageViewState state = pageViewModel.State,
+                oldState = pageViewModel.OldState;
+            
+            if(oldState == PageViewModel.PageViewState.Undoing && state == PageViewModel.PageViewState.Selected) // undo 하는 경우
             {
+                Debug.Assert(selectedPageViews.IndexOf(pageView) < 0);
+
                 selectedPageViews.Add(pageView);
-                pageViewModel.IsSelected = true;
 
                 // 차트 새로 반영할 필요는 없다 이미 있으므로
                 // pageViewModel.Reflect(true);
@@ -95,19 +113,20 @@ namespace FlexTable.ViewModel
                 view.TableView.ScrollToColumnViewModel(mainPageViewModel.SheetViewModel.ColumnViewModels.OrderBy(c => c.Order).First());
 
                 // Preview 풀기
-                mainPageViewModel.TableViewModel.CancelIndexing();
+                mainPageViewModel.TableViewModel.CancelIndexing(false);
 
                 // Page View 아래로 보내기                    
-                pageView.MoveToSelectedPosition(isUndo);
-                pageView.EnterSelectedMode();
+                pageView.ReflectState();
             }
-            else if (pageView == TopPageView && previewingColumnViewModel != null && ViewStatus.SelectedColumnViewModels.IndexOf(previewingColumnViewModel) < 0)
+            else if (state == PageViewModel.PageViewState.Selected) // 현재 선택하는 경우
             {
+                Debug.Assert(pageView == TopPageView);
+                Debug.Assert(previewingColumnViewModel != null);
+                Debug.Assert(ViewStatus.SelectedColumnViewModels.IndexOf(previewingColumnViewModel) < 0); // 이미 선택한 걸 또 선택하는 경우는 없도록 이 함수 호출전에 미리 체크해야함
+
                 // 현재 탭된 컬럼의 viewStatus에는 previewingColumn이 추가되어 있는 상태임.
                 selectedPageViews.Add(pageView);
 
-                pageViewModel.IsSelected = true;
-                                
                 // 차트 새로 반영 (타이틀이 업데이트 될 것임)
                 pageViewModel.Reflect(true);
 
@@ -115,28 +134,27 @@ namespace FlexTable.ViewModel
                 view.ExplorationView.AddNewPage();
 
                 mainPageViewModel.SheetViewModel.UpdateGroup(ViewStatus);
-                mainPageViewModel.TableViewModel.Reflect(ViewStatus);               
+                //mainPageViewModel.TableViewModel.Reflect(ViewStatus);               
                 
                 view.TableView.ScrollToColumnViewModel(mainPageViewModel.SheetViewModel.ColumnViewModels.OrderBy(c => c.Order).First());
 
                 // Preview 풀기
-                mainPageViewModel.TableViewModel.CancelIndexing();
+                mainPageViewModel.TableViewModel.CancelIndexing(false);
 
                 // Page View 아래로 보내기                    
-                pageView.MoveToSelectedPosition(isUndo);
-                pageView.EnterSelectedMode();
+                pageView.ReflectState();
+                //pageView.MoveToSelectedPosition(isUndo);
+                //pageView.EnterSelectedMode();
             }
-            else if(pageView == TopPageView && ViewStatus.SelectedColumnViewModels.IndexOf(previewingColumnViewModel) >= 0) {
+            /*else if(pageView == TopPageView && ViewStatus.SelectedColumnViewModels.IndexOf(previewingColumnViewModel) >= 0) {
                 // 이미 선택된 것 또 선택하는 경우
-            }
-            else if(pageView.PageViewModel.IsSelected) // 선택해제하는 경우
+            }*/
+            else if(state == PageViewModel.PageViewState.Undoing) // 선택해제하는 경우
             {
                 selectedPageViews.Remove(pageView);
 
-                pageViewModel.IsSelected = false;
-
                 // Preview 풀기 (만약 되어있다면)
-                mainPageViewModel.TableViewModel.CancelIndexing();
+                mainPageViewModel.TableViewModel.CancelIndexing(false);
 
                 // 기존 탑 페이지 지우고 이걸 탑 페이지로 지정
                 view.ExplorationView.RemoveTopPage(pageView);
@@ -150,8 +168,9 @@ namespace FlexTable.ViewModel
                 view.TableView.ScrollToColumnViewModel(mainPageViewModel.SheetViewModel.ColumnViewModels.OrderBy(c => c.Order).First());
 
                 // Page View 위로 올리기
-                pageView.MoveToUnselectedPosition();
-                pageView.EnterUndoMode();
+                pageView.ReflectState();
+                /*pageView.MoveToUnselectedPosition();
+                pageView.EnterUndoMode();*/
             }            
         }        
     }

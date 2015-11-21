@@ -23,29 +23,37 @@ namespace FlexTable.ViewModel
         const Int32 LineChartMaximumPointNumberInASeries = 14;
         const Int32 ScatterplotMaximumCategoryNumber = BarChartMaximumRecordNumber;
 
+        public enum PageViewState { Empty, Previewing, Selected, Undoing }
+
         MainPageViewModel mainPageViewModel;
         public MainPageViewModel MainPageViewModel => mainPageViewModel;
 
         PivotTableViewModel pivotTableViewModel;
-        public PivotTableViewModel PivotTableViewModel => pivotTableViewModel; 
-        
-        /// <summary>
-        /// 현재 preview가 보이고 있는 상태
-        /// </summary>
-        private Boolean isPreviewVisible = false; 
-        public Boolean IsPreviewVisible { get { return isPreviewVisible; } set { isPreviewVisible = value; OnPropertyChanged(nameof(IsPreviewVisible)); } }
-        
-        private Boolean isUndoing = false;
-        public Boolean IsUndoing { get { return isUndoing; } set { isUndoing = value; OnPropertyChanged(nameof(IsUndoing)); } }
-        
-        /// <summary>
-        /// 아무것도 선택되어 있지 않고 초기 상태면 (select a column to preview라는 메세지가 보이는) true
-        /// </summary>
-        private Boolean isEmpty = true;
-        public Boolean IsEmpty { get { return isEmpty; } set { isEmpty = value; OnPropertyChanged(nameof(IsEmpty)); } }
+        public PivotTableViewModel PivotTableViewModel => pivotTableViewModel;
+
+        public PageViewState OldState { get; set; } = PageViewState.Empty;
+
+        private PageViewState state = PageViewState.Empty;
+        public PageViewState State
+        {
+            get { return state; }
+            set
+            {
+                OldState = state;
+                state = value;
+                OnPropertyChanged(nameof(IsPreviewing));
+                OnPropertyChanged(nameof(IsUndoing));
+                OnPropertyChanged(nameof(IsEmpty));
+            }
+        }
+
+        public Boolean IsPreviewing { get { return state == PageViewState.Previewing; } }
+        public Boolean IsUndoing { get { return state == PageViewState.Undoing; } }
+        public Boolean IsEmpty { get { return state == PageViewState.Empty; } }
+        public Boolean IsSelected { get { return state == PageViewState.Selected; } }
 
         private Boolean isBarChartVisible = false;
-        public Boolean IsBarChartVisible { get { return isBarChartVisible; } set { isBarChartVisible = value; OnPropertyChanged("IsBarChartVisible"); } }
+        public Boolean IsBarChartVisible { get { return isBarChartVisible; } set { isBarChartVisible = value; OnPropertyChanged(nameof(IsBarChartVisible)); } }
 
         private Boolean isLineChartVisible = false;
         public Boolean IsLineChartVisible { get { return isLineChartVisible; } set { isLineChartVisible = value; OnPropertyChanged(nameof(IsLineChartVisible)); } }
@@ -83,11 +91,7 @@ namespace FlexTable.ViewModel
         private Boolean isPrimaryUndoMessageVisible = true;
         public Boolean IsPrimaryUndoMessageVisible { get { return isPrimaryUndoMessageVisible; } set { isPrimaryUndoMessageVisible = value; OnPropertyChanged(nameof(IsPrimaryUndoMessageVisible)); } }
 
-        /// <summary>
-        /// 현재 페이지가 선택된 상태
-        /// </summary>
-        private Boolean isSelected = false;
-        public Boolean IsSelected { get { return isSelected; } set { isSelected = value; OnPropertyChanged(nameof(IsSelected)); } }
+        
         
         public Func<Category, Func<RowViewModel, Boolean>> BarChartRowSelecter { get; set; }
         public Func<Category, Category, Func<RowViewModel, Boolean>> GroupedBarChartRowSelecter { get; set; }
@@ -103,30 +107,24 @@ namespace FlexTable.ViewModel
             this.mainPageViewModel = mainPageViewModel;
             this.pageView = pageView;
             this.pivotTableViewModel = new PivotTableViewModel(mainPageViewModel, pageView.PivotTableView);
-        }
+        }        
 
-        public void HideSummary()
+        /// <summary>
+        /// 상태가 바뀌었으면 일단 exploration에 보고를 한 후 거기서 reflect 메소드를 호출해서 이 페이지 뷰와 뷰모델에 반영한다.
+        /// </summary>
+        /// <param name="pageView"></param>
+        /// <param name="isUndo"></param>
+        public void StateChanged(PageView pageView)
         {
-            IsPreviewVisible = false;
-            IsEmpty = true;
-        }
-
-        public void StatusChanged(PageView pageView, Boolean isUndo)
-        {
-            mainPageViewModel.ExplorationViewModel.StatusChanged(this, pageView, isUndo);
+            mainPageViewModel.ExplorationViewModel.PageViewStateChanged(this, pageView);
         }
         
+        /// <summary>
+        /// 페이지뷰의 상태가 바꾸면 우선 exploration view에 보고를 한 후 거기서 reflect를 호출함. exploration view에 호출하지 않아도 될 때만 직접 reflect를 해야함
+        /// </summary>
+        /// <param name="trackPreviousParagraph"></param>
         public void Reflect(Boolean trackPreviousParagraph)
         {
-            if(IsUndoing)
-            {
-                pageView.CancelUndoStoryboard.Begin();
-                IsUndoing = false;
-            }
-
-            IsEmpty = false;
-
-            IsPreviewVisible = true;
             IsBarChartVisible = false;
             IsLineChartVisible = false;
             IsDescriptiveStatisticsVisible = false;

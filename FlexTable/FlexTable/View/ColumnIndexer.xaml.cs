@@ -168,7 +168,7 @@ namespace FlexTable.View
 
         private void IndexHelperWrapperElement_PointerExited(object sender, PointerRoutedEventArgs e)
         {
-            TableViewModel.CancelIndexing();
+            TableViewModel.CancelIndexing(true);
             IndexHelperWrapperElement.IsHitTestVisible = false;
             ShowHelperStoryboard.Pause();
             HideHelperStoryboard.Begin();

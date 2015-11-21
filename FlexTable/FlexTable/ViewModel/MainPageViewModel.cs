@@ -5,8 +5,10 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 
@@ -103,11 +105,22 @@ namespace FlexTable.ViewModel
             // 메타데이터 초기화
             ExplorationViewModel.MetadataViewModel.Initialize();
 
-            
-            
-            ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[1]);
-            ExplorationViewModel.StatusChanged(ExplorationViewModel.TopPageView.PageViewModel, ExplorationViewModel.TopPageView, false);
 
+            var dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
+
+
+            ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[1]);
+
+            DispatcherTimer dispatcherTimer = new DispatcherTimer();
+            dispatcherTimer.Tick += (sender, e) =>
+            {
+                dispatcherTimer.Stop();
+                ExplorationViewModel.TopPageView.PageViewModel.State = PageViewModel.PageViewState.Selected;
+                ExplorationViewModel.PageViewStateChanged(ExplorationViewModel.TopPageView.PageViewModel, ExplorationViewModel.TopPageView);
+            };
+            dispatcherTimer.Interval = TimeSpan.FromMilliseconds(500);
+            dispatcherTimer.Start();
+                      
             /*ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[4]);
             ExplorationViewModel.StatusChanged(ExplorationViewModel.TopPageView.PageViewModel, ExplorationViewModel.TopPageView, false);
             */

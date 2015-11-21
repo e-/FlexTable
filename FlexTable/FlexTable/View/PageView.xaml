@@ -56,16 +56,7 @@
                              />
         </Storyboard>
 
-        <Storyboard x:Name="SelectStoryboard">
-            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.8"
-                             Storyboard.TargetName="UserControl" Storyboard.TargetProperty="(Canvas.Top)" To="0">
-            </DoubleAnimation>
-            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.7"
-                             Storyboard.TargetName="ChartWrapper" Storyboard.TargetProperty="Opacity" To="1">
-            </DoubleAnimation>
-        </Storyboard>
-
-        <Storyboard x:Name="UndoSelectStoryboard">
+        <Storyboard x:Name="MoveToSelectedPositionStoryboard">
             <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.7"
                              Storyboard.TargetName="UserControl" Storyboard.TargetProperty="(Canvas.Top)" To="0">
             </DoubleAnimation>
@@ -73,28 +64,55 @@
                              Storyboard.TargetName="ChartWrapper" Storyboard.TargetProperty="Opacity" To="1">
             </DoubleAnimation>
         </Storyboard>
-
-        <Storyboard x:Name="UnselectStoryboard">
+        
+        <Storyboard x:Name="MoveToDefaultPositionStoryboard">
             <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.7"
                              Storyboard.TargetName="UserControl" Storyboard.TargetProperty="(Canvas.Top)" To="{Binding MainPageViewModel.PageOffset}">
             </DoubleAnimation>
         </Storyboard>
 
-        <Storyboard x:Name="UndoStoryboard" Completed="UndoStoryboard_Completed">
+        <Storyboard x:Name="UndoDimmingStoryboard">
             <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.4" BeginTime="00:00:00.2"
-                             Storyboard.TargetName="ChartWrapper" Storyboard.TargetProperty="Opacity" To="0.2">
+                             Storyboard.TargetName="ChartWrapper" Storyboard.TargetProperty="Opacity" To="0.1">
+            </DoubleAnimation>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="UndoMessage"
+                                           Storyboard.TargetProperty="Visibility">
+                <DiscreteObjectKeyFrame KeyTime="0" Value="Visible" />
+            </ObjectAnimationUsingKeyFrames>
+            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.4" BeginTime="00:00:00.2"
+                             Storyboard.TargetName="UndoMessage" Storyboard.TargetProperty="Opacity" To="1">
             </DoubleAnimation>
         </Storyboard>
 
-        <Storyboard x:Name="CancelUndoOpacityStoryboardElement">
+        <Storyboard x:Name="EmptyDimmingStoryboard">
+            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.2"
+                             Storyboard.TargetName="ChartWrapper" Storyboard.TargetProperty="Opacity" To="0">
+            </DoubleAnimation>
             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ChartWrapper"
-                                             Storyboard.TargetProperty="Opacity">
-                <DiscreteObjectKeyFrame KeyTime="0" Value="1" />
+                                           Storyboard.TargetProperty="Visibility">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.2" Value="Collapsed" />
             </ObjectAnimationUsingKeyFrames>
         </Storyboard>
-
+        
+        <Storyboard x:Name="CancelDimmingboard">
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ChartWrapper"
+                                           Storyboard.TargetProperty="Visibility">
+                <DiscreteObjectKeyFrame KeyTime="0" Value="Visible" />
+            </ObjectAnimationUsingKeyFrames>
+            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.2" 
+                             Storyboard.TargetName="ChartWrapper" Storyboard.TargetProperty="Opacity" To="1">
+            </DoubleAnimation>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="UndoMessage"
+                                           Storyboard.TargetProperty="Visibility">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.4" Value="Collapsed" />
+            </ObjectAnimationUsingKeyFrames>
+            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.2"
+                             Storyboard.TargetName="UndoMessage" Storyboard.TargetProperty="Opacity" To="0">
+            </DoubleAnimation>
+        </Storyboard>
+        
         <Storyboard x:Name="ShowTopToolBar">
-            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.4"
+            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.2"
                              Storyboard.TargetName="TopToolBar" Storyboard.TargetProperty="Opacity" To="1">
             </DoubleAnimation>
         </Storyboard>
@@ -279,19 +297,22 @@
                 </Grid>
             </Border>
             
-            <StackPanel HorizontalAlignment="Right" VerticalAlignment="Top" Orientation="Horizontal" x:Name="TopToolBar" Opacity="0">
-                <Button Style="{StaticResource FlatIconButtonStyle}" Margin="0 0 2 0" Tapped="Select_Tapped">&#xf00c;</Button>
-                <Button Style="{StaticResource FlatIconButtonStyle}" Margin="0 0 5 0" Tapped="Clipboard_Tapped">&#xf0ea;</Button>
-            </StackPanel>
+            <Grid HorizontalAlignment="Right" VerticalAlignment="Top" x:Name="TopToolBar" Opacity="0">
+                <Grid.RenderTransform>
+                    <TranslateTransform Y="-8" />
+                </Grid.RenderTransform>
+                <Button Style="{StaticResource TopTriangleIconButtonStyle}" Tapped="Select_Tapped">&#xf00c;</Button>
+                <!--<Button Style="{StaticResource FlatIconButtonStyle}" Margin="0 0 5 0" Tapped="Clipboard_Tapped">&#xf0ea;</Button>-->
+            </Grid>
 
-            <StackPanel HorizontalAlignment="Right" VerticalAlignment="Bottom" Orientation="Horizontal" x:Name="BottomToolBar" Opacity="0" Margin="0 0 0 5">
-                <Button Style="{StaticResource FlatIconButtonStyle}" Margin="0 0 2 0" Tapped="Unselect_Tapped">&#xf00d;</Button>
-                <Button Style="{StaticResource FlatIconButtonStyle}" Margin="0 0 5 0" Tapped="Clipboard_Tapped">&#xf0ea;</Button>
+            <Grid HorizontalAlignment="Right" VerticalAlignment="Bottom" x:Name="BottomToolBar" Opacity="0">
+                <Button Style="{StaticResource BottomTriangleIconButtonStyle}" Tapped="Unselect_Tapped">&#xf00d;</Button>
+                <!--<Button Style="{StaticResource FlatIconButtonStyle}" Margin="0 0 5 0" Tapped="Clipboard_Tapped">&#xf0ea;</Button>-->
                 <!--<Button Style="{StaticResource FlatIconButtonStyle}" Margin="0 0 5 0">&#xf0b2;</Button>-->
-            </StackPanel>
+            </Grid>
 
-            <Border Height="{Binding MainPageViewModel.PageHeight}" Visibility="{Binding IsUndoing, Converter={StaticResource BooleanToVisibilityConverter}}" Padding="20" 
-                    Background="#33FFFFFF" Tapped="Undo_Tapped">
+            <Border Height="{Binding MainPageViewModel.PageHeight}" Opacity="0" Visibility="Collapsed" Padding="20" 
+                    Background="#33FFFFFF" Tapped="Undo_Tapped" x:Name="UndoMessage">
                 <StackPanel VerticalAlignment="Center">
                     <TextBlock FontSize="25" TextAlignment="Center"  Visibility="{Binding IsPrimaryUndoMessageVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <Run FontFamily="FontAwesome">&#xf0e2;</Run>
@@ -303,7 +324,8 @@
                     </TextBlock>
                 </StackPanel>
             </Border>
-            <Border Height="{Binding MainPageViewModel.PageHeight}" Visibility="{Binding IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" Padding="20" Background="White">
+            <Border Height="{Binding MainPageViewModel.PageHeight}" Visibility="{Binding IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" 
+                    Padding="20">
                 <StackPanel VerticalAlignment="Center">
                     <TextBlock FontSize="25" TextAlignment="Center">
                         <Run FontFamily="FontAwesome">&#xf25a;</Run>

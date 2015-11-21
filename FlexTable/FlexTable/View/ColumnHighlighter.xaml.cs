@@ -217,7 +217,7 @@ namespace FlexTable.View
             {
                 tvm.MainPageViewModel.View.TableView.ColumnHighlighter.ColumnViewModel = null;
                 tvm.MainPageViewModel.View.TableView.ColumnHighlighter.Update();
-                tvm.MainPageViewModel.View.ExplorationView.TopPageViewModel.HideSummary();
+                tvm.MainPageViewModel.View.ExplorationView.TopPageViewModel.State = PageViewModel.PageViewState.Empty;
             }
         }
 
@@ -232,7 +232,7 @@ namespace FlexTable.View
             {
                 tvm.MainPageViewModel.View.TableView.ColumnHighlighter.ColumnViewModel = null;
                 tvm.MainPageViewModel.View.TableView.ColumnHighlighter.Update();
-                tvm.MainPageViewModel.View.ExplorationView.TopPageViewModel.HideSummary();
+                tvm.MainPageViewModel.View.ExplorationView.TopPageViewModel.State = PageViewModel.PageViewState.Empty;
             }
         }
 
@@ -244,17 +244,17 @@ namespace FlexTable.View
                 case(Command.Left):
                     tvm.MainPageViewModel.SheetViewModel.BringFront(ColumnViewModel);
                     UpperLeftMenuElement.Unhighlight();
-                    tvm.CancelIndexing();
+                    tvm.CancelIndexing(true);
                     break;
                 case(Command.Right):
                     tvm.MainPageViewModel.SheetViewModel.SetAside(ColumnViewModel);
                     UpperRightMenuElement.Unhighlight();
-                    tvm.CancelIndexing();
+                    tvm.CancelIndexing(true);
                     break;
                 case(Command.Down):
                     tvm.MainPageViewModel.TableViewModel.Sort(ColumnViewModel, Model.SortOption.Descending);
                     UpperDownMenuElement.Unhighlight();
-                    tvm.CancelIndexing();
+                    tvm.CancelIndexing(true);
                     break;
             }
 
@@ -362,7 +362,7 @@ namespace FlexTable.View
             {
                 tvm.MainPageViewModel.View.TableView.ColumnHighlighter.ColumnViewModel = null;
                 tvm.MainPageViewModel.View.TableView.ColumnHighlighter.Update();
-                tvm.MainPageViewModel.View.ExplorationView.TopPageViewModel.HideSummary();
+                tvm.MainPageViewModel.View.ExplorationView.TopPageViewModel.State = PageViewModel.PageViewState.Empty;
             }
         }
 
@@ -377,7 +377,7 @@ namespace FlexTable.View
             {
                 tvm.MainPageViewModel.View.TableView.ColumnHighlighter.ColumnViewModel = null;
                 tvm.MainPageViewModel.View.TableView.ColumnHighlighter.Update();
-                tvm.MainPageViewModel.View.ExplorationView.TopPageViewModel.HideSummary();
+                tvm.MainPageViewModel.View.ExplorationView.TopPageViewModel.State = PageViewModel.PageViewState.Empty;
             }
         }
 
@@ -389,17 +389,17 @@ namespace FlexTable.View
                 case (Command.Left):
                     tvm.MainPageViewModel.SheetViewModel.BringFront(ColumnViewModel);
                     LowerLeftMenuElement.Unhighlight();
-                    tvm.CancelIndexing();
+                    tvm.CancelIndexing(true);
                     break;
                 case (Command.Right):
                     tvm.MainPageViewModel.SheetViewModel.SetAside(ColumnViewModel);
                     LowerRightMenuElement.Unhighlight();
-                    tvm.CancelIndexing();
+                    tvm.CancelIndexing(true);
                     break;
                 case (Command.Up):
                     tvm.MainPageViewModel.TableViewModel.Sort(ColumnViewModel, Model.SortOption.Ascending);
                     LowerUpMenuElement.Unhighlight();
-                    tvm.CancelIndexing();
+                    tvm.CancelIndexing(true);
                     break;
             }
 

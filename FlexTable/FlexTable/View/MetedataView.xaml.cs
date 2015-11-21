@@ -17,6 +17,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Windows.Storage.Streams;
 using FlexTable.Model;
+using FlexTable.ViewModel;
 
 // 사용자 정의 컨트롤 항목 템플릿에 대한 설명은 http://go.microsoft.com/fwlink/?LinkId=234236에 나와 있습니다.
 
@@ -41,10 +42,8 @@ namespace FlexTable.View
             mpvm.View.TableView.TopColumnHeader.Reset();
             mpvm.View.TableView.BottomColumnHeader.Reset();
             mpvm.View.TableView.ColumnIndexer.Reset();
-            mpvm.ExplorationViewModel.TopPageView.PageViewModel.IsUndoing = false;
-            mpvm.ExplorationViewModel.TopPageView.PageViewModel.IsPreviewVisible = false;
-            mpvm.ExplorationViewModel.TopPageView.PageViewModel.IsEmpty = true;
-            mpvm.ExplorationViewModel.TopPageView.CancelUndoStoryboard.Begin();
+            mpvm.ExplorationViewModel.TopPageView.PageViewModel.State = PageViewModel.PageViewState.Empty;            
+            //mpvm.ExplorationViewModel.TopPageView.CancelUndoStoryboard.Begin();
             mpvm.Sheet = sheet;
             mpvm.Initialize();
         }

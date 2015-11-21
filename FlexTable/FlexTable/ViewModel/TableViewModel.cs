@@ -283,7 +283,13 @@ namespace FlexTable.ViewModel
             activatedPointerId = id;
         }
 
-        public void CancelIndexing()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="cancelPreviewing">cancelIndexing이 호출되는 경우는 1) 컬럼을 선택할 때 처럼 단순히 하이라이터를 숨기고 싶은 경우 2) 소팅 처럼 하이라이터를 숨길 뿐만 아니라 프리뷰도 그만둘 경우. 
+        /// 전자의 경우 프리뷰를 취소할 필요는 없으므로 false가 되고 후자의 경우 프리뷰도 그만둬야 하므로 true를 넘김
+        /// </param>
+        public void CancelIndexing(bool cancelPreviewing)
         {
             IsIndexing = false;
 

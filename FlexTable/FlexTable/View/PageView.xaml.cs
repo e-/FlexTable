@@ -52,7 +52,7 @@ namespace FlexTable.View
 
         public PageViewModel PageViewModel => (this.DataContext as PageViewModel);
         public Storyboard HideStoryboard => HideStoryboardElement;
-        public Storyboard CancelUndoStoryboard => CancelUndoOpacityStoryboardElement;
+        //public Storyboard CancelUndoStoryboard => CancelUndoOpacityStoryboardElement;
         private Int32 activatedParagraphIndex = 0;
         public String ActivatedParagraphTag { get; set; }
         public object PixelFormats { get; private set; }
@@ -164,55 +164,77 @@ namespace FlexTable.View
         }
         #endregion
         
-        public void MoveToSelectedPosition(Boolean isUndo)
+        public void ReflectState()
         {
-            if (isUndo) UndoSelectStoryboard.Begin();
-            else SelectStoryboard.Begin();
-            HideBottomToolBar.Pause();
-            ShowBottomToolBar.Begin();
+            PageViewModel.PageViewState state = PageViewModel.State,
+                oldState = PageViewModel.OldState;
 
-            ShowTopToolBar.Pause();
-            HideTopToolBar.Begin();
-        }
+            // 현재 뷰가 위에 있다
+            if(state == PageViewModel.PageViewState.Selected)
+            {
+                MoveToSelectedPositionStoryboard.Begin();
+                CancelDimmingboard.Begin();
 
-        public void MoveToUnselectedPosition()
-        {
-            UnselectStoryboard.Begin();
-            HideTopToolBar.Pause();
-            ShowTopToolBar.Begin();
+                HideBottomToolBar.Pause();
+                ShowBottomToolBar.Begin();
 
-            ShowBottomToolBar.Pause();
-            HideBottomToolBar.Begin();
-        }
+                ShowTopToolBar.Pause();
+                HideTopToolBar.Begin();
+            }
+            else if(state == PageViewModel.PageViewState.Undoing)
+            {
+                UndoDimmingStoryboard.Begin();
+                MoveToDefaultPositionStoryboard.Begin();
 
-        public void EnterSelectedMode()
-        {
-            BarChartElement.IsHitTestVisible = true;
-            LineChartElement.IsHitTestVisible = true;
-            DistributionViewElement.IsHitTestVisible = true;
-            GroupedBarChartElement.IsHitTestVisible = true;
-            ScatterplotElement.IsHitTestVisible = true;
-            PageViewModel.IsUndoing = false;
-            PageViewModel.IsEmpty = false;
-        }
+                ShowTopToolBar.Pause();
+                HideTopToolBar.Begin();
 
-        public void EnterUndoMode()
-        {
-            UndoStoryboard.Begin();
+                ShowBottomToolBar.Pause();
+                HideBottomToolBar.Begin();
+            }
+            else if (state == PageViewModel.PageViewState.Empty)
+            {
+                EmptyDimmingStoryboard.Begin();
 
-            PageViewModel.IsPrimaryUndoMessageVisible = true;
-            BarChartElement.IsHitTestVisible = false;
-            LineChartElement.IsHitTestVisible = false;
-            DistributionViewElement.IsHitTestVisible = false;
-            GroupedBarChartElement.IsHitTestVisible = false;
-            ScatterplotElement.IsHitTestVisible = false;
-        }
+                ShowTopToolBar.Pause();
+                HideTopToolBar.Begin();
 
-        private void UndoStoryboard_Completed(object sender, object e)
-        {
-            PageViewModel.IsUndoing = true;
-        }
+                ShowBottomToolBar.Pause();
+                HideBottomToolBar.Begin();
+            }
+            else if (state == PageViewModel.PageViewState.Previewing)
+            {
+                CancelDimmingboard.Begin();
 
+                HideTopToolBar.Pause();
+                ShowTopToolBar.Begin();
+
+                ShowBottomToolBar.Pause();
+                HideBottomToolBar.Begin();
+            }
+
+            switch(state)
+            {
+                case PageViewModel.PageViewState.Selected:
+                    BarChartElement.IsHitTestVisible = true;
+                    LineChartElement.IsHitTestVisible = true;
+                    DistributionViewElement.IsHitTestVisible = true;
+                    GroupedBarChartElement.IsHitTestVisible = true;
+                    ScatterplotElement.IsHitTestVisible = true;
+                    break;
+                case PageViewModel.PageViewState.Undoing:
+                case PageViewModel.PageViewState.Previewing:
+                case PageViewModel.PageViewState.Empty:
+                    PageViewModel.IsPrimaryUndoMessageVisible = true;
+                    BarChartElement.IsHitTestVisible = false;
+                    LineChartElement.IsHitTestVisible = false;
+                    DistributionViewElement.IsHitTestVisible = false;
+                    GroupedBarChartElement.IsHitTestVisible = false;
+                    ScatterplotElement.IsHitTestVisible = false;
+                    break;
+            }
+        }        
+        
         #region Carousel 
         public void UpdateCarousel(Boolean trackPreviousParagraph, String firstChartTag)
         {
@@ -404,8 +426,8 @@ namespace FlexTable.View
         private void Undo_Tapped(object sender, TappedRoutedEventArgs e)
         {
             e.Handled = true;
-            PageViewModel.IsUndoing = false;
-            PageViewModel.StatusChanged(this, true);
+            PageViewModel.State = PageViewModel.PageViewState.Selected;
+            PageViewModel.StateChanged(this);
         }
 
         private void Wrapper_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
@@ -443,7 +465,7 @@ namespace FlexTable.View
         private void Wrapper_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
             return; // does nothing
-            if (e.PointerDeviceType != PointerDeviceType.Touch) return;
+            /*if (e.PointerDeviceType != PointerDeviceType.Touch) return;
             if (PageViewModel.IsEmpty) { }
             else if (PageViewModel.IsUndoing)
             {
@@ -465,7 +487,7 @@ namespace FlexTable.View
                 {
                     MoveToUnselectedPosition();
                     EnterUndoMode();
-                    PageViewModel.StatusChanged(this, false);
+                    PageViewModel.StateChanged(this, false);
                 }
                 else
                 {
@@ -480,13 +502,13 @@ namespace FlexTable.View
                 {
                     MoveToSelectedPosition(false);
                     EnterSelectedMode();
-                    PageViewModel.StatusChanged(this, false);
+                    PageViewModel.StateChanged(this, false);
                 }
                 else
                 {
                     MoveToUnselectedPosition();
                 }
-            }
+            }*/
         }
 
         private void Carousel_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
@@ -501,16 +523,18 @@ namespace FlexTable.View
 
         private void Select_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            MoveToSelectedPosition(false);
-            EnterSelectedMode();
-            PageViewModel.StatusChanged(this, false);
+            PageViewModel.State = PageViewModel.PageViewState.Selected;
+            /*MoveToSelectedPosition(false);
+            EnterSelectedMode();*/
+            PageViewModel.StateChanged(this);
         }
 
         private void Unselect_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            MoveToUnselectedPosition();
-            EnterUndoMode();
-            PageViewModel.StatusChanged(this, false);
+            PageViewModel.State = PageViewModel.PageViewState.Undoing;
+            /*MoveToUnselectedPosition();
+            EnterUndoMode();*/
+            PageViewModel.StateChanged(this);
         }
 
         private async void Clipboard_Tapped(object sender, TappedRoutedEventArgs e)
