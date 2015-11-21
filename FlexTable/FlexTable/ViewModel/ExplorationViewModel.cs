@@ -101,9 +101,6 @@ namespace FlexTable.ViewModel
 
                 selectedPageViews.Add(pageView);
 
-                // 차트 새로 반영할 필요는 없다 이미 있으므로
-                // pageViewModel.Reflect(true);
-
                 // 새로운 page 만들기
                 view.ExplorationView.AddNewPage();
 
@@ -141,14 +138,8 @@ namespace FlexTable.ViewModel
                 // Preview 풀기
                 mainPageViewModel.TableViewModel.CancelIndexing(false);
 
-                // Page View 아래로 보내기                    
                 pageView.ReflectState();
-                //pageView.MoveToSelectedPosition(isUndo);
-                //pageView.EnterSelectedMode();
             }
-            /*else if(pageView == TopPageView && ViewStatus.SelectedColumnViewModels.IndexOf(previewingColumnViewModel) >= 0) {
-                // 이미 선택된 것 또 선택하는 경우
-            }*/
             else if(state == PageViewModel.PageViewState.Undoing) // 선택해제하는 경우
             {
                 selectedPageViews.Remove(pageView);
@@ -169,8 +160,6 @@ namespace FlexTable.ViewModel
 
                 // Page View 위로 올리기
                 pageView.ReflectState();
-                /*pageView.MoveToUnselectedPosition();
-                pageView.EnterUndoMode();*/
             }            
         }        
     }

@@ -420,12 +420,6 @@ namespace FlexTable.View
 
         #endregion
 
-        private void Undo_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            e.Handled = true;
-            PageViewModel.State = PageViewModel.PageViewState.Selected;
-            PageViewModel.StateChanged(this);
-        }
 
         private void Wrapper_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
@@ -520,7 +514,14 @@ namespace FlexTable.View
 
         private void Select_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            PageViewModel.State = PageViewModel.PageViewState.Selected;
+            // 이 페이지 뷰가 선택될수 있는지 먼저 확인하자
+            if (this != PageViewModel.MainPageViewModel.ExplorationViewModel.TopPageView) return; // 이게 맨 위에있는게 아니면 reject
+            if (!PageViewModel.IsPreviewing) return; // 아무것도 프리뷰잉하고 있지 않으면 reject
+            if (PageViewModel.MainPageViewModel.ExplorationViewModel.ViewStatus.SelectedColumnViewModels.IndexOf(
+                PageViewModel.ViewStatus.SelectedColumnViewModels.Last()
+                ) >= 0) return; // 선택된 컬럼이 이미 선택되어잇으면
+
+            PageViewModel.State = PageViewModel.PageViewState.Selected; 
             PageViewModel.StateChanged(this);
         }
 
@@ -529,6 +530,14 @@ namespace FlexTable.View
             PageViewModel.State = PageViewModel.PageViewState.Undoing;
             PageViewModel.StateChanged(this);
         }
+
+        private void Undo_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            e.Handled = true;
+            PageViewModel.State = PageViewModel.PageViewState.Selected; // undo하는 경우는 조건 체크할 필요 없이 무조건 select해도 됨
+            PageViewModel.StateChanged(this);
+        }
+
 
         private async void Clipboard_Tapped(object sender, TappedRoutedEventArgs e)
         {
