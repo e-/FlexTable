@@ -225,20 +225,20 @@ namespace FlexTable.View
         {
             //AllRowsCanvasElement.Visibility = Visibility.Visible;
 
-            HideAllRowsCanvasStoryboard.Pause();
+            /*HideAllRowsCanvasStoryboard.Pause();
             ShowAllRowsCanvasStoryboard.Begin();
             ShowTableCanvasStoryboard.Pause();
-            HideTableCanvasStoryboard.Begin();
+            HideTableCanvasStoryboard.Begin();*/
         }
 
         public void ShowGroupByTableCanvas()
         {
             //TableCanvasElement.Visibility = Visibility.Visible;
 
-            HideTableCanvasStoryboard.Pause();
+            /*HideTableCanvasStoryboard.Pause();
             ShowTableCanvasStoryboard.Begin();
             ShowAllRowsCanvasStoryboard.Pause();
-            HideAllRowsCanvasStoryboard.Begin();            
+            HideAllRowsCanvasStoryboard.Begin();            */
         }
 
         private void HideAllRowsCanvasStoryboard_Completed(object sender, object e)

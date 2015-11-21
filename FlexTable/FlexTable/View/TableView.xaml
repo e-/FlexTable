@@ -15,9 +15,7 @@
     >
 
     <UserControl.Resources>
-        <util:BooleanToOpacityConverter x:Key="BooleanToOpacityConverter" />
-        
-        <Storyboard x:Name="ShowAllRowsCanvasStoryboard">
+        <!--<Storyboard x:Name="ShowAllRowsCanvasStoryboard">
             <DoubleAnimation Storyboard.TargetName="AllRowsCanvasElement" Storyboard.TargetProperty="Opacity"
                              To="1" Duration="0:0:0.3" EasingFunction="{StaticResource QuarticEaseInOut}"></DoubleAnimation>
         </Storyboard>
@@ -36,7 +34,64 @@
             <DoubleAnimation Storyboard.TargetName="TableCanvasElement" Storyboard.TargetProperty="Opacity"
                              To="0" Duration="0:0:0.3" EasingFunction="{StaticResource QuarticEaseInOut}"></DoubleAnimation>
         </Storyboard>
-        <util:IndexToRowBackgroundConverter x:Name="IndexToRowBackgroundConverter" />
+        -->
+        <Style x:Key="ListViewStyle" TargetType="ListView">
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto" />
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
+            <Setter Property="ScrollViewer.HorizontalScrollMode" Value="Enabled" />
+            <Setter Property="ScrollViewer.VerticalScrollMode" Value="Enabled" />
+            <Setter Property="ScrollViewer.ZoomMode" Value="Disabled" />
+            <Setter Property="ScrollViewer.IsDeferredScrollingEnabled" Value="False" />
+            <Setter Property="SelectionMode" Value="None" />
+        </Style>
+
+        <Style x:Key="ListViewItemContainerStyle" TargetType="ListViewItem">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListViewItem">
+                        <ContentPresenter Margin="0" />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="MinHeight" Value="0" />
+        </Style>
+
+        <DataTemplate x:DataType="viewModel:RowViewModel" x:Key="ListViewDataTemplate">
+            <ListView ItemsSource="{x:Bind Path=Cells, Mode=OneWay}"
+                                  SelectionMode="None"
+                                  Height="{StaticResource RowHeight}"
+                                  Margin="0"
+                                  Width="{x:Bind Path=MainPageViewModel.SheetViewModel.SheetWidth}"                                  
+                                  IsHitTestVisible="False"
+                                  Padding="0">
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ListViewItem">
+                                    <ContentPresenter />
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Setter Property="Padding" Value="0" />
+                        <Setter Property="Margin" Value="0" />
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="model:Cell">
+                        <TextBlock Text="{x:Bind Path=RawContent}" Width="{x:Bind Path=ColumnViewModel.Width}" 
+                                               Style="{StaticResource CellStyle}" Margin="0 -14 0 0" />
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </DataTemplate>
     </UserControl.Resources>
     
     <Grid>
@@ -57,79 +112,19 @@
             <view:GuidelinePresenter Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" x:Name="GuidlineElement"/>
             <view:RowHeaderPresenter Grid.Row="1" Grid.Column="0" x:Name="RowHeaderPresenterElement"></view:RowHeaderPresenter>
 
-            <!--<ListView Grid.Row="1" Grid.Column="1" 
-                      ItemsSource="{x:Bind Path=ViewModel.RowViewModels, Mode=OneWay}"
-                      ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                      ScrollViewer.VerticalScrollBarVisibility="Auto"
-                      ScrollViewer.HorizontalScrollMode="Enabled"
-                      ScrollViewer.VerticalScrollMode="Enabled"
-                      ScrollViewer.ZoomMode="Disabled"
-                      ScrollViewer.IsScrollInertiaEnabled="False"
-                      ScrollViewer.IsDeferredScrollingEnabled="True"
-                      SelectionMode="None"
-                      x:Name="TableViewer"
+            <ListView Grid.Row="1" Grid.Column="1" ItemsSource="{x:Bind Path=ViewModel.RowViewModels, Mode=OneWay}"
+                      x:Name="TableViewer" Style="{StaticResource ListViewStyle}"
+                      ItemContainerStyle="{StaticResource ListViewItemContainerStyle}"
+                      ItemTemplate="{StaticResource ListViewDataTemplate}"
                       >
                 <ListView.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <StackPanel></StackPanel>
+                        <ItemsStackPanel Orientation="Vertical" CacheLength="100" />
                     </ItemsPanelTemplate>
                 </ListView.ItemsPanel>
-                <ListView.ItemContainerStyle>
-                    <Style TargetType="ListViewItem">
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="ListViewItem">
-                                    <ContentPresenter Margin="0" />
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                        <Setter Property="Padding" Value="0" />
-                        <Setter Property="Margin" Value="0" />
-                        <Setter Property="MinHeight" Value="0" />
-                    </Style>
-                </ListView.ItemContainerStyle>
-                <ListView.ItemTemplate>
-                    <DataTemplate x:DataType="viewModel:RowViewModel">
-                        <ListView ItemsSource="{x:Bind Path=Cells, Mode=OneWay}"
-                                  SelectionMode="None"
-                                  Height="{StaticResource RowHeight}"
-                                  Margin="0"
-                           
-                                  IsHitTestVisible="False"
-                                  Padding="0">
-                                    Width="{x:Bind Path=MainPageViewModel.SheetViewModel.SheetWidth}"
-                                  Background="{x:Bind Path=Index, Converter={StaticResource IndexToRowBackgroundConverter}, Mode=OneWay}"-->
-                            <!--<ListView.ItemContainerStyle>
-                                <Style TargetType="ListViewItem">
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="ListViewItem">
-                                                <ContentPresenter />
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                    <Setter Property="Padding" Value="0" />
-                                    <Setter Property="Margin" Value="0" />
-                                </Style>
-                            </ListView.ItemContainerStyle>-->
-                            <!--<ListView.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <StackPanel Orientation="Horizontal" />
-                                </ItemsPanelTemplate>
-                            </ListView.ItemsPanel>
-                            <ListView.ItemTemplate>
-                                <DataTemplate x:DataType="model:Cell">
-                                    <TextBlock>qwer</TextBlock>
-                                    <TextBlock Text="{x:Bind Path=RawContent}" Width="{x:Bind Path=ColumnViewModel.Width}" 
-                                               Style="{StaticResource CellStyle}" Margin="0 -14 0 0" />
-                                </DataTemplate>
-                            </ListView.ItemTemplate>
-                        </ListView>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
             </ListView>
-            -->
-
+            
+            <!-- 
             <ListView Grid.Row="1" Grid.Column="1" 
                       ItemsSource="{x:Bind Path=ViewModel.RowViewModels, Mode=OneWay}"
                       ScrollViewer.HorizontalScrollBarVisibility="Auto"
@@ -169,7 +164,6 @@
                                   Width="{x:Bind Path=MainPageViewModel.SheetViewModel.SheetWidth}"                                  
                                   IsHitTestVisible="False"
                                   Padding="0">
-                            <!-- -Background="{x:Bind Path=Index, Converter={StaticResource IndexToRowBackgroundConverter}, Mode=OneWay}" -->
                             <ListView.ItemContainerStyle>
                                 <Style TargetType="ListViewItem">
                                     <Setter Property="Template">
@@ -185,7 +179,6 @@
                             </ListView.ItemContainerStyle>
                             <ListView.ItemsPanel>
                                 <ItemsPanelTemplate>
-                                    <!--<ItemsStackPanel Orientation="Horizontal" Margin="0" />-->
                                     <StackPanel Orientation="Horizontal" />
                                 </ItemsPanelTemplate>
                             </ListView.ItemsPanel>
@@ -199,29 +192,6 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-            
-            <!--<ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" 
-                              ZoomMode="Disabled" Grid.Row="1" Grid.Column="1"
-                              ViewChanged="ScrollViewer_ViewChanged"
-                              ManipulationMode="All"
-                              x:Name="TableScrollViewerElement"
-                          Visibility="Collapsed"
-                              >
-                <Grid x:Name="ScrollViewerContentWrapperElement" Width="{Binding PaddedSheetWidth}" Height="{Binding PaddedSheetHeight}">
-                    <StackPanel x:Name="GuidelineElement" IsHitTestVisible="False"></StackPanel>
-                    <ListView Opacity="1" x:Name="AllRowsListViewElement">
-                        <ListView.ItemTemplate>
-                            <DataTemplate>
-                                <local:RowPresenter></local:RowPresenter>
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
-                    <Canvas x:Name="AllRowsCanvasElement" Opacity="1">
-                    </Canvas>
-                    <Canvas x:Name="TableCanvasElement" Visibility="Collapsed" Opacity="0">
-                    </Canvas>
-                </Grid>
-            </ScrollViewer>
             -->
             
             <Border Grid.Row="2" Grid.Column="0" Background="LightGray"></Border>

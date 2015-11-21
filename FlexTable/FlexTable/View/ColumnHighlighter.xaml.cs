@@ -41,7 +41,7 @@ namespace FlexTable.View
 
             if (columnViewModel != null)
             {
-                Int32 columnIndex = columnViewModel.Index;
+                Int32 columnIndex = columnViewModel.Order; // columnViewModel.Index;
                 Int32 index = 0;
 
                 foreach (RowViewModel rowViewModel in tvm.RowViewModels)
@@ -149,12 +149,7 @@ namespace FlexTable.View
             TableViewModel tvm = (this.DataContext as TableViewModel);
             TableScrollViewer.Height = tvm.SheetViewHeight / (Double)this.Resources["ZoomScale"] - (Double)App.Current.Resources["ColumnHeaderHeight"] / 2 / (Double)this.Resources["ZoomScale"];
         }
-
-        private void Brighten_Completed(object sender, object e)
-        {
-            Wrapper.Visibility = Visibility.Collapsed;
-        }
-
+        
         enum Command { Left, Right, Up, Down, None };
 
         private void UpperColumnHeaderWrapperElement_PointerEntered(object sender, PointerRoutedEventArgs e)

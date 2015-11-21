@@ -105,7 +105,7 @@ namespace FlexTable.ViewModel
                 view.ExplorationView.AddNewPage();
 
                 mainPageViewModel.SheetViewModel.UpdateGroup(ViewStatus);
-                //mainPageViewModel.TableViewModel.Reflect(ViewStatus);
+                mainPageViewModel.TableViewModel.Reflect(ViewStatus);
 
                 view.TableView.ScrollToColumnViewModel(mainPageViewModel.SheetViewModel.ColumnViewModels.OrderBy(c => c.Order).First());
 
@@ -131,7 +131,7 @@ namespace FlexTable.ViewModel
                 view.ExplorationView.AddNewPage();
 
                 mainPageViewModel.SheetViewModel.UpdateGroup(ViewStatus);
-                //mainPageViewModel.TableViewModel.Reflect(ViewStatus);               
+                mainPageViewModel.TableViewModel.Reflect(ViewStatus);               
                 
                 view.TableView.ScrollToColumnViewModel(mainPageViewModel.SheetViewModel.ColumnViewModels.OrderBy(c => c.Order).First());
 
@@ -154,7 +154,7 @@ namespace FlexTable.ViewModel
                 mainPageViewModel.SheetViewModel.UpdateGroup(ViewStatus);
 
                 // Table View 업데이트
-                //mainPageViewModel.TableViewModel.Reflect(ViewStatus);
+                mainPageViewModel.TableViewModel.Reflect(ViewStatus);
 
                 view.TableView.ScrollToColumnViewModel(mainPageViewModel.SheetViewModel.ColumnViewModels.OrderBy(c => c.Order).First());
 

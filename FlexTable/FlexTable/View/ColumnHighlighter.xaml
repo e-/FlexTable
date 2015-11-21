@@ -34,7 +34,7 @@
             <DoubleAnimation Storyboard.TargetProperty="ScaleY" Storyboard.TargetName="LowerCompositeTransform"
                              To="{StaticResource ZoomScale}" EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2"></DoubleAnimation>
         </Storyboard>
-        <Storyboard x:Name="Brighten" Completed="Brighten_Completed">
+        <Storyboard x:Name="Brighten">
             <ColorAnimation Storyboard.TargetProperty="(Canvas.Background).(SolidColorBrush.Color)" To="#00000000"
                             EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2" Storyboard.TargetName="Wrapper" 
                             ></ColorAnimation>
@@ -55,6 +55,11 @@
 
             <DoubleAnimation Storyboard.TargetProperty="Height" Storyboard.TargetName="TableScrollViewer"
                              To="3000" EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2"></DoubleAnimation>
+            
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Wrapper"
+                                        Storyboard.TargetProperty="Visibility">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.2" Value="Collapsed" />
+            </ObjectAnimationUsingKeyFrames>
         </Storyboard>
         <util:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </UserControl.Resources>

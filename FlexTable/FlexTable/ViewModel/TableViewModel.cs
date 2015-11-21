@@ -44,15 +44,7 @@ namespace FlexTable.ViewModel
 
         private Double paddedSheetHeight;
         public Double PaddedSheetHeight { get { return paddedSheetHeight; } set { paddedSheetHeight = value; OnPropertyChanged("PaddedSheetHeight"); } }
-
-        /*
-        private List<RowPresenter> allRowPresenters = new List<RowPresenter>();
-        public List<RowPresenter> AllRowPresenters => allRowPresenters;
-
-        private List<RowPresenter> groupByRowPresenters = new List<RowPresenter>();
-        public List<RowPresenter> GroupByRowPresenters => groupByRowPresenters;
-        */
-
+        
         private ObservableCollection<RowViewModel> rowViewModels;
         public ObservableCollection<RowViewModel> RowViewModels
         {
@@ -60,16 +52,10 @@ namespace FlexTable.ViewModel
             set { rowViewModels = value; OnPropertyChanged(nameof(RowViewModels)); }
         }
 
-        /*
-        private List<RowPresenter> rowPresenters;
-        public List<RowPresenter> RowPresenters => rowPresenters;
-        */
-
         private Boolean isIndexing;
         public Boolean IsIndexing { get { return isIndexing; } set { isIndexing = value; OnPropertyChanged("IsIndexing"); } }
         
         private Boolean isPreviewing = false;
-
         
         private ColumnViewModel sortBy;
         public ColumnViewModel SortBy { get { return sortBy; } set { sortBy = value; } }
@@ -139,35 +125,48 @@ namespace FlexTable.ViewModel
             }*/
 
             //rowPresenters = allRowPresenters;
-            RowViewModels = SheetViewModel.AllRowViewModels;
+            RowViewModels = new ObservableCollection<RowViewModel>(SheetViewModel.AllRowViewModels);
 
             view.TableView.RowHeaderPresenter.SetRowNumber(SheetViewModel.AllRowViewModels.Count);
         }
 
+        DispatcherTimer dispatcherTimer = null;
+        const Double DeferredReflectionTimeInMS = 1;
         public void Reflect(ViewStatus viewStatus)
         {
-            UpdateRows(viewStatus);
+            if (dispatcherTimer != null && dispatcherTimer.IsEnabled) dispatcherTimer.Stop();
+            dispatcherTimer = new DispatcherTimer();
 
-            // column header 업데이트
-            foreach (ColumnViewModel cvm in mainPageViewModel.SheetViewModel.ColumnViewModels)
+            dispatcherTimer.Tick += (sender, e) =>
             {
-                cvm.IsSelected = viewStatus.SelectedColumnViewModels.IndexOf(cvm) >= 0;
-                cvm.UpdateHeaderName();
-            }
+                dispatcherTimer.Stop();
+                UpdateRows(viewStatus);
 
-            view.TableView.TopColumnHeader.Update();
-            view.TableView.BottomColumnHeader.Update();
+                view.TableView.RowHeaderPresenter.SetRowNumber(RowViewModels.Count);
+
+                // column header 업데이트
+                foreach (ColumnViewModel cvm in mainPageViewModel.SheetViewModel.ColumnViewModels)
+                {
+                    cvm.IsSelected = viewStatus.SelectedColumnViewModels.IndexOf(cvm) >= 0;
+                    cvm.UpdateHeaderName();
+                }
+
+                view.TableView.TopColumnHeader.Update();
+                view.TableView.BottomColumnHeader.Update();
+            };
+            dispatcherTimer.Interval = TimeSpan.FromMilliseconds(DeferredReflectionTimeInMS);
+            dispatcherTimer.Start();
         }
 
         void UpdateRows(ViewStatus viewStatus)
         {
             if (viewStatus.SelectedColumnViewModels.Count == 0) // 아무 것도 선택되지 않으면 모든 로우 보여줘야함.
             {
-                RowViewModels = SheetViewModel.AllRowViewModels;
+                RowViewModels = new ObservableCollection<RowViewModel>(SheetViewModel.AllRowViewModels);
             }
             else
             {
-                RowViewModels = SheetViewModel.GroupByRowViewModels;
+                RowViewModels = new ObservableCollection<RowViewModel>(SheetViewModel.GroupByRowViewModels);
             }
 
             /*if (sortBy != null)
@@ -274,8 +273,6 @@ namespace FlexTable.ViewModel
                 view.TableView.ColumnHighlighter.Update();
 
                 IsIndexing = true;
-                /*IndexTooltipY = (columnIndex + 0.5) * (totalHeight / SheetViewModel.ColumnViewModels.Count) - 15;
-                IndexTooltipContent = columnViewModel.Column.Name;*/
 
                 mainPageViewModel.ExplorationViewModel.PreviewColumn(columnViewModel);
             }
@@ -307,23 +304,7 @@ namespace FlexTable.ViewModel
 
             Int32 index = 0;
             Double rowHeight = (Double)App.Current.Resources["RowHeight"];
-
-            /*
-            foreach (RowPresenter rowPresenter in allRowPresenters)
-            {
-                if(condition(rowPresenter.RowViewModel))
-                {
-                    rowPresenter.Visibility = Visibility.Visible;
-                    rowPresenter.Y = (index++) * rowHeight;
-                    rowPresenter.UpdateCellsWithoutAnimation();
-                }
-                else
-                {
-                    rowPresenter.Visibility = Visibility.Collapsed;
-                }
-            }
-            */
-
+            
             Double sheetHeight = index * rowHeight;
             PaddedSheetHeight = sheetHeight > SheetViewHeight ? sheetHeight : SheetViewHeight;
             view.TableView.RowHeaderPresenter.SetRowNumber(index);
@@ -335,30 +316,7 @@ namespace FlexTable.ViewModel
             isPreviewing = false;
             UpdateRows(mainPageViewModel.ExplorationViewModel.ViewStatus);
             // TODO view.TableView.TableScrollViewer.ChangeView(null, 0, null);
-        }
-
-        public void UpdateCellXPosition()
-        {
-            Storyboard sb = new Storyboard();
-
-            foreach (ColumnViewModel columnViewModel in SheetViewModel.ColumnViewModels)
-            {
-                if (columnViewModel.IsXDirty)
-                {
-                    columnViewModel.IsXDirty = false;
-
-                    /*
-                    foreach(RowPresenter rowPresenter in rowPresenters) {
-                        sb.Children.Add(
-                            Util.Animator.Generate(rowPresenter.CellPresenters[columnViewModel.Index], "(Canvas.Left)", columnViewModel.X)
-                            );
-                    }
-                    */
-                }
-            }
-
-            sb.Begin();
-        }
+        }        
 
         public void Sort(ColumnViewModel columnViewModel, SortOption sortOption)
         {

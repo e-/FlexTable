@@ -28,12 +28,12 @@ namespace FlexTable.ViewModel
         public List<ColumnViewModel> ColumnViewModels => columnViewModels;
 
         // 모든 로우에 대한 정보 가지고 있음 속도 위함
-        private ObservableCollection<RowViewModel> allRowViewModels = new ObservableCollection<RowViewModel>();
-        public ObservableCollection<RowViewModel> AllRowViewModels => allRowViewModels;
+        private List<RowViewModel> allRowViewModels = new List<RowViewModel>();
+        public List<RowViewModel> AllRowViewModels => allRowViewModels;
 
         // group된 일시적인 테이블
-        private ObservableCollection<RowViewModel> groupByRowViewModels = new ObservableCollection<RowViewModel>();
-        public ObservableCollection<RowViewModel> GroupByRowViewModels => groupByRowViewModels;
+        private List<RowViewModel> groupByRowViewModels = new List<RowViewModel>();
+        public List<RowViewModel> GroupByRowViewModels => groupByRowViewModels;
 
         //ViewStatus viewStatus = new ViewStatus();
 
@@ -51,7 +51,7 @@ namespace FlexTable.ViewModel
             this.view = view;
         }
 
-        public ColumnType GuessColumnType(IEnumerable<String> cellValues)
+        public static ColumnType GuessColumnType(IEnumerable<String> cellValues)
         {
             Boolean allDouble = true;
             Double result;
@@ -78,7 +78,7 @@ namespace FlexTable.ViewModel
             return ColumnType.Numerical;
         }
 
-        public Boolean CheckStringValue(IEnumerable<String> cellValues)
+        public static Boolean CheckStringValue(IEnumerable<String> cellValues)
         {
             Boolean allDouble = true;
             Double result;
@@ -306,7 +306,9 @@ namespace FlexTable.ViewModel
                 remainingColumnViewModel.Order = order++;
             }
 
-            // Column의 x값을 업데이트하고 아래에서 Cell을 추가하므로 RowPresenter.UpdateCells() 를 호출하지 않아도 됨
+            var orderedColumnViewModels = columnViewModels.OrderBy(cvm => cvm.Order);
+
+            // Column의 x값을 업데이트함, 위 아래 컬럼 헤더를 위한것임. 
             UpdateColumnX();
 
             // table에 추가하는 것은 tableViewModel이 할 것이고 여기는 rowViewModels만 만들어주면 됨
@@ -342,7 +344,7 @@ namespace FlexTable.ViewModel
                         Index = index++
                     };
 
-                    foreach (ColumnViewModel columnViewModel in columnViewModels)
+                    foreach (ColumnViewModel columnViewModel in orderedColumnViewModels)
                     {
                         Cell cell = new Cell();
 
@@ -385,7 +387,7 @@ namespace FlexTable.ViewModel
                         Index = index++
                     };
 
-                    foreach (ColumnViewModel columnViewModel in columnViewModels)
+                    foreach (ColumnViewModel columnViewModel in orderedColumnViewModels)
                     {
                         Cell cell = new Cell();
 
