@@ -49,13 +49,7 @@
                              Storyboard.TargetName="Wrapper" Storyboard.TargetProperty="Opacity" To="1" EnableDependentAnimation="True"
                              BeginTime="00:00:00.5"/>
         </Storyboard>
-
-        <Storyboard x:Name="HideStoryboardElement">
-            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.3"
-                             Storyboard.TargetName="Wrapper" Storyboard.TargetProperty="Opacity" To="0" EnableDependentAnimation="True"
-                             />
-        </Storyboard>
-
+        
         <Storyboard x:Name="MoveToSelectedPositionStoryboard">
             <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.7"
                              Storyboard.TargetName="UserControl" Storyboard.TargetProperty="(Canvas.Top)" To="0">
@@ -185,7 +179,7 @@
             </Setter>
         </Style>
     </UserControl.Resources>
-    <!--Tapped="Wrapper_Tapped"-->
+    
     <StackPanel Opacity="0" x:Name="Wrapper"
                 ManipulationMode="TranslateY" 
                 ManipulationDelta="Wrapper_ManipulationDelta"

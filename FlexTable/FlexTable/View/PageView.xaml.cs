@@ -51,8 +51,6 @@ namespace FlexTable.View
         public StackPanel CorrelationStatisticsTitle => CorrelationStatisticsTitleElement;
 
         public PageViewModel PageViewModel => (this.DataContext as PageViewModel);
-        public Storyboard HideStoryboard => HideStoryboardElement;
-        //public Storyboard CancelUndoStoryboard => CancelUndoOpacityStoryboardElement;
         private Int32 activatedParagraphIndex = 0;
         public String ActivatedParagraphTag { get; set; }
         public object PixelFormats { get; private set; }
@@ -95,8 +93,7 @@ namespace FlexTable.View
                 ShowSelectionIndicatorStoryboard.Begin();
                 SelectedRowCountIndicator.Text = count.ToString();
                 SelectionMessage.Text = count == 1 ? "row selected" : "rows selected";
-            }
-            
+            }            
         }
 
         #region Visualization Event Handlers
@@ -265,7 +262,7 @@ namespace FlexTable.View
                 Canvas.SetLeft(paragraph, (Double)App.Current.Resources["ParagraphWidth"] * index);
                 index++;
             }
-            ParagraphContainerCanvasElement.Width = index * (Double)App.Current.Resources["ParagraphWidth"] * index;
+            ParagraphContainerCanvasElement.Width = index * (Double)App.Current.Resources["ParagraphWidth"];
 
             // 먼저 전에 보이던 시각화와 같은 시각화가 있는지 본다. 있으면 그걸 먼저 보여줌 (바, 산점도)에서 산점도를 보다 바가 없어지면 그대로 산점도를 보여주고 싶음
 
@@ -524,16 +521,12 @@ namespace FlexTable.View
         private void Select_Tapped(object sender, TappedRoutedEventArgs e)
         {
             PageViewModel.State = PageViewModel.PageViewState.Selected;
-            /*MoveToSelectedPosition(false);
-            EnterSelectedMode();*/
             PageViewModel.StateChanged(this);
         }
 
         private void Unselect_Tapped(object sender, TappedRoutedEventArgs e)
         {
             PageViewModel.State = PageViewModel.PageViewState.Undoing;
-            /*MoveToUnselectedPosition();
-            EnterUndoMode();*/
             PageViewModel.StateChanged(this);
         }
 
