@@ -788,7 +788,7 @@ namespace FlexTable.ViewModel
             pageView.BarChart.HorizontalAxisTitle = categorical.Name;
             pageView.BarChart.VerticalAxisTitle = String.Format("Frequency");
             pageView.BarChart.Data = groupedRows
-                .Select(grs => new BarChartDatum() { Key = grs.Keys[categorical], Value = grs.Rows.Count })
+                .Select(grs => new BarChartDatum() { Key = grs.Keys[categorical], Value = grs.Rows.Count, Rows = grs.Rows })
                 .OrderBy(t => (t.Key as Category).Order)
                 .Take(BarChartMaximumRecordNumber).ToList();
             if (groupedRows.Count > BarChartMaximumRecordNumber) IsBarChartWarningVisible = true;
@@ -952,7 +952,8 @@ namespace FlexTable.ViewModel
                 .Select(g => new BarChartDatum()
                 {
                     Key = g.Keys[categorical],
-                    Value = numerical.AggregativeFunction.Aggregate(g.Rows.Select(r => (Double)r.Cells[numerical.Index].Content))
+                    Value = numerical.AggregativeFunction.Aggregate(g.Rows.Select(r => (Double)r.Cells[numerical.Index].Content)),
+                    Rows = g.Rows
                 })
                 .Take(BarChartMaximumRecordNumber).ToList();
             if (groupedRows.Count > BarChartMaximumRecordNumber) IsBarChartWarningVisible = true;

@@ -10,5 +10,6 @@ namespace FlexTable.Crayon.Chart
     {
         public Object Key { get; set; }
         public Double Value { get; set; }
+        public IEnumerable<Model.Row> Rows { get; set; }
     }
 }

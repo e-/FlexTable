@@ -79,21 +79,32 @@ namespace FlexTable.View
 
         private void BarChartElement_SelectionChanged(object sender, object e, object datum, int index)
         {
-            List<BarChartDatum> selection = (datum as List<Object>).Select(d => d as BarChartDatum).ToList();
-            Int32 count = selection.Count;
+            IEnumerable<BarChartDatum> selection = datum as IEnumerable<BarChartDatum>;
+            Int32 count = selection.Count();
 
             if(count == 0)
             {
                 ShowSelectionIndicatorStoryboard.Pause();
                 HideSelectionIndicatorStoryboard.Begin();
+                PageViewModel.MainPageViewModel.TableViewModel.CancelPreviewRows();                
             }
             else
             {
+                IEnumerable<Row> selectedRows = new List<Row>();
+
+                foreach(BarChartDatum d in selection)
+                {
+                    selectedRows = selectedRows.Concat(d.Rows);
+                }
+
+                Int32 rowCount = selectedRows.Count();
+
                 HideSelectionIndicatorStoryboard.Pause();
                 ShowSelectionIndicatorStoryboard.Begin();
-                SelectedRowCountIndicator.Text = count.ToString();
-                SelectionMessage.Text = count == 1 ? "row selected" : "rows selected";
-            }            
+                SelectedRowCountIndicator.Text = rowCount.ToString();
+                SelectionMessage.Text = rowCount == 1 ? "row selected" : "rows selected";
+                PageViewModel.MainPageViewModel.TableViewModel.PreviewRows(selectedRows);
+            }
         }
 
         #region Visualization Event Handlers
@@ -102,9 +113,9 @@ namespace FlexTable.View
             PageViewModel pvm = this.DataContext as PageViewModel;
 
             List<Int32> indices = datum as List<Int32>;
-            pvm.MainPageViewModel.TableViewModel.PreviewRows(
+            /*pvm.MainPageViewModel.TableViewModel.PreviewRows(
                 r => indices.IndexOf(r.Index) >= 0
-            );
+            );*/
         }
 
         private void ScatterplotElement_LassoUnselected(object sender, object e, object datum, int index)
@@ -118,7 +129,7 @@ namespace FlexTable.View
             PageViewModel pvm = this.DataContext as PageViewModel;
 
             Category category = (datum as Tuple<Object, Int32>).Item1 as Category;
-            pvm.MainPageViewModel.TableViewModel.PreviewRows(pvm.ScatterplotRowSelecter(category));
+//            pvm.MainPageViewModel.TableViewModel.PreviewRows(pvm.ScatterplotRowSelecter(category));
         }
 
         private void ScatterplotElement_CategoryPointerReleased(object sender, object e, object datum, int index)
@@ -132,7 +143,7 @@ namespace FlexTable.View
             PageViewModel pvm = this.DataContext as PageViewModel;
 
             Series series = datum as Series;
-            pvm.MainPageViewModel.TableViewModel.PreviewRows(pvm.LineChartRowSelecter(series));
+            //pvm.MainPageViewModel.TableViewModel.PreviewRows(pvm.LineChartRowSelecter(series));
         }
 
         private void LineChartElement_LinePointerReleased(object sender, object e, object datum, int index)
@@ -146,7 +157,7 @@ namespace FlexTable.View
             PageViewModel pvm = this.DataContext as PageViewModel;
 
             Tuple<Object, Object, Double, Object> datum = d as Tuple<Object, Object, Double, Object>;
-            pvm.MainPageViewModel.TableViewModel.PreviewRows(pvm.GroupedBarChartRowSelecter(datum.Item1 as Category, datum.Item4 as Category));
+            //pvm.MainPageViewModel.TableViewModel.PreviewRows(pvm.GroupedBarChartRowSelecter(datum.Item1 as Category, datum.Item4 as Category));
         }
         
         void BarChartElement_BarPointerReleased(object sender, object e, object d, Int32 index)

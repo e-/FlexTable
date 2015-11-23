@@ -24,48 +24,7 @@ namespace FlexTable.View
 {
     public sealed partial class TableView : UserControl
     {
-        public TableViewModel ViewModel { get { return (TableViewModel)DataContext;} }
-        
-        /*public Canvas AllRowsTableCanvas => AllRowsCanvasElement;
-        public Canvas GroupByTableCanvas { get { return TableCanvasElement; } }
-        public Grid ScrollViewerContentWrapper { get { return ScrollViewerContentWrapperElement; } }*/
-        public ColumnHeaderPresenter TopColumnHeader { get { return TopColumnHeaderElement; } }
-        public ColumnHeaderPresenter BottomColumnHeader { get { return BottomColumnHeaderElement; } }
-        public RowHeaderPresenter RowHeaderPresenter { get { return RowHeaderPresenterElement; } }
-        public GuidelinePresenter GuidelinePresenter { get { return GuidlineElement; } }
-        /*public ScrollViewer TableScrollViewer { get { return TableScrollViewerElement; } }*/
-        public ColumnIndexer ColumnIndexer { get { return ColumnIndexerElement; } }
-        public ColumnHighlighter ColumnHighlighter { get { return ColumnHighlighterElement; } }
-        public ScrollViewer TableScrollViewer { get; set; }
-
-        Drawable drawable = new Drawable()
-        {
-            IgnoreSmallStrokes = false
-        };
-
-        DispatcherTimer timer = new DispatcherTimer()
-        {
-            Interval = TimeSpan.FromMilliseconds(1000)
-        };
-        InkManager inkManager;
-
-        public TableView()
-        {
-            this.InitializeComponent();
-            
-            drawable.Attach(SheetView, StrokeGrid, NewStrokeGrid);
-            drawable.StrokeAdded += RecognizeStrokes;
-            timer.Tick += timer_Tick;            
-        }
-
-        public void Initialize()
-        {
-            TableScrollViewer = GetScrollViewer(TableViewer);
-
-            TableScrollViewer.ViewChanged += ScrollViewer_ViewChanged;
-        }
-
-        public ScrollViewer GetScrollViewer(DependencyObject o)
+        public static ScrollViewer GetScrollViewer(DependencyObject o)
         {
             // Return the DependencyObject if it is a ScrollViewer
             if (o is ScrollViewer)
@@ -90,6 +49,84 @@ namespace FlexTable.View
             return null;
         }
 
+        public TableViewModel ViewModel { get { return (TableViewModel)DataContext;} }
+        
+        public ColumnHeaderPresenter TopColumnHeader { get { return TopColumnHeaderElement; } }
+        public ColumnHeaderPresenter BottomColumnHeader { get { return BottomColumnHeaderElement; } }
+        public RowHeaderPresenter RowHeaderPresenter { get { return RowHeaderPresenterElement; } }
+        public GuidelinePresenter GuidelinePresenter { get { return GuidlineElement; } }
+        public ColumnIndexer ColumnIndexer { get { return ColumnIndexerElement; } }
+        public ColumnHighlighter ColumnHighlighter { get { return ColumnHighlighterElement; } }
+        public ScrollViewer AllRowScrollViewer { get; set; }
+        public ScrollViewer GroupedRowScrollViewer { get; set; }
+        public ScrollViewer SelectedRowScrollViewer { get; set; }
+        public ScrollViewer ActivatedScrollViewer { get; set; }
+
+        Drawable drawable = new Drawable()
+        {
+            IgnoreSmallStrokes = false
+        };
+
+        DispatcherTimer timer = new DispatcherTimer()
+        {
+            Interval = TimeSpan.FromMilliseconds(1000)
+        };
+        InkManager inkManager;
+
+        public TableView()
+        {
+            this.InitializeComponent();
+            
+            drawable.Attach(SheetView, StrokeGrid, NewStrokeGrid);
+            drawable.StrokeAdded += RecognizeStrokes;
+            timer.Tick += timer_Tick;            
+        }
+
+        public void Initialize()
+        {
+            ActivatedScrollViewer = AllRowScrollViewer = GetScrollViewer(AllRowViewer);
+            GroupedRowScrollViewer = GetScrollViewer(GroupedRowViewer);
+            SelectedRowScrollViewer = GetScrollViewer(SelectedRowViewer);
+
+            AllRowScrollViewer.ViewChanged += ScrollViewer_ViewChanged;
+            GroupedRowScrollViewer.ViewChanged += ScrollViewer_ViewChanged;
+            SelectedRowScrollViewer.ViewChanged += ScrollViewer_ViewChanged;
+        }
+
+        public void ReflectState()
+        {
+            TableViewModel.TableViewState state = ViewModel.State,
+                oldState = ViewModel.OldState;
+           
+            switch (state)
+            {
+                case TableViewModel.TableViewState.AllRow:
+                    HideGroupedRowViewerStoryboard.Begin();
+                    HideSelectedRowViewerStoryboard.Begin();
+                    ShowAllRowViewerStoryboard.Begin();
+
+                    ActivatedScrollViewer = AllRowScrollViewer;
+                    RowHeaderPresenter.SetRowNumber(ViewModel.AllRowViewModels.Count);
+                    break;
+                case TableViewModel.TableViewState.GroupedRow:
+                    HideAllRowViewerStoryboard.Begin();
+                    HideSelectedRowViewerStoryboard.Begin();
+                    ShowGroupedRowViewerStoryboard.Begin();
+
+                    ActivatedScrollViewer = GroupedRowScrollViewer;
+                    RowHeaderPresenter.SetRowNumber(ViewModel.GroupedRowViewModels.Count);
+                    break;
+                case TableViewModel.TableViewState.SelectedRow:
+                    HideAllRowViewerStoryboard.Begin();
+                    HideGroupedRowViewerStoryboard.Begin();
+                    ShowSelectedRowViewerStoryboard.Begin();
+
+                    ActivatedScrollViewer = SelectedRowScrollViewer;
+                    RowHeaderPresenter.SetRowNumber(ViewModel.SelectedRowViewModels.Count);
+                    break;
+            }
+        }
+
         async void timer_Tick(object sender, object e)
         {
             timer.Stop();
@@ -99,7 +136,7 @@ namespace FlexTable.View
             IReadOnlyList<InkStroke> strokes = this.inkManager.GetStrokes();
             
             Double centerX = strokes[0].BoundingRect.X + strokes[0].BoundingRect.Width / 2 -
-                (Double)App.Current.Resources["RowHeaderWidth"] + TableScrollViewer.HorizontalOffset;
+                (Double)App.Current.Resources["RowHeaderWidth"] + AllRowScrollViewer.HorizontalOffset;
 
             TableViewModel tableViewModel = this.DataContext as TableViewModel;
             ColumnViewModel selectedColumnViewModel = null;
@@ -164,7 +201,6 @@ namespace FlexTable.View
             }
             drawable.RemoveAllStrokes();
         }
-
         
         void RecognizeStrokes(InkManager inkManager)
         {
@@ -175,7 +211,7 @@ namespace FlexTable.View
         public void ScrollToColumnViewModel(ColumnViewModel columnViewModel)
         {
             TableViewModel tableViewModel = this.DataContext as TableViewModel;
-            Double offset = TableScrollViewer.HorizontalOffset,
+            Double offset = ActivatedScrollViewer.HorizontalOffset,
                    width = tableViewModel.SheetViewWidth,
                    x1 = columnViewModel.X,
                    x2 = columnViewModel.X + columnViewModel.Width;
@@ -193,11 +229,11 @@ namespace FlexTable.View
 
             if (to < 0) to = 0;
 
-            TableScrollViewer.ChangeView(to, null, null);
+            ActivatedScrollViewer.ChangeView(to, null, null);
 
             if (to == null)
             {
-                tableViewModel.ScrollLeft = TableScrollViewer.HorizontalOffset;
+                tableViewModel.ScrollLeft = ActivatedScrollViewer.HorizontalOffset;
             }
             else
             {
@@ -218,37 +254,6 @@ namespace FlexTable.View
 
             tableViewModel.ScrollTop = sv.VerticalOffset;
             tableViewModel.ScrollLeft = sv.HorizontalOffset;
-        }
-
-        
-        public void ShowAllRowsCanvas()
-        {
-            //AllRowsCanvasElement.Visibility = Visibility.Visible;
-
-            /*HideAllRowsCanvasStoryboard.Pause();
-            ShowAllRowsCanvasStoryboard.Begin();
-            ShowTableCanvasStoryboard.Pause();
-            HideTableCanvasStoryboard.Begin();*/
-        }
-
-        public void ShowGroupByTableCanvas()
-        {
-            //TableCanvasElement.Visibility = Visibility.Visible;
-
-            /*HideTableCanvasStoryboard.Pause();
-            ShowTableCanvasStoryboard.Begin();
-            ShowAllRowsCanvasStoryboard.Pause();
-            HideAllRowsCanvasStoryboard.Begin();            */
-        }
-
-        private void HideAllRowsCanvasStoryboard_Completed(object sender, object e)
-        {
-            //AllRowsCanvasElement.Visibility = Visibility.Collapsed;
-        }
-
-        private void HideTableCanvasStoryboard_Completed(object sender, object e)
-        {
-            //GroupByTableCanvas.Visibility = Visibility.Collapsed;
         }
     }
 }

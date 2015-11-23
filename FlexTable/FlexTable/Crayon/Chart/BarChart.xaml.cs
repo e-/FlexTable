@@ -341,9 +341,9 @@ namespace FlexTable.Crayon.Chart
                 {
                     selectedKeys.Remove(barChartDatum.Key);
                 }
-
+                
                 if (SelectionChanged != null)
-                    SelectionChanged(sender, e, selectedKeys, index);
+                    SelectionChanged(sender, e, Data.Where(d => selectedKeys.IndexOf(d.Key) >= 0), index);
 
                 RectangleElement.Update(true);
                 IndicatorTextElement.Update(true);
@@ -511,7 +511,7 @@ namespace FlexTable.Crayon.Chart
             selectedKeys.Clear();
 
             if (SelectionChanged != null)
-                SelectionChanged(null, null, selectedKeys, 0);
+                SelectionChanged(null, null, Data.Where(d => selectedKeys.IndexOf(d.Key) >= 0), 0);
 
             RectangleElement.Update(true);
             IndicatorTextElement.Update(true);

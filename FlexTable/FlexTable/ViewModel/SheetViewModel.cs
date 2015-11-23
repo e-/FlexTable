@@ -32,8 +32,8 @@ namespace FlexTable.ViewModel
         public List<RowViewModel> AllRowViewModels => allRowViewModels;
 
         // group된 일시적인 테이블
-        private List<RowViewModel> groupByRowViewModels = new List<RowViewModel>();
-        public List<RowViewModel> GroupByRowViewModels => groupByRowViewModels;
+        private List<RowViewModel> groupedRowViewModels = new List<RowViewModel>();
+        public List<RowViewModel> GroupedRowViewModels => groupedRowViewModels;
 
         //ViewStatus viewStatus = new ViewStatus();
 
@@ -194,7 +194,8 @@ namespace FlexTable.ViewModel
             foreach (Row row in sheet.Rows)
             {
                 RowViewModel rowViewModel = new RowViewModel(mainPageViewModel) { 
-                    Index = index
+                    Index = index,
+                    Row = row
                 };
                 Int32 index2 = 0;
                 foreach (Cell cell in row.Cells)
@@ -312,7 +313,7 @@ namespace FlexTable.ViewModel
             UpdateColumnX();
 
             // table에 추가하는 것은 tableViewModel이 할 것이고 여기는 rowViewModels만 만들어주면 됨
-            groupByRowViewModels.Clear();
+            groupedRowViewModels.Clear();
 
             Int32 index = 0;
 
@@ -327,7 +328,7 @@ namespace FlexTable.ViewModel
                 IsAllRowsVisible = true;
                 foreach(RowViewModel rowViewModel in allRowViewModels)
                 {
-                    groupByRowViewModels.Add(rowViewModel);
+                    groupedRowViewModels.Add(rowViewModel);
                 }
             }
             else if (viewStatus.SelectedColumnViewModels.Count == 1 && viewStatus.SelectedColumnViewModels[0].Type == ColumnType.Numerical) // 이 경우는 뉴메리컬 하나만 선택되어 비닝 된 결과가 보이는 경우이다.
@@ -373,12 +374,12 @@ namespace FlexTable.ViewModel
                         rowViewModel.Cells.Add(cell);
                     }
 
-                    groupByRowViewModels.Add(rowViewModel);
+                    groupedRowViewModels.Add(rowViewModel);
                 }
             }
             else // 이 경우는 categorical이든 datetime이든 뭔가로 그룹핑이 된 경우 
             {
-                groupingResult = GroupRecursive(sheet.Rows.ToList(), viewStatus.SelectedColumnViewModels.Where(s => s.Type == ColumnType.Categorical).ToList() , 0);
+                groupingResult = GroupRecursive(sheet.Rows, viewStatus.SelectedColumnViewModels.Where(s => s.Type == ColumnType.Categorical).ToList() , 0);
                 
                 foreach (GroupedRows groupedRows in groupingResult)
                 {
@@ -417,10 +418,10 @@ namespace FlexTable.ViewModel
                         rowViewModel.Cells.Add(cell);
                     }
 
-                    groupByRowViewModels.Add(rowViewModel);
+                    groupedRowViewModels.Add(rowViewModel);
                 }
             }
-            SheetHeight = groupByRowViewModels.Count * (Double)App.Current.Resources["RowHeight"];
+            SheetHeight = groupedRowViewModels.Count * (Double)App.Current.Resources["RowHeight"];
         }
 
         public static List<GroupedRows> GroupRecursive(List<Row> rows, List<ColumnViewModel> groupedColumnViewModels, Int32 pivotIndex)

@@ -44,7 +44,7 @@ namespace FlexTable.View
                 Int32 columnIndex = columnViewModel.Order; // columnViewModel.Index;
                 Int32 index = 0;
 
-                foreach (RowViewModel rowViewModel in tvm.RowViewModels)
+                foreach (RowViewModel rowViewModel in tvm.AllRowViewModels)
                 {
                     TextBlock cell;
                     if (index < TableCanvas.Children.Count)
