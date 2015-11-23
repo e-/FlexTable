@@ -13,6 +13,7 @@ using Windows.UI.Input.Inking;
 using FlexTable.Model;
 using Windows.UI.Xaml.Media.Animation;
 using FlexTable.View;
+using System.Collections.Specialized;
 
 namespace FlexTable.ViewModel
 {
@@ -48,6 +49,12 @@ namespace FlexTable.ViewModel
             this.MainPageViewModel = mainPageViewModel;
             MetadataViewModel = new MetadataViewModel(mainPageViewModel);
             this.view = view;
+            mainPageViewModel.SheetViewModel.FilterViewModels.CollectionChanged += FilterViewModels_CollectionChanged;
+        }
+
+        private void FilterViewModels_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            view.ExplorationView.SetFilterEnabled(mainPageViewModel.SheetViewModel.FilterViewModels.Count > 0);
         }
 
         public void PreviewColumn(ColumnViewModel columnViewModel)
@@ -162,5 +169,43 @@ namespace FlexTable.ViewModel
                 pageView.ReflectState();
             }            
         }        
+
+        public void FilterOut(FilterViewModel filterViewModel)
+        {
+            mainPageViewModel.SheetViewModel.FilterViewModels.Add(filterViewModel);
+
+            // sheet 업데이트
+            mainPageViewModel.SheetViewModel.UpdateGroup(ViewStatus);
+
+            // 테이블 업데이트
+            mainPageViewModel.TableViewModel.Reflect(ViewStatus);
+
+            // 차트 업데이트
+            foreach(PageView pageView in selectedPageViews)
+            {
+                pageView.PageViewModel.Reflect(true);
+            }
+
+            // 뒤에 숨겨진 차트들은 어떻게하나? 좀 더 빨리 안될까
+        }
+
+        public void CancelFilter(FilterViewModel filterViewModel)
+        {
+            mainPageViewModel.SheetViewModel.FilterViewModels.Remove(filterViewModel);
+
+            // sheet 업데이트
+            mainPageViewModel.SheetViewModel.UpdateGroup(ViewStatus);
+
+            // 테이블 업데이트
+            mainPageViewModel.TableViewModel.Reflect(ViewStatus);
+
+            // 차트 업데이트
+            foreach (PageView pageView in selectedPageViews)
+            {
+                pageView.PageViewModel.Reflect(true);
+            }
+
+            // 뒤에 숨겨진 차트들은 어떻게하나? 좀 더 빨리 안될까
+        }
     }
 }

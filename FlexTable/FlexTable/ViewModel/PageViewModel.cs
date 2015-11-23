@@ -109,6 +109,11 @@ namespace FlexTable.ViewModel
             this.pivotTableViewModel = new PivotTableViewModel(mainPageViewModel, pageView.PivotTableView);
         }        
 
+        public void FilterOut(FilterViewModel filterViewModel)
+        {
+            mainPageViewModel.ExplorationViewModel.FilterOut(filterViewModel);
+        }
+
         /// <summary>
         /// 상태가 바뀌었으면 일단 exploration에 보고를 한 후 거기서 reflect 메소드를 호출해서 이 페이지 뷰와 뷰모델에 반영한다.
         /// </summary>
@@ -150,7 +155,7 @@ namespace FlexTable.ViewModel
 
             if (categoricalColumns.Count > 0)
             {
-                groupedRows = SheetViewModel.GroupRecursive(mainPageViewModel.SheetViewModel.Sheet.Rows.ToList(), categoricalColumns, 0);
+                groupedRows = SheetViewModel.GroupRecursive(mainPageViewModel.SheetViewModel.FilteredRows.ToList(), categoricalColumns, 0);
             }
 
             if (categoricalCount == 1 && numericalCount == 0)
@@ -788,7 +793,7 @@ namespace FlexTable.ViewModel
             pageView.BarChart.HorizontalAxisTitle = categorical.Name;
             pageView.BarChart.VerticalAxisTitle = String.Format("Frequency");
             pageView.BarChart.Data = groupedRows
-                .Select(grs => new BarChartDatum() { Key = grs.Keys[categorical], Value = grs.Rows.Count, Rows = grs.Rows })
+                .Select(grs => new BarChartDatum() { Key = grs.Keys[categorical], Value = grs.Rows.Count, Rows = grs.Rows, ColumnViewModel = categorical })
                 .OrderBy(t => (t.Key as Category).Order)
                 .Take(BarChartMaximumRecordNumber).ToList();
             if (groupedRows.Count > BarChartMaximumRecordNumber) IsBarChartWarningVisible = true;
@@ -953,7 +958,8 @@ namespace FlexTable.ViewModel
                 {
                     Key = g.Keys[categorical],
                     Value = numerical.AggregativeFunction.Aggregate(g.Rows.Select(r => (Double)r.Cells[numerical.Index].Content)),
-                    Rows = g.Rows
+                    Rows = g.Rows,
+                    ColumnViewModel = categorical
                 })
                 .Take(BarChartMaximumRecordNumber).ToList();
             if (groupedRows.Count > BarChartMaximumRecordNumber) IsBarChartWarningVisible = true;

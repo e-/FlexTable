@@ -33,6 +33,8 @@ namespace d3.Component
         public event Event.EventHandler RectanglePointerPressed;
         public event Event.EventHandler RectanglePointerReleased;
         public event Event.EventHandler RectangleTapped;
+        public event Event.EventHandler RectangleManipulationDelta;
+        public event Event.EventHandler RectangleManipulationCompleted;
 
         public Data Data
         {
@@ -129,8 +131,10 @@ namespace d3.Component
                             Width = WidthGetter(datum, index),
                             Height = HeightGetter(datum, index),
                             Fill = ColorGetter == null ? new SolidColorBrush(Colors.LightGray) : new SolidColorBrush(ColorGetter(datum, index)),
-                            Opacity = OpacityGetter == null ? 1 : OpacityGetter(datum, index)
+                            Opacity = OpacityGetter == null ? 1 : OpacityGetter(datum, index),
+                            ManipulationMode = ManipulationModes.TranslateY
                         };
+
                         rect.PointerPressed += delegate (object sender, PointerRoutedEventArgs e)
                         {
                             if (RectanglePointerPressed != null)
@@ -156,7 +160,23 @@ namespace d3.Component
                                 RectangleTapped(rect, e, datum, localIndex);
                             }
                         };
-                        //rect.Tapped += rect_Tapped;
+
+                        rect.ManipulationDelta += delegate (object sender, ManipulationDeltaRoutedEventArgs e)
+                        {
+                            if (RectangleManipulationDelta != null)
+                            {
+                                RectangleManipulationDelta(sender, e, datum, localIndex);
+                            }
+                        };
+
+                        rect.ManipulationCompleted += delegate (object sender, ManipulationCompletedRoutedEventArgs e)
+                        {
+                            if (RectangleManipulationCompleted != null)
+                            {
+                                RectangleManipulationCompleted(sender, e, datum, localIndex);
+                            }
+                        };
+
                         RectangleCanvas.Children.Add(rect);
                     }
                     else
@@ -210,7 +230,8 @@ namespace d3.Component
                         Width = WidthGetter(datum, index),
                         Height = HeightGetter(datum, index),
                         Fill = ColorGetter == null ? new SolidColorBrush(Colors.LightGray) : new SolidColorBrush(ColorGetter(datum, index)),
-                        Opacity = OpacityGetter == null ? 1 : OpacityGetter(datum, index)
+                        Opacity = OpacityGetter == null ? 1 : OpacityGetter(datum, index),
+                        ManipulationMode = ManipulationModes.TranslateY
                     };
 
                     rect.PointerPressed += delegate (object sender, PointerRoutedEventArgs e)
@@ -237,8 +258,22 @@ namespace d3.Component
                             RectangleTapped(rect, e, datum, localIndex);
                         }
                     };
-                    //rect.Tapped += rect_Tapped;
 
+                    rect.ManipulationDelta += delegate (object sender, ManipulationDeltaRoutedEventArgs e)
+                    {
+                        if (RectangleManipulationDelta != null)
+                        {
+                            RectangleManipulationDelta(sender, e, datum, localIndex);
+                        }
+                    };
+
+                    rect.ManipulationCompleted += delegate (object sender, ManipulationCompletedRoutedEventArgs e)
+                    {
+                        if (RectangleManipulationCompleted != null)
+                        {
+                            RectangleManipulationCompleted(sender, e, datum, localIndex);
+                        }
+                    };
 
                     Canvas.SetLeft(rect, XGetter(datum, index));
                     Canvas.SetTop(rect, YGetter(datum, index));

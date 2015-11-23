@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using FlexTable.ViewModel;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -21,19 +22,20 @@ namespace FlexTable.View
     {
         private PageView topPageView;
         public PageView TopPageView { get { return topPageView; } }
-        public ViewModel.PageViewModel TopPageViewModel { get { return topPageView.PageViewModel; } }
-        
+        public PageViewModel TopPageViewModel { get { return topPageView.PageViewModel; } }
+        public ExplorationViewModel ViewModel { get { return (ExplorationViewModel)DataContext; } }
+
         public ExplorationView()
         {
             this.InitializeComponent();
-            topPageView = InitialPageViewElement;
+            topPageView = InitialPageViewElement;            
         }
 
         public void AddNewPage()
         {
             PageView page = new PageView();
-            ViewModel.MainPageViewModel mainPageViewModel = (this.DataContext as ViewModel.ExplorationViewModel).MainPageViewModel;
-            ViewModel.PageViewModel pageViewModel = new ViewModel.PageViewModel(
+            MainPageViewModel mainPageViewModel = (this.DataContext as ViewModel.ExplorationViewModel).MainPageViewModel;
+            PageViewModel pageViewModel = new PageViewModel(
                 mainPageViewModel,
                 page
                 );
@@ -46,17 +48,29 @@ namespace FlexTable.View
         public void RemoveTopPage(PageView nextTopPageView)
         {
             PageView currentTopPageView = topPageView;
-            //PageViewElement.Children.Remove(currentTopPageView);
             topPageView = nextTopPageView;
 
             PageViewElement.Children.Remove(currentTopPageView);
+        }
 
-            /*currentTopPageView.HideStoryboard.Completed += delegate
-            {
-                PageViewElement.Children.Remove(currentTopPageView);
-            };
-            currentTopPageView.HideStoryboard.Begin();*/
+        public void SetFilterEnabled(Boolean value)
+        {
+            FilterList.UpdateLayout();
+            FilterButtonElement.IsEnabled = value;
+            if (!value)
+                FilterButtonElement.IsChecked = false;
+        }
 
+        private void FilterButtonElement_Checked(object sender, RoutedEventArgs e)
+        {
+            HideFilterListStoryboard.Pause();
+            ShowFilterListStoryboard.Begin();
+        }
+
+        private void FilterButtonElement_Unchecked(object sender, RoutedEventArgs e)
+        {
+            ShowFilterListStoryboard.Pause();
+            HideFilterListStoryboard.Begin();
         }
     }
 }

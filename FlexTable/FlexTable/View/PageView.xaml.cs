@@ -64,6 +64,7 @@ namespace FlexTable.View
             this.InitializeComponent();
 
             BarChartElement.SelectionChanged += BarChartElement_SelectionChanged;
+            BarChartElement.FilterOut += BarChartElement_FilterOut;
 
             GroupedBarChartElement.BarPointerPressed += GroupedBarChartElement_BarPointerPressed;
             GroupedBarChartElement.BarPointerReleased += BarChartElement_BarPointerReleased;
@@ -75,6 +76,26 @@ namespace FlexTable.View
             ScatterplotElement.CategoryPointerReleased += ScatterplotElement_CategoryPointerReleased;
             ScatterplotElement.LassoSelected += ScatterplotElement_LassoSelected;
             ScatterplotElement.LassoUnselected += ScatterplotElement_LassoUnselected;
+        }
+
+        private void BarChartElement_FilterOut(object sender, object e, object datum, int index)
+        {
+            IEnumerable<BarChartDatum> filteredData = datum as IEnumerable<BarChartDatum>;
+            IEnumerable<Row> filteredRows = new List<Row>();
+
+            foreach(BarChartDatum d in filteredData)
+            {
+                filteredRows = filteredRows.Concat(d.Rows);
+            }
+
+            FilterViewModel fvm = new FilterViewModel(PageViewModel.MainPageViewModel)
+            {
+                Name = (filteredData.Count() == 1) ? 
+                $"{filteredData.First().ColumnViewModel.Name} = ${filteredData.First().Key}" :
+                $"{filteredData.First().ColumnViewModel.Name} in ${String.Join(", ", filteredData.Select(fd => fd.Key).ToArray())}",
+                Predicate = r => !filteredRows.Any(rr => rr == r)
+            };
+            PageViewModel.FilterOut(fvm);
         }
 
         private void BarChartElement_SelectionChanged(object sender, object e, object datum, int index)

@@ -163,6 +163,7 @@
     <Compile Include="ViewModel\ColumnViewModel.cs" />
     <Compile Include="ViewModel\CustomHistogramViewModel.cs" />
     <Compile Include="ViewModel\ExplorationViewModel.cs" />
+    <Compile Include="ViewModel\FilterViewModel.cs" />
     <Compile Include="ViewModel\MainPageViewModel.cs" />
     <Compile Include="ViewModel\MetadataViewModel.cs" />
     <Compile Include="ViewModel\NotifyViewModel.cs" />
@@ -201,6 +202,9 @@
     </Compile>
     <Compile Include="View\ExplorationView.xaml.cs">
       <DependentUpon>ExplorationView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\FilterPresenter.xaml.cs">
+      <DependentUpon>FilterPresenter.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\GuidelinePresenter.xaml.cs">
       <DependentUpon>GuidelinePresenter.xaml</DependentUpon>
@@ -304,6 +308,10 @@
     <Page Include="View\ExplorationView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\FilterPresenter.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\GuidelinePresenter.xaml">
       <Generator>MSBuild:Compile</Generator>

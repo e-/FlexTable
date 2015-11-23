@@ -43,13 +43,14 @@ namespace FlexTable
         protected override void OnLaunched(LaunchActivatedEventArgs e)
         {
 
+            /*
 #if DEBUG
             if (System.Diagnostics.Debugger.IsAttached)
             {
                 this.DebugSettings.EnableFrameRateCounter = true;
             }
 #endif
-
+*/
             Frame rootFrame = Window.Current.Content as Frame;
 
             // 창에 콘텐츠가 이미 있는 경우 앱 초기화를 반복하지 말고,

@@ -62,11 +62,11 @@ namespace d3.Component
         }
 
         public static readonly DependencyProperty LabelOpacityGetterProperty =
-            DependencyProperty.Register("LabelOpacityGetter", typeof(Func<TextBlock, Double>), typeof(Axis), new PropertyMetadata(default(Func<TextBlock, Double>)));
+            DependencyProperty.Register("LabelOpacityGetter", typeof(Func<Object, Int32, TextBlock, Double>), typeof(Axis), new PropertyMetadata(default(Func<Object, Int32, TextBlock, Double>)));
 
-        public Func<TextBlock, Double> LabelOpacityGetter
+        public Func<Object, Int32, TextBlock, Double> LabelOpacityGetter
         {
-            get { return (Func<TextBlock, Double>)GetValue(LabelOpacityGetterProperty); }
+            get { return (Func<Object, Int32, TextBlock, Double>)GetValue(LabelOpacityGetterProperty); }
             set { SetValue(LabelOpacityGetterProperty, value); }
         }
 
@@ -79,6 +79,14 @@ namespace d3.Component
             set { SetValue(LabelFontSizeGetterProperty, value); }
         }
 
+        public static readonly DependencyProperty LabelYGetterProperty =
+            DependencyProperty.Register("LabelYGetter", typeof(Func<Object, Int32, TextBlock, Double>), typeof(Axis), new PropertyMetadata(default(Func<Object, Int32, TextBlock, Double>)));
+
+        public Func<Object, Int32, TextBlock, Double> LabelYGetter
+        {
+            get { return (Func<Object, Int32, TextBlock, Double>)GetValue(LabelYGetterProperty); }
+            set { SetValue(LabelYGetterProperty, value); }
+        }
 
         private DependencyProperty linePrimary1, linePrimary2, lineSecondary1, lineSecondary2;
         private DependencyProperty canvasPrimary, canvasSecondary;
@@ -181,32 +189,33 @@ namespace d3.Component
                         Storyboard.SetTarget(positionAnimation, tickLabel);
                         Storyboard.SetTargetProperty(positionAnimation, canvasPrimaryString);
 
-                        DoubleAnimation positionAnimation1 = new DoubleAnimation()
+                        
+                        DoubleAnimation tickMarkerPositionAnimation1 = new DoubleAnimation()
                         {
                             To = Scale.ClampedMap(tick.DomainValue),
                             Duration = Duration,
                             EasingFunction = EasingFunction,
                             EnableDependentAnimation = true
                         };
-                        Storyboard.SetTarget(positionAnimation1, tickMarker);
-                        Storyboard.SetTargetProperty(positionAnimation1, linePrimary1String);
+                        Storyboard.SetTarget(tickMarkerPositionAnimation1, tickMarker);
+                        Storyboard.SetTargetProperty(tickMarkerPositionAnimation1, linePrimary1String);
 
-                        DoubleAnimation positionAnimation2 = new DoubleAnimation()
+                        DoubleAnimation tickMarkerPositionAnimation2 = new DoubleAnimation()
                         {
                             To = Scale.ClampedMap(tick.DomainValue),
                             Duration = Duration,
                             EasingFunction = EasingFunction,
                             EnableDependentAnimation = true
                         };
-                        Storyboard.SetTarget(positionAnimation2, tickMarker);
-                        Storyboard.SetTargetProperty(positionAnimation2, linePrimary2String);
+                        Storyboard.SetTarget(tickMarkerPositionAnimation2, tickMarker);
+                        Storyboard.SetTargetProperty(tickMarkerPositionAnimation2, linePrimary2String);
 
 
                         if (previousScale.GetType() == Scale.GetType() && !(Scale is Ordinal)) // 같고 ordinal이 아니어야 (linear)야 position animation 가능
                         {
                             tickLabelsStoryboard.Children.Add(positionAnimation);
-                            tickLabelsStoryboard.Children.Add(positionAnimation1);
-                            tickLabelsStoryboard.Children.Add(positionAnimation2);
+                            tickLabelsStoryboard.Children.Add(tickMarkerPositionAnimation1);
+                            tickLabelsStoryboard.Children.Add(tickMarkerPositionAnimation2);
                         }
 
                         DoubleAnimation opacityAnimation = new DoubleAnimation()
@@ -228,6 +237,9 @@ namespace d3.Component
                         Storyboard.SetTargetProperty(opacityAnimation2, "Opacity");
 
                         tickLabel.SetValue(canvasSecondary, Orientation == Orientations.Horizontal ? (24 - tickLabel.ActualHeight) / 2 : -tickLabel.ActualWidth - 10);
+
+                        if (LabelYGetter != null)
+                            Canvas.SetTop(tickLabel, LabelYGetter(tick.DomainValue, index, tickLabel));
 
                         tickLabelsStoryboard.Children.Add(opacityAnimation);
                         tickLabelsStoryboard.Children.Add(opacityAnimation2);
@@ -317,7 +329,7 @@ namespace d3.Component
 
                     DoubleAnimation opacityAnimation = new DoubleAnimation()
                     {
-                        To = LabelOpacityGetter == null ? 1 : LabelOpacityGetter(tickLabel),
+                        To = LabelOpacityGetter == null ? 1 : LabelOpacityGetter(tick.DomainValue, 0, tickLabel),
                         Duration = Duration,
                         EasingFunction = EasingFunction
                     };

@@ -274,7 +274,7 @@
                     Visibility="Collapsed" Opacity="0">
                 <Border.RenderTransform>
                     <TransformGroup>
-                        <TranslateTransform Y="420" X="-70" />
+                        <TranslateTransform Y="454" X="290" />
                         <TranslateTransform x:Name="SelectionIndicatorTemporaryTransform" />
                     </TransformGroup>
                 </Border.RenderTransform>

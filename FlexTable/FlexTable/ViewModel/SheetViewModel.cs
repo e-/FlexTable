@@ -35,13 +35,15 @@ namespace FlexTable.ViewModel
         private List<RowViewModel> groupedRowViewModels = new List<RowViewModel>();
         public List<RowViewModel> GroupedRowViewModels => groupedRowViewModels;
 
-        //ViewStatus viewStatus = new ViewStatus();
-
         private List<GroupedRows> groupingResult;
         public List<GroupedRows> GroupingResult => groupingResult;
 
+        public ObservableCollection<FilterViewModel> FilterViewModels { get; private set; } = new ObservableCollection<FilterViewModel>();
+
         public Boolean IsAllRowsVisible { get; set; } = false;
         MainPageViewModel mainPageViewModel;
+
+        public IEnumerable<Row> FilteredRows { get { return FilterViewModel.ApplyFilters(FilterViewModels, sheet.Rows); } }
 
         IMainPage view;
 
@@ -326,6 +328,8 @@ namespace FlexTable.ViewModel
                 )
             {
                 IsAllRowsVisible = true;
+
+                // 그대로 베끼면 안되는게 순서가 바뀌기 때문임
                 foreach(RowViewModel rowViewModel in allRowViewModels)
                 {
                     groupedRowViewModels.Add(rowViewModel);
@@ -335,7 +339,7 @@ namespace FlexTable.ViewModel
             {
                 ColumnViewModel selected = viewStatus.SelectedColumnViewModels[0];
 
-                List<GroupedRows> binResult = Bin(selected, Sheet.Rows);
+                List<GroupedRows> binResult = Bin(selected, FilteredRows.ToList());
 
                 foreach (GroupedRows groupedRows in binResult)
                 {
@@ -379,7 +383,7 @@ namespace FlexTable.ViewModel
             }
             else // 이 경우는 categorical이든 datetime이든 뭔가로 그룹핑이 된 경우 
             {
-                groupingResult = GroupRecursive(sheet.Rows, viewStatus.SelectedColumnViewModels.Where(s => s.Type == ColumnType.Categorical).ToList() , 0);
+                groupingResult = GroupRecursive(FilteredRows.ToList(), viewStatus.SelectedColumnViewModels.Where(s => s.Type == ColumnType.Categorical).ToList() , 0);
                 
                 foreach (GroupedRows groupedRows in groupingResult)
                 {

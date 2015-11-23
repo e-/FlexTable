@@ -107,9 +107,32 @@ namespace FlexTable.Crayon.Chart
         public Func<Object, Int32, Double> WidthGetter { get { return (d, index) => BarWidth; } }
         public Func<Object, Int32, Double> HeightGetter { get { return (d, index) => ChartAreaEndY - YScale.Map((d as BarChartDatum).Value); } }
         public Func<Object, Int32, Double> XGetter { get { return (d, index) => XScale.Map((d as BarChartDatum).Key) - BarWidth / 2; } }
-        public Func<Object, Int32, Double> YGetter { get { return (d, index) => YScale.Map((d as BarChartDatum).Value); } }
+        public Func<Object, Int32, Double> YGetter
+        {
+            get
+            {
+                return (d, index) => YScale.Map((d as BarChartDatum).Value) + 
+                (selectedKeys.Count > 0 ? 
+                    (selectedKeys.IndexOf((d as BarChartDatum).Key) >= 0 ? DragToFilterYDelta : 0) : 
+                    (d == DragToFilterFocusedBar ? DragToFilterYDelta : 0));
+            }
+        }
         public Func<Object, Int32, Color> ColorGetter { get { return (bin, index) => (AutoColor ? Category10.Colors[index % 10] : Category10.Colors.First()); } }
-        public Func<Object, Int32, Double> OpacityGetter { get { return (d, index) => (selectedKeys.Count == 0) ? 1 : (selectedKeys.IndexOf((d as BarChartDatum).Key) < 0 ? 0.2 : 1); } }
+        public Func<Object, Int32, Double> OpacityGetter { get {
+                return (d, index) => (selectedKeys.Count == 0) ? (d == DragToFilterFocusedBar ? DragToFilterOpacity : 1) : 
+                (selectedKeys.IndexOf((d as BarChartDatum).Key) < 0 ? 0.2 : DragToFilterOpacity);
+            } }
+
+        public Func<Object, Int32, TextBlock, Double> HorizontalAxisLabelYGetter { get {
+                return (d, index, textBlock) => (selectedKeys.Count > 0 ?
+                    (selectedKeys.IndexOf((d as BarChartDatum).Key) >= 0 ? DragToFilterYDelta : 0) :
+                    (d == DragToFilterFocusedBar ? DragToFilterYDelta : 0));
+            } }
+        public Func<Object, Int32, TextBlock, Double> HorizontalAxisLabelOpacityGetter { get {
+                return (d, index, textBlock) => (selectedKeys.Count > 0 ?
+                    (selectedKeys.IndexOf((d as BarChartDatum).Key) >= 0 ? DragToFilterOpacity : 1) :
+                    (d == DragToFilterFocusedBar ? DragToFilterOpacity : 1));
+            } }
 
         public Func<Object, Int32, Double> HandleWidthGetter { get { return (d, index) => XScale.RangeBand; } }
         public Func<Object, Int32, Double> HandleHeightGetter { get { return (d, index) => ChartAreaEndY - PaddingTop; } }
@@ -163,15 +186,16 @@ namespace FlexTable.Crayon.Chart
 
         public Double LegendAreaWidth { get; set; } = 140;
 
-
-        //public static readonly DependencyProperty BarPointerPressedProperty = DependencyProperty.Register("BarPointerPressed", typeof(Event.EventHandler), typeof(BarChart), new PropertyMetadata(null));
-
-        //event를 이렇게 low레벨에서 주는게 아니라 선택됐을때 이런 식으로 줘야함
-        //public event Event.EventHandler BarPointerPressed;
-        //public event Event.EventHandler BarPointerReleased;
-
+        private Double DragToFilterYDelta = 0;
+        private Double DragToFilterOpacity = 1;
+        private BarChartDatum DragToFilterFocusedBar = null;
+        
         public event Event.EventHandler SelectionChanged;
         private List<Object> selectedKeys = new List<Object>();
+
+        public event Event.EventHandler FilterIn;
+        public event Event.EventHandler FilterOut;
+
         #endregion
 
         Drawable drawable = new Drawable()
@@ -190,7 +214,6 @@ namespace FlexTable.Crayon.Chart
             HandleRectangleElement.HeightGetter = HandleHeightGetter;
             HandleRectangleElement.XGetter = HandleXGetter;
             HandleRectangleElement.YGetter = d3.Util.CreateConstantGetter<Double>(PaddingTop);
-
             HandleRectangleElement.ColorGetter = d3.Util.CreateConstantGetter<Color>(Colors.Transparent);
 
             RectangleElement.Data = D3Data;
@@ -205,6 +228,8 @@ namespace FlexTable.Crayon.Chart
             Canvas.SetTop(HorizontalAxis, ChartAreaEndY);
             HorizontalAxis.Visibility = HorizontalAxisVisibility;
             HorizontalAxis.LabelFontSizeGetter = LabelFontSizeGetter;
+            //HorizontalAxis.LabelOpacityGetter = HorizontalAxisLabelOpacityGetter;
+            //HorizontalAxis.LabelYGetter = HorizontalAxisLabelYGetter;
 
             Canvas.SetTop(HorizontalAxisTitleElement, HorizontalAxisLabelCanvasTop);
             Canvas.SetLeft(HorizontalAxisTitleElement, HorizontalAxisLabelCanvasLeft);
@@ -254,9 +279,67 @@ namespace FlexTable.Crayon.Chart
 
             HandleRectangleElement.RectangleTapped += RectangleElement_RectangleTapped;
             LegendHandleRectangleElement.RectangleTapped += RectangleElement_RectangleTapped;
-
+            HandleRectangleElement.RectangleManipulationDelta += HandleRectangleElement_RectangleManipulationDelta;
+            HandleRectangleElement.RectangleManipulationCompleted += HandleRectangleElement_RectangleManipulationCompleted;
             drawable.Attach(RootCanvas, StrokeGrid, NewStrokeGrid);
             drawable.StrokeAdded += Drawable_StrokeAdded;
+        }
+
+        private void HandleRectangleElement_RectangleManipulationCompleted(object sender, object eo, object datumo, int index)
+        {
+            ManipulationCompletedRoutedEventArgs e = eo as ManipulationCompletedRoutedEventArgs;
+            if (e.PointerDeviceType != PointerDeviceType.Touch) return;
+            Double delta = e.Cumulative.Translation.Y;
+            BarChartDatum datum = datumo as BarChartDatum;
+
+            if (delta > DragToFilterThreshold)
+            {
+                // filter out
+
+                if (FilterOut != null) {
+                    if(selectedKeys.Count > 0)
+                    {
+                        FilterOut(sender, eo, Data.Where(d => selectedKeys.IndexOf(d.Key) >= 0), index);
+                    }
+                    else
+                    {
+                        FilterOut(sender, eo, new List<BarChartDatum>() { datum }, index);
+                    }
+                }
+
+                DragToFilterYDelta = 0;
+                DragToFilterFocusedBar = null;
+                DragToFilterOpacity = 1;
+            }
+            else
+            {
+                DragToFilterYDelta = 0;
+                DragToFilterFocusedBar = null;
+                DragToFilterOpacity = 1;
+            }
+
+            RectangleElement.Update();
+            //HorizontalAxis.Update();
+        }
+
+        const Double DragToFilterThreshold = 50;
+
+        private void HandleRectangleElement_RectangleManipulationDelta(object sender, object eo, object datumo, int index)
+        {
+            ManipulationDeltaRoutedEventArgs e = eo as ManipulationDeltaRoutedEventArgs;
+            if (e.PointerDeviceType != PointerDeviceType.Touch) return;
+            Double delta = e.Cumulative.Translation.Y;
+            BarChartDatum datum = datumo as BarChartDatum;
+
+            if (delta < 0) delta = 0;
+            if (delta > DragToFilterThreshold) delta = DragToFilterThreshold;
+
+            DragToFilterYDelta = delta;
+            DragToFilterFocusedBar = datum;
+            DragToFilterOpacity = 1 - delta / DragToFilterThreshold;
+
+            RectangleElement.Update();
+            //HorizontalAxis.Update();
         }
 
         private void Drawable_StrokeAdded(InkManager inkManager)
@@ -315,6 +398,9 @@ namespace FlexTable.Crayon.Chart
                     }
                 }
 
+                if (SelectionChanged != null)
+                    SelectionChanged(this, null, Data.Where(d => selectedKeys.IndexOf(d.Key) >= 0), index);
+
                 RectangleElement.Update(true);
                 IndicatorTextElement.Update(true);
                 if (LegendVisibility == Visibility.Visible)
@@ -354,24 +440,6 @@ namespace FlexTable.Crayon.Chart
                 }
                 args.Handled = true;
             }
-
-            /*if (BarPointerPressed != null)
-                BarPointerPressed(sender, datum, index);*/
-        }
-
-        void RectangleElement_RectanglePointerReleased(object sender, object e, object datum, Int32 index)
-        {
-            /*if (BarPointerReleased != null)
-                BarPointerReleased(sender, datum, index);*/
-
-            /*viewModel.UnselectBar(index);
-            RectangleElement.Update(true);
-            IndicatorTextElement.Update(true);
-            if (viewModel.IsLegendVisible)
-            {
-                LegendRectangleElement.Update(true);
-                LegendTextElement.Update(true);
-            }*/
         }
 
         public void Update()

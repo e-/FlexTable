@@ -11,8 +11,10 @@
             <x:Double x:Key="RowHeaderWidth">110</x:Double>
             <x:Double x:Key="HalfRowHeaderWidth">55</x:Double>
             <x:Double x:Key="ColumnHeaderHeight">50</x:Double>
+            <SolidColorBrush x:Key="BrighterGridLineBrush" Color="#F0F0F0" />
             <SolidColorBrush x:Key="GridLineBrush" Color="#EEEEEE" />
-            <SolidColorBrush x:Key="DarkerGridLineBrush" Color="#DDDDDD" />
+            <Color x:Key="DarkerGridLineColor">#DDDDDD</Color>
+            <SolidColorBrush x:Key="DarkerGridLineBrush" Color="{StaticResource DarkerGridLineColor}" />
             <Color x:Key="HighlightColor1">#1FAF9b</Color>
             <SolidColorBrush Color="{StaticResource HighlightColor1}" x:Key="HighlightBrush1" />
             <Color x:Key="DarkerHighlightColor1">#1B9D8B</Color>
@@ -66,6 +68,113 @@
 
             <QuarticEase EasingMode="EaseInOut" x:Key="QuarticEaseInOut" />
 
+
+            <Style x:Key="FilterIconButtonStyle" TargetType="ToggleButton">
+                <Setter Property="FontFamily" Value="FontAwesome" />
+                <Setter Property="FontSize" Value="34" />
+                <Setter Property="Background" Value="Transparent" />
+                <!--<Setter Property="Background" Value="{ThemeResource SystemControlBackgroundBaseLowBrush}" />-->
+                <Setter Property="Foreground" Value="{StaticResource GridLineBrush}"/>
+                <Setter Property="BorderBrush" Value="{ThemeResource SystemControlForegroundTransparentBrush}" />
+                <Setter Property="BorderThickness" Value="0" />
+                <!--<Setter Property="BorderThickness" Value="{ThemeResource ButtonBorderThemeThickness}" />-->
+                <Setter Property="HorizontalAlignment" Value="Center" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+
+                <!--<Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}" />-->
+                <Setter Property="FontWeight" Value="Normal" />
+                <!--<Setter Property="FontSize" Value="{ThemeResource ControlContentThemeFontSize}" />-->
+                <Setter Property="UseSystemFocusVisuals" Value="True" />
+                <Setter Property="Width" Value="110" />
+                <Setter Property="Height" Value="110" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ToggleButton">
+                            <Grid x:Name="RootGrid">
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualState x:Name="Normal">
+                                            <Storyboard>
+                                                <ColorAnimation Storyboard.TargetName="ContentPresenter"
+                                                                Storyboard.TargetProperty="(ContentPresenter.Foreground).(SolidColorBrush.Color)"
+                                                                Duration="0:0:0.3"
+                                                                EasingFunction="{StaticResource QuarticEaseInOut}"
+                                                                To="{StaticResource HighlightColor1}">
+                                                </ColorAnimation>
+                                            </Storyboard>
+                                        </VisualState>
+                                        <!--<VisualState x:Name="Pressed">
+                                            <Storyboard>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Triangle"
+                                                    Storyboard.TargetProperty="Fill">
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource DarkerGridLineBrush}" />
+                                                </ObjectAnimationUsingKeyFrames>
+                                                <PointerDownThemeAnimation Storyboard.TargetName="RootGrid" />
+                                            </Storyboard>
+                                        </VisualState>-->
+                                        <VisualState x:Name="Checked">
+                                            <Storyboard>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter"
+                                                                Storyboard.TargetProperty="(ContentPresenter.Foreground).(SolidColorBrush.Color)"
+                                                                               >
+                                                    <DiscreteObjectKeyFrame
+                                                        KeyTime="0"
+                                                        Value="{StaticResource DarkerGridLineColor}" />
+                                                </ObjectAnimationUsingKeyFrames>
+                                                <!--<ColorAnimation Storyboard.TargetName="ContentPresenter"
+                                                                Storyboard.TargetProperty="(ContentPresenter.Foreground).(SolidColorBrush.Color)"
+                                                                Duration="0:0:0.3"
+                                                                EasingFunction="{StaticResource QuarticEaseInOut}"
+                                                                To="{StaticResource DarkerGridLineColor}">
+                                                </ColorAnimation>-->
+                                            </Storyboard>
+                                        </VisualState>
+                                        <!--<VisualState x:Name="CheckedPressed">
+                                            <Storyboard>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Triangle"
+                                                    Storyboard.TargetProperty="Fill">
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource DarkerGridLineBrush}" />
+                                                </ObjectAnimationUsingKeyFrames>
+                                                <PointerDownThemeAnimation Storyboard.TargetName="RootGrid" />
+                                            </Storyboard>
+                                        </VisualState>-->
+                                        <VisualState x:Name="Disabled">
+                                            <Storyboard>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Triangle"
+                                                    Storyboard.TargetProperty="Fill">
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource GridLineBrush}" />
+                                                </ObjectAnimationUsingKeyFrames>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter"
+                                                    Storyboard.TargetProperty="Foreground">
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource DarkerGridLineBrush}" />
+                                                </ObjectAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+
+                                <Polygon Points="0,0 110,110, 110,0" StrokeThickness="0" Fill="{StaticResource GridLineBrush}" x:Name="Triangle"/>
+                                
+                                <ContentPresenter x:Name="ContentPresenter"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                                  Foreground="{TemplateBinding Foreground}"
+                                    Content="{TemplateBinding Content}"
+                                    ContentTransitions="{TemplateBinding ContentTransitions}"
+                                    ContentTemplate="{TemplateBinding ContentTemplate}"
+                                    HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                    VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"                                                  
+                                    AutomationProperties.AccessibilityView="Raw">
+                                    <ContentPresenter.RenderTransform>
+                                        <TranslateTransform X="20" Y="-20" />
+                                    </ContentPresenter.RenderTransform>
+                                </ContentPresenter>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            
             <Style x:Key="TopTriangleIconButtonStyle" TargetType="Button">
                 <Setter Property="FontFamily" Value="FontAwesome" />
                 <Setter Property="FontSize" Value="34" />
@@ -630,7 +739,6 @@
                     </Setter.Value>
                 </Setter>
             </Style>
-
 
             <Style TargetType="ComboBoxItem" x:Key="SeamlessComboBoxItemStyle">
                 <Setter Property="Background" Value="Transparent" />
