@@ -205,7 +205,9 @@ namespace FlexTable.View
                 }
 
                 RowHeaderPresenter.SetRowNumber(ViewModel.AllRowViewModels.Count, selected.Count());
-            }            
+            }
+
+            UpdateScrollViews();
         }
 
         async void timer_Tick(object sender, object e)
@@ -328,13 +330,19 @@ namespace FlexTable.View
             TableViewModel tableViewModel = this.DataContext as TableViewModel;
             ScrollViewer sv = sender as ScrollViewer;
 
+            UpdateScrollViews();
+        }
+
+        void UpdateScrollViews()
+        {
+            ScrollViewer sv = ActivatedScrollViewer;
             RowHeaderPresenterElement.VerticalOffset = sv.VerticalOffset;
             GuidlineElement.VerticalOffset = sv.VerticalOffset;
             TopColumnHeader.HorizontalOffset = sv.HorizontalOffset;
             BottomColumnHeader.HorizontalOffset = sv.HorizontalOffset;
 
-            tableViewModel.ScrollTop = sv.VerticalOffset;
-            tableViewModel.ScrollLeft = sv.HorizontalOffset;
+            ViewModel.ScrollTop = sv.VerticalOffset;
+            ViewModel.ScrollLeft = sv.HorizontalOffset;
         }
     }
 }

@@ -125,7 +125,12 @@
     <Compile Include="Crayon\Chart\BarChart.xaml.cs">
       <DependentUpon>BarChart.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Crayon\Chart\GroupedBarChartDatum.cs" />
     <Compile Include="Crayon\Chart\BarChartDatum.cs" />
+    <Compile Include="Crayon\Chart\GroupedBarChart.xaml.cs">
+      <DependentUpon>GroupedBarChart.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Crayon\Key.cs" />
     <Compile Include="IMainPage.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
@@ -253,6 +258,10 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Page Include="Crayon\Chart\BarChart.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Crayon\Chart\GroupedBarChart.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

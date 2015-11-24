@@ -32,12 +32,12 @@ namespace FlexTable.View
 {
     public sealed partial class PageView : UserControl
     {
-        public Crayon.Chart.BarChart BarChart => BarChartElement;
+        public BarChart BarChart => BarChartElement;
         public d3.View.LineChart LineChart => LineChartElement;
         public DescriptiveStatisticsView DescriptiveStatisticsView => DescriptiveStatisticsViewElement;
         public CorrelationStatisticsView CorrelationStatisticsView => CorrelationStatisticsViewElement;
         public DistributionView DistributionView => DistributionViewElement;
-        public d3.View.GroupedBarChart GroupedBarChart => GroupedBarChartElement;
+        public GroupedBarChart GroupedBarChart => GroupedBarChartElement;
         public d3.View.Scatterplot Scatterplot => ScatterplotElement;
         public PivotTableView PivotTableView => PivotTableViewElement;
 
@@ -66,8 +66,8 @@ namespace FlexTable.View
             BarChartElement.SelectionChanged += BarChartElement_SelectionChanged;
             BarChartElement.FilterOut += BarChartElement_FilterOut;
 
-            GroupedBarChartElement.BarPointerPressed += GroupedBarChartElement_BarPointerPressed;
-            GroupedBarChartElement.BarPointerReleased += BarChartElement_BarPointerReleased;
+            //GroupedBarChartElement.BarPointerPressed += GroupedBarChartElement_BarPointerPressed;
+            //GroupedBarChartElement.BarPointerReleased += BarChartElement_BarPointerReleased;
 
             LineChartElement.LinePointerPressed += LineChartElement_LinePointerPressed;
             LineChartElement.LinePointerReleased += LineChartElement_LinePointerReleased;

@@ -872,31 +872,50 @@ namespace FlexTable.ViewModel
             }
 
             GroupedBarChartRowSelecter = (c1, c2) => (r => r.Cells[categorical1.Index].Content == c1 && r.Cells[categorical2.Index].Content == c2);
-            pageView.GroupedBarChart.YStartsWithZero = true;
-            pageView.GroupedBarChart.HorizontalAxisLabel = categorical1.Name;
-            pageView.GroupedBarChart.VerticalAxisLabel = $"Frequency of {categorical2.Name}";
-            
+            pageView.GroupedBarChart.YStartsFromZero = true;
+            pageView.GroupedBarChart.HorizontalAxisTitle = categorical1.Name;
+            pageView.GroupedBarChart.VerticalAxisTitle = $"Frequency of {categorical2.Name}";
+
             var data = groupedRows
                         .OrderBy(g => (g.Keys[categorical1] as Category).Order * 10000 + (g.Keys[categorical2] as Category).Order)
-                        .Select(g => new Tuple<Object, Object, Double, Object>(
-                            g.Keys[categorical1],
-                            g.Keys[categorical2],
-                            g.Rows.Count,
-                            g.Keys[categorical2]
-                        ))
-                        .Take(GroupedBarChartMaximumRecordNumber);
-            
+                        .Take(GroupedBarChartMaximumRecordNumber)
+                        .GroupBy(g => g.Keys[categorical1])
+                        .Select(gs =>
+                        {
+                            GroupedBarChartDatum datum = new GroupedBarChartDatum()
+                            {
+                                ColumnViewModel = categorical1,
+                                Key = gs.Key
+                            };
+
+                            datum.Children = gs.Select(g => new BarChartDatum()
+                            {
+                                Key = g.Keys[categorical2],
+                                Value = g.Rows.Count,
+                                ColumnViewModel = categorical2,
+                                Parent = datum,
+                                Rows = g.Rows
+                            }).ToList();
+                            return datum;
+                        });
+
             if (groupedRows.Count > GroupedBarChartMaximumRecordNumber) IsGroupedBarChartWarningVisible = true;
-            if (data.Select(d => (d as Tuple<Object, Object, Double, Object>).Item2).Distinct().Count() > BarChartMaximumRecordNumber)
+            var legends = groupedRows.Take(GroupedBarChartMaximumRecordNumber).GroupBy(g => g.Keys[categorical2]);
+
+            if (legends.Count() > BarChartMaximumRecordNumber)
             {
                 // number of categories in legend
+                var validLegends = legends.Take(BarChartMaximumRecordNumber).Select(g => g.Key);
                 IsGroupedBarChartWarningVisible = true;
-                var distinct = data.Select(d => (d as Tuple<Object, Object, Double, Object>).Item2).Distinct().Take(BarChartMaximumRecordNumber).ToList();
-                
-                data = data.Where(d => distinct.IndexOf((d as Tuple<Object, Object, Double, Object>).Item2) >= 0);
+
+                foreach(GroupedBarChartDatum datum in data)
+                {
+                    datum.Children = datum.Children.Where(c => validLegends.Contains(c.Key)).ToList();
+                }
+                data = data.Where(d => d.Children.Count > 0);
             }
 
-            pageView.GroupedBarChart.Data = data;
+            pageView.GroupedBarChart.Data = data.ToList();
 
             pageView.GroupedBarChart.Update();           
         }
@@ -917,18 +936,33 @@ namespace FlexTable.ViewModel
 
             GroupedBarChartRowSelecter = (c1, c2) => (r => r.Cells[categorical1.Index].Content == c1 && r.Cells[categorical2.Index].Content == c2);
 
-            pageView.GroupedBarChart.YStartsWithZero = false;
-            pageView.GroupedBarChart.HorizontalAxisLabel = categorical1.Name;
-            pageView.GroupedBarChart.VerticalAxisLabel = numerical.HeaderNameWithUnit;
+            pageView.GroupedBarChart.YStartsFromZero = false;
+            pageView.GroupedBarChart.HorizontalAxisTitle = categorical1.Name;
+            pageView.GroupedBarChart.VerticalAxisTitle = numerical.HeaderNameWithUnit;
             pageView.GroupedBarChart.Data = groupedRows
                         .OrderBy(g => (g.Keys[categorical1] as Category).Order * 10000 + (g.Keys[categorical2] as Category).Order)
-                        .Select(g => new Tuple<Object, Object, Double, Object>(
-                            g.Keys[categorical1],
-                            String.Format("{0} {1}", categorical2.Name, g.Keys[categorical2]),
-                            numerical.AggregativeFunction.Aggregate(g.Rows.Select(row => (Double)row.Cells[numerical.Index].Content)),
-                            g.Keys[categorical2]
-                        ))
-                        .Take(GroupedBarChartMaximumRecordNumber);
+                        .Take(GroupedBarChartMaximumRecordNumber)
+                        .GroupBy(g => g.Keys[categorical1])
+                        .Select(gs =>
+                        {
+                            GroupedBarChartDatum datum = new GroupedBarChartDatum()
+                            {
+                                ColumnViewModel = categorical1,
+                                Key = gs.Key
+                            };
+
+                            datum.Children = gs.Select(g => new BarChartDatum()
+                            {
+                                Key = g.Keys[categorical2],
+                                Value = numerical.AggregativeFunction.Aggregate(g.Rows.Select(row => (Double)row.Cells[numerical.Index].Content)),
+                                ColumnViewModel = categorical2,
+                                Parent = datum,
+                                Rows = g.Rows
+                            }).ToList();
+                            return datum;
+                        })
+                        .ToList();
+
             if (groupedRows.Count > GroupedBarChartMaximumRecordNumber) IsGroupedBarChartWarningVisible = true;
             pageView.GroupedBarChart.Update();
         }
@@ -1135,31 +1169,44 @@ namespace FlexTable.ViewModel
 
             GroupedBarChartRowSelecter = (c1, c2) => (r => r.Cells[categorical.Index].Content == c1);
 
-            pageView.GroupedBarChart.YStartsWithZero = true;
-            pageView.GroupedBarChart.HorizontalAxisLabel = categorical.Name;
-            pageView.GroupedBarChart.VerticalAxisLabel = $"{numerical1.Name} and {numerical2.Name} {numerical1.UnitString}";
-                        
+            pageView.GroupedBarChart.YStartsFromZero = true;
+            pageView.GroupedBarChart.HorizontalAxisTitle = categorical.Name;
+            pageView.GroupedBarChart.VerticalAxisTitle = $"{numerical1.Name} and {numerical2.Name} {numerical1.UnitString}";
+
             var data = groupedRows
                         .OrderBy(g => (g.Keys[categorical] as Category).Order)
-                        .SelectMany(g => new List<Tuple<Object, Object, Double, Object>>() {
-                            new Tuple<Object, Object, Double, Object>(
-                                g.Keys[categorical],
-                                numerical1.Name,
-                                numerical1.AggregativeFunction.Aggregate(g.Rows.Select(r => (Double)r.Cells[numerical1.Index].Content)),
-                                null
-                            ),
-                            new Tuple<Object, Object, Double, Object>(
-                                g.Keys[categorical],
-                                numerical2.Name,
-                                numerical2.AggregativeFunction.Aggregate(g.Rows.Select(r => (Double)r.Cells[numerical2.Index].Content)),
-                                null
-                            )
-                        })
-                        ;
+                        .Select(g =>
+                        {
+                            GroupedBarChartDatum datum = new GroupedBarChartDatum()
+                            {
+                                ColumnViewModel = categorical,
+                                Key = g.Keys[categorical]
+                            };
 
+                            datum.Children = new List<BarChartDatum>()
+                            {
+                                new BarChartDatum()
+                                {
+                                    ColumnViewModel = null,
+                                    Key = numerical1.Name,
+                                    Parent = datum,
+                                    Value = numerical1.AggregativeFunction.Aggregate(g.Rows.Select(r => (Double)r.Cells[numerical1.Index].Content)),
+                                    Rows = g.Rows
+                                },
+                                new BarChartDatum()
+                                {
+                                    ColumnViewModel = null,
+                                    Key = numerical2.Name,
+                                    Parent = datum,
+                                    Value = numerical2.AggregativeFunction.Aggregate(g.Rows.Select(r => (Double)r.Cells[numerical2.Index].Content)),
+                                    Rows = g.Rows
+                                }
+                            };
+                            return datum;
+                        });
 
             if (data.Count() > GroupedBarChartMaximumRecordNumber) IsGroupedBarChartWarningVisible = true;
-            pageView.GroupedBarChart.Data = data.Take(GroupedBarChartMaximumRecordNumber);
+            pageView.GroupedBarChart.Data = data.Take(GroupedBarChartMaximumRecordNumber).ToList();
 
             pageView.GroupedBarChart.Update();
         }

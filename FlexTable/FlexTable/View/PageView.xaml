@@ -185,7 +185,8 @@
                 ManipulationDelta="Wrapper_ManipulationDelta"
                 ManipulationCompleted="Wrapper_ManipulationCompleted">
         <Grid>
-            <StackPanel Height="{Binding MainPageViewModel.PageHeight}" Visibility="{Binding IsPreviewVisible, Converter={StaticResource BooleanToVisibilityConverter}}" 
+            <!-- Visibility="{Binding IsPreviewVisible, Converter={StaticResource BooleanToVisibilityConverter}}" -->
+            <StackPanel Height="{Binding MainPageViewModel.PageHeight}"
                         x:Name="ChartWrapper" Padding="20" Background="White">
                 <ScrollViewer HorizontalScrollBarVisibility="Hidden" HorizontalScrollMode="Auto" 
                               VerticalScrollBarVisibility="Hidden" VerticalScrollMode="Disabled"
@@ -235,7 +236,7 @@
                                 <Run FontFamily="FontAwesome" Foreground="#CC0000">&#xf071;</Run>
                                 <Run Text="{StaticResource TooManyElementsWarningString}"></Run>
                             </TextBlock>
-                            <d3view:GroupedBarChart x:Name="GroupedBarChartElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}" 
+                            <crayon:GroupedBarChart x:Name="GroupedBarChartElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}" 
                                                     IsHitTestVisible="False" Tag="Grouped Bar Chart"/>
                         </StackPanel>
 

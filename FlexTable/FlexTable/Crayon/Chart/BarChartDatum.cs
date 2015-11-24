@@ -12,6 +12,7 @@ namespace FlexTable.Crayon.Chart
         public ColumnViewModel ColumnViewModel { get; set; }
         public Object Key { get; set; }
         public Double Value { get; set; }
+        public GroupedBarChartDatum Parent { get; set; }
         public IEnumerable<Model.Row> Rows { get; set; }
     }
 }

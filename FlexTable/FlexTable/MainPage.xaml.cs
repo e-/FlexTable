@@ -45,7 +45,7 @@ namespace FlexTable
 
             view.TryEnterFullScreenMode();
 
-            Model.Sheet sheet = await Util.CsvLoader.Load("who.csv"); // "Population-filtered.csv");
+            Model.Sheet sheet = await Util.CsvLoader.Load("fitts.csv"); // "Population-filtered.csv");
             mainPageViewModel.Sheet = sheet;
 
             mainPageViewModel.Initialize();
