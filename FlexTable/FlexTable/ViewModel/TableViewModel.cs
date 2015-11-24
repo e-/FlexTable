@@ -42,10 +42,10 @@ namespace FlexTable.ViewModel
         public Double SheetViewHeight => mainPageViewModel.Bounds.Height - (Double)App.Current.Resources["ColumnHeaderHeight"] * 2;
 
         private Double paddedSheetWidth;
-        public Double PaddedSheetWidth { get { return paddedSheetWidth; } set { paddedSheetWidth = value; OnPropertyChanged("PaddedSheetWidth"); } }
+        public Double PaddedSheetWidth { get { return paddedSheetWidth; } set { paddedSheetWidth = value; OnPropertyChanged(nameof(PaddedSheetWidth)); } }
 
         private Double paddedSheetHeight;
-        public Double PaddedSheetHeight { get { return paddedSheetHeight; } set { paddedSheetHeight = value; OnPropertyChanged("PaddedSheetHeight"); } }
+        public Double PaddedSheetHeight { get { return paddedSheetHeight; } set { paddedSheetHeight = value; OnPropertyChanged(nameof(PaddedSheetHeight)); } }
         
         private ObservableCollection<RowViewModel> allRowViewModels;
         public ObservableCollection<RowViewModel> AllRowViewModels
@@ -61,13 +61,13 @@ namespace FlexTable.ViewModel
             set { groupedRowViewModels = value; OnPropertyChanged(nameof(GroupedRowViewModels)); }
         }
 
-        private ObservableCollection<RowViewModel> selectedRowViewModels;
+        /*private ObservableCollection<RowViewModel> selectedRowViewModels;
         public ObservableCollection<RowViewModel> SelectedRowViewModels
         {
             get { return selectedRowViewModels; }
             set { selectedRowViewModels = value; OnPropertyChanged(nameof(SelectedRowViewModels)); }
-        }
-
+        }*/
+        
         private TableViewState oldState = TableViewState.AllRow;
         public TableViewState OldState { get { return oldState; } }
 
@@ -83,7 +83,7 @@ namespace FlexTable.ViewModel
         private SortOption sortOption;
         public SortOption SortOption { get { return sortOption; } set { sortOption = value; } }
 
-        IEnumerable<Row> selectedRows = null;
+        public IEnumerable<Row> SelectedRows { get; set; } = null;
 
         public TableViewModel(MainPageViewModel mainPageViewModel, IMainPage view)
         {
@@ -100,22 +100,20 @@ namespace FlexTable.ViewModel
         {
             // 최대 row header 추가
             view.TableView.GuidelinePresenter.SetMaximumRowNumber(SheetViewModel.AllRowViewModels.Count);
+            view.TableView.RowHeaderPresenter.SetRowMaximumNumber(SheetViewModel.AllRowViewModels.Count);
+
             view.TableView.TopColumnHeader.Update();
             view.TableView.BottomColumnHeader.Update();
 
-            view.TableView.Initialize();
-
-            view.TableView.ColumnIndexer.Update();
-        }
-
-        public void CreateAllRows()
-        {
             PaddedSheetHeight = SheetViewModel.AllRowsSheetHeight > SheetViewHeight ? SheetViewModel.AllRowsSheetHeight : SheetViewHeight;
             PaddedSheetWidth = SheetViewModel.SheetWidth > SheetViewWidth ? SheetViewModel.SheetWidth : SheetViewWidth;
-            
+
             AllRowViewModels = new ObservableCollection<RowViewModel>(SheetViewModel.AllRowViewModels);
 
+            view.TableView.Initialize();
             view.TableView.ReflectState();
+
+            view.TableView.ColumnIndexer.Update();
         }
 
         DispatcherTimer dispatcherTimer = null;
@@ -146,11 +144,11 @@ namespace FlexTable.ViewModel
         
         void Update(ViewStatus viewStatus)
         {
-            if(selectedRows != null) // 로우 선택 중
+            if(SelectedRows != null) // 로우 선택 중
             {
-                List<RowViewModel> rvms = new List<RowViewModel>();
+                //List<RowViewModel> rvms = new List<RowViewModel>();
 
-                foreach (Row row in selectedRows)
+                /*foreach (Row row in selectedRows)
                 {
                     RowViewModel rowViewModel = new RowViewModel(mainPageViewModel) { Row = row };
                     foreach (Cell cell in row.Cells.OrderBy(c => c.ColumnViewModel.Order))
@@ -158,9 +156,9 @@ namespace FlexTable.ViewModel
                         rowViewModel.Cells.Add(cell);
                     }
                     rvms.Add(rowViewModel);
-                }
+                }*/
 
-                SelectedRowViewModels = new ObservableCollection<RowViewModel>(rvms);
+                //SelectedRowViewModels = new ObservableCollection<RowViewModel>(rvms);
 
 
                 State = TableViewState.SelectedRow;
@@ -329,14 +327,14 @@ namespace FlexTable.ViewModel
 
         public void PreviewRows(IEnumerable<Row> selectedRows)
         {
-            this.selectedRows = selectedRows;
+            this.SelectedRows = selectedRows;
 
             Reflect(mainPageViewModel.ExplorationViewModel.ViewStatus);
         }
 
         public void CancelPreviewRows()
         {
-            selectedRows = null;
+            SelectedRows = null;
             Reflect(mainPageViewModel.ExplorationViewModel.ViewStatus);
         }        
 

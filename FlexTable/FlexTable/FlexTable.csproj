@@ -221,6 +221,9 @@
     <Compile Include="View\RowHeaderPresenter.xaml.cs">
       <DependentUpon>RowHeaderPresenter.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\RowPresenter.xaml.cs">
+      <DependentUpon>RowPresenter.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\StatusView.xaml.cs">
       <DependentUpon>StatusView.xaml</DependentUpon>
     </Compile>
@@ -332,6 +335,10 @@
     <Page Include="View\RowHeaderPresenter.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\RowPresenter.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\StatusView.xaml">
       <Generator>MSBuild:Compile</Generator>

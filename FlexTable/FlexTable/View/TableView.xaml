@@ -77,6 +77,12 @@
             <Setter Property="ScrollViewer.ZoomMode" Value="Disabled" />
             <Setter Property="ScrollViewer.IsDeferredScrollingEnabled" Value="False" />
             <Setter Property="SelectionMode" Value="None" />
+            <Setter Property="ItemContainerTransitions">
+                <Setter.Value>
+                    <TransitionCollection>
+                    </TransitionCollection>
+                </Setter.Value>
+            </Setter>
         </Style>
 
         <Style x:Key="ListViewItemContainerStyle" TargetType="ListViewItem">
@@ -100,6 +106,9 @@
                                   Width="{x:Bind Path=MainPageViewModel.SheetViewModel.SheetWidth}"                                  
                                   IsHitTestVisible="False"
                                   Padding="0">
+                <ListView.ItemContainerTransitions>
+                    <TransitionCollection />
+                </ListView.ItemContainerTransitions>
                 <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">
                         <Setter Property="Template">
@@ -146,7 +155,7 @@
             <view:GuidelinePresenter Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" x:Name="GuidlineElement"/>
             <view:RowHeaderPresenter Grid.Row="1" Grid.Column="0" x:Name="RowHeaderPresenterElement"></view:RowHeaderPresenter>
 
-            <ListView Grid.Row="1" Grid.Column="1" ItemsSource="{x:Bind Path=ViewModel.AllRowViewModels, Mode=OneWay}"
+            <!--<ListView Grid.Row="1" Grid.Column="1" ItemsSource="{x:Bind Path=ViewModel.AllRowViewModels, Mode=OneWay}"
                       x:Name="AllRowViewer" Style="{StaticResource ListViewStyle}"
                       ItemContainerStyle="{StaticResource ListViewItemContainerStyle}"
                       ItemTemplate="{StaticResource ListViewDataTemplate}"
@@ -156,8 +165,16 @@
                         <ItemsStackPanel Orientation="Vertical" CacheLength="100" />
                     </ItemsPanelTemplate>
                 </ListView.ItemsPanel>
-            </ListView>
+            </ListView>-->
 
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" 
+                          ZoomMode="Disabled" Grid.Row="1" Grid.Column="1"
+                          ManipulationMode="All"
+                          x:Name="AllRowViewer">
+                <Canvas x:Name="AllRowCanvas" Width="{Binding PaddedSheetWidth}" Height="{Binding PaddedSheetHeight}">
+                </Canvas>
+            </ScrollViewer>
+            
             <ListView Grid.Row="1" Grid.Column="1" ItemsSource="{x:Bind Path=ViewModel.GroupedRowViewModels, Mode=OneWay}"
                       x:Name="GroupedRowViewer" Style="{StaticResource ListViewStyle}"
                       ItemContainerStyle="{StaticResource ListViewItemContainerStyle}"
@@ -170,7 +187,16 @@
                 </ListView.ItemsPanel>
             </ListView>
 
-            <ListView Grid.Row="1" Grid.Column="1" ItemsSource="{x:Bind Path=ViewModel.SelectedRowViewModels, Mode=OneWay}"
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" 
+                          ZoomMode="Disabled" Grid.Row="1" Grid.Column="1"
+                          ManipulationMode="All"
+                          x:Name="SelectedRowViewer">
+                <Canvas x:Name="SelectedRowCanvas" Width="{Binding PaddedSheetWidth}" Height="{Binding PaddedSheetHeight}">
+                </Canvas>
+            </ScrollViewer>
+            
+                    
+            <!--<ListView Grid.Row="1" Grid.Column="1" ItemsSource="{x:Bind Path=ViewModel.SelectedRowViewModels, Mode=OneWay}"
                       x:Name="SelectedRowViewer" Style="{StaticResource ListViewStyle}"
                       ItemContainerStyle="{StaticResource ListViewItemContainerStyle}"
                       ItemTemplate="{StaticResource ListViewDataTemplate}"
@@ -180,7 +206,7 @@
                         <ItemsStackPanel Orientation="Vertical" CacheLength="100" />
                     </ItemsPanelTemplate>
                 </ListView.ItemsPanel>
-            </ListView>
+            </ListView>-->
             <!-- 
             <ListView Grid.Row="1" Grid.Column="1" 
                       ItemsSource="{x:Bind Path=ViewModel.RowViewModels, Mode=OneWay}"

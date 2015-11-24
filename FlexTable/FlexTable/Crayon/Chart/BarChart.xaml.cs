@@ -296,8 +296,9 @@ namespace FlexTable.Crayon.Chart
             {
                 // filter out
 
-                if (FilterOut != null) {
-                    if(selectedKeys.Count > 0)
+                if (FilterOut != null)
+                {
+                    if (selectedKeys.Count > 0)
                     {
                         FilterOut(sender, eo, Data.Where(d => selectedKeys.IndexOf(d.Key) >= 0), index);
                     }
@@ -306,6 +307,8 @@ namespace FlexTable.Crayon.Chart
                         FilterOut(sender, eo, new List<BarChartDatum>() { datum }, index);
                     }
                 }
+
+                ClearSelection();
 
                 DragToFilterYDelta = 0;
                 DragToFilterFocusedBar = null;

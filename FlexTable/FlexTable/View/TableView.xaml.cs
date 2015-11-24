@@ -73,6 +73,9 @@ namespace FlexTable.View
         };
         InkManager inkManager;
 
+        private List<RowPresenter> allRowPresenters = new List<RowPresenter>();
+        private List<RowPresenter> selectedRowPresenters = new List<RowPresenter>();
+
         public TableView()
         {
             this.InitializeComponent();
@@ -91,40 +94,118 @@ namespace FlexTable.View
             AllRowScrollViewer.ViewChanged += ScrollViewer_ViewChanged;
             GroupedRowScrollViewer.ViewChanged += ScrollViewer_ViewChanged;
             SelectedRowScrollViewer.ViewChanged += ScrollViewer_ViewChanged;
+
+            foreach (RowViewModel rowViewModel in ViewModel.AllRowViewModels)
+            {
+                RowPresenter rowPresenter = new RowPresenter()
+                {
+                    RowViewModel = rowViewModel
+                };
+
+                rowPresenter.Update();
+
+                AllRowCanvas.Children.Add(rowPresenter);
+                allRowPresenters.Add(rowPresenter);
+            }
+
+            foreach (RowViewModel rowViewModel in ViewModel.AllRowViewModels)
+            {
+                RowPresenter rowPresenter = new RowPresenter()
+                {
+                    RowViewModel = rowViewModel
+                };
+
+                rowPresenter.Update();
+
+                SelectedRowCanvas.Children.Add(rowPresenter);
+                selectedRowPresenters.Add(rowPresenter);
+            }
         }
 
         public void ReflectState()
         {
             TableViewModel.TableViewState state = ViewModel.State,
                 oldState = ViewModel.OldState;
-           
-            switch (state)
+
+            if (state == TableViewModel.TableViewState.AllRow)
             {
-                case TableViewModel.TableViewState.AllRow:
-                    HideGroupedRowViewerStoryboard.Begin();
-                    HideSelectedRowViewerStoryboard.Begin();
-                    ShowAllRowViewerStoryboard.Begin();
+                HideGroupedRowViewerStoryboard.Begin();
+                HideSelectedRowViewerStoryboard.Begin();
+                ShowAllRowViewerStoryboard.Begin();
 
-                    ActivatedScrollViewer = AllRowScrollViewer;
-                    RowHeaderPresenter.SetRowNumber(ViewModel.AllRowViewModels.Count);
-                    break;
-                case TableViewModel.TableViewState.GroupedRow:
-                    HideAllRowViewerStoryboard.Begin();
-                    HideSelectedRowViewerStoryboard.Begin();
-                    ShowGroupedRowViewerStoryboard.Begin();
+                ActivatedScrollViewer = AllRowScrollViewer;
+                //RowHeaderPresenter.SetRowNumber(ViewModel.AllRowViewModels.Count);
 
-                    ActivatedScrollViewer = GroupedRowScrollViewer;
-                    RowHeaderPresenter.SetRowNumber(ViewModel.GroupedRowViewModels.Count);
-                    break;
-                case TableViewModel.TableViewState.SelectedRow:
-                    HideAllRowViewerStoryboard.Begin();
-                    HideGroupedRowViewerStoryboard.Begin();
-                    ShowSelectedRowViewerStoryboard.Begin();
+                var sr = ViewModel.MainPageViewModel.SheetViewModel.FilteredRows.ToList();
 
-                    ActivatedScrollViewer = SelectedRowScrollViewer;
-                    RowHeaderPresenter.SetRowNumber(ViewModel.SelectedRowViewModels.Count);
-                    break;
+                IEnumerable<RowPresenter> selected = allRowPresenters.Where(rp => sr.IndexOf(rp.RowViewModel.Row) >= 0),
+                    unselected = allRowPresenters.Where(rp => sr.IndexOf(rp.RowViewModel.Row) < 0);
+
+                Int32 index = 0;
+                Double height = (Double)App.Current.Resources["RowHeight"];
+
+                foreach (RowPresenter rowPresenter in selected)
+                {
+                    Canvas.SetTop(rowPresenter, index * height);
+                    rowPresenter.Opacity = 1;
+                    rowPresenter.Update();
+                    index++;
+                }
+
+                foreach (RowPresenter rowPresenter in unselected)
+                {
+                    Canvas.SetTop(rowPresenter, index * height);
+                    rowPresenter.Opacity = 0.2;
+                    rowPresenter.Update();
+                    index++;
+                }
+
+                RowHeaderPresenter.SetRowNumber(ViewModel.AllRowViewModels.Count, selected.Count());
             }
+            else if (state == TableViewModel.TableViewState.GroupedRow)
+            {
+                HideAllRowViewerStoryboard.Begin();
+                HideSelectedRowViewerStoryboard.Begin();
+                ShowGroupedRowViewerStoryboard.Begin();
+
+                ActivatedScrollViewer = GroupedRowScrollViewer;
+                RowHeaderPresenter.SetRowNumber(ViewModel.GroupedRowViewModels.Count);
+            }
+            else
+            {
+                HideAllRowViewerStoryboard.Begin();
+                HideGroupedRowViewerStoryboard.Begin();
+                ShowSelectedRowViewerStoryboard.Begin();
+
+                ActivatedScrollViewer = SelectedRowScrollViewer;
+
+                //RowHeaderPresenter.SetRowNumber(ViewModel.SelectedRowViewModels.Count);
+                var sr = ViewModel.SelectedRows.ToList();
+
+                IEnumerable<RowPresenter> selected = selectedRowPresenters.Where(rp => sr.IndexOf(rp.RowViewModel.Row) >= 0),
+                    unselected = selectedRowPresenters.Where(rp => sr.IndexOf(rp.RowViewModel.Row) < 0);
+
+                Int32 index = 0;
+                Double height = (Double)App.Current.Resources["RowHeight"];
+
+                foreach (RowPresenter rowPresenter in selected)
+                {
+                    Canvas.SetTop(rowPresenter, index * height);
+                    rowPresenter.Opacity = 1;
+                    rowPresenter.Update();
+                    index++;
+                }
+
+                foreach (RowPresenter rowPresenter in unselected)
+                {
+                    Canvas.SetTop(rowPresenter, index * height);
+                    rowPresenter.Opacity = 0.2;
+                    rowPresenter.Update();
+                    index++;
+                }
+
+                RowHeaderPresenter.SetRowNumber(ViewModel.AllRowViewModels.Count, selected.Count());
+            }            
         }
 
         async void timer_Tick(object sender, object e)

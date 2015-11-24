@@ -37,6 +37,7 @@ namespace FlexTable.View
         }
 
         StackPanel visibleNumberElement, hiddenNumberElement;
+        Int32 maximumRowNumber;
 
         public RowHeaderPresenter()
         {
@@ -49,44 +50,78 @@ namespace FlexTable.View
 
         public void SetRowNumber(Int32 n)
         {
-            hiddenNumberElement.Children.Clear();
+            SetRowNumber(n, n);
+        }
+
+        public void SetRowMaximumNumber(Int32 maximumNumber)
+        {
+            this.maximumRowNumber = maximumNumber;
 
             Style style = App.Current.Resources["RowHeaderStyle"] as Style;
 
-            for (Int32 i = 0; i < n; ++i)
+            NumberElement0.Children.Clear();
+            NumberElement1.Children.Clear();
+
+            for (Int32 i = 0; i < maximumNumber; ++i)
             {
-                TextBlock textBlock = new TextBlock()
+                TextBlock textBlock1 = new TextBlock()
                 {
                     Text = (i + 1).ToString(),
                     Style = style
                 };
 
-                hiddenNumberElement.Children.Add(textBlock);
+                NumberElement0.Children.Add(textBlock1);
+
+                TextBlock textBlock2 = new TextBlock()
+                {
+                    Text = (i + 1).ToString(),
+                    Style = style
+                };
+
+                NumberElement1.Children.Add(textBlock2);
+            }
+        }
+
+        public void SetRowNumber(Int32 totalRowNumber, Int32 activeRowNumber)
+        {
+            if (last != null) last.Pause();
+
+            // visible 은 세팅되어있으니까 흐리게, hidden은 세팅하고 밝게
+
+            Int32 i;
+
+            for (i = 0; i < totalRowNumber; ++i)
+            {
+                hiddenNumberElement.Children[i].Visibility = Visibility.Visible;
             }
 
-            hiddenNumberElement.Opacity = 0;
-            hiddenNumberElement.Visibility = Visibility.Visible;
+            for(;i<maximumRowNumber;++i)
+            {
+                hiddenNumberElement.Children[i].Visibility = Visibility.Collapsed;
+            }
 
-            if (last != null) last.Pause();
+            for (i = 0; i < activeRowNumber; ++i)
+            {
+                hiddenNumberElement.Children[i].Opacity = 1;
+            }
+
+            for (; i < maximumRowNumber; ++i)
+            {
+                hiddenNumberElement.Children[i].Opacity = 0.2;
+            }
 
             Storyboard sb = new Storyboard();
 
             sb.Children.Add(Util.Animator.Generate(visibleNumberElement, "Opacity", 0));
             sb.Children.Add(Util.Animator.Generate(hiddenNumberElement, "Opacity", 1));
 
-            sb.Completed += sb_Completed;
-            sb.Begin();
-            last = sb;
-        }
-
-        void sb_Completed(object sender, object e)
-        {
-            visibleNumberElement.Visibility = Visibility.Collapsed;
             StackPanel temp;
             temp = visibleNumberElement;
             visibleNumberElement = hiddenNumberElement;
             hiddenNumberElement = temp;
-            last = null;
+
+            sb.Begin();
+            last = sb;
         }
     }
 }

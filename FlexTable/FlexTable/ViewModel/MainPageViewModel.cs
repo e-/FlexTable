@@ -83,11 +83,10 @@ namespace FlexTable.ViewModel
             
             // rowViewModels 추가된 것 반영 여기가 시간 많이 듬
             // 전체 컬럼을 가지고 있는 것으로 이분화 하기로 했으므로 updateRows대신 CreateAllRows를 함
-
-            tableViewModel.CreateAllRows();
-
+            
 
             // tableViewModel.UpdateRows();
+
 
             watch.Stop();
             var elapsedMs = watch.ElapsedMilliseconds;
