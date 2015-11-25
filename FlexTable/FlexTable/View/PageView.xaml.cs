@@ -33,7 +33,7 @@ namespace FlexTable.View
     public sealed partial class PageView : UserControl
     {
         public BarChart BarChart => BarChartElement;
-        public d3.View.LineChart LineChart => LineChartElement;
+        public LineChart LineChart => LineChartElement;
         public DescriptiveStatisticsView DescriptiveStatisticsView => DescriptiveStatisticsViewElement;
         public CorrelationStatisticsView CorrelationStatisticsView => CorrelationStatisticsViewElement;
         public DistributionView DistributionView => DistributionViewElement;
@@ -71,55 +71,27 @@ namespace FlexTable.View
             //GroupedBarChartElement.BarPointerPressed += GroupedBarChartElement_BarPointerPressed;
             //GroupedBarChartElement.BarPointerReleased += BarChartElement_BarPointerReleased;
 
-            LineChartElement.LinePointerPressed += LineChartElement_LinePointerPressed;
-            LineChartElement.LinePointerReleased += LineChartElement_LinePointerReleased;
+            LineChartElement.SelectionChanged += LineChartElement_SelectionChanged; ;
+            LineChartElement.FilterOut += LineChartElement_FilterOut;
 
             ScatterplotElement.CategoryPointerPressed += ScatterplotElement_CategoryPointerPressed;
             ScatterplotElement.CategoryPointerReleased += ScatterplotElement_CategoryPointerReleased;
             ScatterplotElement.LassoSelected += ScatterplotElement_LassoSelected;
             ScatterplotElement.LassoUnselected += ScatterplotElement_LassoUnselected;
         }
-
-        private void BarChartElement_FilterOut(object sender, object e, object datum, int index)
+        
+        private void SelectionChanged(IEnumerable<Row> selectedRows)
         {
-            IEnumerable<BarChartDatum> filteredData = datum as IEnumerable<BarChartDatum>;
-            IEnumerable<Row> filteredRows = new List<Row>();
+            Int32 count = selectedRows.Count();
 
-            foreach(BarChartDatum d in filteredData)
-            {
-                filteredRows = filteredRows.Concat(d.Rows);
-            }
-
-            FilterViewModel fvm = new FilterViewModel(PageViewModel.MainPageViewModel)
-            {
-                Name = (filteredData.Count() == 1) ? 
-                $"{filteredData.First().ColumnViewModel.Name} = ${filteredData.First().Key}" :
-                $"{filteredData.First().ColumnViewModel.Name} in ${String.Join(", ", filteredData.Select(fd => fd.Key).ToArray())}",
-                Predicate = r => !filteredRows.Any(rr => rr == r)
-            };
-            PageViewModel.FilterOut(fvm);
-        }
-
-        private void BarChartElement_SelectionChanged(object sender, object e, object datum, int index)
-        {
-            IEnumerable<BarChartDatum> selection = datum as IEnumerable<BarChartDatum>;
-            Int32 count = selection.Count();
-
-            if(count == 0)
+            if (count == 0)
             {
                 ShowSelectionIndicatorStoryboard.Pause();
                 HideSelectionIndicatorStoryboard.Begin();
-                PageViewModel.MainPageViewModel.TableViewModel.CancelPreviewRows();                
+                PageViewModel.MainPageViewModel.TableViewModel.CancelPreviewRows();
             }
             else
             {
-                IEnumerable<Row> selectedRows = new List<Row>();
-
-                foreach(BarChartDatum d in selection)
-                {
-                    selectedRows = selectedRows.Concat(d.Rows);
-                }
-
                 Int32 rowCount = selectedRows.Count();
 
                 HideSelectionIndicatorStoryboard.Pause();
@@ -130,6 +102,43 @@ namespace FlexTable.View
             }
         }
 
+        private void FilterOut(IEnumerable<Row> filteredRows, String name, IEnumerable<String> values)
+        {
+            FilterViewModel fvm = new FilterViewModel(PageViewModel.MainPageViewModel)
+            {
+                Name = (values.Count() == 1) ?
+                $"{name} = ${values.First()}" :
+                $"{name} in ${String.Join(", ", values)}",
+                Predicate = r => !filteredRows.Any(rr => rr == r)
+            };
+            PageViewModel.FilterOut(fvm);
+        }
+
+        private void BarChartElement_SelectionChanged(object sender, object e, object datum, int index)
+        {
+            IEnumerable<BarChartDatum> selection = datum as IEnumerable<BarChartDatum>;
+            SelectionChanged(selection.SelectMany(s => s.Rows));
+        }
+
+        private void LineChartElement_SelectionChanged(object sender, object e, object datum, int index)
+        {
+            IEnumerable<LineChartDatum> selection = datum as IEnumerable<LineChartDatum>;
+            SelectionChanged(selection.SelectMany(s => s.Rows));
+        }
+
+        private void BarChartElement_FilterOut(object sender, object e, object datum, int index)
+        {
+            IEnumerable<BarChartDatum> filteredData = datum as IEnumerable<BarChartDatum>;
+            FilterOut((filteredData as IEnumerable<BarChartDatum>).SelectMany(bcd => bcd.Rows), filteredData.First().ColumnViewModel.Name, filteredData.Select(d => d.Key.ToString()));
+        }
+
+        private void LineChartElement_FilterOut(object sender, object e, object datum, int index)
+        {
+            IEnumerable<LineChartDatum> filteredData = datum as IEnumerable<LineChartDatum>;
+            FilterOut((filteredData as IEnumerable<LineChartDatum>).SelectMany(lcd => lcd.Rows), filteredData.First().ColumnViewModel.Name, filteredData.Select(d => d.Key.ToString()));
+        }
+
+       
         #region Visualization Event Handlers
         private void ScatterplotElement_LassoSelected(object sender, object e, object datum, int index)
         {
@@ -156,20 +165,6 @@ namespace FlexTable.View
         }
 
         private void ScatterplotElement_CategoryPointerReleased(object sender, object e, object datum, int index)
-        {
-            PageViewModel pvm = this.DataContext as PageViewModel;
-            pvm.MainPageViewModel.TableViewModel.CancelPreviewRows();
-        }
-
-        private void LineChartElement_LinePointerPressed(object sender, object e, object datum, int index)
-        {
-            PageViewModel pvm = this.DataContext as PageViewModel;
-
-            Series series = datum as Series;
-            //pvm.MainPageViewModel.TableViewModel.PreviewRows(pvm.LineChartRowSelecter(series));
-        }
-
-        private void LineChartElement_LinePointerReleased(object sender, object e, object datum, int index)
         {
             PageViewModel pvm = this.DataContext as PageViewModel;
             pvm.MainPageViewModel.TableViewModel.CancelPreviewRows();

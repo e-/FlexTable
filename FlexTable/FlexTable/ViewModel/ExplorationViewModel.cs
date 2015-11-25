@@ -126,7 +126,7 @@ namespace FlexTable.ViewModel
             {
                 Debug.Assert(pageView == TopPageView);
                 Debug.Assert(previewingColumnViewModel != null);
-                Debug.Assert(ViewStatus.SelectedColumnViewModels.IndexOf(previewingColumnViewModel) < 0); // 이미 선택한 걸 또 선택하는 경우는 없도록 이 함수 호출전에 미리 체크해야함
+              Debug.Assert(ViewStatus.SelectedColumnViewModels.IndexOf(previewingColumnViewModel) < 0); // 이미 선택한 걸 또 선택하는 경우는 없도록 이 함수 호출전에 미리 체크해야함
 
                 // 현재 탭된 컬럼의 viewStatus에는 previewingColumn이 추가되어 있는 상태임.
                 selectedPageViews.Add(pageView);

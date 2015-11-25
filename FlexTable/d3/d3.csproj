@@ -140,17 +140,17 @@
     <Compile Include="ViewModel\BoxPlotViewModel.cs" />
     <Compile Include="ViewModel\GroupedBarChartViewModel.cs" />
     <Compile Include="ViewModel\ScatterplotViewModel.cs" />
-    <Compile Include="View\LineChart.xaml.cs">
-      <DependentUpon>LineChart.xaml</DependentUpon>
+    <Compile Include="View\LineChart2.xaml.cs">
+      <DependentUpon>LineChart2.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\BarChart.xaml.cs">
-      <DependentUpon>BarChart.xaml</DependentUpon>
+    <Compile Include="View\BarChart2.xaml.cs">
+      <DependentUpon>BarChart2.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\BoxPlot.xaml.cs">
       <DependentUpon>BoxPlot.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\GroupedBarChart.xaml.cs">
-      <DependentUpon>GroupedBarChart.xaml</DependentUpon>
+    <Compile Include="View\GroupedBarChart2.xaml.cs">
+      <DependentUpon>GroupedBarChart2.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Scatterplot.xaml.cs">
       <DependentUpon>Scatterplot.xaml</DependentUpon>
@@ -186,11 +186,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\LineChart.xaml">
+    <Page Include="View\LineChart2.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\BarChart.xaml">
+    <Page Include="View\BarChart2.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -198,7 +198,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\GroupedBarChart.xaml">
+    <Page Include="View\GroupedBarChart2.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

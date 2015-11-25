@@ -34,7 +34,7 @@
             <com:Texts x:Name="LegendTextElement" IsHitTestVisible="False" />
         </Canvas>
 
-        <com:Texts Foreground="Black" FontSize="14" x:Name="IndicatorTextElement" />
+        <com:Texts Foreground="Black" FontSize="14" x:Name="IndicatorTextElement" IsHitTestVisible="False"/>
 
         <Grid x:Name="StrokeGrid" IsHitTestVisible="False"></Grid>
         <Grid x:Name="NewStrokeGrid" IsHitTestVisible="False"></Grid>

@@ -20,7 +20,7 @@ using DataPoint = System.Tuple<object, object, double, object>;
 
 namespace d3.View
 {
-    public sealed partial class GroupedBarChart : UserControl
+    public sealed partial class GroupedBarChart2 : UserControl
     {
         ViewModel.GroupedBarChartViewModel viewModel = new ViewModel.GroupedBarChartViewModel();
 

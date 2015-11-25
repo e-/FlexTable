@@ -19,7 +19,7 @@ using d3.ViewModel;
 
 namespace d3.View
 {
-    public sealed partial class BarChart : UserControl
+    public sealed partial class BarChart2 : UserControl
     {
         ViewModel.BarChartViewModel viewModel = new ViewModel.BarChartViewModel();
 

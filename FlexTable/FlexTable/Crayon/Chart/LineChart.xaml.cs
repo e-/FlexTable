@@ -4,10 +4,14 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using d3;
+using d3.ColorScheme;
 using d3.Scale;
+using FlexTable.Util;
+using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI;
+using Windows.UI.Input.Inking;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -15,19 +19,14 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
-using d3.ColorScheme;
-using FlexTable.Util;
-using Windows.UI.Input.Inking;
-using Windows.Devices.Input;
 using Windows.UI.Xaml.Shapes;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
 namespace FlexTable.Crayon.Chart
 {
-    public sealed partial class BarChart : UserControl
+    public sealed partial class LineChart : UserControl
     {
-        const Double DragToFilterThreshold = 40;
         const Double StrikeThroughMinWidth = 50;
         const Double StrikeThroughMaxHeight = 30;
 
@@ -43,11 +42,17 @@ namespace FlexTable.Crayon.Chart
         public const Double LegendPatchHeight = 20;
         public const Double LegendPatchSpace = 10;
 
-        public IList<BarChartDatum> Data { get; set; }
-        public Data D3Data { get; set; }                   
+        public IList<LineChartDatum> Data { get; set; }
+        public Data D3Data { get; set; }
+
+        /// <summary>
+        /// Circle을 그리기 위한 데이터 = indicator를 그리기 위한 데이터
+        /// </summary>
+        List<DataPoint> CircleData { get; set; }
+        public Data D3CircleData { get; set; }
 
         public static readonly DependencyProperty LegendVisibilityProperty =
-            DependencyProperty.Register("LegendVisibility", typeof(Visibility), typeof(BarChart), new PropertyMetadata(Visibility.Visible));
+            DependencyProperty.Register("LegendVisibility", typeof(Visibility), typeof(LineChart), new PropertyMetadata(Visibility.Visible));
 
         public Visibility LegendVisibility
         {
@@ -56,7 +61,7 @@ namespace FlexTable.Crayon.Chart
         }
 
         public static readonly DependencyProperty HorizontalAxisVisibilityProperty =
-            DependencyProperty.Register("HorizontalAxisVisibility", typeof(Visibility), typeof(BarChart), new PropertyMetadata(Visibility.Visible));
+            DependencyProperty.Register("HorizontalAxisVisibility", typeof(Visibility), typeof(LineChart), new PropertyMetadata(Visibility.Visible));
 
         public Visibility HorizontalAxisVisibility
         {
@@ -65,7 +70,7 @@ namespace FlexTable.Crayon.Chart
         }
 
         public static readonly DependencyProperty HorizontalAxisTitleProperty =
-            DependencyProperty.Register(nameof(HorizontalAxisTitle), typeof(String), typeof(BarChart), new PropertyMetadata(String.Empty));
+            DependencyProperty.Register(nameof(HorizontalAxisTitle), typeof(String), typeof(LineChart), new PropertyMetadata(String.Empty));
 
         public String HorizontalAxisTitle
         {
@@ -74,7 +79,7 @@ namespace FlexTable.Crayon.Chart
         }
 
         public static readonly DependencyProperty VerticalAxisTitleProperty =
-            DependencyProperty.Register(nameof(VerticalAxisTitle), typeof(String), typeof(BarChart), new PropertyMetadata(String.Empty));
+            DependencyProperty.Register(nameof(VerticalAxisTitle), typeof(String), typeof(LineChart), new PropertyMetadata(String.Empty));
 
         public String VerticalAxisTitle
         {
@@ -83,7 +88,7 @@ namespace FlexTable.Crayon.Chart
         }
 
         public static readonly DependencyProperty AutoColorProperty =
-            DependencyProperty.Register(nameof(AutoColor), typeof(Boolean), typeof(BarChart), new PropertyMetadata(true));
+            DependencyProperty.Register("AutoColor", typeof(Boolean), typeof(LineChart), new PropertyMetadata(true));
 
         public Boolean AutoColor
         {
@@ -92,7 +97,7 @@ namespace FlexTable.Crayon.Chart
         }
 
         public static readonly DependencyProperty YStartsFromZeroProperty =
-            DependencyProperty.Register(nameof(YStartsFromZero), typeof(Boolean), typeof(BarChart), new PropertyMetadata(false));
+            DependencyProperty.Register(nameof(YStartsFromZero), typeof(Boolean), typeof(LineChart), new PropertyMetadata(false));
 
         public bool YStartsFromZero
         {
@@ -106,45 +111,41 @@ namespace FlexTable.Crayon.Chart
         public Double ChartAreaEndX { get; set; }
         public Double ChartAreaEndY { get; set; } = 300;
 
-        #region Attribute Getter
-        private Double BarWidth { get { return Math.Min(60, XScale.RangeBand / 2); } }
-        public Func<Object, Int32, Double> WidthGetter { get { return (d, index) => BarWidth; } }
-        public Func<Object, Int32, Double> HeightGetter { get { return (d, index) => ChartAreaEndY - YScale.Map((d as BarChartDatum).Value); } }
-        public Func<Object, Int32, Double> XGetter { get { return (d, index) => XScale.Map((d as BarChartDatum).Key) - BarWidth / 2; } }
-        public Func<Object, Int32, Double> YGetter
+        public Func<Object, Int32, List<Point>> LineCoordinateGetter
         {
             get
             {
-                return (d, index) => YScale.Map((d as BarChartDatum).Value) + 
-                (selectedKeys.Count > 0 ? 
-                    (selectedKeys.IndexOf((d as BarChartDatum).Key) >= 0 ? DragToFilterYDelta : 0) : 
-                    (d == DragToFilterFocusedBar ? DragToFilterYDelta : 0));
+                return (d, index) => (d as LineChartDatum).DataPoints.Select<DataPoint, Point>(dp => new Point(
+                   XScale.Map(dp.Item1),
+                   YScale.Map(dp.Item2)
+                   )).ToList();
             }
         }
+
         public Func<Object, Int32, Color> ColorGetter { get { return (bin, index) => (AutoColor ? Category10.Colors[index % 10] : Category10.Colors.First()); } }
-        public Func<Object, Int32, Double> OpacityGetter { get {
-                return (d, index) => (selectedKeys.Count == 0) ? (d == DragToFilterFocusedBar ? DragToFilterOpacity : 1) : 
-                (selectedKeys.IndexOf((d as BarChartDatum).Key) < 0 ? 0.2 : DragToFilterOpacity);
+        public Func<Object, Int32, Color> LineStrokeGetter { get { return (bin, index) => (AutoColor ? Category10.Colors[index % 10] : Category10.Colors.First()); } }
+        public Func<Object, Int32, Double> LineOpacityGetter { get {
+                return (d, index) => ((selectedKeys.Count == 0) ? 0.8 :
+                    (selectedKeys.IndexOf((d as LineChartDatum).Key) >= 0 ? 0.9 : 0.1));
+                    } }
+
+        public Func<Object, Int32, Double> CircleXGetter { get { return (d, index) => XScale.Map((d as DataPoint).Item1); } }
+        public Func<Object, Int32, Double> CircleYGetter { get { return (d, index) => YScale.Map((d as DataPoint).Item2); } }
+        public Func<Object, Int32, Color> CircleColorGetter { get { return (d, index) => Category10.Colors[Data.IndexOf((d as DataPoint).Parent) % 10]; } }
+        public Func<Object, Int32, Double> CircleOpacityGetter{ get {
+                return (d, index) => ((selectedKeys.Count == 0) ? 0.9 :
+                    (selectedKeys.IndexOf((d as DataPoint).Parent.Key) >= 0 ? 1 : 0.1));
             } }
 
-        public Func<Object, Int32, TextBlock, Double> HorizontalAxisLabelOpacityGetter
+        public Func<Object, Int32, Double> LegendHandleWidthGetter { get { return (d, index) => LegendAreaWidth; } }
+        public Func<Object, Int32, Double> LegendHandleYGetter
         {
             get
             {
-                return (d, index, textBlock) => (selectedKeys.Count == 0) ? (d == DragToFilterFocusedBar?.Key ? DragToFilterOpacity : 1) :
-                    (selectedKeys.IndexOf(d) >= 0 ? 1 : 1);
+                return
+                    (d, index) => (Height - Data.Count() * LegendPatchHeight - (Data.Count() - 1) * LegendPatchSpace) / 2 + index * (LegendPatchHeight + LegendPatchSpace) - LegendPatchSpace / 2;
             }
         }
-
-        public Func<Object, Int32, TextBlock, Double> HorizontalAxisLabelYGetter { get {
-                return (d, index, textBlock) => (selectedKeys.Count == 0) ? (d == DragToFilterFocusedBar?.Key ? DragToFilterYDelta : 0) :
-                    (selectedKeys.IndexOf(d) >= 0 ? DragToFilterYDelta : 0);
-            } }
-        
-
-        public Func<Object, Int32, Double> HandleWidthGetter { get { return (d, index) => XScale.RangeBand; } }
-        public Func<Object, Int32, Double> HandleHeightGetter { get { return (d, index) => ChartAreaEndY - PaddingTop; } }
-        public Func<Object, Int32, Double> HandleXGetter { get { return (d, index) => XScale.Map((d as BarChartDatum).Key) - XScale.RangeBand / 2; } }        
 
         public Func<Object, Int32, Double> LegendPatchYGetter
         {
@@ -153,33 +154,32 @@ namespace FlexTable.Crayon.Chart
                 return (d, index) => (Height - Data.Count() * LegendPatchHeight - (Data.Count() - 1) * LegendPatchSpace) / 2 + index * (LegendPatchHeight + LegendPatchSpace);
             }
         }
+        public Func<Object, Int32, Double> LegendTextXGetter { get { return (d, index) => LegendPatchWidth + LegendPatchSpace; } }
+        public Func<Object, Int32, String> LegendTextGetter { get { return (d, index) => (d as LineChartDatum).Key.ToString(); } }
+        public Func<Object, Int32, Double> LegendOpacityGetter { get
+            {
+                return (d, index) => ((selectedKeys.Count == 0) ? 1 :
+                    (selectedKeys.IndexOf((d as LineChartDatum).Key) >= 0 ? 1 : 0.2));
+            } }
+        public Func<TextBlock, Object, Int32, Double> LegendTextOpacityGetter { get {
+                return (textBlock, d, index) => ((selectedKeys.Count == 0) ? 1 :
+                    (selectedKeys.IndexOf((d as LineChartDatum).Key) >= 0 ? 1 : 0.2));
+            } }
 
-        public Func<Object, Int32, Double> LegendHandleWidthGetter { get { return (d, index) => LegendAreaWidth; } }
-        public Func<Object, Int32, Double> LegendHandleYGetter
+        public Func<Object, Int32, Double> IndicatorWidthGetter { get { return (d, index) => XScale.RangeBand; } }
+        public Func<Object, Int32, String> IndicatorTextGetter { get { return (d, index) => d3.Format.IntegerBalanced.Format((Double)(d as DataPoint).Item2); } }
+        public Func<Object, Int32, Double> IndicatorXGetter { get { return (d, index) => XScale.Map((d as DataPoint).Item1) - XScale.RangeBand / 2; } }
+        public Func<Object, Int32, Double> IndicatorYGetter { get { return (d, index) => YScale.Map((d as DataPoint).Item2) - 22; } }
+
+        public Func<TextBlock, Object, Int32, Double> IndicatorTextOpacityGetter
         {
             get
             {
-                return (d, index) => (Height - Data.Count() * LegendPatchHeight - (Data.Count() - 1) * LegendPatchSpace) / 2 + index * (LegendPatchHeight + LegendPatchSpace) - LegendPatchSpace / 2;
+                return (textBlock, d, index) => ((selectedKeys.Count == 0) ? 0 : 
+                    (selectedKeys.IndexOf((d as DataPoint).Parent.Key) >= 0 ? 1 : 0));
             }
         }
 
-        public Func<Object, Int32, Double> LegendTextXGetter { get { return (d, index) => LegendPatchWidth + LegendPatchSpace; } }
-        public Func<Object, Int32, String> LegendTextGetter { get { return (d, index) => (d as BarChartDatum).Key.ToString(); } }
-        public Func<TextBlock, Object, Int32, Double> LegendTextOpacityGetter { get { return (textBlock, d, index) => (selectedKeys.Count == 0) ? 1 : (selectedKeys.IndexOf((d as BarChartDatum).Key) < 0 ? 0.2 : 1); } }
-
-        public Func<Object, Int32, Double> IndicatorWidthGetter { get { return (d, index) => XScale.RangeBand; } }
-        public Func<Object, Int32, String> IndicatorTextGetter { get { return (d, index) => d3.Format.IntegerBalanced.Format((d as BarChartDatum).Value); } }
-        public Func<Object, Int32, Double> IndicatorXGetter { get { return (d, index) => XScale.Map((d as BarChartDatum).Key) - XScale.RangeBand / 2; } }
-        public Func<Object, Int32, Double> IndicatorYGetter { get {
-                return (d, index) => YScale.Map((d as BarChartDatum).Value) - 18 + ((selectedKeys.Count == 0) ? (d == DragToFilterFocusedBar ? DragToFilterYDelta : 0) :
-                    (selectedKeys.IndexOf((d as BarChartDatum).Key) >= 0 ? DragToFilterYDelta : 0))
-                ;
-            } }
-        public Func<TextBlock, Object, Int32, Double> IndicatorTextOpacityGetter { get {
-                return (textBlock, d, index) => ((selectedKeys.Count == 0) ? (d == DragToFilterFocusedBar ? DragToFilterOpacity : 0) :
-                    (selectedKeys.IndexOf((d as BarChartDatum).Key) >= 0 ? DragToFilterOpacity : 0));
-                    } }
-        
         public Double HorizontalAxisLabelCanvasTop { get; set; }
         public Double HorizontalAxisLabelCanvasLeft { get; set; }
         public Double HorizontalAxisLabelWidth { get; set; }
@@ -190,50 +190,46 @@ namespace FlexTable.Crayon.Chart
 
         public Double LegendAreaWidth { get; set; } = 140;
 
-        private Double DragToFilterYDelta = 0;
-        private Double DragToFilterOpacity = 1;
-        private BarChartDatum DragToFilterFocusedBar = null;
-        
         public event Event.EventHandler SelectionChanged;
-        private List<Object> selectedKeys = new List<Object>();
-
         public event Event.EventHandler FilterIn;
         public event Event.EventHandler FilterOut;
 
-        #endregion
+        /// <summary>
+        /// BarChartDatum 의 key가 들어가야함
+        /// </summary>
+        private List<Object> selectedKeys = new List<Object>();
 
         Drawable drawable = new Drawable()
         {
             IgnoreSmallStrokes = true
         };
 
-        public BarChart()
+        public LineChart()
         {
             this.InitializeComponent();
+            
+            HandleLineElement.Data = D3Data;
+            HandleLineElement.CoordinateGetter = LineCoordinateGetter;
+            HandleLineElement.StrokeThicknessGetter = d3.Util.CreateConstantGetter<Double>(20);
+            HandleLineElement.StrokeGetter = d3.Util.CreateConstantGetter<Color>(Colors.Transparent);
+            HandleLineElement.OpacityGetter = d3.Util.CreateConstantGetter<Double>(1);
 
-            // getter가 아닌 경우 재대입을 해야함 예를 들어 visibliity나 Scale등
+            LineElement.Data = D3Data;
+            LineElement.CoordinateGetter = LineCoordinateGetter;
+            LineElement.StrokeThicknessGetter = d3.Util.CreateConstantGetter<Double>(5);
+            LineElement.StrokeGetter = LineStrokeGetter;
+            LineElement.OpacityGetter = LineOpacityGetter;
 
-            HandleRectangleElement.Data = D3Data;
-            HandleRectangleElement.WidthGetter = HandleWidthGetter;
-            HandleRectangleElement.HeightGetter = HandleHeightGetter;
-            HandleRectangleElement.XGetter = HandleXGetter;
-            HandleRectangleElement.YGetter = d3.Util.CreateConstantGetter<Double>(PaddingTop);
-            HandleRectangleElement.ColorGetter = d3.Util.CreateConstantGetter<Color>(Colors.Transparent);
-
-            RectangleElement.Data = D3Data;
-            RectangleElement.WidthGetter = WidthGetter;
-            RectangleElement.HeightGetter = HeightGetter;
-            RectangleElement.XGetter = XGetter;
-            RectangleElement.YGetter = YGetter;
-            RectangleElement.ColorGetter = ColorGetter;
-            RectangleElement.OpacityGetter = OpacityGetter;
+            CircleElement.Data = D3Data;
+            CircleElement.XGetter = CircleXGetter;
+            CircleElement.YGetter = CircleYGetter;
+            CircleElement.RadiusGetter = d3.Util.CreateConstantGetter<Double>(10);
+            CircleElement.ColorGetter = CircleColorGetter;
+            CircleElement.OpacityGetter = CircleOpacityGetter;
 
             HorizontalAxis.Scale = XScale;
             Canvas.SetTop(HorizontalAxis, ChartAreaEndY);
             HorizontalAxis.Visibility = HorizontalAxisVisibility;
-            //HorizontalAxis.LabelFontSizeGetter = LabelFontSizeGetter;
-            HorizontalAxis.LabelOpacityGetter = HorizontalAxisLabelOpacityGetter;
-            HorizontalAxis.LabelYGetter = HorizontalAxisLabelYGetter;
 
             Canvas.SetTop(HorizontalAxisTitleElement, HorizontalAxisLabelCanvasTop);
             Canvas.SetLeft(HorizontalAxisTitleElement, HorizontalAxisLabelCanvasLeft);
@@ -262,7 +258,7 @@ namespace FlexTable.Crayon.Chart
             LegendRectangleElement.XGetter = d3.Util.CreateConstantGetter<Double>(0);
             LegendRectangleElement.YGetter = LegendPatchYGetter;
             LegendRectangleElement.ColorGetter = ColorGetter;
-            LegendRectangleElement.OpacityGetter = OpacityGetter;
+            LegendRectangleElement.OpacityGetter = LegendOpacityGetter;
             LegendRectangleElement.Visibility = LegendVisibility;
 
             LegendTextElement.Data = D3Data;
@@ -280,71 +276,15 @@ namespace FlexTable.Crayon.Chart
             IndicatorTextElement.XGetter = IndicatorXGetter;
             IndicatorTextElement.YGetter = IndicatorYGetter;
             IndicatorTextElement.OpacityGetter = IndicatorTextOpacityGetter;
+            
+            HandleLineElement.LineTapped += LegendHandleRectangleElement_RectangleTapped;
 
-            HandleRectangleElement.RectangleTapped += RectangleElement_RectangleTapped;
-            LegendHandleRectangleElement.RectangleTapped += RectangleElement_RectangleTapped;
-            HandleRectangleElement.RectangleManipulationDelta += HandleRectangleElement_RectangleManipulationDelta;
-            HandleRectangleElement.RectangleManipulationCompleted += HandleRectangleElement_RectangleManipulationCompleted;
+            LegendHandleRectangleElement.RectangleTapped += LegendHandleRectangleElement_RectangleTapped;
+
             drawable.Attach(RootCanvas, StrokeGrid, NewStrokeGrid);
             drawable.StrokeAdded += Drawable_StrokeAdded;
         }
 
-        private void HandleRectangleElement_RectangleManipulationCompleted(object sender, object eo, object datumo, int index)
-        {
-            ManipulationCompletedRoutedEventArgs e = eo as ManipulationCompletedRoutedEventArgs;
-            if (e.PointerDeviceType != PointerDeviceType.Touch) return;
-            Double delta = e.Cumulative.Translation.Y;
-            BarChartDatum datum = datumo as BarChartDatum;
-
-            if (delta > DragToFilterThreshold)
-            {
-                // filter out
-
-                if (FilterOut != null)
-                {
-                    if (selectedKeys.Count > 0)
-                    {
-                        FilterOut(sender, eo, Data.Where(d => selectedKeys.IndexOf(d.Key) >= 0), index);
-                    }
-                    else
-                    {
-                        FilterOut(sender, eo, new List<BarChartDatum>() { datum }, index);
-                    }
-                }
-
-                ClearSelection();
-            }
-
-            DragToFilterYDelta = 0;
-            DragToFilterFocusedBar = null;
-            DragToFilterOpacity = 1;
-
-            RectangleElement.Update();
-            HorizontalAxis.Update();
-            IndicatorTextElement.Update();
-        }
-
-        
-        private void HandleRectangleElement_RectangleManipulationDelta(object sender, object eo, object datumo, int index)
-        {
-            ManipulationDeltaRoutedEventArgs e = eo as ManipulationDeltaRoutedEventArgs;
-            if (e.PointerDeviceType != PointerDeviceType.Touch) return;
-            Double delta = e.Cumulative.Translation.Y;
-            BarChartDatum datum = datumo as BarChartDatum;
-
-            if (delta < 0) delta = 0;
-            if (delta > DragToFilterThreshold) delta = DragToFilterThreshold;
-
-            DragToFilterYDelta = delta;
-            DragToFilterFocusedBar = datum;
-            DragToFilterOpacity = 1 - delta / DragToFilterThreshold;
-
-            RectangleElement.Update();
-            HorizontalAxis.Update();
-            IndicatorTextElement.Update();
-        }
-
-        
         private void Drawable_StrokeAdded(InkManager inkManager)
         {
             if (inkManager.GetStrokes().Count > 0)
@@ -353,23 +293,25 @@ namespace FlexTable.Crayon.Chart
                 Rect boundingRect = inkManager.GetStrokes()[0].BoundingRect;
 
                 Int32 index = 0;
-                List<BarChartDatum> selected = new List<BarChartDatum>();
+                List<LineChartDatum> selected = new List<LineChartDatum>();
                 Boolean isAllSelected = true;
                 Boolean isLegendStrikeThrough = false;
-                BarChartDatum victim = null;
+                LineChartDatum victim = null;
 
                 index = 0;
-                foreach (Rectangle rect in RectangleElement.Children)
+                foreach (LineChartDatum datum in Data)
                 {
-                    if (boundingRect.Left <= Canvas.GetLeft(rect) + rect.Width && Canvas.GetLeft(rect) <= boundingRect.Left + boundingRect.Width)
+                    List<Point> circlePoints = LineCoordinateGetter(datum, index);
+
+                    if(circlePoints.Exists(cp => boundingRect.Contains(cp))) // 하나라도 포함되는 포인트가 있으면 예를 선택
                     {
-                        BarChartDatum datum = Data[index];
                         if (selectedKeys.IndexOf(datum.Key) < 0) //선택 안된 데이터가 있으면
                         {
                             isAllSelected = false;
                         }
                         selected.Add(datum);
                     }
+
                     index++;
                 }
 
@@ -378,7 +320,7 @@ namespace FlexTable.Crayon.Chart
                 {
                     if (Canvas.GetLeft(LegendPanel) + Canvas.GetLeft(rect) <= boundingRect.Left && boundingRect.Top <= Canvas.GetTop(rect) + rect.Height && Canvas.GetTop(rect) <= boundingRect.Top + boundingRect.Height)
                     {
-                        BarChartDatum datum = Data[index];
+                        LineChartDatum datum = Data[index];
 
                         if (boundingRect.Height < StrikeThroughMaxHeight && boundingRect.Width > StrikeThroughMinWidth) // legend strike through면
                         {
@@ -401,21 +343,21 @@ namespace FlexTable.Crayon.Chart
                 if (isLegendStrikeThrough)
                 {
                     selectedKeys.Remove(victim.Key);
-                    if(FilterOut != null)
+                    if (FilterOut != null)
                     {
-                        FilterOut(this, null, new List<BarChartDatum>() { victim }, index);
+                        FilterOut(this, null, new List<LineChartDatum>() { victim }, index);
                     }
                 }
                 else if (isAllSelected) // 모두가 선택되었다면 선택 해제를 하면 됨
                 {
-                    foreach (BarChartDatum datum in selected)
+                    foreach (LineChartDatum datum in selected)
                     {
                         selectedKeys.Remove(datum.Key);
                     }
                 }
                 else // 하나라도 선택 안된게 있으면 선택
                 {
-                    foreach (BarChartDatum datum in selected)
+                    foreach (LineChartDatum datum in selected)
                     {
                         if (selectedKeys.IndexOf(datum.Key) < 0) { selectedKeys.Add(datum.Key); }
                     }
@@ -429,8 +371,10 @@ namespace FlexTable.Crayon.Chart
                 if (SelectionChanged != null)
                     SelectionChanged(this, null, Data.Where(d => selectedKeys.IndexOf(d.Key) >= 0), index);
 
-                RectangleElement.Update(true);
+                LineElement.Update(true);
+                CircleElement.Update(true, false);
                 IndicatorTextElement.Update(true);
+
                 if (LegendVisibility == Visibility.Visible)
                 {
                     LegendRectangleElement.Update(true);
@@ -441,22 +385,23 @@ namespace FlexTable.Crayon.Chart
             drawable.RemoveAllStrokes();
         }
 
-        void RectangleElement_RectangleTapped(object sender, object e, object datum, Int32 index)
+
+        private void LegendHandleRectangleElement_RectangleTapped(object sender, object e, object datum, int index)
         {
             TappedRoutedEventArgs args = e as TappedRoutedEventArgs;
             if (args.PointerDeviceType == PointerDeviceType.Touch)
             {
-                BarChartDatum barChartDatum = datum as BarChartDatum;
-                if (selectedKeys.IndexOf(barChartDatum.Key) < 0)
+                LineChartDatum lineChartDatum = datum as LineChartDatum;
+                if (selectedKeys.IndexOf(lineChartDatum.Key) < 0)
                 {
-                    selectedKeys.Add(barChartDatum.Key);
+                    selectedKeys.Add(lineChartDatum.Key);
                 }
                 else
                 {
-                    selectedKeys.Remove(barChartDatum.Key);
+                    selectedKeys.Remove(lineChartDatum.Key);
                 }
-                
-                if(selectedKeys.Count == Data.Count)
+
+                if (selectedKeys.Count == Data.Count)
                 {
                     selectedKeys.Clear();
                 }
@@ -464,24 +409,32 @@ namespace FlexTable.Crayon.Chart
                 if (SelectionChanged != null)
                     SelectionChanged(sender, e, Data.Where(d => selectedKeys.IndexOf(d.Key) >= 0), index);
 
-                RectangleElement.Update(true);
+                LineElement.Update(true);
+                CircleElement.Update(true, false);
                 IndicatorTextElement.Update(true);
-                if(LegendVisibility == Visibility.Visible)
+
+                if (LegendVisibility == Visibility.Visible)
                 {
                     LegendRectangleElement.Update(true);
                     LegendTextElement.Update(true);
                 }
                 args.Handled = true;
             }
-        }
-
+        }       
+        
         public void Update()
         {
             LegendAreaWidth = 0;
             D3Data = new Data()
             {
                 List = Data.Select(d => d as Object).ToList()
-            }; 
+            };
+
+            CircleData = Data.SelectMany(l => l.DataPoints).ToList();
+            D3CircleData = new Data()
+            {
+                List = CircleData.Select(d => d as Object).ToList()
+            };
 
             if (LegendVisibility == Visibility.Visible)
             {
@@ -494,8 +447,8 @@ namespace FlexTable.Crayon.Chart
                 LegendAreaWidth = LegendTextElement.MaxActualWidth + LegendPatchWidth + LegendPatchSpace + PaddingRight;
             }
 
-            Canvas.SetLeft(LegendPanel, this.Width - LegendAreaWidth);
-
+            Canvas.SetLeft(LegendPanel, this.Width - LegendAreaWidth);            
+            
             if (HorizontalAxisVisibility == Visibility.Visible)
             {
                 ChartAreaEndY = this.Height - PaddingBottom - HorizontalAxisHeight - HorizontalAxisLabelHeight;
@@ -522,9 +475,10 @@ namespace FlexTable.Crayon.Chart
             VerticalAxisLabelCanvasLeft = PaddingLeft + VerticalAxisLabelWidth / 2 - (ChartAreaEndY - PaddingTop) / 2;
             VerticalAxisLabelCanvasTop = PaddingTop + (ChartAreaEndY - PaddingTop) / 2;
             VerticalAxisLabelHeight = ChartAreaEndY - PaddingTop;
-            
-            IEnumerable<Double> values = Data.Select(d => d.Value);
-            Double yMin = values.Min(), yMax = values.Max();
+
+            Double yMin = CircleData.Select(dp => (Double)dp.Item2).Min(),
+                   yMax = CircleData.Select(dp => (Double)dp.Item2).Max();
+
             if (YStartsFromZero) yMin = 0;
             else if (yMin == yMax)
             {
@@ -557,19 +511,19 @@ namespace FlexTable.Crayon.Chart
             XScale = new Ordinal()
             {
                 RangeStart = VerticalAxisCanvasLeft,
-                RangeEnd = ChartAreaEndX
+                RangeEnd = ChartAreaEndX + PaddingLeft
             };
 
-            foreach (BarChartDatum datum in Data)
+            foreach(DataPoint dp in Data[0].DataPoints)
             {
-                XScale.Domain.Add(datum.Key);
+                XScale.Domain.Add(dp.Item1);
             }
 
-            // getter가 아닌 경우 재대입을 해야함 예를 들어 visibliity나 Scale등
+            HandleLineElement.Data = D3Data;
 
-            HandleRectangleElement.Data = D3Data;
+            LineElement.Data = D3Data;
 
-            RectangleElement.Data = D3Data;
+            CircleElement.Data = D3CircleData;
 
             HorizontalAxis.Scale = XScale;
             Canvas.SetTop(HorizontalAxis, ChartAreaEndY);
@@ -592,36 +546,15 @@ namespace FlexTable.Crayon.Chart
             LegendHandleRectangleElement.Data = D3Data;
             LegendHandleRectangleElement.Visibility = LegendVisibility;
 
-            LegendRectangleElement.Data = D3Data;
-            LegendRectangleElement.Visibility = LegendVisibility;
+            IndicatorTextElement.Data = D3CircleData;
 
-            LegendTextElement.Data = D3Data;
-            LegendTextElement.Visibility = LegendVisibility;
-
-            IndicatorTextElement.Data = D3Data;
-
+            HandleLineElement.Update();
+            LineElement.Update();
+            CircleElement.Update(false, false);
             LegendHandleRectangleElement.Update();
-            HandleRectangleElement.Update();
-            RectangleElement.Update();
             IndicatorTextElement.Update();
             HorizontalAxis.Update();
             VerticalAxis.Update();
-        }
-
-        public void ClearSelection()
-        {
-            selectedKeys.Clear();
-
-            if (SelectionChanged != null)
-                SelectionChanged(null, null, Data.Where(d => selectedKeys.IndexOf(d.Key) >= 0), 0);
-
-            RectangleElement.Update(true);
-            IndicatorTextElement.Update(true);
-            if (LegendVisibility == Visibility.Visible)
-            {
-                LegendRectangleElement.Update(true);
-                LegendTextElement.Update(true);
-            }
         }
     }
 }

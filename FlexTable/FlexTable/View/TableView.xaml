@@ -103,7 +103,8 @@
                                   SelectionMode="None"
                                   Height="{StaticResource RowHeight}"
                                   Margin="0"
-                                  Width="{x:Bind Path=MainPageViewModel.SheetViewModel.SheetWidth}"                                  
+                                  Width="{x:Bind Path=MainPageViewModel.SheetViewModel.SheetWidth}"
+                      HorizontalAlignment="Left"
                                   IsHitTestVisible="False"
                                   Padding="0">
                 <ListView.ItemContainerTransitions>
@@ -179,10 +180,11 @@
                       x:Name="GroupedRowViewer" Style="{StaticResource ListViewStyle}"
                       ItemContainerStyle="{StaticResource ListViewItemContainerStyle}"
                       ItemTemplate="{StaticResource ListViewDataTemplate}"
+                      HorizontalAlignment="Left"
                       >
                 <ListView.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <ItemsStackPanel Orientation="Vertical" CacheLength="100" />
+                        <ItemsStackPanel Orientation="Vertical" CacheLength="100" Width="{Binding PaddedSheetWidth}" Height="{Binding PaddedSheetHeight}"/>
                     </ItemsPanelTemplate>
                 </ListView.ItemsPanel>
             </ListView>

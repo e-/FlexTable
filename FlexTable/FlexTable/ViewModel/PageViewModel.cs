@@ -6,8 +6,6 @@ using FlexTable.Model;
 using Windows.UI.Xaml;
 using FlexTable.View;
 using Windows.UI.Xaml.Controls;
-using Series = System.Tuple<System.String, System.Collections.Generic.List<System.Tuple<System.Object, System.Double>>>;
-using DataPoint = System.Tuple<System.Object, System.Double>;
 using Windows.UI.Xaml.Documents;
 using Windows.UI.Text;
 using System.Diagnostics;
@@ -91,11 +89,6 @@ namespace FlexTable.ViewModel
         private Boolean isPrimaryUndoMessageVisible = true;
         public Boolean IsPrimaryUndoMessageVisible { get { return isPrimaryUndoMessageVisible; } set { isPrimaryUndoMessageVisible = value; OnPropertyChanged(nameof(IsPrimaryUndoMessageVisible)); } }
 
-        
-        
-        public Func<Category, Func<RowViewModel, Boolean>> BarChartRowSelecter { get; set; }
-        public Func<Category, Category, Func<RowViewModel, Boolean>> GroupedBarChartRowSelecter { get; set; }
-        public Func<Series, Func<RowViewModel, Boolean>> LineChartRowSelecter { get; set; }
         public Func<Category, Func<RowViewModel, Boolean>> ScatterplotRowSelecter { get; set; }
 
         PageView pageView;
@@ -787,7 +780,6 @@ namespace FlexTable.ViewModel
             }
 
             Int32 index = categorical.Index;
-            BarChartRowSelecter = c => (r => r.Cells[index].Content == c);
 
             pageView.BarChart.YStartsFromZero = true;
             pageView.BarChart.HorizontalAxisTitle = categorical.Name;
@@ -871,7 +863,6 @@ namespace FlexTable.ViewModel
                 AddText(pageView.GroupedBarChartTitle, $"Frequency of <b>{categorical2.Name}</b> by <b>{categorical1.Name}</b>");
             }
 
-            GroupedBarChartRowSelecter = (c1, c2) => (r => r.Cells[categorical1.Index].Content == c1 && r.Cells[categorical2.Index].Content == c2);
             pageView.GroupedBarChart.YStartsFromZero = true;
             pageView.GroupedBarChart.HorizontalAxisTitle = categorical1.Name;
             pageView.GroupedBarChart.VerticalAxisTitle = $"Frequency of {categorical2.Name}";
@@ -932,8 +923,6 @@ namespace FlexTable.ViewModel
             {
                 AddText(pageView.GroupedBarChartTitle, $"<b>{numerical.HeaderName}</b> by <b>{categorical1.Name}</b> and <b>{categorical2.Name}</b>");
             }
-
-            GroupedBarChartRowSelecter = (c1, c2) => (r => r.Cells[categorical1.Index].Content == c1 && r.Cells[categorical2.Index].Content == c2);
 
             pageView.GroupedBarChart.YStartsFromZero = false;
             pageView.GroupedBarChart.HorizontalAxisTitle = categorical1.Name;
@@ -996,8 +985,6 @@ namespace FlexTable.ViewModel
                 AddText(pageView.BarChartTitle, $"<b>{numerical.AggregatedName}</b> by <b>{categorical.Name}</b>");
             }
 
-            BarChartRowSelecter = c => (r => r.Cells[categorical.Index].Content == c);
-
             pageView.BarChart.YStartsFromZero = false;
             pageView.BarChart.HorizontalAxisTitle = categorical.Name;
             pageView.BarChart.VerticalAxisTitle = numerical.HeaderNameWithUnit;
@@ -1029,23 +1016,30 @@ namespace FlexTable.ViewModel
             {
                 AddText(pageView.LineChartTitle, $"<b>{numerical.HeaderName}</b> by <b>{categorical.Name}</b>");
             }
-            LineChartRowSelecter = series => (r => true); // r.Cells[categorical.Index].Content.ToString() == series.Item1);
 
-            pageView.LineChart.YStartsWithZero = false;
-            pageView.LineChart.HorizontalAxisLabel = categorical.Name;
-            pageView.LineChart.VerticalAxisLabel = numerical.HeaderNameWithUnit;
-            var rows = groupedRows
+            pageView.LineChart.YStartsFromZero = false;
+            pageView.LineChart.HorizontalAxisTitle = categorical.Name;
+            pageView.LineChart.VerticalAxisTitle = numerical.HeaderNameWithUnit;
+
+            LineChartDatum datum = new LineChartDatum()
+            {
+                ColumnViewModel = numerical,
+                Key = numerical.AggregatedName,
+                Rows = mainPageViewModel.SheetViewModel.FilteredRows
+            };
+
+            datum.DataPoints = groupedRows
                 .OrderBy(g => (g.Keys[categorical] as Category).Order)
-                .Select(grs => new Tuple<Object, Double>(
-                    grs.Keys[categorical],
-                    numerical.AggregativeFunction.Aggregate(grs.Rows.Select(r => (Double)r.Cells[numerical.Index].Content))
-                    ))
+                .Select(g => new DataPoint(
+                    g.Keys[categorical],
+                    numerical.AggregativeFunction.Aggregate(g.Rows.Select(r => (Double)r.Cells[numerical.Index].Content)),
+                    datum
+                ))
                 .Take(LineChartMaximumPointNumberInASeries)
                 .ToList();
-                
 
-            pageView.LineChart.Data = new List<Series>() { new Series(numerical.AggregatedName, rows) };
-            if (rows.Count > LineChartMaximumPointNumberInASeries) IsLineChartWarningVisible = true;
+            pageView.LineChart.Data = new List<LineChartDatum>() { datum };
+            if (groupedRows.Count > LineChartMaximumPointNumberInASeries) IsLineChartWarningVisible = true;
             
             pageView.LineChart.Update();
         }
@@ -1068,39 +1062,37 @@ namespace FlexTable.ViewModel
                 AddText(pageView.LineChartTitle, $"<b>{numerical.HeaderName}</b> by <b>{categorical1.Name}</b> and <b>{categorical2.Name}</b>");
             }
             
-            LineChartRowSelecter = series => (r => r.Cells[categorical2.Index].Content.ToString() == series.Item1);
+            pageView.LineChart.YStartsFromZero = false;
+            pageView.LineChart.HorizontalAxisTitle = categorical1.Name;
+            pageView.LineChart.VerticalAxisTitle = numerical.HeaderNameWithUnit;
 
-            pageView.LineChart.YStartsWithZero = false;
-            pageView.LineChart.HorizontalAxisLabel = categorical1.Name;
-            pageView.LineChart.VerticalAxisLabel = numerical.HeaderNameWithUnit;
             var rows =
                 groupedRows
                 .GroupBy(grs => grs.Keys[categorical2]) // 먼저 묶고 
-                .Select(group =>
-                    new Series(
-                        group.Key.ToString(),
-                        group
-                            .GroupBy(g => g.Keys[categorical1])
-                            .Select(g =>
-                                new DataPoint(
-                                    g.Key,
-                                    numerical.AggregativeFunction.Aggregate(
-                                        g
-                                        .SelectMany(grs => grs.Rows)
-                                        .Select(r => (Double)r.Cells[numerical.Index].Content)
-                                    )
-                                )
-                        )
-                        .Take(LineChartMaximumPointNumberInASeries)
-                        .ToList()
-                    )
-                )
+                .Select(group => {
+                    LineChartDatum datum = new LineChartDatum()
+                    {
+                        ColumnViewModel = categorical2,
+                        Key = group.Key,
+                        Rows = group.SelectMany(grs => grs.Rows)
+                    };
+
+                    datum.DataPoints = group.Select(g => new DataPoint(
+                        g.Keys[categorical1],
+                        numerical.AggregativeFunction.Aggregate(
+                                g.Rows.Select(r => (Double)r.Cells[numerical.Index].Content)
+                            ),
+                        datum
+                    )).ToList();
+
+                    return datum;
+                })
                 .Take(LineChartMaximumSeriesNumber);
 
-            if (groupedRows.GroupBy(grs => grs.Keys[categorical2]).Count() > LineChartMaximumSeriesNumber) IsLineChartWarningVisible = true;
-            if (rows.Max(row => row.Item2.Count) > LineChartMaximumPointNumberInASeries) IsLineChartWarningVisible = true;
+            if (rows.Count() > LineChartMaximumSeriesNumber) IsLineChartWarningVisible = true;
+            if (rows.Max(row => row.DataPoints.Count) > LineChartMaximumPointNumberInASeries) IsLineChartWarningVisible = true;
 
-            pageView.LineChart.Data = rows;
+            pageView.LineChart.Data = rows.ToList();
             pageView.LineChart.Update();
         }
 
@@ -1181,8 +1173,6 @@ namespace FlexTable.ViewModel
             {
                 AddText(pageView.GroupedBarChartTitle, $"<b>{numerical1.AggregatedName}</b> and <b>{numerical2.AggregatedName}</b> by <b>{categorical.Name}</b>");
             }
-
-            GroupedBarChartRowSelecter = (c1, c2) => (r => r.Cells[categorical.Index].Content == c1);
 
             pageView.GroupedBarChart.YStartsFromZero = true;
             pageView.GroupedBarChart.HorizontalAxisTitle = categorical.Name;

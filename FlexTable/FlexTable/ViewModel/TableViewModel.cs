@@ -105,8 +105,8 @@ namespace FlexTable.ViewModel
             view.TableView.TopColumnHeader.Update();
             view.TableView.BottomColumnHeader.Update();
 
-            PaddedSheetHeight = SheetViewModel.AllRowsSheetHeight > SheetViewHeight ? SheetViewModel.AllRowsSheetHeight : SheetViewHeight;
-            PaddedSheetWidth = SheetViewModel.SheetWidth > SheetViewWidth ? SheetViewModel.SheetWidth : SheetViewWidth;
+            PaddedSheetHeight = Math.Max(SheetViewModel.AllRowsSheetHeight, SheetViewHeight);
+            PaddedSheetWidth = Math.Max(SheetViewModel.SheetWidth, SheetViewWidth);
 
             AllRowViewModels = new ObservableCollection<RowViewModel>(SheetViewModel.AllRowViewModels);
 

@@ -31,6 +31,7 @@ namespace d3.Component
         
         public event Event.EventHandler LinePointerPressed;
         public event Event.EventHandler LinePointerReleased;
+        public event Event.EventHandler LineTapped;
 
         public Data Data
         {
@@ -161,25 +162,29 @@ namespace d3.Component
                         Opacity = OpacityGetter == null ? 1 : OpacityGetter(datum, index)
                     };
 
-                    path.PointerPressed += delegate (object sender, PointerRoutedEventArgs e)
+                    if (LinePointerPressed != null)
                     {
-                        if (LinePointerPressed != null)
+                        path.PointerPressed += delegate (object sender, PointerRoutedEventArgs e)
                         {
                             LinePointerPressed(path, e, datum, index);
-                            e.Handled = true;
-                        }
-                    };
+                        };
+                    }
 
-                    path.PointerReleased += delegate (object sender, PointerRoutedEventArgs e)
+                    if (LinePointerReleased != null)
                     {
-                        if (LinePointerReleased != null)
+                        path.PointerReleased += delegate (object sender, PointerRoutedEventArgs e)
                         {
-                            LinePointerReleased(path, e,datum, index);
-                            e.Handled = true;
-                        }
-                    };
+                            LinePointerReleased(path, e, datum, index);
+                        };
+                    }
 
-                    path.Tapped += rect_Tapped;
+                    if(LineTapped != null)
+                    {
+                        path.Tapped += delegate (object sender, TappedRoutedEventArgs e)
+                        {
+                            LineTapped(path, e, datum, index);
+                        };
+                    }
 
                     index++;
                     LineCanvas.Children.Add(path);
@@ -187,10 +192,6 @@ namespace d3.Component
                 }
             }
         }
-
-        void rect_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            e.Handled = true;
-        }
+        
     }
 }

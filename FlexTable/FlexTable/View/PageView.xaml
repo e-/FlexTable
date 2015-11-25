@@ -214,7 +214,7 @@
                                 <Run FontFamily="FontAwesome" Foreground="#CC0000">&#xf071;</Run>
                                 <Run Text="{StaticResource TooManyElementsWarningString}"></Run>
                             </TextBlock>
-                            <d3view:LineChart x:Name="LineChartElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}" 
+                            <crayon:LineChart x:Name="LineChartElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}" 
                                               IsHitTestVisible="False" Tag="Line Chart"/>
                         </StackPanel>
 

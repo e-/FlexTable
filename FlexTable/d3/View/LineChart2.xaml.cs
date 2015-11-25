@@ -21,7 +21,7 @@ using DataPoint = System.Tuple<System.Object, System.Double>;
 
 namespace d3.View
 {
-    public sealed partial class LineChart : UserControl
+    public sealed partial class LineChart2 : UserControl
     {
         ViewModel.LineChartViewModel viewModel = new ViewModel.LineChartViewModel();
 
