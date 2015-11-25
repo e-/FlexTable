@@ -876,9 +876,23 @@ namespace FlexTable.ViewModel
             pageView.GroupedBarChart.HorizontalAxisTitle = categorical1.Name;
             pageView.GroupedBarChart.VerticalAxisTitle = $"Frequency of {categorical2.Name}";
 
-            var data = groupedRows
+            if (groupedRows.Count > GroupedBarChartMaximumRecordNumber)
+            {
+                groupedRows = groupedRows.Take(GroupedBarChartMaximumRecordNumber).ToList();
+                IsGroupedBarChartWarningVisible = true;
+            }
+
+            var validLegends = groupedRows.GroupBy(g => g.Keys[categorical2]).Select(g => g.Key);
+
+            if (validLegends.Count() > BarChartMaximumRecordNumber)
+            {
+                // number of categories in legend
+                validLegends = validLegends.Take(BarChartMaximumRecordNumber);
+                IsGroupedBarChartWarningVisible = true;
+            }
+
+            pageView.GroupedBarChart.Data = groupedRows
                         .OrderBy(g => (g.Keys[categorical1] as Category).Order * 10000 + (g.Keys[categorical2] as Category).Order)
-                        .Take(GroupedBarChartMaximumRecordNumber)
                         .GroupBy(g => g.Keys[categorical1])
                         .Select(gs =>
                         {
@@ -888,7 +902,8 @@ namespace FlexTable.ViewModel
                                 Key = gs.Key
                             };
 
-                            datum.Children = gs.Select(g => new BarChartDatum()
+                            datum.Children = gs.Where(g => validLegends.Contains(g.Keys[categorical2]))
+                            .Select(g => new BarChartDatum()
                             {
                                 Key = g.Keys[categorical2],
                                 Value = g.Rows.Count,
@@ -897,25 +912,9 @@ namespace FlexTable.ViewModel
                                 Rows = g.Rows
                             }).ToList();
                             return datum;
-                        });
-
-            if (groupedRows.Count > GroupedBarChartMaximumRecordNumber) IsGroupedBarChartWarningVisible = true;
-            var legends = groupedRows.Take(GroupedBarChartMaximumRecordNumber).GroupBy(g => g.Keys[categorical2]);
-
-            if (legends.Count() > BarChartMaximumRecordNumber)
-            {
-                // number of categories in legend
-                var validLegends = legends.Take(BarChartMaximumRecordNumber).Select(g => g.Key);
-                IsGroupedBarChartWarningVisible = true;
-
-                foreach(GroupedBarChartDatum datum in data)
-                {
-                    datum.Children = datum.Children.Where(c => validLegends.Contains(c.Key)).ToList();
-                }
-                data = data.Where(d => d.Children.Count > 0);
-            }
-
-            pageView.GroupedBarChart.Data = data.ToList();
+                        })
+                        .Where(datum => datum.Children != null && datum.Children.Count > 0)
+                        .ToList();            
 
             pageView.GroupedBarChart.Update();           
         }
@@ -939,9 +938,24 @@ namespace FlexTable.ViewModel
             pageView.GroupedBarChart.YStartsFromZero = false;
             pageView.GroupedBarChart.HorizontalAxisTitle = categorical1.Name;
             pageView.GroupedBarChart.VerticalAxisTitle = numerical.HeaderNameWithUnit;
+
+            if (groupedRows.Count > GroupedBarChartMaximumRecordNumber)
+            {
+                groupedRows = groupedRows.Take(GroupedBarChartMaximumRecordNumber).ToList();
+                IsGroupedBarChartWarningVisible = true;
+            }
+
+            var validLegends = groupedRows.GroupBy(g => g.Keys[categorical2]).Select(g => g.Key);
+
+            if (validLegends.Count() > BarChartMaximumRecordNumber)
+            {
+                // number of categories in legend
+                validLegends = validLegends.Take(BarChartMaximumRecordNumber);
+                IsGroupedBarChartWarningVisible = true;
+            }
+
             pageView.GroupedBarChart.Data = groupedRows
                         .OrderBy(g => (g.Keys[categorical1] as Category).Order * 10000 + (g.Keys[categorical2] as Category).Order)
-                        .Take(GroupedBarChartMaximumRecordNumber)
                         .GroupBy(g => g.Keys[categorical1])
                         .Select(gs =>
                         {
@@ -951,7 +965,8 @@ namespace FlexTable.ViewModel
                                 Key = gs.Key
                             };
 
-                            datum.Children = gs.Select(g => new BarChartDatum()
+                            datum.Children = gs.Where(g => validLegends.Contains(g.Keys[categorical2]))
+                            .Select(g => new BarChartDatum()
                             {
                                 Key = g.Keys[categorical2],
                                 Value = numerical.AggregativeFunction.Aggregate(g.Rows.Select(row => (Double)row.Cells[numerical.Index].Content)),
@@ -961,9 +976,9 @@ namespace FlexTable.ViewModel
                             }).ToList();
                             return datum;
                         })
+                        .Where(datum => datum.Children != null && datum.Children.Count > 0)
                         .ToList();
 
-            if (groupedRows.Count > GroupedBarChartMaximumRecordNumber) IsGroupedBarChartWarningVisible = true;
             pageView.GroupedBarChart.Update();
         }
 

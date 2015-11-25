@@ -42,11 +42,7 @@ namespace FlexTable
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
             var view = ApplicationView.GetForCurrentView();
-
             view.TryEnterFullScreenMode();
-
-            Model.Sheet sheet = await Util.CsvLoader.Load("fitts.csv"); // "Population-filtered.csv");
-            mainPageViewModel.Sheet = sheet;
 
             mainPageViewModel.Initialize();
         }

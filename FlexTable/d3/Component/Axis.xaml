@@ -12,6 +12,7 @@
         <Style x:Key="TickLabelStyle" TargetType="TextBlock">
             <Setter Property="TextAlignment" Value="Center" />
             <Setter Property="FontSize" Value="15" />
+            <Setter Property="TextTrimming" Value="CharacterEllipsis" />
             <!--<Setter Property="Foreground" Value="Gray" />-->
         </Style>
         <Style x:Key="AxisLineStyle" TargetType="Line">

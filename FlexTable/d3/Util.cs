@@ -30,6 +30,22 @@ namespace d3
             return da;
         }
 
+        public static DoubleAnimation GenerateDoubleAnimation(DependencyObject obj, String path, double? to, Boolean enableDependentAnimation)
+        {
+            DoubleAnimation da = new DoubleAnimation()
+            {
+                To = to,
+                Duration = duration,
+                EasingFunction = qe,
+                EnableDependentAnimation = enableDependentAnimation
+            };
+
+            Storyboard.SetTarget(da, obj);
+            Storyboard.SetTargetProperty(da, path);
+
+            return da;
+        }
+
         public static ColorAnimation GenerateColorAnimation(DependencyObject obj, String path, Color? to)
         {
             ColorAnimation da = new ColorAnimation()

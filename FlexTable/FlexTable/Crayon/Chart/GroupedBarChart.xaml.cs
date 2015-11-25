@@ -132,13 +132,13 @@ namespace FlexTable.Crayon.Chart
         public Func<Object, Int32, Double> HandleHeightGetter { get { return (d, index) => ChartAreaEndY - PaddingTop; } }
         public Func<Object, Int32, Double> HandleXGetter { get { return (d, index) => XGetter(d, index); } }
 
-        public Func<TextBlock, Double, Double> LabelFontSizeGetter
+        /*public Func<TextBlock, Double, Double> LabelFontSizeGetter
         {
             get
             {
                 return (textBlock, currentSize) => textBlock.ActualWidth > XScale.RangeBand ? currentSize * XScale.RangeBand / textBlock.ActualWidth * 0.9 : currentSize;
             }
-        }
+        }*/
 
         public Func<Object, Int32, Double> LegendPatchYGetter
         {
@@ -235,7 +235,7 @@ namespace FlexTable.Crayon.Chart
             HorizontalAxis.Scale = XScale;
             Canvas.SetTop(HorizontalAxis, ChartAreaEndY);
             HorizontalAxis.Visibility = HorizontalAxisVisibility;
-            HorizontalAxis.LabelFontSizeGetter = LabelFontSizeGetter;
+            //HorizontalAxis.LabelFontSizeGetter = LabelFontSizeGetter;
             //HorizontalAxis.LabelOpacityGetter = HorizontalAxisLabelOpacityGetter;
             //HorizontalAxis.LabelYGetter = HorizontalAxisLabelYGetter;
 

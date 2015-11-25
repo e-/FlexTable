@@ -27,7 +27,8 @@
             x:Name="CircleElement"/>
         
         <com:Axis Orientation="Horizontal" Scale="{Binding XScale}" Canvas.Top="{Binding ChartAreaEndY}" Canvas.Left="0" x:Name="HorizontalAxis"
-                  Visibility="{Binding HorizontalAxisVisibility}"  LabelFontSizeGetter="{Binding LabelFontSizeGetter}"/>
+                  Visibility="{Binding HorizontalAxisVisibility}"/>
+        <!--  LabelFontSizeGetter="{Binding LabelFontSizeGetter}"-->
         <TextBlock TextAlignment="Center" Canvas.Top="{Binding HorizontalAxisLabelCanvasTop}" Canvas.Left="{Binding HorizontalAxisLabelCanvasLeft}"
                    Width="{Binding HorizontalAxisLabelWidth}" Visibility="{Binding HorizontalAxisVisibility}" FontSize="12" Text="{Binding HorizontalAxisLabel}"></TextBlock>
         

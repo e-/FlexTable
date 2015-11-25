@@ -66,6 +66,8 @@ namespace FlexTable.View
             BarChartElement.SelectionChanged += BarChartElement_SelectionChanged;
             BarChartElement.FilterOut += BarChartElement_FilterOut;
 
+            GroupedBarChartElement.SelectionChanged += BarChartElement_SelectionChanged;
+            //GroupedBarChartElement.FilterOut += BarC
             //GroupedBarChartElement.BarPointerPressed += GroupedBarChartElement_BarPointerPressed;
             //GroupedBarChartElement.BarPointerReleased += BarChartElement_BarPointerReleased;
 
@@ -171,22 +173,8 @@ namespace FlexTable.View
         {
             PageViewModel pvm = this.DataContext as PageViewModel;
             pvm.MainPageViewModel.TableViewModel.CancelPreviewRows();
-        }
-
-        private void GroupedBarChartElement_BarPointerPressed(object sender, object e, object d, Int32 index)
-        {
-            PageViewModel pvm = this.DataContext as PageViewModel;
-
-            Tuple<Object, Object, Double, Object> datum = d as Tuple<Object, Object, Double, Object>;
-            //pvm.MainPageViewModel.TableViewModel.PreviewRows(pvm.GroupedBarChartRowSelecter(datum.Item1 as Category, datum.Item4 as Category));
-        }
+        }        
         
-        void BarChartElement_BarPointerReleased(object sender, object e, object d, Int32 index)
-        {
-            PageViewModel pvm = this.DataContext as PageViewModel;
-            pvm.MainPageViewModel.TableViewModel.CancelPreviewRows();
-        }
-
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             ShowStoryboardElement.Begin();
@@ -613,7 +601,8 @@ namespace FlexTable.View
             Double delta = e.Cumulative.Translation.X;
             if (delta > SelectionDismissThreshold)
             {
-                BarChartElement.ClearSelection();
+                if (PageViewModel.IsBarChartVisible) BarChartElement.ClearSelection();
+                if (PageViewModel.IsGroupedBarChartVisible) GroupedBarChartElement.ClearSelection();
             }
             else
             {

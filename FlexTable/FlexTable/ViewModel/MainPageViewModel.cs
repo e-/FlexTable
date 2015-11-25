@@ -66,8 +66,11 @@ namespace FlexTable.ViewModel
             ExplorationViewModel = new ExplorationViewModel(this, view);
         }
 
-        public void Initialize()
+        public async void Initialize()
         {
+            Model.Sheet sheet = await Util.CsvLoader.Load("who.csv"); // "Population-filtered.csv");
+            this.Sheet = sheet;
+
             PageHeight = Bounds.Height / 2 - 4;
             NegativePageHeight = -PageHeight;
             PageOffset = PageHeight + 8;
@@ -108,7 +111,7 @@ namespace FlexTable.ViewModel
             var dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
 
 
-            ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[0]);
+            ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[1]);
 
             DispatcherTimer dispatcherTimer = new DispatcherTimer();
             dispatcherTimer.Tick += (sender, e) =>
@@ -117,7 +120,7 @@ namespace FlexTable.ViewModel
                 ExplorationViewModel.TopPageView.PageViewModel.State = PageViewModel.PageViewState.Selected;
                 ExplorationViewModel.PageViewStateChanged(ExplorationViewModel.TopPageView.PageViewModel, ExplorationViewModel.TopPageView);
 
-                ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[3]);
+                /*ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[3]);
 
                 DispatcherTimer dispatcherTimer2 = new DispatcherTimer();
                 dispatcherTimer2.Tick += (sender2, e2) =>
@@ -141,7 +144,7 @@ namespace FlexTable.ViewModel
 
                 };
                 dispatcherTimer2.Interval = TimeSpan.FromMilliseconds(500);
-                dispatcherTimer2.Start();
+                dispatcherTimer2.Start();*/
             };
             dispatcherTimer.Interval = TimeSpan.FromMilliseconds(500);
             dispatcherTimer.Start();
