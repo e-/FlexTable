@@ -29,7 +29,7 @@ namespace FlexTable.Crayon.Chart
     {
         const Double DragToFilterThreshold = 40;
         const Double StrikeThroughMinWidth = 50;
-        const Double StrikeThroughMaxHeight = 30;
+        const Double StrikeThroughMaxHeight = 20;
 
         const Double PaddingLeft = 0;
         const Double PaddingTop = 30;

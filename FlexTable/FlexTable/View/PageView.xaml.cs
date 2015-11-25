@@ -32,6 +32,8 @@ namespace FlexTable.View
 {
     public sealed partial class PageView : UserControl
     {
+        const Double SelectionDismissThreshold = 50;
+
         public BarChart BarChart => BarChartElement;
         public LineChart LineChart => LineChartElement;
         public DescriptiveStatisticsView DescriptiveStatisticsView => DescriptiveStatisticsViewElement;
@@ -580,8 +582,6 @@ namespace FlexTable.View
             Clipboard.SetContent(dataPackage);
         }
 
-        const Double SelectionDismissThreshold = 100;
-
         private void SelectionIndicator_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             Double delta = e.Cumulative.Translation.X;
@@ -598,6 +598,7 @@ namespace FlexTable.View
             {
                 if (PageViewModel.IsBarChartVisible) BarChartElement.ClearSelection();
                 if (PageViewModel.IsGroupedBarChartVisible) GroupedBarChartElement.ClearSelection();
+                if (PageViewModel.IsLineChartVisible) LineChart.ClearSelection();
             }
             else
             {

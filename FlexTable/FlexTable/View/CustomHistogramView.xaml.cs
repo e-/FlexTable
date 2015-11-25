@@ -28,7 +28,7 @@ namespace FlexTable.View
     public sealed partial class CustomHistogramView : UserControl
     {
         public d3.Component.Axis XAxis { get { return AxisElement; } }
-        public d3.View.BarChart BarChart { get { return BarChartElement; } }
+        public Crayon.Chart.BarChart BarChart { get { return BarChartElement; } }
         List<BinTick> binTicks = new List<BinTick>();
         Util.Drawable binSplitDrawable = new Util.Drawable()
         {
@@ -291,8 +291,8 @@ namespace FlexTable.View
 
         public void UpdateBarChart()
         {
-            BarChartElement.Data = CreateBins();
-            BarChartElement.Update();
+            /*BarChartElement.Data = CreateBins();
+            BarChartElement.Update();*/
         }
 
         public void SetBinTicks(List<Double> pivots)

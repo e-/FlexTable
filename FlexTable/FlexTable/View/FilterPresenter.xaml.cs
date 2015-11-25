@@ -45,7 +45,6 @@ namespace FlexTable.View
 
         private void Border_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            if (e.PointerDeviceType != PointerDeviceType.Touch) return;
             Double delta = e.Cumulative.Translation.X;
             if (delta < 0) delta = 0;
             if (delta > CancelThreshold) delta = CancelThreshold;
@@ -56,8 +55,6 @@ namespace FlexTable.View
 
         private void Border_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
-            if (e.PointerDeviceType != PointerDeviceType.Touch) return;
-
             Double delta = e.Cumulative.Translation.X;
             if (delta > CancelThreshold)
             {

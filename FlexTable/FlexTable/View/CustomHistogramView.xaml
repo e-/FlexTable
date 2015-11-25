@@ -9,7 +9,8 @@
     xmlns:d3component="using:d3.Component"
     mc:Ignorable="d"
     d:DesignHeight="300"
-    d:DesignWidth="400"   
+    d:DesignWidth="400" 
+    xmlns:crayon="using:FlexTable.Crayon.Chart"
     >
     
     <UserControl.Resources>
@@ -35,8 +36,8 @@
     </UserControl.Resources>
     
     <StackPanel>
-        <d3view:BarChart x:Name="BarChartElement"  Width="{StaticResource ParagraphWidth}" 
-                         Height="{StaticResource BarChartHeight}" LegendVisibility="Collapsed"></d3view:BarChart>
+        <crayon:BarChart x:Name="BarChartElement"  Width="{StaticResource ParagraphWidth}" 
+                         Height="{StaticResource BarChartHeight}" LegendVisibility="Collapsed"></crayon:BarChart>
         <Grid Height="{StaticResource GridHeight}">
             
         </Grid>

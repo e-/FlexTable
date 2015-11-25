@@ -28,7 +28,7 @@ namespace FlexTable.Crayon.Chart
     public sealed partial class LineChart : UserControl
     {
         const Double StrikeThroughMinWidth = 50;
-        const Double StrikeThroughMaxHeight = 30;
+        const Double StrikeThroughMaxHeight = 20;
 
         const Double PaddingLeft = 0;
         const Double PaddingTop = 30;
@@ -555,6 +555,23 @@ namespace FlexTable.Crayon.Chart
             IndicatorTextElement.Update();
             HorizontalAxis.Update();
             VerticalAxis.Update();
+        }
+
+        public void ClearSelection()
+        {
+            selectedKeys.Clear();
+
+            if (SelectionChanged != null)
+                SelectionChanged(null, null, Data.Where(d => selectedKeys.IndexOf(d.Key) >= 0), 0);
+
+            LineElement.Update(true);
+            CircleElement.Update(true, false);
+            IndicatorTextElement.Update(true);
+            if (LegendVisibility == Visibility.Visible)
+            {
+                LegendRectangleElement.Update(true);
+                LegendTextElement.Update(true);
+            }
         }
     }
 }

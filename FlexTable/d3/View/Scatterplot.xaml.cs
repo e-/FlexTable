@@ -35,7 +35,7 @@ namespace d3.View
         }
 
         public static readonly DependencyProperty LegendVisibilityProperty =
-            DependencyProperty.Register("LegendVisibility", typeof(Visibility), typeof(BarChart), new PropertyMetadata(Visibility.Visible));
+            DependencyProperty.Register("LegendVisibility", typeof(Visibility), typeof(Scatterplot), new PropertyMetadata(Visibility.Visible));
 
         public Visibility LegendVisibility
         {
@@ -44,7 +44,7 @@ namespace d3.View
         }
 
         public static readonly DependencyProperty HorizontalAxisVisibilityProperty =
-            DependencyProperty.Register("HorizontalAxisVisibility", typeof(Visibility), typeof(BarChart), new PropertyMetadata(Visibility.Visible));
+            DependencyProperty.Register("HorizontalAxisVisibility", typeof(Visibility), typeof(Scatterplot), new PropertyMetadata(Visibility.Visible));
 
         public Visibility HorizontalAxisVisibility
         {
@@ -53,7 +53,7 @@ namespace d3.View
         }
 
         public static readonly DependencyProperty HorizontalAxisLabelProperty =
-            DependencyProperty.Register("HorizontalAxisLabel", typeof(String), typeof(BarChart), new PropertyMetadata(String.Empty));
+            DependencyProperty.Register("HorizontalAxisLabel", typeof(String), typeof(Scatterplot), new PropertyMetadata(String.Empty));
 
         public String HorizontalAxisLabel
         {
@@ -62,7 +62,7 @@ namespace d3.View
         }
 
         public static readonly DependencyProperty VerticalAxisLabelProperty =
-            DependencyProperty.Register("VeritcalAxisLabel", typeof(String), typeof(BarChart), new PropertyMetadata(String.Empty));
+            DependencyProperty.Register("VeritcalAxisLabel", typeof(String), typeof(Scatterplot), new PropertyMetadata(String.Empty));
 
         public String VerticalAxisLabel
         {
