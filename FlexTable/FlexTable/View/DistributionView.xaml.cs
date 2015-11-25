@@ -15,6 +15,7 @@ using Windows.UI.Xaml.Navigation;
 using FlexTable.Model;
 using d3;
 using FlexTable.Crayon.Chart;
+using FlexTable.ViewModel;
 
 // 사용자 정의 컨트롤 항목 템플릿에 대한 설명은 http://go.microsoft.com/fwlink/?LinkId=234236에 나와 있습니다.
 
@@ -22,13 +23,20 @@ namespace FlexTable.View
 {
     public sealed partial class DistributionView : UserControl
     {
+        public PageViewModel ViewModel { get { return (PageViewModel)DataContext; } }
+        public BarChart Histogram { get { return HistogramElement; } }
+
         public DistributionView()
         {
             this.InitializeComponent();
         }
 
-        public void Update(DescriptiveStatisticsResult result, IEnumerable<Double> data)
+        public void Update(IEnumerable<Row> rows, ColumnViewModel numerical)
         {
+            DescriptiveStatisticsResult result = DescriptiveStatistics.Analyze(
+                       rows.Select(r => (Double)r.Cells[numerical.Index].Content)
+                       );
+
             HistogramElement.Width = (Double)App.Current.Resources["ParagraphWidth"] - 20;
             BoxPlotElement.Width = (Double)App.Current.Resources["ParagraphWidth"] - 90;
             BoxPlotElement.Min = result.Min;
@@ -37,7 +45,6 @@ namespace FlexTable.View
             BoxPlotElement.Median = result.Median;
             BoxPlotElement.ThirdQuartile = result.ThirdQuartile;
             BoxPlotElement.Mean = result.Mean;
-
 
             BoxPlotElement.Update();
 
@@ -50,19 +57,24 @@ namespace FlexTable.View
             };
 
             linear.Nice();
-                        
-            /*HistogramElement.Data = Util.HistogramCalculator.Bin(
+
+            HistogramElement.Data = Util.HistogramCalculator.Bin(
                 linear.DomainStart,
                 linear.DomainEnd,
                 linear.Step,
-                data
+                rows,
+                numerical
                 )
-                .Select(d => new BarChartDatum() {
-                    Key= $"~{Util.Formatter.Auto(d.Item2)}",
-                    ColumnViewModel = 
-                    (, d.Item3));
-            
-            HistogramElement.Update();*/
+                .OrderBy(bin => bin.Min)
+                .Select(d => new BarChartDatum()
+                {
+                    Key = $"~{Util.Formatter.Auto(d.Max)}",
+                    ColumnViewModel = numerical,
+                    Value = d.Rows.Count(),
+                    Rows = d.Rows
+                }).ToList();
+                   
+            HistogramElement.Update();
         }
     }
 }

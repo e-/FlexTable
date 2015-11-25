@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using d3.Scale;
+using FlexTable.Util;
 
 namespace FlexTable.ViewModel
 {
@@ -475,27 +476,21 @@ namespace FlexTable.ViewModel
 
             linear.Nice();
 
-            List<Tuple<Double, Double, Int32>> bins = Util.HistogramCalculator.Bin(
+            IEnumerable<Bin> bins = HistogramCalculator.Bin(
                 linear.DomainStart,
                 linear.DomainEnd,
                 linear.Step,
-                rows.Select(r => (Double)r.Cells[selected.Index].Content)
+                rows,
+                selected
                 );
 
             List<GroupedRows> groupedRows = new List<GroupedRows>();
-            foreach(Tuple<Double, Double, Int32> bin in bins)
+            foreach(Bin bin in bins)
             {
                 GroupedRows grs = new GroupedRows();
-                grs.Keys[selected] = $"{Util.Formatter.FormatAuto3(bin.Item1)} - {Util.Formatter.FormatAuto3(bin.Item2)}";
+                grs.Keys[selected] = $"{Formatter.FormatAuto3(bin.Min)} - {Formatter.FormatAuto3(bin.Max)}";
+                grs.Rows = bin.Rows.ToList();
                 groupedRows.Add(grs);
-            }
-
-            foreach(Row row in rows)
-            {
-                Int32 index = (Int32)Math.Floor(((Double)row.Cells[selected.Index].Content - linear.DomainStart) / linear.Step);
-                if (index >= bins.Count) index = bins.Count - 1;
-
-                groupedRows[index].Rows.Add(row);
             }
 
             return groupedRows;

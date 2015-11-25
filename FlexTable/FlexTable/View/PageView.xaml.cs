@@ -80,8 +80,13 @@ namespace FlexTable.View
             ScatterplotElement.CategoryPointerReleased += ScatterplotElement_CategoryPointerReleased;
             ScatterplotElement.LassoSelected += ScatterplotElement_LassoSelected;
             ScatterplotElement.LassoUnselected += ScatterplotElement_LassoUnselected;
+
+            DistributionView.Histogram.SelectionChanged += Histogram_SelectionChanged;
+            DistributionView.Histogram.FilterOut += Histogram_FilterOut;
         }
+
         
+
         private void SelectionChanged(IEnumerable<Row> selectedRows)
         {
             Int32 count = selectedRows.Count();
@@ -128,19 +133,31 @@ namespace FlexTable.View
             SelectionChanged(selection.SelectMany(s => s.Rows));
         }
 
+        private void Histogram_SelectionChanged(object sender, object e, object datum, int index)
+        {
+            IEnumerable<BarChartDatum> selection = datum as IEnumerable<BarChartDatum>;
+            SelectionChanged(selection.SelectMany(s => s.Rows));
+        }
+
         private void BarChartElement_FilterOut(object sender, object e, object datum, int index)
         {
             IEnumerable<BarChartDatum> filteredData = datum as IEnumerable<BarChartDatum>;
-            FilterOut((filteredData as IEnumerable<BarChartDatum>).SelectMany(bcd => bcd.Rows), filteredData.First().ColumnViewModel.Name, filteredData.Select(d => d.Key.ToString()));
+            FilterOut((filteredData as IEnumerable<BarChartDatum>).SelectMany(bcd => bcd.Rows).ToList(), filteredData.First().ColumnViewModel.Name, filteredData.Select(d => d.Key.ToString()));
         }
 
         private void LineChartElement_FilterOut(object sender, object e, object datum, int index)
         {
             IEnumerable<LineChartDatum> filteredData = datum as IEnumerable<LineChartDatum>;
-            FilterOut((filteredData as IEnumerable<LineChartDatum>).SelectMany(lcd => lcd.Rows), filteredData.First().ColumnViewModel.Name, filteredData.Select(d => d.Key.ToString()));
+            FilterOut((filteredData as IEnumerable<LineChartDatum>).SelectMany(lcd => lcd.Rows).ToList(), filteredData.First().ColumnViewModel.Name, filteredData.Select(d => d.Key.ToString()));
         }
 
-       
+        private void Histogram_FilterOut(object sender, object e, object datum, int index)
+        {
+            IEnumerable<BarChartDatum> filteredData = datum as IEnumerable<BarChartDatum>;
+            FilterOut((filteredData as IEnumerable<BarChartDatum>).SelectMany(bcd => bcd.Rows).ToList(), filteredData.First().ColumnViewModel.Name, filteredData.Select(d => d.Key.ToString()));
+        }
+
+
         #region Visualization Event Handlers
         private void ScatterplotElement_LassoSelected(object sender, object e, object datum, int index)
         {

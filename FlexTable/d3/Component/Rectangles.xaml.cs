@@ -160,7 +160,7 @@ namespace d3.Component
 
                         if (RectangleManipulationDelta != null)
                         {
-                            rect.ManipulationMode = ManipulationModes.TranslateY;
+                            rect.ManipulationMode = ManipulationModes.TranslateY | ManipulationModes.System;
                             rect.ManipulationDelta += delegate (object sender, ManipulationDeltaRoutedEventArgs e)
                             {
                                 RectangleManipulationDelta(sender, e, datum, localIndex);
@@ -258,7 +258,7 @@ namespace d3.Component
 
                     if (RectangleManipulationDelta != null)
                     {
-                        rect.ManipulationMode = ManipulationModes.TranslateY;
+                        rect.ManipulationMode = ManipulationModes.TranslateY | ManipulationModes.System;
                         rect.ManipulationDelta += delegate (object sender, ManipulationDeltaRoutedEventArgs e)
                         {
                             RectangleManipulationDelta(sender, e, datum, localIndex);

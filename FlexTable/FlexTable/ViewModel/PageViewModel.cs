@@ -814,10 +814,6 @@ namespace FlexTable.ViewModel
 
         void DrawDistributionHistogram(ColumnViewModel numerical, Boolean isTitleEditable)
         {
-            DescriptiveStatisticsResult result = DescriptiveStatistics.Analyze(
-                       mainPageViewModel.SheetViewModel.AllRowViewModels.Select(r => (Double)r.Cells[numerical.Index].Content)
-                       );
-
             pageView.DistributionViewTitle.Children.Clear();
 
             if (isTitleEditable/* && mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical).Count() > 1*/) // 선택지가 하나밖에 없으면 selectbox 보여줄 필요 없음
@@ -830,9 +826,10 @@ namespace FlexTable.ViewModel
             }
             
             IsDistributionVisible = true;
+            
             pageView.DistributionView.Update(
-                result,
-                mainPageViewModel.SheetViewModel.AllRowViewModels.Select(r => (Double)r.Cells[numerical.Index].Content)
+                mainPageViewModel.SheetViewModel.FilteredRows, 
+                numerical
                 ); // 히스토그램 업데이트
         }
 

@@ -3,14 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FlexTable.Model;
+using FlexTable.ViewModel;
 
 namespace FlexTable.Util
 {
+    public class Bin
+    {
+        public ColumnViewModel ColumnViewModel { get; set; }
+        public Double Min { get; set; }
+        public Double Max { get; set; }
+        public IEnumerable<Row> Rows { get; set; }
+    }
+
     public class HistogramCalculator
     {
-        public static List<Tuple<Double, Double, Int32>> Bin(Double min, Double max, Double step, IEnumerable<Double> values)
+        public static IEnumerable<Bin> Bin(Double min, Double max, Double step, IEnumerable<Row> rows, ColumnViewModel numerical)
         {
-            //List<Tuple<Double, Double, Int32>> result = new List<Tuple<double, double, int>>();
             Int32[] array;
             if (min == max)
             {
@@ -24,21 +33,23 @@ namespace FlexTable.Util
             Int32 i = 0;
             for (i = 0; i < array.Length; ++i) array[i] = 0;
 
-            foreach (Double value in values)
-            {
-                Int32 index = (Int32)Math.Floor((value - min) / step);
+            return rows
+                .GroupBy(row =>
+                {
+                    Double value = (Double)row.Cells[numerical.Index].Content;
+                    Int32 index = (Int32)Math.Floor((value - min) / step);
 
-                if (index >= array.Length) index = array.Length - 1;
-                array[index]++;
-            }
+                    if (index >= array.Length) index = array.Length - 1;
 
-            List<Tuple<Double, Double, Int32>> result = new List<Tuple<double, double, int>>();
-            for (i = 0; i < array.Length; ++i)
-            {
-                result.Add(new Tuple<double, double, Int32>(min + step * i, min + step * (i + 1), array[i]));
-            }
-
-            return result;
+                    return index;
+                })
+                .Select(group => new Bin()
+                {
+                    ColumnViewModel = numerical,
+                    Min = min + step * group.Key,
+                    Max = min + step * (1 + group.Key),
+                    Rows = group
+                });
         }
     }
 }
