@@ -77,11 +77,11 @@ namespace FlexTable.ViewModel
         private Boolean isIndexing;
         public Boolean IsIndexing { get { return isIndexing; } set { isIndexing = value; OnPropertyChanged("IsIndexing"); } }
         
-        private ColumnViewModel sortBy;
-        public ColumnViewModel SortBy { get { return sortBy; } set { sortBy = value; } }
+        //private ColumnViewModel sortBy;
+        //public ColumnViewModel SortBy { get { return sortBy; } set { sortBy = value; } }
 
-        private SortOption sortOption;
-        public SortOption SortOption { get { return sortOption; } set { sortOption = value; } }
+        //private SortOption sortOption;
+        //public SortOption SortOption { get { return sortOption; } set { sortOption = value; } }
 
         public IEnumerable<Row> SelectedRows { get; set; } = null;
 
@@ -146,21 +146,6 @@ namespace FlexTable.ViewModel
         {
             if(SelectedRows != null) // 로우 선택 중
             {
-                //List<RowViewModel> rvms = new List<RowViewModel>();
-
-                /*foreach (Row row in selectedRows)
-                {
-                    RowViewModel rowViewModel = new RowViewModel(mainPageViewModel) { Row = row };
-                    foreach (Cell cell in row.Cells.OrderBy(c => c.ColumnViewModel.Order))
-                    {
-                        rowViewModel.Cells.Add(cell);
-                    }
-                    rvms.Add(rowViewModel);
-                }*/
-
-                //SelectedRowViewModels = new ObservableCollection<RowViewModel>(rvms);
-
-
                 State = TableViewState.SelectedRow;
             }
             else if (viewStatus.SelectedColumnViewModels.Count == 0 ||
@@ -204,7 +189,7 @@ namespace FlexTable.ViewModel
                 switch (sortOption)
                 {
                     case SortOption.Ascending:
-                        sorted = rowViewModels.OrderBy(
+                        sorted = rowViewModels.OrderBy( 
                             r => r.Cells[sortBy.Index].Content is Category ? r.Cells[sortBy.Index].Content.ToString() : r.Cells[sortBy.Index].Content
                             );
                         break;
@@ -343,7 +328,7 @@ namespace FlexTable.ViewModel
         public void Sort(ColumnViewModel columnViewModel, SortOption sortOption)
         {
             // 하나의 컬럼으로만 소트가 가능하다 현재는
-            sortBy = columnViewModel;
+            /*sortBy = columnViewModel;
             this.sortOption = sortOption;
 
             foreach (ColumnViewModel cvm in SheetViewModel.ColumnViewModels)
@@ -361,6 +346,7 @@ namespace FlexTable.ViewModel
                 columnViewModel.IsDescendingSorted = true;
             }
             Reflect(mainPageViewModel.ExplorationViewModel.ViewStatus);
+    */    
         }
 
         public void OnAggregativeFunctionChanged(ColumnViewModel columnViewModel)

@@ -8,6 +8,7 @@ namespace FlexTable.Model
 {
     public enum SortOption
     {
+        None,
         Ascending,
         Descending
     }

@@ -44,13 +44,16 @@ namespace FlexTable.ViewModel
         private Boolean isSelected = false;
         public Boolean IsSelected { get { return isSelected; } set { isSelected = value; OnPropertyChanged("IsSelected"); } }
 
-        private Boolean isAscendingSorted = false;
-        public Boolean IsAscendingSorted { get { return isAscendingSorted; } set { isAscendingSorted = value; OnPropertyChanged("IsAscendingSorted"); } }
+        public Boolean IsAscendingSorted { get { return sortOption == SortOption.Ascending; } }
+        public Boolean IsDescendingSorted { get { return sortOption == SortOption.Descending; } }
 
-        private Boolean isDecendingSorted = false;
-        public Boolean IsDescendingSorted { get { return isDecendingSorted; } set { isDecendingSorted = value; OnPropertyChanged("IsDescendingSorted"); } }
-
-        public Boolean IsXDirty { get; set; }
+        private SortOption sortOption = SortOption.None;
+        public SortOption SortOption { get { return sortOption; } set
+            {
+                sortOption = value;
+                OnPropertyChanged(nameof(IsAscendingSorted));
+                OnPropertyChanged(nameof(IsDescendingSorted));
+            } }
 
         private List<Category> categories;
         public List<Category> Categories { get { return categories; } set { categories = value; } }

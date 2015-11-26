@@ -43,6 +43,9 @@ namespace FlexTable.ViewModel
 
         MainPageViewModel mainPageViewModel;
 
+        /// <summary>
+        /// 여기도 소팅해야하나? 어차피 이 집합에 속하는지 안하는지만 테스트하고 차트 그릴때는 통계를 쓰는거라 렌더링하는 rowviewmodel이 아니면 소팅 필요없지않나
+        /// </summary>
         public IEnumerable<Row> FilteredRows { get { return FilterViewModel.ApplyFilters(FilterViewModels, sheet.Rows); } }
 
         IMainPage view;
@@ -229,11 +232,9 @@ namespace FlexTable.ViewModel
             foreach (ColumnViewModel cvm in nexts)
             {
                 cvm.Order--;
-                cvm.IsXDirty = true;
             }
 
             columnViewModel.Order = columnViewModels.Count - 1;
-            columnViewModel.IsXDirty = true;
 
             UpdateColumnX();
 
@@ -261,11 +262,9 @@ namespace FlexTable.ViewModel
             foreach (ColumnViewModel cvm in nexts)
             {
                 cvm.Order++;
-                cvm.IsXDirty = true;
             }
 
             columnViewModel.Order = order;
-            columnViewModel.IsXDirty = true;
 
             UpdateColumnX();
 
@@ -281,7 +280,7 @@ namespace FlexTable.ViewModel
             mainPageViewModel.View.TableView.TopColumnHeader.Update();
             mainPageViewModel.View.TableView.BottomColumnHeader.Update();
         }
-
+ 
         public void UpdateGroup(ViewStatus viewStatus)
         {
             // column order 조정 group된 것을 맨 앞으로
@@ -315,8 +314,7 @@ namespace FlexTable.ViewModel
             UpdateColumnX();
 
             // table에 추가하는 것은 tableViewModel이 할 것이고 여기는 rowViewModels만 만들어주면 됨
-            groupedRowViewModels.Clear();
-
+            
             Int32 index = 0;
 
             // 여기서 상황별로 왼쪽에 보일 rowViewModel을 만들어 줘야함. 여기서 만들면 tableViewModel에서 받아다가 그림
@@ -326,13 +324,22 @@ namespace FlexTable.ViewModel
                 viewStatus.SelectedColumnViewModels.Count == 3 && viewStatus.SelectedColumnViewModels.Count(s => s.Type == ColumnType.Numerical) == 2
                 )
             {
-                // 어차피 allRow가 보일 것이므로 아무것도 안해도 됨
+                // 어차피 allRow가 보일 것이므로 RowViewModel 을 만들어 줄 필요는 없음 
+                // 소팅은 여기서 해줘야함
+                AllRowViewModels.Sort(new RowViewModelComparer(viewStatus));
             }
             else if (viewStatus.SelectedColumnViewModels.Count == 1 && viewStatus.SelectedColumnViewModels[0].Type == ColumnType.Numerical) // 이 경우는 뉴메리컬 하나만 선택되어 비닝 된 결과가 보이는 경우이다.
             {
+                groupedRowViewModels.Clear();
+
                 ColumnViewModel selected = viewStatus.SelectedColumnViewModels[0];
 
                 List<GroupedRows> binResult = Bin(selected, FilteredRows.ToList());
+
+                // 여기서 groupedRows가 소팅되어야함 
+                // 그런데 여기서는 선택되지 않은 컬럼의 경우에는 어차피 어그리게이션되므로 소팅 순서가 의미가 없음 따라서 선택된 컬럼에 대해서만 소팅하면 된다
+
+                binResult.Sort(new GroupedRowComparer(viewStatus));
 
                 foreach (GroupedRows groupedRows in binResult)
                 {
@@ -350,13 +357,15 @@ namespace FlexTable.ViewModel
 
                         if (columnViewModel == selected)
                         {
-                            String content = $"{groupedRows.Keys[selected]} ({groupedRows.Rows.Count})";
+                            Bin bin = groupedRows.Keys[selected] as Bin;
+
+                            String content = $"{Formatter.FormatAuto3(bin.Min)} - {Formatter.FormatAuto3(bin.Max)} ({groupedRows.Rows.Count})";
                             cell.RawContent = content;
                             cell.Content = content;
                         }
                         else if (columnViewModel.Type == ColumnType.Categorical)
                         {
-                            Int32 uniqueCount = Sheet.Rows.Select(r => r.Cells[columnViewModel.Index].Content).Distinct().Count();
+                            Int32 uniqueCount = FilteredRows.Select(r => r.Cells[columnViewModel.Index].Content).Distinct().Count();
                             cell.Content = $"({uniqueCount})";
                             cell.RawContent = $"({uniqueCount})";
                         }
@@ -376,8 +385,11 @@ namespace FlexTable.ViewModel
             }
             else // 이 경우는 categorical이든 datetime이든 뭔가로 그룹핑이 된 경우 
             {
+                groupedRowViewModels.Clear();
+
                 groupingResult = GroupRecursive(FilteredRows.ToList(), viewStatus.SelectedColumnViewModels.Where(s => s.Type == ColumnType.Categorical).ToList() , 0);
-                
+                groupingResult.Sort(new GroupedRowComparer(viewStatus));
+
                 foreach (GroupedRows groupedRows in groupingResult)
                 {
                     RowViewModel rowViewModel = new RowViewModel(mainPageViewModel)
@@ -475,12 +487,12 @@ namespace FlexTable.ViewModel
                 rows,
                 selected
                 );
-
+            
             List<GroupedRows> groupedRows = new List<GroupedRows>();
             foreach(Bin bin in bins)
             {
                 GroupedRows grs = new GroupedRows();
-                grs.Keys[selected] = $"{Formatter.FormatAuto3(bin.Min)} - {Formatter.FormatAuto3(bin.Max)}";
+                grs.Keys[selected] = bin;
                 grs.Rows = bin.Rows.ToList();
                 groupedRows.Add(grs);
             }
@@ -545,5 +557,61 @@ namespace FlexTable.ViewModel
                 total += columnViewModel.Width;
             }
         }            
+    }
+
+    public class RowViewModelComparer : IComparer<RowViewModel>
+    {
+        ViewStatus ViewStatus;
+        public RowViewModelComparer(ViewStatus viewStatus)
+        {
+            ViewStatus = viewStatus;
+        }
+
+        Int32 GetSortDirection(ColumnViewModel cvm) => cvm.SortOption == SortOption.Descending ? -1 : 1;
+
+        public int Compare(RowViewModel x, RowViewModel y)
+        {
+            return x.Row.Index - y.Row.Index;
+        }
+    }
+
+    public class GroupedRowComparer : IComparer<GroupedRows>
+    {
+        ViewStatus ViewStatus;
+        public GroupedRowComparer(ViewStatus viewStatus)
+        {
+            ViewStatus = viewStatus;
+        }
+
+        Int32 GetSortDirection(ColumnViewModel cvm) => cvm.SortOption == SortOption.Descending ? -1 : 1;
+
+        public int Compare(GroupedRows x, GroupedRows y)
+        {
+            if (ViewStatus.SelectedColumnViewModels.Count == 1 && ViewStatus.SelectedColumnViewModels[0].Type == ColumnType.Numerical) // 이 경우는 뉴메리컬 하나만 선택되어 비닝 된 결과가 보이는 경우이다.
+            {
+                ColumnViewModel numerical = ViewStatus.SelectedColumnViewModels[0];
+                
+                return (x.Keys[numerical] as Bin).Min.CompareTo((y.Keys[numerical] as Bin).Min) * GetSortDirection(numerical);
+            }
+
+
+            foreach (ColumnViewModel columnViewModel in ViewStatus.SelectedColumnViewModels)
+            {
+                if(columnViewModel.Type == ColumnType.Categorical)
+                {
+                    if(x.Keys[columnViewModel] != y.Keys[columnViewModel])
+                    {
+                        return (x.Keys[columnViewModel] as Category).Order.CompareTo((y.Keys[columnViewModel] as Category).Order) * GetSortDirection(columnViewModel);
+                    }
+                }
+                else if(columnViewModel.Type == ColumnType.Numerical)
+                {
+                    // 카테고리컬 컬럼이 하나 이상 선택되었다는게 보장된다. 따라서 카테고리컬로 소팅을 하면 됨
+                    // 뉴메리컬 하나만 선택된 경우 본 함수 처음 if문에서 걸리고
+                    // 아무것도 선택되지 않은 경우 이 루프에 들어오지 않음
+                }
+            }
+            return 0;
+        }
     }
 }

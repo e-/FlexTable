@@ -89,8 +89,6 @@ namespace FlexTable.ViewModel
         private Boolean isPrimaryUndoMessageVisible = true;
         public Boolean IsPrimaryUndoMessageVisible { get { return isPrimaryUndoMessageVisible; } set { isPrimaryUndoMessageVisible = value; OnPropertyChanged(nameof(IsPrimaryUndoMessageVisible)); } }
 
-        public Func<Category, Func<RowViewModel, Boolean>> ScatterplotRowSelecter { get; set; }
-
         PageView pageView;
 
         public ViewStatus ViewStatus { get; set; } // 현재 페이지 뷰의 viewStatus
@@ -1107,8 +1105,6 @@ namespace FlexTable.ViewModel
                 AddText(pageView.ScatterplotTitle, $"<b>{numerical1.Name}</b> vs. <b>{numerical2.Name}</b> colored by <b>{categorical.Name}</b>");
             }
             
-            ScatterplotRowSelecter = c => (r => r.Cells[categorical.Index].Content == c);
-
             pageView.Scatterplot.LegendVisibility = Visibility.Visible;
             pageView.Scatterplot.HorizontalAxisTitle = numerical1.Name + numerical1.UnitString;
             pageView.Scatterplot.VerticalAxisTitle = numerical2.Name + numerical2.UnitString;
@@ -1147,8 +1143,6 @@ namespace FlexTable.ViewModel
             {
                 AddText(pageView.ScatterplotTitle, $"<b>{numerical1.Name}</b> vs. <b>{numerical2.Name}</b>");
             }
-
-            ScatterplotRowSelecter = c => (r => true);
 
             pageView.Scatterplot.LegendVisibility = Visibility.Collapsed;
             pageView.Scatterplot.HorizontalAxisTitle = numerical1.Name + numerical1.UnitString;
@@ -1227,8 +1221,8 @@ namespace FlexTable.ViewModel
             CorrelationStatisticsResult result = CorrelationStatistics.Analyze(
                 numerical1.Name,
                 numerical2.Name,
-                mainPageViewModel.SheetViewModel.Sheet.Rows.Select(r => (Double)r.Cells[numerical1.Index].Content),
-                mainPageViewModel.SheetViewModel.Sheet.Rows.Select(r => (Double)r.Cells[numerical2.Index].Content)
+                mainPageViewModel.SheetViewModel.FilteredRows.Select(r => (Double)r.Cells[numerical1.Index].Content),
+                mainPageViewModel.SheetViewModel.FilteredRows.Select(r => (Double)r.Cells[numerical2.Index].Content)
                 );
 
             pageView.CorrelationStatisticsTitle.Children.Clear();

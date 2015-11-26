@@ -111,7 +111,7 @@ namespace FlexTable.ViewModel
             var dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
 
 
-            ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[4]);
+            ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[1]);
 
             DispatcherTimer dispatcherTimer = new DispatcherTimer();
             dispatcherTimer.Tick += (sender, e) =>
@@ -120,6 +120,7 @@ namespace FlexTable.ViewModel
                 ExplorationViewModel.TopPageView.PageViewModel.State = PageViewModel.PageViewState.Selected;
                 ExplorationViewModel.PageViewStateChanged(ExplorationViewModel.TopPageView.PageViewModel, ExplorationViewModel.TopPageView);
 
+                /*
                 ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[5]);
 
                 DispatcherTimer dispatcherTimer2 = new DispatcherTimer();
@@ -144,7 +145,7 @@ namespace FlexTable.ViewModel
 
                 };
                 dispatcherTimer2.Interval = TimeSpan.FromMilliseconds(500);
-                dispatcherTimer2.Start();
+                dispatcherTimer2.Start();*/
             };
             dispatcherTimer.Interval = TimeSpan.FromMilliseconds(500);
             dispatcherTimer.Start();
