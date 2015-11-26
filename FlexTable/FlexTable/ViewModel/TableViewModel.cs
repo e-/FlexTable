@@ -163,10 +163,12 @@ namespace FlexTable.ViewModel
 
                 State = TableViewState.SelectedRow;
             }
-            else if (viewStatus.SelectedColumnViewModels.Count == 0) // 아무 것도 선택되지 않으면 모든 로우 보여줘야함.
+            else if (viewStatus.SelectedColumnViewModels.Count == 0 ||
+                viewStatus.SelectedColumnViewModels.Count >= 2 && viewStatus.SelectedColumnViewModels.Count(s => s.Type != ColumnType.Numerical) == 0 ||
+                viewStatus.SelectedColumnViewModels.Count == 3 && viewStatus.SelectedColumnViewModels.Count(s => s.Type == ColumnType.Numerical) == 2
+            ) // 아무 것도 선택되지 않으면 모든 로우 보여줘야함.
             {
                 // 근데 어차피 이건 바뀌지 않으므로 대입해서 업데이트 할 필요도 없음
-                //AllRowViewModels = new ObservableCollection<RowViewModel>(SheetViewModel.AllRowViewModels);
                 State = TableViewState.AllRow;
             }
             else 

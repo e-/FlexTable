@@ -68,7 +68,7 @@ namespace FlexTable.ViewModel
 
         public async void Initialize()
         {
-            Model.Sheet sheet = await Util.CsvLoader.Load("temperature.csv"); // "Population-filtered.csv");
+            Model.Sheet sheet = await Util.CsvLoader.Load("who.csv"); // "Population-filtered.csv");
             this.Sheet = sheet;
 
             PageHeight = Bounds.Height / 2 - 4;
@@ -111,7 +111,7 @@ namespace FlexTable.ViewModel
             var dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
 
 
-            ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[2]);
+            ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[4]);
 
             DispatcherTimer dispatcherTimer = new DispatcherTimer();
             dispatcherTimer.Tick += (sender, e) =>
@@ -120,7 +120,7 @@ namespace FlexTable.ViewModel
                 ExplorationViewModel.TopPageView.PageViewModel.State = PageViewModel.PageViewState.Selected;
                 ExplorationViewModel.PageViewStateChanged(ExplorationViewModel.TopPageView.PageViewModel, ExplorationViewModel.TopPageView);
 
-                /*ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[0]);
+                ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[5]);
 
                 DispatcherTimer dispatcherTimer2 = new DispatcherTimer();
                 dispatcherTimer2.Tick += (sender2, e2) =>
@@ -130,7 +130,7 @@ namespace FlexTable.ViewModel
                     ExplorationViewModel.PageViewStateChanged(ExplorationViewModel.TopPageView.PageViewModel, ExplorationViewModel.TopPageView);
 
 
-                    ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[2]);
+                    ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[1]);
 
                     DispatcherTimer dispatcherTimer3 = new DispatcherTimer();
                     dispatcherTimer3.Tick += (sender3, e3) =>
@@ -144,7 +144,7 @@ namespace FlexTable.ViewModel
 
                 };
                 dispatcherTimer2.Interval = TimeSpan.FromMilliseconds(500);
-                dispatcherTimer2.Start();*/
+                dispatcherTimer2.Start();
             };
             dispatcherTimer.Interval = TimeSpan.FromMilliseconds(500);
             dispatcherTimer.Start();

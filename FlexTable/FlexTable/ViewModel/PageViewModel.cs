@@ -1110,24 +1110,26 @@ namespace FlexTable.ViewModel
             ScatterplotRowSelecter = c => (r => r.Cells[categorical.Index].Content == c);
 
             pageView.Scatterplot.LegendVisibility = Visibility.Visible;
-            pageView.Scatterplot.HorizontalAxisLabel = numerical1.Name + numerical1.UnitString;
-            pageView.Scatterplot.VerticalAxisLabel = numerical2.Name + numerical2.UnitString;
-            
-            var data = mainPageViewModel.SheetViewModel.Sheet.Rows
-                .Select(r => new Tuple<Object, Double, Double, Int32>(
+            pageView.Scatterplot.HorizontalAxisTitle = numerical1.Name + numerical1.UnitString;
+            pageView.Scatterplot.VerticalAxisTitle = numerical2.Name + numerical2.UnitString;
+            pageView.Scatterplot.AutoColor = true;
+
+            var data = mainPageViewModel.SheetViewModel.FilteredRows
+                .Select(r => new ScatterplotDatum(
                     r.Cells[categorical.Index].Content,
                     (Double)r.Cells[numerical1.Index].Content,
                     (Double)r.Cells[numerical2.Index].Content,
-                    r.Index
+                    r,
+                    categorical
                     ));
 
-            if (data.Select(d => (d as Tuple<Object, Double, Double, Int32>).Item1).Distinct().Count() > ScatterplotMaximumCategoryNumber) {
+            if (data.Select(d => d.Key).Distinct().Count() > ScatterplotMaximumCategoryNumber) {
                 IsScatterplotWarningVisible = true;
-                var categories = data.Select(d => (d as Tuple<Object, Double, Double, Int32>).Item1).Distinct().Take(ScatterplotMaximumCategoryNumber).ToList();
-                data = data.Where(d => categories.IndexOf((d as Tuple<Object, Double, Double, Int32>).Item1) >= 0);
+                var categories = data.Select(d => d.Key).Distinct().Take(ScatterplotMaximumCategoryNumber).ToList();
+                data = data.Where(d => categories.IndexOf(d.Key) >= 0);
             }
 
-            pageView.Scatterplot.Data = data;
+            pageView.Scatterplot.Data = data.ToList();
 
             pageView.Scatterplot.Update();
         }
@@ -1149,10 +1151,17 @@ namespace FlexTable.ViewModel
             ScatterplotRowSelecter = c => (r => true);
 
             pageView.Scatterplot.LegendVisibility = Visibility.Collapsed;
-            pageView.Scatterplot.HorizontalAxisLabel = numerical1.Name + numerical1.UnitString;
-            pageView.Scatterplot.VerticalAxisLabel = numerical2.Name + numerical2.UnitString;
-            pageView.Scatterplot.Data = mainPageViewModel.SheetViewModel.Sheet.Rows
-                .Select(r => new Tuple<Object, Double, Double, Int32>(0, (Double)r.Cells[numerical1.Index].Content, (Double)r.Cells[numerical2.Index].Content, r.Index));
+            pageView.Scatterplot.HorizontalAxisTitle = numerical1.Name + numerical1.UnitString;
+            pageView.Scatterplot.VerticalAxisTitle = numerical2.Name + numerical2.UnitString;
+            pageView.Scatterplot.AutoColor = false;
+            pageView.Scatterplot.Data = mainPageViewModel.SheetViewModel.FilteredRows
+                .Select(r => new ScatterplotDatum(
+                    0, 
+                    (Double)r.Cells[numerical1.Index].Content, 
+                    (Double)r.Cells[numerical2.Index].Content, 
+                    r,
+                    null))
+                .ToList();
 
             pageView.Scatterplot.Update();
         }       

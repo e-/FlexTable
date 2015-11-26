@@ -40,7 +40,7 @@ namespace FlexTable.View
         public CorrelationStatisticsView CorrelationStatisticsView => CorrelationStatisticsViewElement;
         public DistributionView DistributionView => DistributionViewElement;
         public GroupedBarChart GroupedBarChart => GroupedBarChartElement;
-        public d3.View.Scatterplot Scatterplot => ScatterplotElement;
+        public Scatterplot Scatterplot => ScatterplotElement;
         public PivotTableView PivotTableView => PivotTableViewElement;
 
         public StackPanel BarChartTitle => BarChartTitleElement;
@@ -70,22 +70,16 @@ namespace FlexTable.View
 
             GroupedBarChartElement.SelectionChanged += BarChartElement_SelectionChanged;
             //GroupedBarChartElement.FilterOut += BarC
-            //GroupedBarChartElement.BarPointerPressed += GroupedBarChartElement_BarPointerPressed;
-            //GroupedBarChartElement.BarPointerReleased += BarChartElement_BarPointerReleased;
-
+         
             LineChartElement.SelectionChanged += LineChartElement_SelectionChanged; ;
             LineChartElement.FilterOut += LineChartElement_FilterOut;
 
-            ScatterplotElement.CategoryPointerPressed += ScatterplotElement_CategoryPointerPressed;
-            ScatterplotElement.CategoryPointerReleased += ScatterplotElement_CategoryPointerReleased;
-            ScatterplotElement.LassoSelected += ScatterplotElement_LassoSelected;
-            ScatterplotElement.LassoUnselected += ScatterplotElement_LassoUnselected;
+            ScatterplotElement.SelectionChanged += ScatterplotElement_SelectionChanged;
+            ScatterplotElement.FilterOut += ScatterplotElement_FilterOut;
 
             DistributionView.Histogram.SelectionChanged += Histogram_SelectionChanged;
             DistributionView.Histogram.FilterOut += Histogram_FilterOut;
         }
-
-        
 
         private void SelectionChanged(IEnumerable<Row> selectedRows)
         {
@@ -121,6 +115,8 @@ namespace FlexTable.View
             PageViewModel.FilterOut(fvm);
         }
 
+        #region Visualization Event Handlers
+
         private void BarChartElement_SelectionChanged(object sender, object e, object datum, int index)
         {
             IEnumerable<BarChartDatum> selection = datum as IEnumerable<BarChartDatum>;
@@ -139,55 +135,44 @@ namespace FlexTable.View
             SelectionChanged(selection.SelectMany(s => s.Rows));
         }
 
+        private void ScatterplotElement_SelectionChanged(object sender, object e, object datum, int index)
+        {
+            IEnumerable<ScatterplotDatum> selection = datum as IEnumerable<ScatterplotDatum>;
+            SelectionChanged(selection.Select(s => s.Row));
+        }
+
         private void BarChartElement_FilterOut(object sender, object e, object datum, int index)
         {
             IEnumerable<BarChartDatum> filteredData = datum as IEnumerable<BarChartDatum>;
-            FilterOut((filteredData as IEnumerable<BarChartDatum>).SelectMany(bcd => bcd.Rows).ToList(), filteredData.First().ColumnViewModel.Name, filteredData.Select(d => d.Key.ToString()));
+            FilterOut(filteredData.SelectMany(bcd => bcd.Rows).ToList(), filteredData.First().ColumnViewModel.Name, filteredData.Select(d => d.Key.ToString()));
         }
 
         private void LineChartElement_FilterOut(object sender, object e, object datum, int index)
         {
             IEnumerable<LineChartDatum> filteredData = datum as IEnumerable<LineChartDatum>;
-            FilterOut((filteredData as IEnumerable<LineChartDatum>).SelectMany(lcd => lcd.Rows).ToList(), filteredData.First().ColumnViewModel.Name, filteredData.Select(d => d.Key.ToString()));
+            FilterOut(filteredData.SelectMany(lcd => lcd.Rows).ToList(), filteredData.First().ColumnViewModel.Name, filteredData.Select(d => d.Key.ToString()));
+        }
+
+        private void ScatterplotElement_FilterOut(object sender, object e, object datum, int index)
+        {
+            IEnumerable<ScatterplotDatum> filteredData = datum as IEnumerable<ScatterplotDatum>;
+            ScatterplotDatum first = filteredData.First();
+            if(first.ColumnViewModel == null) // filter from NN
+            {
+                FilterOut(filteredData.Select(sd => sd.Row).ToList(), "Lasso", new List<String>() { "" });
+            }
+            else // from CNN
+            {
+                FilterOut(filteredData.Select(sd => sd.Row).ToList(), first.ColumnViewModel.Name, new List<String>() { first.Key.ToString() });
+            }
         }
 
         private void Histogram_FilterOut(object sender, object e, object datum, int index)
         {
             IEnumerable<BarChartDatum> filteredData = datum as IEnumerable<BarChartDatum>;
-            FilterOut((filteredData as IEnumerable<BarChartDatum>).SelectMany(bcd => bcd.Rows).ToList(), filteredData.First().ColumnViewModel.Name, filteredData.Select(d => d.Key.ToString()));
+            FilterOut(filteredData.SelectMany(bcd => bcd.Rows).ToList(), filteredData.First().ColumnViewModel.Name, filteredData.Select(d => d.Key.ToString()));
         }
 
-
-        #region Visualization Event Handlers
-        private void ScatterplotElement_LassoSelected(object sender, object e, object datum, int index)
-        {
-            PageViewModel pvm = this.DataContext as PageViewModel;
-
-            List<Int32> indices = datum as List<Int32>;
-            /*pvm.MainPageViewModel.TableViewModel.PreviewRows(
-                r => indices.IndexOf(r.Index) >= 0
-            );*/
-        }
-
-        private void ScatterplotElement_LassoUnselected(object sender, object e, object datum, int index)
-        {
-            PageViewModel pvm = this.DataContext as PageViewModel;
-            pvm.MainPageViewModel.TableViewModel.CancelPreviewRows();
-        }
-
-        private void ScatterplotElement_CategoryPointerPressed(object sender, object e, object datum, int index)
-        {
-            PageViewModel pvm = this.DataContext as PageViewModel;
-
-            Category category = (datum as Tuple<Object, Int32>).Item1 as Category;
-//            pvm.MainPageViewModel.TableViewModel.PreviewRows(pvm.ScatterplotRowSelecter(category));
-        }
-
-        private void ScatterplotElement_CategoryPointerReleased(object sender, object e, object datum, int index)
-        {
-            PageViewModel pvm = this.DataContext as PageViewModel;
-            pvm.MainPageViewModel.TableViewModel.CancelPreviewRows();
-        }        
         
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
@@ -616,6 +601,8 @@ namespace FlexTable.View
                 if (PageViewModel.IsBarChartVisible) BarChartElement.ClearSelection();
                 if (PageViewModel.IsGroupedBarChartVisible) GroupedBarChartElement.ClearSelection();
                 if (PageViewModel.IsLineChartVisible) LineChart.ClearSelection();
+                if (PageViewModel.IsDistributionVisible) DistributionView.Histogram.ClearSelection();
+                if (PageViewModel.IsScatterplotVisible) ScatterplotElement.ClearSelection();
             }
             else
             {

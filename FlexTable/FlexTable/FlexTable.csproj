@@ -134,6 +134,10 @@
       <DependentUpon>LineChart.xaml</DependentUpon>
     </Compile>
     <Compile Include="Crayon\Chart\LineChartDatum.cs" />
+    <Compile Include="Crayon\Chart\Scatterplot.xaml.cs">
+      <DependentUpon>Scatterplot.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Crayon\Chart\ScatterplotDatum.cs" />
     <Compile Include="Crayon\Key.cs" />
     <Compile Include="IMainPage.cs" />
     <Compile Include="MainPage.xaml.cs">
@@ -270,6 +274,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Crayon\Chart\LineChart.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Crayon\Chart\Scatterplot.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

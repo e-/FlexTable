@@ -132,7 +132,7 @@ namespace FlexTable.Crayon.Chart
             get
             {
                 return (d, index, textBlock) => (selectedKeys.Count == 0) ? (d == DragToFilterFocusedBar?.Key ? DragToFilterOpacity : 1) :
-                    (selectedKeys.IndexOf(d) >= 0 ? 1 : 1);
+                    (selectedKeys.IndexOf(d) >= 0 ? DragToFilterOpacity : 1);
             }
         }
 
@@ -323,7 +323,6 @@ namespace FlexTable.Crayon.Chart
             HorizontalAxis.Update();
             IndicatorTextElement.Update();
         }
-
         
         private void HandleRectangleElement_RectangleManipulationDelta(object sender, object eo, object datumo, int index)
         {
@@ -343,8 +342,7 @@ namespace FlexTable.Crayon.Chart
             HorizontalAxis.Update();
             IndicatorTextElement.Update();
         }
-
-        
+       
         private void Drawable_StrokeAdded(InkManager inkManager)
         {
             if (inkManager.GetStrokes().Count > 0)

@@ -246,7 +246,7 @@
                                 <Run FontFamily="FontAwesome" Foreground="#CC0000">&#xf071;</Run>
                                 <Run Text="{StaticResource TooManyElementsWarningString}"></Run>
                             </TextBlock>
-                            <d3view:Scatterplot x:Name="ScatterplotElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}" 
+                            <crayon:Scatterplot x:Name="ScatterplotElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}" 
                                                 IsHitTestVisible="False" Tag="Scatterplot"/>
                         </StackPanel>
 

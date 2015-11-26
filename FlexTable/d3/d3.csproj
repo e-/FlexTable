@@ -136,12 +136,8 @@
     <Compile Include="Scale\ScaleBase.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="ViewModel\BoxPlotViewModel.cs" />
-    <Compile Include="ViewModel\ScatterplotViewModel.cs" />
     <Compile Include="View\BoxPlot.xaml.cs">
       <DependentUpon>BoxPlot.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\Scatterplot.xaml.cs">
-      <DependentUpon>Scatterplot.xaml</DependentUpon>
     </Compile>
     <Content Include="Properties\d3.rd.xml" />
   </ItemGroup>
@@ -175,10 +171,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="View\BoxPlot.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="View\Scatterplot.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

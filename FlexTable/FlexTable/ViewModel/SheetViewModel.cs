@@ -41,7 +41,6 @@ namespace FlexTable.ViewModel
 
         public ObservableCollection<FilterViewModel> FilterViewModels { get; private set; } = new ObservableCollection<FilterViewModel>();
 
-        public Boolean IsAllRowsVisible { get; set; } = false;
         MainPageViewModel mainPageViewModel;
 
         public IEnumerable<Row> FilteredRows { get { return FilterViewModel.ApplyFilters(FilterViewModels, sheet.Rows); } }
@@ -321,20 +320,13 @@ namespace FlexTable.ViewModel
             Int32 index = 0;
 
             // 여기서 상황별로 왼쪽에 보일 rowViewModel을 만들어 줘야함. 여기서 만들면 tableViewModel에서 받아다가 그림
-
-            IsAllRowsVisible = false;
+            
             if (viewStatus.SelectedColumnViewModels.Count == 0 ||
                 viewStatus.SelectedColumnViewModels.Count >= 2 && viewStatus.SelectedColumnViewModels.Count(s => s.Type != ColumnType.Numerical) == 0 ||
                 viewStatus.SelectedColumnViewModels.Count == 3 && viewStatus.SelectedColumnViewModels.Count(s => s.Type == ColumnType.Numerical) == 2
                 )
             {
-                IsAllRowsVisible = true;
-
-                // 그대로 베끼면 안되는게 순서가 바뀌기 때문임
-                foreach(RowViewModel rowViewModel in allRowViewModels)
-                {
-                    groupedRowViewModels.Add(rowViewModel);
-                }
+                // 어차피 allRow가 보일 것이므로 아무것도 안해도 됨
             }
             else if (viewStatus.SelectedColumnViewModels.Count == 1 && viewStatus.SelectedColumnViewModels[0].Type == ColumnType.Numerical) // 이 경우는 뉴메리컬 하나만 선택되어 비닝 된 결과가 보이는 경우이다.
             {
