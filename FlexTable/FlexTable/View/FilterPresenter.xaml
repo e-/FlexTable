@@ -44,7 +44,8 @@
                 </TextBlock>
             </Border>
 
-            <TextBlock Grid.Column="1" FontSize="16" VerticalAlignment="Center" Margin="10 0 0 0" Width="180" TextTrimming="WordEllipsis" Text="{x:Bind ViewModel.Name, Mode=OneWay}"></TextBlock>
+            <TextBlock Grid.Column="1" FontSize="16" VerticalAlignment="Center" 
+                       Margin="10 0 0 0" Width="180" TextTrimming="WordEllipsis" Text="{x:Bind ViewModel.Name, Mode=OneWay}"></TextBlock>
         </Grid>
     </Border>
 </UserControl>

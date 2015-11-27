@@ -55,11 +55,10 @@ namespace FlexTable.View
         public PageViewModel PageViewModel => (this.DataContext as PageViewModel);
         private Int32 activatedParagraphIndex = 0;
         public String ActivatedParagraphTag { get; set; }
-        public object PixelFormats { get; private set; }
+        private IEnumerable<Row> SelectedRows { get; set; }
 
         private List<Border> paragraphLabels = new List<Border>();
-        private List<StackPanel> paragraphs = new List<StackPanel>();
-        
+        private List<StackPanel> paragraphs = new List<StackPanel>();        
 
         public PageView()
         {
@@ -84,7 +83,7 @@ namespace FlexTable.View
         private void SelectionChanged(IEnumerable<Row> selectedRows)
         {
             Int32 count = selectedRows.Count();
-
+            SelectedRows = selectedRows;
             if (count == 0)
             {
                 ShowSelectionIndicatorStoryboard.Pause();
@@ -114,6 +113,16 @@ namespace FlexTable.View
             };
             PageViewModel.FilterOut(fvm);
         }
+
+        private void FilterOut(IEnumerable<Row> filteredRows, String name)
+        {
+            FilterViewModel fvm = new FilterViewModel(PageViewModel.MainPageViewModel)
+            {
+                Name = name,
+                Predicate = r => !filteredRows.Any(rr => rr == r)
+            };
+            PageViewModel.FilterOut(fvm);
+        }           
 
         #region Visualization Event Handlers
 
@@ -159,7 +168,7 @@ namespace FlexTable.View
             ScatterplotDatum first = filteredData.First();
             if(first.ColumnViewModel == null) // filter from NN
             {
-                FilterOut(filteredData.Select(sd => sd.Row).ToList(), "Lasso", new List<String>() { "" });
+                FilterOut(filteredData.Select(sd => sd.Row).ToList(), "Lasso");
             }
             else // from CNN
             {
@@ -173,7 +182,17 @@ namespace FlexTable.View
             FilterOut(filteredData.SelectMany(bcd => bcd.Rows).ToList(), filteredData.First().ColumnViewModel.Name, filteredData.Select(d => d.Key.ToString()));
         }
 
-        
+
+        private void SelectionFilterButton_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            if(SelectedRows != null && SelectedRows.Count() > 0)
+            {
+                Int32 count = SelectedRows.Count();
+                FilterOut(SelectedRows, $"Filtered {count} row" + (count == 1 ? String.Empty : "s"));
+                SelectionChanged(new List<Row>() { });
+            }
+        }
+
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             ShowStoryboardElement.Begin();
@@ -609,5 +628,6 @@ namespace FlexTable.View
                 ResetSelectionIndicatorPositionStoryboard.Begin();
             }
         }
+
     }
 }

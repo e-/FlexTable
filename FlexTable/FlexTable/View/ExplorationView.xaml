@@ -72,7 +72,7 @@
             VerticalAlignment="Top"
             ItemsSource="{x:Bind Path=ViewModel.MainPageViewModel.SheetViewModel.FilterViewModels, Mode=OneWay}"
             SelectionMode="None"
-            Margin="0 70 0 0"    
+            Margin="0 120 0 0"    
             x:Name="FilterList"
             Visibility="Collapsed"
             Opacity="0"

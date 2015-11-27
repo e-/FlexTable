@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using FlexTable.Model;
+using FlexTable.View;
 using Windows.Foundation;
 using Windows.UI.Core;
 using Windows.UI.ViewManagement;
@@ -66,6 +68,29 @@ namespace FlexTable.ViewModel
             ExplorationViewModel = new ExplorationViewModel(this, view);
         }
 
+        /// <summary>
+        /// 현재 ExplorationViewModel의 ViewStatus를 통해 SheetViewModel, TableViewModel, PageView들을 모두 업데이트 합니다
+        /// </summary>
+        public void ReflectAll()
+        {
+            ReflectAll(ExplorationViewModel.ViewStatus);
+        }
+
+        public void ReflectAll(ViewStatus viewStatus)
+        {
+            // sheet 업데이트
+            SheetViewModel.UpdateGroup(viewStatus);
+
+            // 테이블 업데이트
+            TableViewModel.Reflect(viewStatus);
+
+            // 차트 업데이트
+            foreach (PageView pageView in ExplorationViewModel.SelectedPageViews)
+            {
+                pageView.PageViewModel.Reflect(true);
+            }
+        }
+
         public async void Initialize()
         {
             Model.Sheet sheet = await Util.CsvLoader.Load("who.csv"); // "Population-filtered.csv");
@@ -119,9 +144,8 @@ namespace FlexTable.ViewModel
                 dispatcherTimer.Stop();
                 ExplorationViewModel.TopPageView.PageViewModel.State = PageViewModel.PageViewState.Selected;
                 ExplorationViewModel.PageViewStateChanged(ExplorationViewModel.TopPageView.PageViewModel, ExplorationViewModel.TopPageView);
-
-                /*
-                ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[5]);
+                
+                /*ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[3]);
 
                 DispatcherTimer dispatcherTimer2 = new DispatcherTimer();
                 dispatcherTimer2.Tick += (sender2, e2) =>
@@ -149,12 +173,6 @@ namespace FlexTable.ViewModel
             };
             dispatcherTimer.Interval = TimeSpan.FromMilliseconds(500);
             dispatcherTimer.Start();
-
-            
-
-            /*ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[4]);
-            ExplorationViewModel.StatusChanged(ExplorationViewModel.TopPageView.PageViewModel, ExplorationViewModel.TopPageView, false);
-            */
         }    
     }
 }

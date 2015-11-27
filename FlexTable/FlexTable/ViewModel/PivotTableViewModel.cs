@@ -50,6 +50,7 @@ namespace FlexTable.ViewModel
             List<GroupedRows> groupedRows
             )
         {
+            return;
             // 모두 지우기
 
             UIElementCollection children = pivotTableView.PivotTable.Children;

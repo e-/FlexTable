@@ -147,6 +147,7 @@ namespace FlexTable.ViewModel
             if (categoricalColumns.Count > 0)
             {
                 groupedRows = SheetViewModel.GroupRecursive(mainPageViewModel.SheetViewModel.FilteredRows.ToList(), categoricalColumns, 0);
+                groupedRows.Sort(new GroupedRowComparer(mainPageViewModel.SheetViewModel, ViewStatus));
             }
 
             if (categoricalCount == 1 && numericalCount == 0)
@@ -784,7 +785,6 @@ namespace FlexTable.ViewModel
             pageView.BarChart.VerticalAxisTitle = String.Format("Frequency");
             pageView.BarChart.Data = groupedRows
                 .Select(grs => new BarChartDatum() { Key = grs.Keys[categorical], Value = grs.Rows.Count, Rows = grs.Rows, ColumnViewModel = categorical })
-                .OrderBy(t => (t.Key as Category).Order)
                 .Take(BarChartMaximumRecordNumber).ToList();
             if (groupedRows.Count > BarChartMaximumRecordNumber) IsBarChartWarningVisible = true;
             pageView.BarChart.Update();
@@ -878,7 +878,6 @@ namespace FlexTable.ViewModel
             }
 
             pageView.GroupedBarChart.Data = groupedRows
-                        .OrderBy(g => (g.Keys[categorical1] as Category).Order * 10000 + (g.Keys[categorical2] as Category).Order)
                         .GroupBy(g => g.Keys[categorical1])
                         .Select(gs =>
                         {
@@ -939,7 +938,6 @@ namespace FlexTable.ViewModel
             }
 
             pageView.GroupedBarChart.Data = groupedRows
-                        .OrderBy(g => (g.Keys[categorical1] as Category).Order * 10000 + (g.Keys[categorical2] as Category).Order)
                         .GroupBy(g => g.Keys[categorical1])
                         .Select(gs =>
                         {
@@ -984,7 +982,6 @@ namespace FlexTable.ViewModel
             pageView.BarChart.HorizontalAxisTitle = categorical.Name;
             pageView.BarChart.VerticalAxisTitle = numerical.HeaderNameWithUnit;
             pageView.BarChart.Data = groupedRows
-                .OrderBy(g => (g.Keys[categorical] as Category).Order)
                 .Select(g => new BarChartDatum()
                 {
                     Key = g.Keys[categorical],
@@ -993,6 +990,7 @@ namespace FlexTable.ViewModel
                     ColumnViewModel = categorical
                 })
                 .Take(BarChartMaximumRecordNumber).ToList();
+
             if (groupedRows.Count > BarChartMaximumRecordNumber) IsBarChartWarningVisible = true;
             pageView.BarChart.Update();
         }
@@ -1024,7 +1022,6 @@ namespace FlexTable.ViewModel
             };
 
             datum.DataPoints = groupedRows
-                .OrderBy(g => (g.Keys[categorical] as Category).Order)
                 .Select(g => new DataPoint(
                     g.Keys[categorical],
                     numerical.AggregativeFunction.Aggregate(g.Rows.Select(r => (Double)r.Cells[numerical.Index].Content)),
@@ -1179,7 +1176,6 @@ namespace FlexTable.ViewModel
             pageView.GroupedBarChart.VerticalAxisTitle = $"{numerical1.Name} and {numerical2.Name} {numerical1.UnitString}";
 
             var data = groupedRows
-                        .OrderBy(g => (g.Keys[categorical] as Category).Order)
                         .Select(g =>
                         {
                             GroupedBarChartDatum datum = new GroupedBarChartDatum()

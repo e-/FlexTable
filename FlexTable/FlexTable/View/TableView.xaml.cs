@@ -17,6 +17,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Shapes;
+using FlexTable.Model;
 
 // 사용자 정의 컨트롤 항목 템플릿에 대한 설명은 http://go.microsoft.com/fwlink/?LinkId=234236에 나와 있습니다.
 
@@ -74,6 +75,7 @@ namespace FlexTable.View
         InkManager inkManager;
 
         private List<RowPresenter> allRowPresenters = new List<RowPresenter>();
+        private List<RowPresenter> groupedRowPresenters = new List<RowPresenter>();
         private List<RowPresenter> selectedRowPresenters = new List<RowPresenter>();
 
         public TableView()
@@ -117,6 +119,19 @@ namespace FlexTable.View
 
                 rowPresenter.Update();
 
+                GroupedRowCanvas.Children.Add(rowPresenter);
+                groupedRowPresenters.Add(rowPresenter);
+
+            }
+            foreach (RowViewModel rowViewModel in ViewModel.AllRowViewModels)
+            {
+                RowPresenter rowPresenter = new RowPresenter()
+                {
+                    RowViewModel = rowViewModel
+                };
+
+                rowPresenter.Update();
+
                 SelectedRowCanvas.Children.Add(rowPresenter);
                 selectedRowPresenters.Add(rowPresenter);
             }
@@ -134,12 +149,11 @@ namespace FlexTable.View
                 ShowAllRowViewerStoryboard.Begin();
 
                 ActivatedScrollViewer = AllRowScrollViewer;
-                //RowHeaderPresenter.SetRowNumber(ViewModel.AllRowViewModels.Count);
 
                 var sr = ViewModel.MainPageViewModel.SheetViewModel.FilteredRows.ToList();
 
-                IEnumerable<RowPresenter> selected = allRowPresenters.Where(rp => sr.IndexOf(rp.RowViewModel.Row) >= 0),
-                    unselected = allRowPresenters.Where(rp => sr.IndexOf(rp.RowViewModel.Row) < 0);
+                IEnumerable<RowPresenter> selected = allRowPresenters.Where(rp => sr.IndexOf(rp.RowViewModel.Row) >= 0).OrderBy(rp => rp.RowViewModel.Index),
+                    unselected = allRowPresenters.Where(rp => sr.IndexOf(rp.RowViewModel.Row) < 0).OrderBy(rp => rp.RowViewModel.Index);
 
                 Int32 index = 0;
                 Double height = (Double)App.Current.Resources["RowHeight"];
@@ -169,6 +183,24 @@ namespace FlexTable.View
                 ShowGroupedRowViewerStoryboard.Begin();
 
                 ActivatedScrollViewer = GroupedRowScrollViewer;
+
+                Int32 index = 0;
+                Double height = (Double)App.Current.Resources["RowHeight"];
+                Int32 i = 0;
+                for (i = 0; i < ViewModel.GroupedRowViewModels.Count; ++i)
+                {
+                    groupedRowPresenters[i].RowViewModel = ViewModel.GroupedRowViewModels[i];
+                    Canvas.SetTop(groupedRowPresenters[i], index * height);
+                    groupedRowPresenters[i].Visibility = Visibility.Visible;
+                    groupedRowPresenters[i].Update();
+                    index++;
+                }
+
+                for (; i < ViewModel.AllRowViewModels.Count; ++i)
+                {
+                    groupedRowPresenters[i].Visibility = Visibility.Collapsed;
+                }
+
                 RowHeaderPresenter.SetRowNumber(ViewModel.GroupedRowViewModels.Count);
             }
             else
@@ -182,8 +214,8 @@ namespace FlexTable.View
                 //RowHeaderPresenter.SetRowNumber(ViewModel.SelectedRowViewModels.Count);
                 var sr = ViewModel.SelectedRows.ToList();
 
-                IEnumerable<RowPresenter> selected = selectedRowPresenters.Where(rp => sr.IndexOf(rp.RowViewModel.Row) >= 0),
-                    unselected = selectedRowPresenters.Where(rp => sr.IndexOf(rp.RowViewModel.Row) < 0);
+                IEnumerable<RowPresenter> selected = selectedRowPresenters.Where(rp => sr.IndexOf(rp.RowViewModel.Row) >= 0).OrderBy(rp => rp.RowViewModel.Index),
+                    unselected = selectedRowPresenters.Where(rp => sr.IndexOf(rp.RowViewModel.Row) < 0).OrderBy(rp => rp.RowViewModel.Index);
 
                 Int32 index = 0;
                 Double height = (Double)App.Current.Resources["RowHeight"];
@@ -210,6 +242,11 @@ namespace FlexTable.View
             UpdateScrollViews();
         }
 
+        const Double VerticalStrokeMaxWidth = 30;
+        const Double VerticalStrokeMinHeight = 50;
+        const Double VerticalStrokeHeightDifferenceThreshold = 20;
+        Int32 sortPriority = 0;
+
         async void timer_Tick(object sender, object e)
         {
             timer.Stop();
@@ -219,76 +256,145 @@ namespace FlexTable.View
             IReadOnlyList<InkStroke> strokes = this.inkManager.GetStrokes();
             
             Double centerX = strokes[0].BoundingRect.X + strokes[0].BoundingRect.Width / 2 -
-                (Double)App.Current.Resources["RowHeaderWidth"] + AllRowScrollViewer.HorizontalOffset;
+                (Double)App.Current.Resources["RowHeaderWidth"] + ActivatedScrollViewer.HorizontalOffset;
+
+            Double screenHeight = ViewModel.MainPageViewModel.Bounds.Height;
+            Double columnHeaderHeight = (Double)App.Current.Resources["ColumnHeaderHeight"];
 
             TableViewModel tableViewModel = this.DataContext as TableViewModel;
             ColumnViewModel selectedColumnViewModel = null;
 
-            if (strokes[0].BoundingRect.Y < 100)
+
+            foreach (ColumnViewModel columnViewModel in tableViewModel.SheetViewModel.ColumnViewModels) // 현재 그 아래에 있는 컬럼을 찾고
             {
-                foreach (ColumnViewModel columnViewModel in tableViewModel.SheetViewModel.ColumnViewModels)
+                if (columnViewModel.X <= centerX && centerX < columnViewModel.X + columnViewModel.Width)
                 {
-                    if (columnViewModel.X <= centerX && centerX < columnViewModel.X + columnViewModel.Width)
-                    {
-                        selectedColumnViewModel = columnViewModel;
-                        break;
-                    }
+                    selectedColumnViewModel = columnViewModel;
+                    break;
                 }
             }
 
-            IReadOnlyList<InkRecognitionResult> results = await this.inkManager.RecognizeAsync(InkRecognitionTarget.Recent);
-
-            foreach (InkRecognitionResult result in results)
+            if(selectedColumnViewModel == null)
             {
-                foreach (String candidate in result.GetTextCandidates())
-                {
-                    String upperCandidate = candidate.ToUpper();
+                drawable.RemoveAllStrokes();
+                return;
+            }
 
-                    if (selectedColumnViewModel != null && selectedColumnViewModel.Type == Model.ColumnType.Numerical
-                        && tableViewModel.MainPageViewModel.ExplorationViewModel.ViewStatus.SelectedColumnViewModels.Count > 0)
+            if (strokes[0].BoundingRect.Y < columnHeaderHeight 
+                || strokes[0].BoundingRect.Y + strokes[0].BoundingRect.Height > screenHeight - columnHeaderHeight) // 컬럼 헤더에서 스트로크가 쓰여졌을때에는 
+            {
+                // 스트로크를 인식해서 적절한 행동을 한다.
+
+                IReadOnlyList<InkRecognitionResult> results = await this.inkManager.RecognizeAsync(InkRecognitionTarget.Recent);
+
+                foreach (InkRecognitionResult result in results)
+                {
+                    foreach (String candidate in result.GetTextCandidates())
                     {
-                        switch (upperCandidate)
+                        String upperCandidate = candidate.ToUpper();
+
+                        if (selectedColumnViewModel != null && selectedColumnViewModel.Type == Model.ColumnType.Numerical
+                            && tableViewModel.MainPageViewModel.ExplorationViewModel.ViewStatus.SelectedColumnViewModels.Count > 0)
                         {
-                            case "MIN":
-                                selectedColumnViewModel.AggregativeFunction = new AggregativeFunction.MinAggregation();
-                                tableViewModel.OnAggregativeFunctionChanged(selectedColumnViewModel);
-                                Debug.WriteLine("Min selected");
-                                drawable.RemoveAllStrokes();
-                                timer.Stop();
-                                return;
-                            case "MAX":
-                                selectedColumnViewModel.AggregativeFunction = new AggregativeFunction.MaxAggregation();
-                                tableViewModel.OnAggregativeFunctionChanged(selectedColumnViewModel);
-                                Debug.WriteLine("Max selected");
-                                drawable.RemoveAllStrokes();
-                                timer.Stop();
-                                return;
-                            case "AVG":
-                            case "MEAN":
-                                selectedColumnViewModel.AggregativeFunction = new AggregativeFunction.AverageAggregation();
-                                tableViewModel.OnAggregativeFunctionChanged(selectedColumnViewModel);
-                                Debug.WriteLine("Mean selected");
-                                drawable.RemoveAllStrokes();
-                                timer.Stop();
-                                return;
-                            case "SUM":
-                                selectedColumnViewModel.AggregativeFunction = new AggregativeFunction.SumAggregation();
-                                tableViewModel.OnAggregativeFunctionChanged(selectedColumnViewModel);
-                                Debug.WriteLine("Sum selected");
-                                drawable.RemoveAllStrokes();
-                                timer.Stop();
-                                return;
+                            switch (upperCandidate)
+                            {
+                                case "MIN":
+                                    selectedColumnViewModel.AggregativeFunction = new AggregativeFunction.MinAggregation();
+                                    tableViewModel.OnAggregativeFunctionChanged(selectedColumnViewModel);
+                                    Debug.WriteLine("Min selected");
+                                    drawable.RemoveAllStrokes();
+                                    timer.Stop();
+                                    return;
+                                case "MAX":
+                                    selectedColumnViewModel.AggregativeFunction = new AggregativeFunction.MaxAggregation();
+                                    tableViewModel.OnAggregativeFunctionChanged(selectedColumnViewModel);
+                                    Debug.WriteLine("Max selected");
+                                    drawable.RemoveAllStrokes();
+                                    timer.Stop();
+                                    return;
+                                case "AVG":
+                                case "MEAN":
+                                    selectedColumnViewModel.AggregativeFunction = new AggregativeFunction.AverageAggregation();
+                                    tableViewModel.OnAggregativeFunctionChanged(selectedColumnViewModel);
+                                    Debug.WriteLine("Mean selected");
+                                    drawable.RemoveAllStrokes();
+                                    timer.Stop();
+                                    return;
+                                case "SUM":
+                                    selectedColumnViewModel.AggregativeFunction = new AggregativeFunction.SumAggregation();
+                                    tableViewModel.OnAggregativeFunctionChanged(selectedColumnViewModel);
+                                    Debug.WriteLine("Sum selected");
+                                    drawable.RemoveAllStrokes();
+                                    timer.Stop();
+                                    return;
+                            }
                         }
                     }
                 }
+                drawable.RemoveAllStrokes();
             }
-            drawable.RemoveAllStrokes();
         }
         
         void RecognizeStrokes(InkManager inkManager)
         {
-            timer.Start();
+            IReadOnlyList<InkStroke> strokes = inkManager.GetStrokes();
             this.inkManager = inkManager;
+
+            Double centerX = strokes[0].BoundingRect.X + strokes[0].BoundingRect.Width / 2 -
+                (Double)App.Current.Resources["RowHeaderWidth"] + ActivatedScrollViewer.HorizontalOffset;
+
+            Double screenHeight = ViewModel.MainPageViewModel.Bounds.Height;
+            Double columnHeaderHeight = (Double)App.Current.Resources["ColumnHeaderHeight"];
+
+            TableViewModel tableViewModel = this.DataContext as TableViewModel;
+            ColumnViewModel selectedColumnViewModel = null;
+
+            foreach (ColumnViewModel columnViewModel in tableViewModel.SheetViewModel.ColumnViewModels) // 현재 그 아래에 있는 컬럼을 찾고
+            {
+                if (columnViewModel.X <= centerX && centerX < columnViewModel.X + columnViewModel.Width)
+                {
+                    selectedColumnViewModel = columnViewModel;
+                    break;
+                }
+            }
+
+            if (selectedColumnViewModel == null)
+            {
+                drawable.RemoveAllStrokes();
+                return;
+            }
+
+            if (strokes[0].BoundingRect.Y < columnHeaderHeight
+                || strokes[0].BoundingRect.Y + strokes[0].BoundingRect.Height > screenHeight - columnHeaderHeight) // 컬럼 헤더에서 스트로크가 쓰여졌을때에는 다음 글자가 쓰여질때까지 기다린다
+            {
+                if(timer.IsEnabled)timer.Stop();
+                timer.Start();
+            }
+            else // 아니면 바로 실행해버린다.
+            {
+                if (strokes[0].BoundingRect.Width < VerticalStrokeMaxWidth && strokes[0].BoundingRect.Height > VerticalStrokeMinHeight) // 세로 스트로크면 소팅하라는 것임 
+                {
+                    var points = strokes[0].GetInkPoints();
+                    var firstPoint = points.First();
+                    var lastPoint = points.Last();
+
+                    if (firstPoint.Position.Y < lastPoint.Position.Y - VerticalStrokeHeightDifferenceThreshold)
+                    {
+                        // 내림차순 정렬
+                        selectedColumnViewModel.SortOption = SortOption.Descending;
+                        selectedColumnViewModel.SortPriority = sortPriority++;
+                        ViewModel.MainPageViewModel.ReflectAll();
+                    }
+                    else if (lastPoint.Position.Y < firstPoint.Position.Y + VerticalStrokeHeightDifferenceThreshold)
+                    {
+                        // 오름차순 정렬
+                        selectedColumnViewModel.SortOption = SortOption.Ascending;
+                        selectedColumnViewModel.SortPriority = sortPriority++;
+                        ViewModel.MainPageViewModel.ReflectAll();
+                    }
+                }
+                drawable.RemoveAllStrokes();
+            }
         }
 
         public void ScrollToColumnViewModel(ColumnViewModel columnViewModel)

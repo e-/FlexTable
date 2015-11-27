@@ -76,6 +76,7 @@ namespace FlexTable.ViewModel
             pageViewModel.State = PageViewModel.PageViewState.Previewing;
 
             // 이걸로 pageView를 채움
+            
             pageViewModel.Reflect(false);
             TopPageView.ReflectState();
         }
@@ -172,7 +173,7 @@ namespace FlexTable.ViewModel
 
         public void FilterOut(FilterViewModel filterViewModel)
         {
-            mainPageViewModel.SheetViewModel.FilterViewModels.Add(filterViewModel);
+            mainPageViewModel.SheetViewModel.FilterViewModels.Insert(0, filterViewModel);
 
             // sheet 업데이트
             mainPageViewModel.SheetViewModel.UpdateGroup(ViewStatus);

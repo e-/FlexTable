@@ -213,8 +213,6 @@ namespace FlexTable.ViewModel
                 index++;
             }
 
-            //rowViewModels = allRowViewModels;
-
             MeasureColumnWidth();
             UpdateColumnX();
 
@@ -308,8 +306,6 @@ namespace FlexTable.ViewModel
                 remainingColumnViewModel.Order = order++;
             }
 
-            var orderedColumnViewModels = columnViewModels.OrderBy(cvm => cvm.Order);
-
             // Column의 x값을 업데이트함, 위 아래 컬럼 헤더를 위한것임. 
             UpdateColumnX();
 
@@ -325,8 +321,6 @@ namespace FlexTable.ViewModel
                 )
             {
                 // 어차피 allRow가 보일 것이므로 RowViewModel 을 만들어 줄 필요는 없음 
-                // 소팅은 여기서 해줘야함
-                AllRowViewModels.Sort(new RowViewModelComparer(viewStatus));
             }
             else if (viewStatus.SelectedColumnViewModels.Count == 1 && viewStatus.SelectedColumnViewModels[0].Type == ColumnType.Numerical) // 이 경우는 뉴메리컬 하나만 선택되어 비닝 된 결과가 보이는 경우이다.
             {
@@ -339,7 +333,7 @@ namespace FlexTable.ViewModel
                 // 여기서 groupedRows가 소팅되어야함 
                 // 그런데 여기서는 선택되지 않은 컬럼의 경우에는 어차피 어그리게이션되므로 소팅 순서가 의미가 없음 따라서 선택된 컬럼에 대해서만 소팅하면 된다
 
-                binResult.Sort(new GroupedRowComparer(viewStatus));
+                binResult.Sort(new GroupedRowComparer(this, viewStatus));
 
                 foreach (GroupedRows groupedRows in binResult)
                 {
@@ -349,7 +343,7 @@ namespace FlexTable.ViewModel
                         Index = index++
                     };
 
-                    foreach (ColumnViewModel columnViewModel in orderedColumnViewModels)
+                    foreach (ColumnViewModel columnViewModel in ColumnViewModels)
                     {
                         Cell cell = new Cell();
 
@@ -388,7 +382,7 @@ namespace FlexTable.ViewModel
                 groupedRowViewModels.Clear();
 
                 groupingResult = GroupRecursive(FilteredRows.ToList(), viewStatus.SelectedColumnViewModels.Where(s => s.Type == ColumnType.Categorical).ToList() , 0);
-                groupingResult.Sort(new GroupedRowComparer(viewStatus));
+                groupingResult.Sort(new GroupedRowComparer(this, viewStatus));
 
                 foreach (GroupedRows groupedRows in groupingResult)
                 {
@@ -397,7 +391,7 @@ namespace FlexTable.ViewModel
                         Index = index++
                     };
 
-                    foreach (ColumnViewModel columnViewModel in orderedColumnViewModels)
+                    foreach (ColumnViewModel columnViewModel in ColumnViewModels)
                     {
                         Cell cell = new Cell();
 
@@ -409,7 +403,6 @@ namespace FlexTable.ViewModel
                             cell.Content = content;
                             cell.RawContent = cell.Content.ToString();
                         }
-
                         else if (columnViewModel.Type == ColumnType.Categorical)
                         {
                             Int32 uniqueCount = groupedRows.Rows.Select(r => r.Cells[columnViewModel.Index].Content).Distinct().Count();
@@ -562,8 +555,11 @@ namespace FlexTable.ViewModel
     public class RowViewModelComparer : IComparer<RowViewModel>
     {
         ViewStatus ViewStatus;
-        public RowViewModelComparer(ViewStatus viewStatus)
+        SheetViewModel SheetViewModel;
+
+        public RowViewModelComparer(SheetViewModel sheetViewModel, ViewStatus viewStatus)
         {
+            SheetViewModel = sheetViewModel;
             ViewStatus = viewStatus;
         }
 
@@ -571,6 +567,24 @@ namespace FlexTable.ViewModel
 
         public int Compare(RowViewModel x, RowViewModel y)
         {
+            IEnumerable<ColumnViewModel> sortAppliedColumnViewModels = SheetViewModel.ColumnViewModels.Where(cvm => cvm.SortOption != SortOption.None).OrderByDescending(cvm => cvm.SortPriority);
+
+            foreach(ColumnViewModel columnViewModel in sortAppliedColumnViewModels)
+            {
+                if(x.Cells[columnViewModel.Index].Content != y.Cells[columnViewModel.Index].Content)
+                {
+                    if (columnViewModel.Type == ColumnType.Numerical)
+                    {
+                        return GetSortDirection(columnViewModel) *
+                            ((Double)x.Cells[columnViewModel.Index].Content).CompareTo((Double)y.Cells[columnViewModel.Index].Content);
+                    }
+                    else if (columnViewModel.Type == ColumnType.Categorical)
+                    {
+                        return GetSortDirection(columnViewModel) *
+                            (x.Cells[columnViewModel.Index].Content as Category).Order.CompareTo((y.Cells[columnViewModel.Index].Content as Category).Order);
+                    }
+                }
+            }
             return x.Row.Index - y.Row.Index;
         }
     }
@@ -578,8 +592,11 @@ namespace FlexTable.ViewModel
     public class GroupedRowComparer : IComparer<GroupedRows>
     {
         ViewStatus ViewStatus;
-        public GroupedRowComparer(ViewStatus viewStatus)
+        SheetViewModel SheetViewModel;
+
+        public GroupedRowComparer(SheetViewModel sheetViewModel, ViewStatus viewStatus)
         {
+            SheetViewModel = sheetViewModel;
             ViewStatus = viewStatus;
         }
 
@@ -594,23 +611,54 @@ namespace FlexTable.ViewModel
                 return (x.Keys[numerical] as Bin).Min.CompareTo((y.Keys[numerical] as Bin).Min) * GetSortDirection(numerical);
             }
 
-
-            foreach (ColumnViewModel columnViewModel in ViewStatus.SelectedColumnViewModels)
+            foreach (ColumnViewModel columnViewModel in SheetViewModel.ColumnViewModels.Where(cvm => cvm.SortOption != SortOption.None).OrderByDescending(scvm => scvm.SortPriority))
             {
                 if(columnViewModel.Type == ColumnType.Categorical)
                 {
-                    if(x.Keys[columnViewModel] != y.Keys[columnViewModel])
+                    if (columnViewModel.IsSelected) // 선택된거면 키에 있을 것
                     {
-                        return (x.Keys[columnViewModel] as Category).Order.CompareTo((y.Keys[columnViewModel] as Category).Order) * GetSortDirection(columnViewModel);
+                        if (x.Keys[columnViewModel] != y.Keys[columnViewModel])
+                        {
+                            return (x.Keys[columnViewModel] as Category).Order.CompareTo((y.Keys[columnViewModel] as Category).Order) * GetSortDirection(columnViewModel);
+                        }
+                    }
+                    else // 선택되지 않은거면 distinct한 value의 개수로 
+                    {
+                        Int32 xCount = x.Rows.Select(r => r.Cells[columnViewModel.Index].Content).Distinct().Count();
+                        Int32 yCount = y.Rows.Select(r => r.Cells[columnViewModel.Index].Content).Distinct().Count();
+
+                        if(xCount != yCount)
+                        {
+                            return xCount.CompareTo(yCount) * GetSortDirection(columnViewModel);
+                        }
                     }
                 }
                 else if(columnViewModel.Type == ColumnType.Numerical)
                 {
-                    // 카테고리컬 컬럼이 하나 이상 선택되었다는게 보장된다. 따라서 카테고리컬로 소팅을 하면 됨
-                    // 뉴메리컬 하나만 선택된 경우 본 함수 처음 if문에서 걸리고
-                    // 아무것도 선택되지 않은 경우 이 루프에 들어오지 않음
+                    Double xValue = columnViewModel.AggregativeFunction.Aggregate(x.Rows.Select(r => (Double)r.Cells[columnViewModel.Index].Content));
+                    Double yValue = columnViewModel.AggregativeFunction.Aggregate(y.Rows.Select(r => (Double)r.Cells[columnViewModel.Index].Content));
+
+                    if (xValue != yValue)
+                    {
+                        return xValue.CompareTo(yValue) * GetSortDirection(columnViewModel);
+                    }
                 }
             }
+
+            foreach (ColumnViewModel columnViewModel in ViewStatus.SelectedColumnViewModels)
+            {
+                if (columnViewModel.Type == ColumnType.Categorical)
+                {
+                    if (x.Keys[columnViewModel] != y.Keys[columnViewModel])
+                    {
+                        return (x.Keys[columnViewModel] as Category).Order.CompareTo((y.Keys[columnViewModel] as Category).Order) * GetSortDirection(columnViewModel);
+                    }
+                }
+                else if (columnViewModel.Type == ColumnType.Numerical)
+                {
+                }
+            }
+
             return 0;
         }
     }

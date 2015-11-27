@@ -52,6 +52,7 @@ namespace FlexTable.View
             Int32 index = 0;
             foreach (Model.Cell cell in RowViewModel.Cells)
             {
+                cellPresenters[index].Text = cell.Content.ToString();
                 Canvas.SetLeft(cellPresenters[index], cell.ColumnViewModel.X);
                 index++;
             }

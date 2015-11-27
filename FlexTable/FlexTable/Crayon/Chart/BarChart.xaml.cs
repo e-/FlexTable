@@ -204,7 +204,7 @@ namespace FlexTable.Crayon.Chart
 
         Drawable drawable = new Drawable()
         {
-            IgnoreSmallStrokes = true
+            //IgnoreSmallStrokes = true
         };
 
         public BarChart()

@@ -47,8 +47,8 @@ namespace FlexTable.ViewModel
         private Double paddedSheetHeight;
         public Double PaddedSheetHeight { get { return paddedSheetHeight; } set { paddedSheetHeight = value; OnPropertyChanged(nameof(PaddedSheetHeight)); } }
         
-        private ObservableCollection<RowViewModel> allRowViewModels;
-        public ObservableCollection<RowViewModel> AllRowViewModels
+        private List<RowViewModel> allRowViewModels;
+        public List<RowViewModel> AllRowViewModels
         {
             get { return allRowViewModels; }
             set { allRowViewModels = value; OnPropertyChanged(nameof(AllRowViewModels)); }
@@ -108,7 +108,7 @@ namespace FlexTable.ViewModel
             PaddedSheetHeight = Math.Max(SheetViewModel.AllRowsSheetHeight, SheetViewHeight);
             PaddedSheetWidth = Math.Max(SheetViewModel.SheetWidth, SheetViewWidth);
 
-            AllRowViewModels = new ObservableCollection<RowViewModel>(SheetViewModel.AllRowViewModels);
+            AllRowViewModels = new List<RowViewModel>(SheetViewModel.AllRowViewModels);
 
             view.TableView.Initialize();
             view.TableView.ReflectState();
@@ -144,8 +144,16 @@ namespace FlexTable.ViewModel
         
         void Update(ViewStatus viewStatus)
         {
+            Int32 index = 0;
             if(SelectedRows != null) // 로우 선택 중
             {
+                AllRowViewModels.Sort(new RowViewModelComparer(SheetViewModel, viewStatus));
+                index = 0;
+                foreach (RowViewModel rowViewModel in AllRowViewModels)
+                {
+                    rowViewModel.Index = index++;
+                }
+
                 State = TableViewState.SelectedRow;
             }
             else if (viewStatus.SelectedColumnViewModels.Count == 0 ||
@@ -153,7 +161,12 @@ namespace FlexTable.ViewModel
                 viewStatus.SelectedColumnViewModels.Count == 3 && viewStatus.SelectedColumnViewModels.Count(s => s.Type == ColumnType.Numerical) == 2
             ) // 아무 것도 선택되지 않으면 모든 로우 보여줘야함.
             {
-                // 근데 어차피 이건 바뀌지 않으므로 대입해서 업데이트 할 필요도 없음
+                AllRowViewModels.Sort(new RowViewModelComparer(SheetViewModel, viewStatus));
+                index = 0;
+                foreach (RowViewModel rowViewModel in AllRowViewModels)
+                {
+                    rowViewModel.Index = index++;
+                }
                 State = TableViewState.AllRow;
             }
             else 
@@ -181,87 +194,7 @@ namespace FlexTable.ViewModel
             }
 
 
-            view.TableView.ReflectState();
-
-            /*if (sortBy != null)
-            {
-                IOrderedEnumerable<RowViewModel> sorted = null;
-                switch (sortOption)
-                {
-                    case SortOption.Ascending:
-                        sorted = rowViewModels.OrderBy( 
-                            r => r.Cells[sortBy.Index].Content is Category ? r.Cells[sortBy.Index].Content.ToString() : r.Cells[sortBy.Index].Content
-                            );
-                        break;
-                    case SortOption.Descending:
-                        sorted = rowViewModels.OrderByDescending(
-                            r => r.Cells[sortBy.Index].Content is Category ? r.Cells[sortBy.Index].Content.ToString() : r.Cells[sortBy.Index].Content
-                            );
-                        break;
-                }
-
-                Int32 index = 0;
-                foreach (RowViewModel rowViewModel in sorted)
-                {
-                    rowViewModel.Index = index++;
-                }
-            }
-            else
-            {
-                Int32 index = 0;
-                foreach (RowViewModel rowViewModel in rowViewModels)
-                {
-                    rowViewModel.Index = index++;
-                }
-            }*/
-
-           
-            /*
-            if (SheetViewModel.IsAllRowsVisible) // 아무 것도 선택되지 않으면 모든 로우 보여줘야함.
-            {
-                rowPresenters = allRowPresenters;
-
-                foreach (RowPresenter rowPresenter in allRowPresenters)
-                {
-                    rowPresenter.Visibility = Visibility.Visible;
-                    rowPresenter.Y = rowPresenter.RowViewModel.Y;
-                    rowPresenter.UpdateCellsWithoutAnimation();
-                }
-
-                view.TableView.ShowAllRowsCanvas();
-                
-                PaddedSheetHeight = SheetViewModel.AllRowsSheetHeight > SheetViewHeight ? SheetViewModel.AllRowsSheetHeight : SheetViewHeight;
-
-                view.TableView.RowHeaderPresenter.SetRowNumber(rowViewModels.Count);
-            }
-            else
-            {
-                view.TableView.ShowGroupByTableCanvas();
-                rowPresenters = groupByRowPresenters;
-
-                PaddedSheetHeight = SheetViewModel.SheetHeight > SheetViewHeight ? SheetViewModel.SheetHeight : SheetViewHeight;
-
-                Int32 index = 0;
-
-                foreach (RowViewModel rowViewModel in SheetViewModel.GroupByRowViewModels)
-                {
-                    RowPresenter rowPresenter = groupByRowPresenters[index];
-                    rowPresenter.DataContext = rowViewModel;
-                    rowPresenter.Visibility = Visibility.Visible;
-
-                    rowPresenter.Y = rowViewModel.Y;
-                    rowPresenter.Update();
-
-                    index++;
-                }
-
-                for(;index < groupByRowPresenters.Count; ++index)
-                {
-                    groupByRowPresenters[index].Visibility = Visibility.Collapsed;
-                }
-
-                view.TableView.RowHeaderPresenter.SetRowNumber(rowViewModels.Count);
-            }    */       
+            view.TableView.ReflectState();            
         }
 
         uint ignoredPointerId;
@@ -324,31 +257,7 @@ namespace FlexTable.ViewModel
             SelectedRows = null;
             Reflect(mainPageViewModel.ExplorationViewModel.ViewStatus);
         }        
-
-        public void Sort(ColumnViewModel columnViewModel, SortOption sortOption)
-        {
-            // 하나의 컬럼으로만 소트가 가능하다 현재는
-            /*sortBy = columnViewModel;
-            this.sortOption = sortOption;
-
-            foreach (ColumnViewModel cvm in SheetViewModel.ColumnViewModels)
-            {
-                cvm.IsAscendingSorted = false;
-                cvm.IsDescendingSorted= false;
-            }
-
-            if (sortOption == SortOption.Ascending)
-            {
-                columnViewModel.IsAscendingSorted = true;
-            }
-            else if(sortOption == SortOption.Descending)
-            {
-                columnViewModel.IsDescendingSorted = true;
-            }
-            Reflect(mainPageViewModel.ExplorationViewModel.ViewStatus);
-    */    
-        }
-
+        
         public void OnAggregativeFunctionChanged(ColumnViewModel columnViewModel)
         {
             // 위 아래 컬럼 헤더 업데이트 (앞에 min, max 붙는 부분)

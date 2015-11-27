@@ -55,6 +55,8 @@ namespace FlexTable.ViewModel
                 OnPropertyChanged(nameof(IsDescendingSorted));
             } }
 
+        public Int32 SortPriority { get; set; } = 0;
+
         private List<Category> categories;
         public List<Category> Categories { get { return categories; } set { categories = value; } }
 
