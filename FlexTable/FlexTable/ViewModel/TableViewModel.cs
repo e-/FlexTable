@@ -139,6 +139,7 @@ namespace FlexTable.ViewModel
 
                 view.TableView.TopColumnHeader.Update();
                 view.TableView.BottomColumnHeader.Update();
+                view.TableView.ColumnIndexer.Update();
             };
             dispatcherTimer.Interval = TimeSpan.FromMilliseconds(DeferredReflectionTimeInMS);
             dispatcherTimer.Start();
@@ -203,17 +204,17 @@ namespace FlexTable.ViewModel
         uint ignoredPointerId;
         uint activatedPointerId; // for cancel indexing
 
-        public void IndexColumn(uint id, Int32 order) //Double y)
+        public void IndexColumn(uint id, Int32 index) //Double y)
         {
             if (state == TableViewState.SelectedRow) return;
             if (ignoredPointerId == id) return;
 
             Double totalHeight = SheetViewHeight;
-            Int32 columnIndex = order; // (Int32)Math.Floor(y / totalHeight * SheetViewModel.ColumnViewModels.Count);
+            Int32 columnIndex = index; // (Int32)Math.Floor(y / totalHeight * SheetViewModel.ColumnViewModels.Count);
 
             if (columnIndex < 0 || columnIndex >= SheetViewModel.ColumnViewModels.Count) return;
 
-            ColumnViewModel columnViewModel = SheetViewModel.ColumnViewModels.First(c => c.Order == columnIndex);
+            ColumnViewModel columnViewModel = SheetViewModel.ColumnViewModels.Where(cvm => !cvm.IsSelected).OrderBy(cvm => cvm.Order).ElementAt(index);
 
             if (view.TableView.ColumnHighlighter.ColumnViewModel != columnViewModel)
             {

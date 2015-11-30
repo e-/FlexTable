@@ -87,11 +87,48 @@ namespace FlexTable.View
         public void Update() // 처음에 초기화하거나 컬럼의 순서가 바뀌면 이게 호출되어야함
         {
             TableViewModel tvm = this.DataContext as TableViewModel;
-            List<ColumnViewModel> sorted = tvm.SheetViewModel.ColumnViewModels.OrderBy(cvm => cvm.Order).ToList();
+            List<ColumnViewModel> sorted = tvm.SheetViewModel.ColumnViewModels.Where(cvm => !cvm.IsSelected).OrderBy(cvm => cvm.Order).ToList();
             Int32 index = 0;
             Double anglePerMenu = AngleSpan / sorted.Count;
 
+            IndexHelperWrapperElement.Children.Clear();
+
             foreach (ColumnViewModel cvm in sorted)
+            {
+                Path path = null;
+                //TextBlock textBlock = null;
+
+                if (index == 0)
+                {
+                    path = DrawArc((Double)App.Current.Resources["ColumnIndexerHeight"], -Math.PI / 18, anglePerMenu * (index + 1));
+                }
+                else if (index < sorted.Count - 1)
+                {
+                    path = DrawArc((Double)App.Current.Resources["ColumnIndexerHeight"], anglePerMenu * index, anglePerMenu * (index + 1));
+                }
+                else // 5개 이하일때 마지막은 모두 포함하도록
+                {
+                    path = DrawArc((Double)App.Current.Resources["ColumnIndexerHeight"], anglePerMenu * index, Math.PI / 2);
+                }
+
+                Int32 indexCopied = index;
+                path.PointerEntered += (o, e) =>
+                {
+                    TableViewModel.IndexColumn(e.GetCurrentPoint(this).PointerId, indexCopied);
+                    Debug.WriteLine(indexCopied);
+                };
+
+                Canvas.SetTop(path, (Double)App.Current.Resources["ColumnIndexerHeight"]);
+
+                IndexHelperWrapperElement.Children.Add(path);
+
+                path.Stroke = new SolidColorBrush(Color.FromArgb(255, 150, 150, 150));
+                path.StrokeThickness = 2;
+                path.Fill = new SolidColorBrush(Color.FromArgb(255, 230, 230, 230));
+                index++;
+            }
+
+            /*foreach (ColumnViewModel cvm in sorted)
             {
                 Path path = null;
                 //TextBlock textBlock = null;
@@ -124,12 +161,7 @@ namespace FlexTable.View
                     };
                     
                     Canvas.SetTop(path, (Double)App.Current.Resources["ColumnIndexerHeight"]);
-                    /*textBlock = new TextBlock()
-                    {
-                        Style = this.Resources["LabelStyle"] as Style
-                    };
 
-                    path.Child = textBlock;*/
                     IndexHelperWrapperElement.Children.Add(path);
                 }
 
@@ -143,7 +175,7 @@ namespace FlexTable.View
             {
                 IndexHelperWrapperElement.Children.RemoveAt(j);
             }
-
+            */
         }
 
         private void Opener_PointerEntered(object sender, PointerRoutedEventArgs e)
