@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI;
 
 namespace FlexTable.Model
 {
@@ -12,6 +13,7 @@ namespace FlexTable.Model
         public String Value { get { return value; } set { this.value = value; OnPropertyChanged("Value"); } }
 
         public Int32 Order { get; set; }
+        public Color Color { get; set; }
 
         public override String ToString()
         {

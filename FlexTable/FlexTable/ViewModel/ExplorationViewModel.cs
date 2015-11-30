@@ -33,7 +33,7 @@ namespace FlexTable.ViewModel
         /// <summary>
         /// 이 view status는 이미 선택된 컬럼들을 가지는 view status 임
         /// </summary>
-        public ViewStatus ViewStatus => selectedPageViews.Count == 0 ? initialViewStatus : selectedPageViews.Last().PageViewModel.ViewStatus; 
+        public ViewStatus ViewStatus => selectedPageViews.Count == 0 ? initialViewStatus : selectedPageViews.Last().ViewModel.ViewStatus; 
 
         public PageView TopPageView { get { return view.ExplorationView.TopPageView; } }
 
@@ -68,7 +68,7 @@ namespace FlexTable.ViewModel
             selectedViewStatus.SelectedColumnViewModels.Add(columnViewModel);
             
             // 탑 페이지 뷰 모델 가져와서
-            PageViewModel pageViewModel = TopPageView.PageViewModel;
+            PageViewModel pageViewModel = TopPageView.ViewModel;
 
             // 복제한 view status를 추가 한 다음 
             pageViewModel.ViewStatus = selectedViewStatus;
@@ -84,10 +84,10 @@ namespace FlexTable.ViewModel
         public void CancelPreviewColumn()
         {
             previewingColumnViewModel = null;
-            if (TopPageView.PageViewModel.State == PageViewModel.PageViewState.Previewing)
+            if (TopPageView.ViewModel.State == PageViewModel.PageViewState.Previewing)
             {
-                TopPageView.PageViewModel.State = PageViewModel.PageViewState.Empty;
-                TopPageView.PageViewModel.Reflect(false);
+                TopPageView.ViewModel.State = PageViewModel.PageViewState.Empty;
+                TopPageView.ViewModel.Reflect(false);
                 TopPageView.ReflectState();
             }
         }
@@ -184,7 +184,7 @@ namespace FlexTable.ViewModel
             // 차트 업데이트
             foreach(PageView pageView in selectedPageViews)
             {
-                pageView.PageViewModel.Reflect(true);
+                pageView.ViewModel.Reflect(true);
             }
 
             // 뒤에 숨겨진 차트들은 어떻게하나? 좀 더 빨리 안될까
@@ -203,7 +203,7 @@ namespace FlexTable.ViewModel
             // 차트 업데이트
             foreach (PageView pageView in selectedPageViews)
             {
-                pageView.PageViewModel.Reflect(true);
+                pageView.ViewModel.Reflect(true);
             }
 
             // 뒤에 숨겨진 차트들은 어떻게하나? 좀 더 빨리 안될까

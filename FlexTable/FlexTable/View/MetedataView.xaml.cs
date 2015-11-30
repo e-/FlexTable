@@ -42,7 +42,7 @@ namespace FlexTable.View
             mpvm.View.TableView.TopColumnHeader.Reset();
             mpvm.View.TableView.BottomColumnHeader.Reset();
             mpvm.View.TableView.ColumnIndexer.Reset();
-            mpvm.ExplorationViewModel.TopPageView.PageViewModel.State = PageViewModel.PageViewState.Empty;            
+            mpvm.ExplorationViewModel.TopPageView.ViewModel.State = PageViewModel.PageViewState.Empty;            
             //mpvm.ExplorationViewModel.TopPageView.CancelUndoStoryboard.Begin();
             mpvm.Sheet = sheet;
             mpvm.Initialize();

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using d3;
+using d3.ColorScheme;
 using d3.Scale;
 using FlexTable.Model;
 using FlexTable.Util;
@@ -28,9 +29,9 @@ namespace FlexTable.Crayon.Chart
     public sealed partial class Scatterplot : UserControl
     {
         const Double DragToFilterThreshold = 40;
-        const Double StrikeThroughMinWidth = 50;
-
+        const Double StrikeThroughMinWidth = 30;
         const Double StrikeThroughMaxHeight = 20;
+
         const Double PaddingLeft = 0;
         const Double PaddingTop = 30;
         public const Double PaddingRight = 10;
@@ -119,7 +120,7 @@ namespace FlexTable.Crayon.Chart
         {
             get
             {
-                return (d, index) => (selectedData.Count == 0) ? 0.8 : (selectedData.IndexOf(d as ScatterplotDatum) >= 0 ? 0.8 : 0.1);
+                return (d, index) => (selectedData.Count == 0) ? 0.8 : (selectedData.Exists(sd => sd.Row == (d as ScatterplotDatum).Row) ? 0.8 : 0.1);
             }
         }
 
@@ -149,8 +150,7 @@ namespace FlexTable.Crayon.Chart
         {
             get
             {
-                return (d, index) => AutoColor ? d3.ColorScheme.Category10.Colors[LegendData.IndexOf((d as ScatterplotDatum).Key) % d3.ColorScheme.Category10.Colors.Count] :
-                    d3.ColorScheme.Category10.Colors[0];
+                return (d, index) => AutoColor ? ((d as ScatterplotDatum).Key as Category).Color : Category10.Colors[0];
             }
         }
 
@@ -158,8 +158,7 @@ namespace FlexTable.Crayon.Chart
         {
             get
             {
-                return (d, index) => AutoColor ? d3.ColorScheme.Category10.Colors[index % d3.ColorScheme.Category10.Colors.Count] :
-                    d3.ColorScheme.Category10.Colors[0];
+                return (d, index) => AutoColor ? (d as Category).Color : Category10.Colors[0];
             }
         }
 
@@ -412,7 +411,7 @@ namespace FlexTable.Crayon.Chart
             }
             else
             {
-                ChartAreaEndX = this.Width - PaddingRight;
+                ChartAreaEndX = this.Width - PaddingRight - 20;
             }
 
             HorizontalAxisLabelCanvasLeft = PaddingLeft + VerticalAxisWidth + VerticalAxisLabelWidth;

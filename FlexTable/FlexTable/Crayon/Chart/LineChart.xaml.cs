@@ -6,6 +6,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using d3;
 using d3.ColorScheme;
 using d3.Scale;
+using FlexTable.Model;
 using FlexTable.Util;
 using Windows.Devices.Input;
 using Windows.Foundation;
@@ -27,7 +28,7 @@ namespace FlexTable.Crayon.Chart
 {
     public sealed partial class LineChart : UserControl
     {
-        const Double StrikeThroughMinWidth = 50;
+        const Double StrikeThroughMinWidth = 30;
         const Double StrikeThroughMaxHeight = 20;
 
         const Double PaddingLeft = 0;
@@ -41,6 +42,7 @@ namespace FlexTable.Crayon.Chart
         public const Double LegendPatchWidth = 20;
         public const Double LegendPatchHeight = 20;
         public const Double LegendPatchSpace = 10;
+        const Double MinimumLegendWidth = 100;
 
         public IList<LineChartDatum> Data { get; set; }
         public Data D3Data { get; set; }
@@ -122,8 +124,8 @@ namespace FlexTable.Crayon.Chart
             }
         }
 
-        public Func<Object, Int32, Color> ColorGetter { get { return (bin, index) => (AutoColor ? Category10.Colors[index % 10] : Category10.Colors.First()); } }
-        public Func<Object, Int32, Color> LineStrokeGetter { get { return (bin, index) => (AutoColor ? Category10.Colors[index % 10] : Category10.Colors.First()); } }
+        public Func<Object, Int32, Color> ColorGetter { get { return (datum, index) => (AutoColor ? ((datum as LineChartDatum).Key as Category).Color : Category10.Colors.First()); } }
+        public Func<Object, Int32, Color> LineStrokeGetter { get { return (datum, index) => (AutoColor ? ((datum as LineChartDatum).Key as Category).Color : Category10.Colors.First()); } }
         public Func<Object, Int32, Double> LineOpacityGetter { get {
                 return (d, index) => ((selectedKeys.Count == 0) ? 0.8 :
                     (selectedKeys.IndexOf((d as LineChartDatum).Key) >= 0 ? 0.9 : 0.1));
@@ -131,7 +133,7 @@ namespace FlexTable.Crayon.Chart
 
         public Func<Object, Int32, Double> CircleXGetter { get { return (d, index) => XScale.Map((d as DataPoint).Item1); } }
         public Func<Object, Int32, Double> CircleYGetter { get { return (d, index) => YScale.Map((d as DataPoint).Item2); } }
-        public Func<Object, Int32, Color> CircleColorGetter { get { return (d, index) => Category10.Colors[Data.IndexOf((d as DataPoint).Parent) % 10]; } }
+        public Func<Object, Int32, Color> CircleColorGetter { get { return (d, index) => (AutoColor ? (((d as DataPoint).Parent as LineChartDatum).Key as Category).Color : Category10.Colors.First()); } }
         public Func<Object, Int32, Double> CircleOpacityGetter{ get {
                 return (d, index) => ((selectedKeys.Count == 0) ? 0.9 :
                     (selectedKeys.IndexOf((d as DataPoint).Parent.Key) >= 0 ? 1 : 0.1));
@@ -444,7 +446,7 @@ namespace FlexTable.Crayon.Chart
                 LegendTextElement.Data = D3Data;
                 LegendTextElement.Update();
 
-                LegendAreaWidth = LegendTextElement.MaxActualWidth + LegendPatchWidth + LegendPatchSpace + PaddingRight;
+                LegendAreaWidth = Math.Max(LegendTextElement.MaxActualWidth + LegendPatchWidth + LegendPatchSpace + PaddingRight, MinimumLegendWidth);
             }
 
             Canvas.SetLeft(LegendPanel, this.Width - LegendAreaWidth);            

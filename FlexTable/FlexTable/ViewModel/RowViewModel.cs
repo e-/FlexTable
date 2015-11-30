@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI;
 
 namespace FlexTable.ViewModel
 {
@@ -30,8 +31,9 @@ namespace FlexTable.ViewModel
         public Boolean IsFilteredOut { get; set; }
         public Row Row { get; set; }
 
-        private ObservableCollection<Cell> cells = new ObservableCollection<Cell>();
-        public ObservableCollection<Cell> Cells { get { return cells; } }
+        private List<Cell> cells = new List<Cell>();
+        public List<Cell> Cells { get { return cells; } }
+        public Color Color { get; set; } = Colors.Black;
 
         public RowViewModel(MainPageViewModel mainPageViewModel)
         {

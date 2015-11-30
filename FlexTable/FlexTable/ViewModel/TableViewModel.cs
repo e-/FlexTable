@@ -54,8 +54,8 @@ namespace FlexTable.ViewModel
             set { allRowViewModels = value; OnPropertyChanged(nameof(AllRowViewModels)); }
         }
 
-        private ObservableCollection<RowViewModel> groupedRowViewModels;
-        public ObservableCollection<RowViewModel> GroupedRowViewModels
+        private List<RowViewModel> groupedRowViewModels;
+        public List<RowViewModel> GroupedRowViewModels
         {
             get { return groupedRowViewModels; }
             set { groupedRowViewModels = value; OnPropertyChanged(nameof(GroupedRowViewModels)); }
@@ -158,10 +158,9 @@ namespace FlexTable.ViewModel
 
                 State = TableViewState.SelectedRow;
             }
-            else if (viewStatus.SelectedColumnViewModels.Count == 0 ||
-                viewStatus.SelectedColumnViewModels.Count >= 2 && viewStatus.SelectedColumnViewModels.Count(s => s.Type != ColumnType.Numerical) == 0 ||
-                viewStatus.SelectedColumnViewModels.Count == 3 && viewStatus.SelectedColumnViewModels.Count(s => s.Type == ColumnType.Numerical) == 2
-            ) // 아무 것도 선택되지 않으면 모든 로우 보여줘야함.
+            else if (viewStatus.IsEmpty || 
+                viewStatus.IsNN || 
+                (viewStatus.IsCNN && viewStatus.IsScatterplotVisible))
             {
                 AllRowViewModels.Sort(new RowViewModelComparer(SheetViewModel, viewStatus));
                 index = 0;
@@ -191,13 +190,13 @@ namespace FlexTable.ViewModel
                 }
 
                 if(isDirty)
-                    GroupedRowViewModels = new ObservableCollection<RowViewModel>(SheetViewModel.GroupedRowViewModels);
+                    GroupedRowViewModels = new List<RowViewModel>(SheetViewModel.GroupedRowViewModels);
 
                 ActivatedRowViewModels = GroupedRowViewModels;
                 State = TableViewState.GroupedRow;
             }
 
-
+            PageViewModel.ColorRowViewModels(viewStatus, allRowViewModels, groupedRowViewModels, SheetViewModel.GroupingResult);
             view.TableView.ReflectState();            
         }
 
@@ -261,17 +260,5 @@ namespace FlexTable.ViewModel
             SelectedRows = null;
             Reflect(mainPageViewModel.ExplorationViewModel.ViewStatus);
         }        
-        
-        public void OnAggregativeFunctionChanged(ColumnViewModel columnViewModel)
-        {
-            // 위 아래 컬럼 헤더 업데이트 (앞에 min, max 붙는 부분)
-            // 는 바인딩으로 자동으로 됨
-            // 여기서 주의점은 나중에 그룹바이시 컬럼 하나에 대해서만 min, max를 하는 경우 min, max 자체를 생략해야 한다는 점이다
-
-            mainPageViewModel.ExplorationViewModel.SelectedPageViews.Last().PageViewModel.Reflect(true);
-
-            mainPageViewModel.SheetViewModel.UpdateGroup(mainPageViewModel.ExplorationViewModel.ViewStatus);
-            Reflect(mainPageViewModel.ExplorationViewModel.ViewStatus);
-        }
     }
 }

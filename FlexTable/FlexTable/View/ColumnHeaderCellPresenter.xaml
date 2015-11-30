@@ -30,7 +30,6 @@
           x:Name="Wrapper"
           PointerEntered="Border_PointerEntered" 
           Background="Transparent"
-          PointerPressed="Wrapper_PointerPressed"
           >
 
         <Grid.RenderTransform>

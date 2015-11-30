@@ -18,6 +18,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Shapes;
 using FlexTable.Model;
+using Windows.UI;
 
 // 사용자 정의 컨트롤 항목 템플릿에 대한 설명은 http://go.microsoft.com/fwlink/?LinkId=234236에 나와 있습니다.
 
@@ -157,12 +158,14 @@ namespace FlexTable.View
 
                 Int32 index = 0;
                 Double height = (Double)App.Current.Resources["RowHeight"];
+                List<Color> colors = new List<Color>();
 
                 foreach (RowPresenter rowPresenter in selected)
                 {
                     Canvas.SetTop(rowPresenter, index * height);
                     rowPresenter.Opacity = 1;
                     rowPresenter.Update();
+                    colors.Add(rowPresenter.RowViewModel.Color);
                     index++;
                 }
 
@@ -171,10 +174,11 @@ namespace FlexTable.View
                     Canvas.SetTop(rowPresenter, index * height);
                     rowPresenter.Opacity = 0.2;
                     rowPresenter.Update();
+                    colors.Add(rowPresenter.RowViewModel.Color);
                     index++;
                 }
 
-                RowHeaderPresenter.SetRowNumber(ViewModel.AllRowViewModels.Count, selected.Count());
+                RowHeaderPresenter.SetRowNumber(colors, selected.Count(), colors.Count);
             }
             else if (state == TableViewModel.TableViewState.GroupedRow)
             {
@@ -187,12 +191,15 @@ namespace FlexTable.View
                 Int32 index = 0;
                 Double height = (Double)App.Current.Resources["RowHeight"];
                 Int32 i = 0;
+                List<Color> colors = new List<Color>();
+
                 for (i = 0; i < ViewModel.GroupedRowViewModels.Count; ++i)
                 {
                     groupedRowPresenters[i].RowViewModel = ViewModel.GroupedRowViewModels[i];
                     Canvas.SetTop(groupedRowPresenters[i], index * height);
                     groupedRowPresenters[i].Visibility = Visibility.Visible;
                     groupedRowPresenters[i].Update();
+                    colors.Add(groupedRowPresenters[i].RowViewModel.Color);
                     index++;
                 }
 
@@ -201,7 +208,7 @@ namespace FlexTable.View
                     groupedRowPresenters[i].Visibility = Visibility.Collapsed;
                 }
 
-                RowHeaderPresenter.SetRowNumber(ViewModel.GroupedRowViewModels.Count);
+                RowHeaderPresenter.SetRowNumber(colors, ViewModel.GroupedRowViewModels.Count, ViewModel.GroupedRowViewModels.Count);
             }
             else
             {
@@ -211,7 +218,6 @@ namespace FlexTable.View
 
                 ActivatedScrollViewer = SelectedRowScrollViewer;
 
-                //RowHeaderPresenter.SetRowNumber(ViewModel.SelectedRowViewModels.Count);
                 var sr = ViewModel.SelectedRows.ToList();
 
                 IEnumerable<RowPresenter> selected = selectedRowPresenters.Where(rp => sr.IndexOf(rp.RowViewModel.Row) >= 0).OrderBy(rp => rp.RowViewModel.Index),
@@ -219,12 +225,14 @@ namespace FlexTable.View
 
                 Int32 index = 0;
                 Double height = (Double)App.Current.Resources["RowHeight"];
+                List<Color> colors = new List<Color>();
 
                 foreach (RowPresenter rowPresenter in selected)
                 {
                     Canvas.SetTop(rowPresenter, index * height);
                     rowPresenter.Opacity = 1;
                     rowPresenter.Update();
+                    colors.Add(rowPresenter.RowViewModel.Color);
                     index++;
                 }
 
@@ -233,10 +241,11 @@ namespace FlexTable.View
                     Canvas.SetTop(rowPresenter, index * height);
                     rowPresenter.Opacity = 0.2;
                     rowPresenter.Update();
+                    colors.Add(rowPresenter.RowViewModel.Color);
                     index++;
                 }
 
-                RowHeaderPresenter.SetRowNumber(ViewModel.AllRowViewModels.Count, selected.Count());
+                RowHeaderPresenter.SetRowNumber(colors, selected.Count(), colors.Count);
             }
 
             UpdateScrollViews();
@@ -257,14 +266,13 @@ namespace FlexTable.View
             Double centerX = strokes[0].BoundingRect.X + strokes[0].BoundingRect.Width / 2 -
                 (Double)App.Current.Resources["RowHeaderWidth"] + ActivatedScrollViewer.HorizontalOffset;
 
-            Double screenHeight = ViewModel.MainPageViewModel.Bounds.Height;
+            Double screenHeight = this.ViewModel.MainPageViewModel.Bounds.Height;
             Double columnHeaderHeight = (Double)App.Current.Resources["ColumnHeaderHeight"];
 
-            TableViewModel tableViewModel = this.DataContext as TableViewModel;
             ColumnViewModel selectedColumnViewModel = null;
 
 
-            foreach (ColumnViewModel columnViewModel in tableViewModel.SheetViewModel.ColumnViewModels) // 현재 그 아래에 있는 컬럼을 찾고
+            foreach (ColumnViewModel columnViewModel in ViewModel.SheetViewModel.ColumnViewModels) // 현재 그 아래에 있는 컬럼을 찾고
             {
                 if (columnViewModel.X <= centerX && centerX < columnViewModel.X + columnViewModel.Width)
                 {
@@ -293,20 +301,20 @@ namespace FlexTable.View
                         String upperCandidate = candidate.ToUpper();
 
                         if (selectedColumnViewModel != null && selectedColumnViewModel.Type == Model.ColumnType.Numerical
-                            && tableViewModel.MainPageViewModel.ExplorationViewModel.ViewStatus.SelectedColumnViewModels.Count > 0)
+                            && ViewModel.MainPageViewModel.ExplorationViewModel.ViewStatus.SelectedColumnViewModels.Count > 0)
                         {
                             switch (upperCandidate)
                             {
                                 case "MIN":
                                     selectedColumnViewModel.AggregativeFunction = new AggregativeFunction.MinAggregation();
-                                    tableViewModel.OnAggregativeFunctionChanged(selectedColumnViewModel);
+                                    ViewModel.MainPageViewModel.ReflectAll();
                                     Debug.WriteLine("Min selected");
                                     drawable.RemoveAllStrokes();
                                     timer.Stop();
                                     return;
                                 case "MAX":
                                     selectedColumnViewModel.AggregativeFunction = new AggregativeFunction.MaxAggregation();
-                                    tableViewModel.OnAggregativeFunctionChanged(selectedColumnViewModel);
+                                    ViewModel.MainPageViewModel.ReflectAll();
                                     Debug.WriteLine("Max selected");
                                     drawable.RemoveAllStrokes();
                                     timer.Stop();
@@ -314,14 +322,14 @@ namespace FlexTable.View
                                 case "AVG":
                                 case "MEAN":
                                     selectedColumnViewModel.AggregativeFunction = new AggregativeFunction.AverageAggregation();
-                                    tableViewModel.OnAggregativeFunctionChanged(selectedColumnViewModel);
+                                    ViewModel.MainPageViewModel.ReflectAll();
                                     Debug.WriteLine("Mean selected");
                                     drawable.RemoveAllStrokes();
                                     timer.Stop();
                                     return;
                                 case "SUM":
                                     selectedColumnViewModel.AggregativeFunction = new AggregativeFunction.SumAggregation();
-                                    tableViewModel.OnAggregativeFunctionChanged(selectedColumnViewModel);
+                                    ViewModel.MainPageViewModel.ReflectAll();
                                     Debug.WriteLine("Sum selected");
                                     drawable.RemoveAllStrokes();
                                     timer.Stop();
@@ -342,13 +350,12 @@ namespace FlexTable.View
             Double centerX = strokes[0].BoundingRect.X + strokes[0].BoundingRect.Width / 2 -
                 (Double)App.Current.Resources["RowHeaderWidth"] + ActivatedScrollViewer.HorizontalOffset;
 
-            Double screenHeight = ViewModel.MainPageViewModel.Bounds.Height;
+            Double screenHeight = this.ViewModel.MainPageViewModel.Bounds.Height;
             Double columnHeaderHeight = (Double)App.Current.Resources["ColumnHeaderHeight"];
 
-            TableViewModel tableViewModel = this.DataContext as TableViewModel;
             ColumnViewModel selectedColumnViewModel = null;
 
-            foreach (ColumnViewModel columnViewModel in tableViewModel.SheetViewModel.ColumnViewModels) // 현재 그 아래에 있는 컬럼을 찾고
+            foreach (ColumnViewModel columnViewModel in ViewModel.SheetViewModel.ColumnViewModels) // 현재 그 아래에 있는 컬럼을 찾고
             {
                 if (columnViewModel.X <= centerX && centerX < columnViewModel.X + columnViewModel.Width)
                 {
@@ -380,14 +387,14 @@ namespace FlexTable.View
                     if (firstPoint.Position.Y < lastPoint.Position.Y - VerticalStrokeHeightDifferenceThreshold)
                     {
                         // 내림차순 정렬
-                        ViewModel.SheetViewModel.Sort(selectedColumnViewModel, SortOption.Descending);
-                        ViewModel.MainPageViewModel.ReflectAll();
+                        this.ViewModel.SheetViewModel.Sort(selectedColumnViewModel, SortOption.Descending);
+                        this.ViewModel.MainPageViewModel.ReflectAll();
                     }
                     else if (lastPoint.Position.Y < firstPoint.Position.Y + VerticalStrokeHeightDifferenceThreshold)
                     {
                         // 오름차순 정렬
-                        ViewModel.SheetViewModel.Sort(selectedColumnViewModel, SortOption.Ascending);
-                        ViewModel.MainPageViewModel.ReflectAll();
+                        this.ViewModel.SheetViewModel.Sort(selectedColumnViewModel, SortOption.Ascending);
+                        this.ViewModel.MainPageViewModel.ReflectAll();
                     }
                 }
                 drawable.RemoveAllStrokes();
@@ -396,9 +403,8 @@ namespace FlexTable.View
 
         public void ScrollToColumnViewModel(ColumnViewModel columnViewModel)
         {
-            TableViewModel tableViewModel = this.DataContext as TableViewModel;
             Double offset = ActivatedScrollViewer.HorizontalOffset,
-                   width = tableViewModel.SheetViewWidth,
+                   width = ViewModel.SheetViewWidth,
                    x1 = columnViewModel.X,
                    x2 = columnViewModel.X + columnViewModel.Width;
 
@@ -419,20 +425,17 @@ namespace FlexTable.View
 
             if (to == null)
             {
-                tableViewModel.ScrollLeft = ActivatedScrollViewer.HorizontalOffset;
+                ViewModel.ScrollLeft = ActivatedScrollViewer.HorizontalOffset;
             }
             else
             {
-                tableViewModel.ScrollLeft = (Double)to;
+                ViewModel.ScrollLeft = (Double)to;
             }
         }
 
 
         private void ScrollViewer_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
         {
-            TableViewModel tableViewModel = this.DataContext as TableViewModel;
-            ScrollViewer sv = sender as ScrollViewer;
-
             UpdateScrollViews();
         }
 

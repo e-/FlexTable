@@ -28,18 +28,6 @@
             <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
         
-        <Style TargetType="Border" x:Key="ParagraphLabelBorderStyle">
-            <Setter Property="CornerRadius" Value="14" />
-            <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="Padding" Value="9 5" />
-            <Setter Property="Margin" Value="5 0" />
-            <Setter Property="HorizontalAlignment" Value="Center" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-        </Style>
-        
-        <Style TargetType="TextBlock" x:Key="ParagraphLabelTextBlockStyle">
-            <Setter Property="FontSize" Value="14" />
-        </Style>
         
         <util:BooleanToVisibilityConverter x:Name="BooleanToVisibilityConverter" />
         <util:BooleanToInvertedVisibilityConverter x:Name="BooleanToInvertedVisibilityConverter" />
@@ -172,11 +160,7 @@
                              Storyboard.TargetName="ChartWrapper" Storyboard.TargetProperty="Opacity" From="0.6" To="1">
             </DoubleAnimation>
         </Storyboard>
-        
-        <Color x:Key="LabelForegroundColor">#333</Color>
-        <Color x:Key="LabelBackgroundColor">#fff</Color>
-        <Color x:Key="ActivatedLabelForegroundColor">#000</Color>
-        <Color x:Key="ActivatedLabelBackgroundColor">#ddd</Color>
+                
         <x:String x:Key="TooManyElementsWarningString">There are too many visual elements. Some elements may be hidden.</x:String>
         <Style x:Key="TooManyElementsWarningStyle" TargetType="TextBlock">
             <Setter Property="Height" Value="20" />
@@ -199,12 +183,12 @@
         <Grid>
             <!-- Visibility="{Binding IsPreviewVisible, Converter={StaticResource BooleanToVisibilityConverter}}" -->
             <StackPanel Height="{Binding MainPageViewModel.PageHeight}"
-                        x:Name="ChartWrapper" Padding="20" Background="White">
+                        x:Name="ChartWrapper" Padding="20 20 20 20" Background="White">
                 <ScrollViewer HorizontalScrollBarVisibility="Hidden" HorizontalScrollMode="Auto" 
                               VerticalScrollBarVisibility="Hidden" VerticalScrollMode="Disabled"
                               x:Name="Carousel" Background="White"
                               Width="{StaticResource ParagraphWidth}"
-                              ViewChanged="Carousel_ViewChanged" ViewChanging="Carousel_ViewChanging">
+                              ViewChanged="Carousel_ViewChanged">
                     <Canvas x:Name="ParagraphContainerCanvasElement" Height="{StaticResource ParagraphContainerHeight}"
                             ManipulationMode="TranslateY,System"
                               ManipulationDelta="Carousel_ManipulationDelta"
@@ -277,7 +261,7 @@
                         </StackPanel>
                     </Canvas>
                 </ScrollViewer>
-                <StackPanel x:Name="ParagraphLabelContainer" Height="50" Orientation="Horizontal" HorizontalAlignment="Center"></StackPanel>
+                <local:PageLabelView x:Name="PageLabelViewElement" />
             </StackPanel>
 
             <Border Background="#ddd" CornerRadius="5" HorizontalAlignment="Right" VerticalAlignment="Top" Height="40" Margin="0 5 0 5"

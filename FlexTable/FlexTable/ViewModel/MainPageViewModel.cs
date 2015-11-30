@@ -87,13 +87,13 @@ namespace FlexTable.ViewModel
             // 차트 업데이트
             foreach (PageView pageView in ExplorationViewModel.SelectedPageViews)
             {
-                pageView.PageViewModel.Reflect(true);
+                pageView.ViewModel.Reflect(true);
             }
         }
 
         public async void Initialize()
         {
-            Model.Sheet sheet = await Util.CsvLoader.Load("who.csv"); // "Population-filtered.csv");
+            Sheet sheet = await Util.CsvLoader.Load("fitts.csv"); // "Population-filtered.csv");
             this.Sheet = sheet;
 
             PageHeight = Bounds.Height / 2 - 4;
@@ -125,7 +125,7 @@ namespace FlexTable.ViewModel
                 view.ExplorationView.TopPageView
                 )
             {
-                ViewStatus = new Model.ViewStatus() // 초기 비어있는 뷰 상태로 초기화
+                ViewStatus = new ViewStatus() // 초기 비어있는 뷰 상태로 초기화
             };
             view.ExplorationView.TopPageView.DataContext = pageViewModel;
 
@@ -136,40 +136,40 @@ namespace FlexTable.ViewModel
             var dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
 
 
-            ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[3]);
+            ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[0]);
 
             DispatcherTimer dispatcherTimer = new DispatcherTimer();
             dispatcherTimer.Tick += (sender, e) =>
             {
                 dispatcherTimer.Stop();
-                ExplorationViewModel.TopPageView.PageViewModel.State = PageViewModel.PageViewState.Selected;
-                ExplorationViewModel.PageViewStateChanged(ExplorationViewModel.TopPageView.PageViewModel, ExplorationViewModel.TopPageView);
+                ExplorationViewModel.TopPageView.ViewModel.State = PageViewModel.PageViewState.Selected;
+                ExplorationViewModel.PageViewStateChanged(ExplorationViewModel.TopPageView.ViewModel, ExplorationViewModel.TopPageView);
                 
-                /*ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[3]);
+                ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[1]);
 
                 DispatcherTimer dispatcherTimer2 = new DispatcherTimer();
                 dispatcherTimer2.Tick += (sender2, e2) =>
                 {
                     dispatcherTimer2.Stop();
-                    ExplorationViewModel.TopPageView.PageViewModel.State = PageViewModel.PageViewState.Selected;
-                    ExplorationViewModel.PageViewStateChanged(ExplorationViewModel.TopPageView.PageViewModel, ExplorationViewModel.TopPageView);
+                    ExplorationViewModel.TopPageView.ViewModel.State = PageViewModel.PageViewState.Selected;
+                    ExplorationViewModel.PageViewStateChanged(ExplorationViewModel.TopPageView.ViewModel, ExplorationViewModel.TopPageView);
+                    
 
-
-                    ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[1]);
+                    ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[3]);
 
                     DispatcherTimer dispatcherTimer3 = new DispatcherTimer();
                     dispatcherTimer3.Tick += (sender3, e3) =>
                     {
                         dispatcherTimer3.Stop();
-                        ExplorationViewModel.TopPageView.PageViewModel.State = PageViewModel.PageViewState.Selected;
-                        ExplorationViewModel.PageViewStateChanged(ExplorationViewModel.TopPageView.PageViewModel, ExplorationViewModel.TopPageView);
+                        ExplorationViewModel.TopPageView.ViewModel.State = PageViewModel.PageViewState.Selected;
+                        ExplorationViewModel.PageViewStateChanged(ExplorationViewModel.TopPageView.ViewModel, ExplorationViewModel.TopPageView);
                     };
                     dispatcherTimer3.Interval = TimeSpan.FromMilliseconds(500);
                     dispatcherTimer3.Start();
-
+                    
                 };
                 dispatcherTimer2.Interval = TimeSpan.FromMilliseconds(500);
-                dispatcherTimer2.Start();*/
+                dispatcherTimer2.Start();
             };
             dispatcherTimer.Interval = TimeSpan.FromMilliseconds(500);
             dispatcherTimer.Start();

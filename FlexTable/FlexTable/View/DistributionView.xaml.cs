@@ -65,7 +65,6 @@ namespace FlexTable.View
                 rows,
                 numerical
                 )
-                .OrderBy(bin => bin.Min)
                 .Select(d => new BarChartDatum()
                 {
                     Key = $"~{Util.Formatter.Auto(d.Max)}",

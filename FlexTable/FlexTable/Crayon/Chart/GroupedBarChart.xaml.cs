@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using d3;
 using d3.Scale;
+using FlexTable.Model;
 using FlexTable.Util;
 using Windows.Devices.Input;
 using Windows.Foundation;
@@ -27,6 +28,10 @@ namespace FlexTable.Crayon.Chart
 {
     public sealed partial class GroupedBarChart : UserControl
     {
+        const Double DragToFilterThreshold = 40;
+        const Double StrikeThroughMinWidth = 30;
+        const Double StrikeThroughMaxHeight = 20;
+
         const Double PaddingLeft = 0;
         const Double PaddingTop = 30;
         public const Double PaddingRight = 10;
@@ -38,6 +43,7 @@ namespace FlexTable.Crayon.Chart
         public const Double LegendPatchWidth = 20;
         public const Double LegendPatchHeight = 20;
         public const Double LegendPatchSpace = 10;
+        const Double MinimumLegendWidth = 100;
 
         public IList<GroupedBarChartDatum> Data { get; set; }
         public Data D3Data { get; set; }
@@ -121,7 +127,7 @@ namespace FlexTable.Crayon.Chart
             }
         }
         public Func<Object, Int32, Double> YGetter { get { return (d, index) => YScale.Map((d as BarChartDatum).Value); } }
-        public Func<Object, Int32, Color> ColorGetter { get { return (d, index) => d3.ColorScheme.Category10.Colors[LegendData.FindIndex(dd => dd.Key == (d as BarChartDatum).Key) % d3.ColorScheme.Category10.Colors.Count]; } }
+        public Func<Object, Int32, Color> ColorGetter { get { return (d, index) => ((d as BarChartDatum).Key as Category).Color; } }
         public Func<Object, Int32, Double> OpacityGetter { get {
                 return (d, index) =>
                     selectedKeys.Count == 0 ? 1 : (
@@ -304,6 +310,8 @@ namespace FlexTable.Crayon.Chart
                 Int32 index = 0;
                 List<BarChartDatum> selected = new List<BarChartDatum>();
                 Boolean isAllSelected = true;
+                Boolean isLegendStrikeThrough = false;
+                BarChartDatum victim = null;
 
                 index = 0;
                 foreach (Rectangle rect in RectangleElement.Children)
@@ -327,19 +335,38 @@ namespace FlexTable.Crayon.Chart
                     {
                         BarChartDatum datum = LegendData[index];
 
-                        foreach(BarChartDatum bcd in Data.SelectMany(d => d.Children).Where(bcd => bcd.Key == datum.Key))
+                        if (boundingRect.Height < StrikeThroughMaxHeight && boundingRect.Width > StrikeThroughMinWidth) // legend strike through면
                         {
-                            if (selectedKeys.Count(k => k.Key1 == bcd.Parent.Key && k.Key2 == bcd.Key) == 0) //선택 안된 데이터가 있으면
+                            isLegendStrikeThrough = true;
+                            victim = datum;
+                            break;
+                        }
+                        else
+                        {
+                            foreach (BarChartDatum bcd in Data.SelectMany(d => d.Children).Where(bcd => bcd.Key == datum.Key))
                             {
-                                isAllSelected = false;
+                                if (selectedKeys.Count(k => k.Key1 == bcd.Parent.Key && k.Key2 == bcd.Key) == 0) //선택 안된 데이터가 있으면
+                                {
+                                    isAllSelected = false;
+                                }
+                                selected.Add(bcd);
                             }
-                            selected.Add(bcd);
                         }
                     }
                     index++;
                 }
 
-                if (isAllSelected) // 모두가 선택되었다면 선택 해제를 하면 됨
+                if (isLegendStrikeThrough)
+                {
+                    selectedKeys.RemoveAll(key => key.Key2 == victim.Key);
+                    selectedData.RemoveAll(datum => datum.Key == victim.Key);
+
+                    if (FilterOut != null)
+                    {
+                        FilterOut(this, null, ChartData.Where(datum => datum.Key == victim.Key), index);
+                    }
+                }
+                else if (isAllSelected) // 모두가 선택되었다면 선택 해제를 하면 됨
                 {
                     selectedData = selectedData.Except(selected).ToList();
                     selectedKeys = selectedData.Select(d => new Key(d.Parent.Key, d.Key)).ToList();
@@ -497,7 +524,7 @@ namespace FlexTable.Crayon.Chart
                 LegendTextElement.Data = new Data() { List = LegendData.Select(d => d as Object).ToList() };
                 LegendTextElement.Update();
 
-                LegendAreaWidth = LegendTextElement.MaxActualWidth + LegendPatchWidth + LegendPatchSpace + PaddingRight;
+                LegendAreaWidth = Math.Max(LegendTextElement.MaxActualWidth + LegendPatchWidth + LegendPatchSpace + PaddingRight, MinimumLegendWidth);
             }
 
             // chart data 수정

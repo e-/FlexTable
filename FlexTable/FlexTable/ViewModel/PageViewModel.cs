@@ -13,7 +13,7 @@ using FlexTable.Crayon.Chart;
 
 namespace FlexTable.ViewModel
 {
-    public class PageViewModel : NotifyViewModel
+    public partial class PageViewModel : NotifyViewModel
     {
         const Int32 BarChartMaximumRecordNumber = 12;
         const Int32 GroupedBarChartMaximumRecordNumber = 48;
@@ -140,8 +140,6 @@ namespace FlexTable.ViewModel
             List<ColumnViewModel> categoricalColumns = selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).ToList();
 
             List<GroupedRows> groupedRows = null;
-            Int32 numericalCount = numericalColumns.Count;
-            Int32 categoricalCount = categoricalColumns.Count;
             Object firstChartTag = "dummy tag wer";
 
             if (categoricalColumns.Count > 0)
@@ -150,32 +148,32 @@ namespace FlexTable.ViewModel
                 groupedRows.Sort(new GroupedRowComparer(mainPageViewModel.SheetViewModel, ViewStatus));
             }
 
-            if (categoricalCount == 1 && numericalCount == 0)
+            if (ViewStatus.IsC)
             {
-                DrawFrequencyHistogram(selectedColumnViewModels.First(), groupedRows, IsSelected);          
+                DrawFrequencyHistogram(ViewStatus.FirstCategorical, groupedRows, IsSelected);          
             }
-            else if (categoricalCount == 0 && numericalCount == 1)
+            else if (ViewStatus.IsN)
             {
-                DrawDescriptiveStatistics(numericalColumns.First(), IsSelected);
-                DrawDistributionHistogram(numericalColumns.First(), IsSelected);
+                DrawDescriptiveStatistics(ViewStatus.FirstNumerical, IsSelected);
+                DrawDistributionHistogram(ViewStatus.FirstNumerical, IsSelected);
             }
-            else if (categoricalCount == 2 && numericalCount == 0)
+            else if (ViewStatus.IsCC)
             {
-                DrawGroupedBarChart(categoricalColumns[0], categoricalColumns[1], groupedRows, IsSelected);
+                DrawGroupedBarChart(ViewStatus.FirstCategorical, ViewStatus.SecondCategorical, groupedRows, IsSelected);
             }
-            else if (categoricalCount == 1 && numericalCount == 1)
+            else if (ViewStatus.IsCN)
             {
-                DrawBarChart(categoricalColumns.First(), numericalColumns.First(), groupedRows, IsSelected);
-                DrawLineChart(categoricalColumns.First(), numericalColumns.First(), groupedRows, IsSelected);
+                DrawBarChart(ViewStatus.FirstCategorical, ViewStatus.FirstNumerical, groupedRows, IsSelected);
+                DrawLineChart(ViewStatus.FirstCategorical, ViewStatus.FirstNumerical, groupedRows, IsSelected);
 
-                firstChartTag = categoricalColumns[0].CategoricalType == CategoricalType.Ordinal ? pageView.LineChart.Tag : pageView.BarChart.Tag;
+                firstChartTag = ViewStatus.FirstCategorical.CategoricalType == CategoricalType.Ordinal ? pageView.LineChart.Tag : pageView.BarChart.Tag;
             }
-            else if (categoricalCount == 0 && numericalCount == 2)
+            else if (ViewStatus.IsNN)
             {
-                DrawCorrelatonStatistics(numericalColumns[0], numericalColumns[1], IsSelected);
-                DrawScatterplot(numericalColumns[0], numericalColumns[1], IsSelected);
+                DrawCorrelatonStatistics(ViewStatus.FirstNumerical, ViewStatus.SecondNumerical, IsSelected);
+                DrawScatterplot(ViewStatus.FirstNumerical, ViewStatus.SecondNumerical, IsSelected);
             }
-            else if (categoricalCount == 3 && numericalCount == 0)
+            else if (ViewStatus.IsCCC)
             {
                 IsPivotTableVisible = true;
                 pageView.PivotTableTitle.Children.Clear();
@@ -199,7 +197,7 @@ namespace FlexTable.ViewModel
                     groupedRows
                     );
             }
-            else if (categoricalCount == 2 && numericalCount == 1)
+            else if (ViewStatus.IsCCN)
             {
                 // 테이블을 그린다
                 IsPivotTableVisible = true;
@@ -229,7 +227,7 @@ namespace FlexTable.ViewModel
                 DrawLineChart(categoricalColumns[0], categoricalColumns[1], numericalColumns[0], groupedRows, IsSelected);
                 firstChartTag = categoricalColumns[0].CategoricalType == CategoricalType.Ordinal ? pageView.LineChart.Tag : pageView.BarChart.Tag;
             }
-            else if (categoricalCount == 1 && numericalCount == 2)
+            else if (ViewStatus.IsCNN)
             {
                 // 스캐터플롯을 그린다.
                 DrawScatterplot(categoricalColumns.First(), numericalColumns[0], numericalColumns[1], IsSelected);
@@ -251,12 +249,12 @@ namespace FlexTable.ViewModel
                     groupedRows
                     );
             }
-            else if (categoricalCount == 0 && numericalCount == 3)
+            else if (ViewStatus.IsNNN)
             {
                 IsBarChartVisible = true;
                 // 지금 필요없다.
             }
-            else if (categoricalCount >= 1 && numericalCount == 0)
+            else if (ViewStatus.IsCnN0)
             {
                 // 테이블을 그린다
                 IsPivotTableVisible = true;
@@ -283,7 +281,7 @@ namespace FlexTable.ViewModel
                     groupedRows
                     );
             }
-            else if (categoricalCount >= 1 && numericalCount == 1)
+            else if (ViewStatus.IsCnN1)
             {
                 // 테이블을 그린다
                 IsPivotTableVisible = true;
@@ -309,7 +307,7 @@ namespace FlexTable.ViewModel
                     groupedRows
                     );
             }
-            else if (categoricalCount >= 1 && numericalCount > 1)
+            else if (ViewStatus.IsCnNn)
             {
                 // 테이블을 그린다
                 IsPivotTableVisible = true;
@@ -328,7 +326,7 @@ namespace FlexTable.ViewModel
                     AddText(pageView.PivotTableTitle, $"{Concatenate(numericalColumns.Select(s => "<b>" + s.HeaderName + "</b>"))} by {Concatenate(categoricalColumns.Select(s => "<b>" + s.Name + "</b>"))}");
                 }
 
-                if (numericalCount * categoricalColumns.Last().Categories.Count <= 12)
+                /*if (numericalCount * categoricalColumns.Last().Categories.Count <= 12)
                 {
                     pivotTableViewModel.Preview(
                         categoricalColumns.Where((c, index) => index != categoricalColumns.Count - 1).ToList(),
@@ -337,7 +335,7 @@ namespace FlexTable.ViewModel
                         groupedRows
                         );
                 }
-                else
+                else*/
                 {
                     pivotTableViewModel.Preview(
                         categoricalColumns,
@@ -353,7 +351,6 @@ namespace FlexTable.ViewModel
             }
 
             pageView.UpdateCarousel(trackPreviousParagraph, firstChartTag?.ToString());
-            pageView.UpdatePageLabelContainer();
         }
        
         public String Concatenate(IEnumerable<String> words)

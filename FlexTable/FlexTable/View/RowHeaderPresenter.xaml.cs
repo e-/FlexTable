@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using FlexTable.ViewModel;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -28,11 +30,11 @@ namespace FlexTable.View
             }
         }
 
-        public ViewModel.SheetViewModel SheetViewModel
+        public SheetViewModel SheetViewModel
         {
             get
             {
-                return (this.DataContext as ViewModel.TableViewModel).SheetViewModel;
+                return (this.DataContext as TableViewModel).SheetViewModel;
             }
         }
 
@@ -48,21 +50,16 @@ namespace FlexTable.View
 
         Storyboard last = null;
 
-        public void SetRowNumber(Int32 n)
+        public void SetRowMaximumNumber(Int32 maximumRowNumber)
         {
-            SetRowNumber(n, n);
-        }
-
-        public void SetRowMaximumNumber(Int32 maximumNumber)
-        {
-            this.maximumRowNumber = maximumNumber;
+            this.maximumRowNumber = maximumRowNumber;
 
             Style style = App.Current.Resources["RowHeaderStyle"] as Style;
 
             NumberElement0.Children.Clear();
             NumberElement1.Children.Clear();
 
-            for (Int32 i = 0; i < maximumNumber; ++i)
+            for (Int32 i = 0; i < maximumRowNumber; ++i)
             {
                 TextBlock textBlock1 = new TextBlock()
                 {
@@ -80,9 +77,9 @@ namespace FlexTable.View
 
                 NumberElement1.Children.Add(textBlock2);
             }
-        }
+        }        
 
-        public void SetRowNumber(Int32 totalRowNumber, Int32 activeRowNumber)
+        public void SetRowNumber(List<Color> colors, Int32 activeRowNumber, Int32 totalRowNumber)
         {
             if (last != null) last.Pause();
 
@@ -90,24 +87,23 @@ namespace FlexTable.View
 
             Int32 i;
 
-            for (i = 0; i < totalRowNumber; ++i)
-            {
-                hiddenNumberElement.Children[i].Visibility = Visibility.Visible;
-            }
-
-            for(;i<maximumRowNumber;++i)
-            {
-                hiddenNumberElement.Children[i].Visibility = Visibility.Collapsed;
-            }
-
             for (i = 0; i < activeRowNumber; ++i)
             {
+                hiddenNumberElement.Children[i].Visibility = Visibility.Visible;
                 hiddenNumberElement.Children[i].Opacity = 1;
+                (hiddenNumberElement.Children[i] as TextBlock).Foreground = new SolidColorBrush(colors[i]);
+            }
+
+            for (; i < totalRowNumber; ++i)
+            {
+                hiddenNumberElement.Children[i].Visibility = Visibility.Visible;
+                hiddenNumberElement.Children[i].Opacity = 0.2;
+                (hiddenNumberElement.Children[i] as TextBlock).Foreground = new SolidColorBrush(colors[i]);
             }
 
             for (; i < maximumRowNumber; ++i)
             {
-                hiddenNumberElement.Children[i].Opacity = 0.2;
+                hiddenNumberElement.Children[i].Visibility = Visibility.Collapsed;
             }
 
             Storyboard sb = new Storyboard();

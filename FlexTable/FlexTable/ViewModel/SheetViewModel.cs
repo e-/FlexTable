@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using d3.Scale;
 using FlexTable.Util;
+using d3.ColorScheme;
 
 namespace FlexTable.ViewModel
 {
@@ -157,7 +158,9 @@ namespace FlexTable.ViewModel
                     Int32 categoryIndex = 0;
                     foreach (Category category in categories)
                     {
-                        category.Order = categoryIndex++;
+                        category.Order = categoryIndex;
+                        category.Color = Category10.Colors[categoryIndex % Category10.Colors.Count];
+                        categoryIndex++;
                     }
 
                     columnViewModel.Categories = categories;
@@ -220,6 +223,37 @@ namespace FlexTable.ViewModel
             SheetHeight = allRowViewModels.Count * (Double)App.Current.Resources["RowHeight"];
         }
 
+        public void MeasureColumnWidth()
+        {
+            foreach (ColumnViewModel columnViewModel in columnViewModels)
+            {
+                String maxValue = (from rowViewModel in allRowViewModels
+                                   orderby rowViewModel.Cells[columnViewModel.Index].RawContent.Count() descending
+                                   select rowViewModel.Cells[columnViewModel.Index].RawContent).First();
+
+                view.DummyTextBlock.Text = maxValue;
+                view.DummyTextBlock.Measure(new Size(Double.MaxValue, Double.MaxValue));
+
+                Double width = view.DummyTextBlock.ActualWidth;
+
+                if (columnViewModel.Type == ColumnType.Numerical)
+                {
+                    view.DummyTextBlock.Text = String.Format("AVG({0})", columnViewModel.Column.Name);
+                    view.DummyTextBlock.Measure(new Size(Double.MaxValue, Double.MaxValue));
+                    if (width < view.DummyTextBlock.ActualWidth)
+                        width = view.DummyTextBlock.ActualWidth;
+                }
+                else if (columnViewModel.Type == ColumnType.Categorical)
+                {
+                    view.DummyTextBlock.Text = columnViewModel.Column.Name;
+                    view.DummyTextBlock.Measure(new Size(Double.MaxValue, Double.MaxValue));
+                    if (width < view.DummyTextBlock.ActualWidth)
+                        width = view.DummyTextBlock.ActualWidth;
+                }
+                columnViewModel.Width = width + 13 /* width of check icon */ + 10 /* width of sort caret*/;
+            }
+        }
+
         Int32 sortPriority = 0;
 
         public void Sort(ColumnViewModel columnViewModel, SortOption sortOption)
@@ -259,6 +293,7 @@ namespace FlexTable.ViewModel
             columnViewModel.Order = order;
         }
  
+
         public void UpdateGroup(ViewStatus viewStatus)
         {
             // column order 조정 group된 것을 맨 앞으로
@@ -295,18 +330,15 @@ namespace FlexTable.ViewModel
 
             // 여기서 상황별로 왼쪽에 보일 rowViewModel을 만들어 줘야함. 여기서 만들면 tableViewModel에서 받아다가 그림
             
-            if (viewStatus.SelectedColumnViewModels.Count == 0 ||
-                viewStatus.SelectedColumnViewModels.Count >= 2 && viewStatus.SelectedColumnViewModels.Count(s => s.Type != ColumnType.Numerical) == 0 ||
-                viewStatus.SelectedColumnViewModels.Count == 3 && viewStatus.SelectedColumnViewModels.Count(s => s.Type == ColumnType.Numerical) == 2
-                )
+            if (viewStatus.IsEmpty || viewStatus.IsNN || viewStatus.IsCNN)
             {
                 // 어차피 allRow가 보일 것이므로 RowViewModel 을 만들어 줄 필요는 없음 
             }
-            else if (viewStatus.SelectedColumnViewModels.Count == 1 && viewStatus.SelectedColumnViewModels[0].Type == ColumnType.Numerical) // 이 경우는 뉴메리컬 하나만 선택되어 비닝 된 결과가 보이는 경우이다.
+            else if (viewStatus.IsN) // 이 경우는 뉴메리컬 하나만 선택되어 비닝 된 결과가 보이는 경우이다.
             {
                 groupedRowViewModels.Clear();
 
-                ColumnViewModel selected = viewStatus.SelectedColumnViewModels[0];
+                ColumnViewModel selected = viewStatus.FirstColumn;
                 if (selected.SortOption == SortOption.None) Sort(selected, SortOption.Ascending);
 
                 List<GroupedRows> binResult = Bin(selected, FilteredRows.ToList());
@@ -404,6 +436,7 @@ namespace FlexTable.ViewModel
                     groupedRowViewModels.Add(rowViewModel);
                 }
             }
+
             SheetHeight = groupedRowViewModels.Count * (Double)App.Current.Resources["RowHeight"];
         }
 
@@ -491,37 +524,7 @@ namespace FlexTable.ViewModel
             return dict;
         }
 
-        public void MeasureColumnWidth()
-        {
-            foreach (ColumnViewModel columnViewModel in columnViewModels)
-            {
-                String maxValue = (from rowViewModel in allRowViewModels
-                                   orderby rowViewModel.Cells[columnViewModel.Index].RawContent.Count() descending
-                                   select rowViewModel.Cells[columnViewModel.Index].RawContent).First();
-
-                view.DummyTextBlock.Text = maxValue;
-                view.DummyTextBlock.Measure(new Size(Double.MaxValue, Double.MaxValue));
-
-                Double width = view.DummyTextBlock.ActualWidth;
-
-                if (columnViewModel.Type == ColumnType.Numerical)
-                {
-                    view.DummyTextBlock.Text = String.Format("AVG({0})", columnViewModel.Column.Name);
-                    view.DummyTextBlock.Measure(new Size(Double.MaxValue, Double.MaxValue));
-                    if (width < view.DummyTextBlock.ActualWidth)
-                        width = view.DummyTextBlock.ActualWidth;
-                }
-                else if (columnViewModel.Type == ColumnType.Categorical)
-                {
-                    view.DummyTextBlock.Text = columnViewModel.Column.Name;
-                    view.DummyTextBlock.Measure(new Size(Double.MaxValue, Double.MaxValue));
-                    if (width < view.DummyTextBlock.ActualWidth)
-                        width = view.DummyTextBlock.ActualWidth;
-                }
-                columnViewModel.Width = width + 13 /* width of check icon */ + 10 /* width of sort caret*/;
-            }
-        }
-
+        
         public void UpdateColumnX()
         {
             Double total = 0;
@@ -589,7 +592,7 @@ namespace FlexTable.ViewModel
             {
                 if(columnViewModel.Type == ColumnType.Categorical)
                 {
-                    if (columnViewModel.IsSelected) // 선택된거면 키에 있을 것
+                    if (x.Keys.ContainsKey(columnViewModel)) // 선택된거면 키에 있을 것
                     {
                         if (x.Keys[columnViewModel] != y.Keys[columnViewModel])
                         {

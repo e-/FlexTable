@@ -20,6 +20,7 @@ using FlexTable.Util;
 using Windows.UI.Input.Inking;
 using Windows.Devices.Input;
 using Windows.UI.Xaml.Shapes;
+using FlexTable.Model;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -28,7 +29,7 @@ namespace FlexTable.Crayon.Chart
     public sealed partial class BarChart : UserControl
     {
         const Double DragToFilterThreshold = 40;
-        const Double StrikeThroughMinWidth = 50;
+        const Double StrikeThroughMinWidth = 30;
         const Double StrikeThroughMaxHeight = 20;
 
         const Double PaddingLeft = 0;
@@ -42,6 +43,7 @@ namespace FlexTable.Crayon.Chart
         public const Double LegendPatchWidth = 20;
         public const Double LegendPatchHeight = 20;
         public const Double LegendPatchSpace = 10;
+        const Double MinimumLegendWidth = 100;
 
         public IList<BarChartDatum> Data { get; set; }
         public Data D3Data { get; set; }                   
@@ -121,7 +123,7 @@ namespace FlexTable.Crayon.Chart
                     (d == DragToFilterFocusedBar ? DragToFilterYDelta : 0));
             }
         }
-        public Func<Object, Int32, Color> ColorGetter { get { return (bin, index) => (AutoColor ? Category10.Colors[index % 10] : Category10.Colors.First()); } }
+        public Func<Object, Int32, Color> ColorGetter { get { return (d, index) => (AutoColor ? ((d as BarChartDatum).Key as Category).Color: Category10.Colors.First()); } }
         public Func<Object, Int32, Double> OpacityGetter { get {
                 return (d, index) => (selectedKeys.Count == 0) ? (d == DragToFilterFocusedBar ? DragToFilterOpacity : 1) : 
                 (selectedKeys.IndexOf((d as BarChartDatum).Key) < 0 ? 0.2 : DragToFilterOpacity);
@@ -489,7 +491,7 @@ namespace FlexTable.Crayon.Chart
                 LegendTextElement.Data = D3Data;
                 LegendTextElement.Update();
 
-                LegendAreaWidth = LegendTextElement.MaxActualWidth + LegendPatchWidth + LegendPatchSpace + PaddingRight;
+                LegendAreaWidth = Math.Max(LegendTextElement.MaxActualWidth + LegendPatchWidth + LegendPatchSpace + PaddingRight, MinimumLegendWidth);
             }
 
             Canvas.SetLeft(LegendPanel, this.Width - LegendAreaWidth);

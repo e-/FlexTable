@@ -108,6 +108,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ColorScheme\Category10.cs" />
+    <Compile Include="ColorScheme\IColorScheme.cs" />
     <Compile Include="Component\Axis.xaml.cs">
       <DependentUpon>Axis.xaml</DependentUpon>
     </Compile>

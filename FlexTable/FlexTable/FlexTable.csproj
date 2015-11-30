@@ -181,6 +181,7 @@
     <Compile Include="ViewModel\MetadataViewModel.cs" />
     <Compile Include="ViewModel\NotifyViewModel.cs" />
     <Compile Include="ViewModel\PageViewModel.cs" />
+    <Compile Include="ViewModel\PageViewModelColor.cs" />
     <Compile Include="ViewModel\PivotTableViewModel.cs" />
     <Compile Include="ViewModel\RowViewModel.cs" />
     <Compile Include="ViewModel\SheetViewModel.cs" />
@@ -224,6 +225,9 @@
     </Compile>
     <Compile Include="View\MetedataView.xaml.cs">
       <DependentUpon>MetedataView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\PageLabelView.xaml.cs">
+      <DependentUpon>PageLabelView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\PageView.xaml.cs">
       <DependentUpon>PageView.xaml</DependentUpon>
@@ -348,6 +352,10 @@
     <Page Include="View\MetedataView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\PageLabelView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\PageView.xaml">
       <Generator>MSBuild:Compile</Generator>
