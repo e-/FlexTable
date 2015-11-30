@@ -162,6 +162,17 @@
             </DoubleAnimation>
         </Storyboard>
 
+        <Storyboard x:Name="FlashStoryboard">
+            <ColorAnimationUsingKeyFrames Storyboard.TargetName="Wrapper"
+                                           Storyboard.TargetProperty="(StackPanel.Background).(SolidColorBrush.Color)">
+                <DiscreteColorKeyFrame KeyTime="0" Value="White" />
+                <DiscreteColorKeyFrame KeyTime="0:0:0.3" Value="Transparent" />
+            </ColorAnimationUsingKeyFrames>
+            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.3"
+                             Storyboard.TargetName="ChartWrapper" Storyboard.TargetProperty="Opacity" From="0.6" To="1">
+            </DoubleAnimation>
+        </Storyboard>
+        
         <Color x:Key="LabelForegroundColor">#333</Color>
         <Color x:Key="LabelBackgroundColor">#fff</Color>
         <Color x:Key="ActivatedLabelForegroundColor">#000</Color>
@@ -181,6 +192,7 @@
     </UserControl.Resources>
     
     <StackPanel Opacity="0" x:Name="Wrapper"
+                Background="Transparent"
                 ManipulationMode="TranslateY" 
                 ManipulationDelta="Wrapper_ManipulationDelta"
                 ManipulationCompleted="Wrapper_ManipulationCompleted">
@@ -309,12 +321,12 @@
                 <Grid.RenderTransform>
                     <TranslateTransform Y="-8" />
                 </Grid.RenderTransform>
-                <Button Style="{StaticResource TopTriangleIconButtonStyle}" Tapped="Select_Tapped">&#xf00c;</Button>
+                <Button Style="{StaticResource TopTriangleIconButtonStyle}" Tapped="Select_Tapped" Holding="Button_Holding">&#xf00c;</Button>
                 <!--<Button Style="{StaticResource FlatIconButtonStyle}" Margin="0 0 5 0" Tapped="Clipboard_Tapped">&#xf0ea;</Button>-->
             </Grid>
 
             <Grid HorizontalAlignment="Right" VerticalAlignment="Bottom" x:Name="BottomToolBar" Opacity="0">
-                <Button Style="{StaticResource BottomTriangleIconButtonStyle}" Tapped="Unselect_Tapped">&#xf00d;</Button>
+                <Button Style="{StaticResource BottomTriangleIconButtonStyle}" Tapped="Unselect_Tapped" Holding="Button_Holding">&#xf00d;</Button>
                 <!--<Button Style="{StaticResource FlatIconButtonStyle}" Margin="0 0 5 0" Tapped="Clipboard_Tapped">&#xf0ea;</Button>-->
                 <!--<Button Style="{StaticResource FlatIconButtonStyle}" Margin="0 0 5 0">&#xf0b2;</Button>-->
             </Grid>

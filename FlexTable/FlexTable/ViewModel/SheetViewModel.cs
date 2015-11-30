@@ -220,6 +220,14 @@ namespace FlexTable.ViewModel
             SheetHeight = allRowViewModels.Count * (Double)App.Current.Resources["RowHeight"];
         }
 
+        Int32 sortPriority = 0;
+
+        public void Sort(ColumnViewModel columnViewModel, SortOption sortOption)
+        {
+            columnViewModel.SortOption = sortOption;
+            columnViewModel.SortPriority = sortPriority++;
+        }
+
         public void SetAside(ColumnViewModel columnViewModel)
         {
             if (columnViewModel.IsHidden) return;
@@ -233,20 +241,6 @@ namespace FlexTable.ViewModel
             }
 
             columnViewModel.Order = columnViewModels.Count - 1;
-
-            UpdateColumnX();
-
-            // TODO
-
-            /*
-            foreach (View.RowPresenter rowPresenter in mainPageViewModel.TableViewModel.RowPresenters)
-            {
-                rowPresenter.UpdateCellsWithoutAnimation();
-            }
-            */
-
-            mainPageViewModel.View.TableView.TopColumnHeader.Update();
-            mainPageViewModel.View.TableView.BottomColumnHeader.Update();
         }
 
         public void BringFront(ColumnViewModel columnViewModel)
@@ -263,20 +257,6 @@ namespace FlexTable.ViewModel
             }
 
             columnViewModel.Order = order;
-
-            UpdateColumnX();
-
-            // TODO
-
-            /*
-            foreach (View.RowPresenter rowPresenter in mainPageViewModel.TableViewModel.RowPresenters)
-            {
-                rowPresenter.UpdateCellsWithoutAnimation();
-            }
-            */
-
-            mainPageViewModel.View.TableView.TopColumnHeader.Update();
-            mainPageViewModel.View.TableView.BottomColumnHeader.Update();
         }
  
         public void UpdateGroup(ViewStatus viewStatus)
@@ -327,6 +307,7 @@ namespace FlexTable.ViewModel
                 groupedRowViewModels.Clear();
 
                 ColumnViewModel selected = viewStatus.SelectedColumnViewModels[0];
+                if (selected.SortOption == SortOption.None) Sort(selected, SortOption.Ascending);
 
                 List<GroupedRows> binResult = Bin(selected, FilteredRows.ToList());
 
@@ -359,7 +340,7 @@ namespace FlexTable.ViewModel
                         }
                         else if (columnViewModel.Type == ColumnType.Categorical)
                         {
-                            Int32 uniqueCount = FilteredRows.Select(r => r.Cells[columnViewModel.Index].Content).Distinct().Count();
+                            Int32 uniqueCount = groupedRows.Rows.Select(r => r.Cells[columnViewModel.Index].Content).Distinct().Count();
                             cell.Content = $"({uniqueCount})";
                             cell.RawContent = $"({uniqueCount})";
                         }
@@ -412,7 +393,7 @@ namespace FlexTable.ViewModel
                         else if (columnViewModel.Type == ColumnType.Numerical)
                         {
                             Object aggregated = columnViewModel.AggregativeFunction.Aggregate(groupedRows.Rows.Select(r => (Double)r.Cells[columnViewModel.Index].Content));
-                            String formatted = Util.Formatter.FormatAuto4((Double)aggregated);
+                            String formatted = Formatter.FormatAuto4((Double)aggregated);
                             cell.RawContent = formatted;
                             cell.Content = Double.Parse(formatted);
                         }
@@ -603,14 +584,7 @@ namespace FlexTable.ViewModel
         Int32 GetSortDirection(ColumnViewModel cvm) => cvm.SortOption == SortOption.Descending ? -1 : 1;
 
         public int Compare(GroupedRows x, GroupedRows y)
-        {
-            if (ViewStatus.SelectedColumnViewModels.Count == 1 && ViewStatus.SelectedColumnViewModels[0].Type == ColumnType.Numerical) // 이 경우는 뉴메리컬 하나만 선택되어 비닝 된 결과가 보이는 경우이다.
-            {
-                ColumnViewModel numerical = ViewStatus.SelectedColumnViewModels[0];
-                
-                return (x.Keys[numerical] as Bin).Min.CompareTo((y.Keys[numerical] as Bin).Min) * GetSortDirection(numerical);
-            }
-
+        {            
             foreach (ColumnViewModel columnViewModel in SheetViewModel.ColumnViewModels.Where(cvm => cvm.SortOption != SortOption.None).OrderByDescending(scvm => scvm.SortPriority))
             {
                 if(columnViewModel.Type == ColumnType.Categorical)
@@ -635,12 +609,24 @@ namespace FlexTable.ViewModel
                 }
                 else if(columnViewModel.Type == ColumnType.Numerical)
                 {
-                    Double xValue = columnViewModel.AggregativeFunction.Aggregate(x.Rows.Select(r => (Double)r.Cells[columnViewModel.Index].Content));
-                    Double yValue = columnViewModel.AggregativeFunction.Aggregate(y.Rows.Select(r => (Double)r.Cells[columnViewModel.Index].Content));
-
-                    if (xValue != yValue)
+                    if (ViewStatus.SelectedColumnViewModels.Count == 1 && columnViewModel == ViewStatus.SelectedColumnViewModels[0]) // 이 경우는 뉴메리컬 하나만 선택되어 비닝 된 결과가 보이는 경우이다.
                     {
-                        return xValue.CompareTo(yValue) * GetSortDirection(columnViewModel);
+                        ColumnViewModel numerical = ViewStatus.SelectedColumnViewModels[0];
+                        Double xMin = (x.Keys[numerical] as Bin).Min,
+                               yMin = (y.Keys[numerical] as Bin).Min;
+
+                        if (xMin != yMin)
+                            return xMin.CompareTo(yMin) * GetSortDirection(numerical);
+                    }
+                    else
+                    {
+                        Double xValue = columnViewModel.AggregativeFunction.Aggregate(x.Rows.Select(r => (Double)r.Cells[columnViewModel.Index].Content));
+                        Double yValue = columnViewModel.AggregativeFunction.Aggregate(y.Rows.Select(r => (Double)r.Cells[columnViewModel.Index].Content));
+
+                        if (xValue != yValue)
+                        {
+                            return xValue.CompareTo(yValue) * GetSortDirection(columnViewModel);
+                        }
                     }
                 }
             }

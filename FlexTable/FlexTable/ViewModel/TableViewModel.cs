@@ -61,6 +61,7 @@ namespace FlexTable.ViewModel
             set { groupedRowViewModels = value; OnPropertyChanged(nameof(GroupedRowViewModels)); }
         }
 
+        public IEnumerable<RowViewModel> ActivatedRowViewModels { get; set; }
         /*private ObservableCollection<RowViewModel> selectedRowViewModels;
         public ObservableCollection<RowViewModel> SelectedRowViewModels
         {
@@ -109,6 +110,7 @@ namespace FlexTable.ViewModel
             PaddedSheetWidth = Math.Max(SheetViewModel.SheetWidth, SheetViewWidth);
 
             AllRowViewModels = new List<RowViewModel>(SheetViewModel.AllRowViewModels);
+            ActivatedRowViewModels = AllRowViewModels;
 
             view.TableView.Initialize();
             view.TableView.ReflectState();
@@ -167,6 +169,7 @@ namespace FlexTable.ViewModel
                 {
                     rowViewModel.Index = index++;
                 }
+                ActivatedRowViewModels = AllRowViewModels;
                 State = TableViewState.AllRow;
             }
             else 
@@ -190,6 +193,7 @@ namespace FlexTable.ViewModel
                 if(isDirty)
                     GroupedRowViewModels = new ObservableCollection<RowViewModel>(SheetViewModel.GroupedRowViewModels);
 
+                ActivatedRowViewModels = GroupedRowViewModels;
                 State = TableViewState.GroupedRow;
             }
 

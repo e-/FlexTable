@@ -18,6 +18,7 @@ using Windows.UI.Xaml.Navigation;
 using FlexTable.ViewModel;
 using Windows.Devices.Input;
 using Windows.UI.Xaml.Media.Animation;
+using FlexTable.Model;
 
 // 사용자 정의 컨트롤 항목 템플릿에 대한 설명은 http://go.microsoft.com/fwlink/?LinkId=234236에 나와 있습니다.
 
@@ -41,10 +42,10 @@ namespace FlexTable.View
 
             if (columnViewModel != null)
             {
-                Int32 columnIndex = columnViewModel.Order; // columnViewModel.Index;
+                Int32 columnIndex = columnViewModel.Index;
                 Int32 index = 0;
 
-                foreach (RowViewModel rowViewModel in tvm.AllRowViewModels)
+                foreach (RowViewModel rowViewModel in tvm.ActivatedRowViewModels)
                 {
                     TextBlock cell;
                     if (index < TableCanvas.Children.Count)
@@ -238,16 +239,19 @@ namespace FlexTable.View
             {
                 case(Command.Left):
                     tvm.MainPageViewModel.SheetViewModel.BringFront(ColumnViewModel);
+                    tvm.MainPageViewModel.ReflectAll();
                     UpperLeftMenuElement.Unhighlight();
                     tvm.CancelIndexing(true);
                     break;
                 case(Command.Right):
                     tvm.MainPageViewModel.SheetViewModel.SetAside(ColumnViewModel);
+                    tvm.MainPageViewModel.ReflectAll();
                     UpperRightMenuElement.Unhighlight();
                     tvm.CancelIndexing(true);
                     break;
                 case(Command.Down):
-                    //tvm.MainPageViewModel.TableViewModel.Sort(ColumnViewModel, Model.SortOption.Descending);
+                    tvm.MainPageViewModel.SheetViewModel.Sort(ColumnViewModel, SortOption.Descending);
+                    tvm.MainPageViewModel.ReflectAll();
                     UpperDownMenuElement.Unhighlight();
                     tvm.CancelIndexing(true);
                     break;
@@ -383,16 +387,19 @@ namespace FlexTable.View
             {
                 case (Command.Left):
                     tvm.MainPageViewModel.SheetViewModel.BringFront(ColumnViewModel);
+                    tvm.MainPageViewModel.ReflectAll();
                     LowerLeftMenuElement.Unhighlight();
                     tvm.CancelIndexing(true);
                     break;
                 case (Command.Right):
                     tvm.MainPageViewModel.SheetViewModel.SetAside(ColumnViewModel);
+                    tvm.MainPageViewModel.ReflectAll();
                     LowerRightMenuElement.Unhighlight();
                     tvm.CancelIndexing(true);
                     break;
                 case (Command.Up):
-                    //tvm.MainPageViewModel.TableViewModel.Sort(ColumnViewModel, Model.SortOption.Ascending);
+                    tvm.MainPageViewModel.SheetViewModel.Sort(ColumnViewModel, SortOption.Ascending);
+                    tvm.MainPageViewModel.ReflectAll();
                     LowerUpMenuElement.Unhighlight();
                     tvm.CancelIndexing(true);
                     break;

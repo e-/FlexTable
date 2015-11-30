@@ -245,8 +245,7 @@ namespace FlexTable.View
         const Double VerticalStrokeMaxWidth = 30;
         const Double VerticalStrokeMinHeight = 50;
         const Double VerticalStrokeHeightDifferenceThreshold = 20;
-        Int32 sortPriority = 0;
-
+        
         async void timer_Tick(object sender, object e)
         {
             timer.Stop();
@@ -381,15 +380,13 @@ namespace FlexTable.View
                     if (firstPoint.Position.Y < lastPoint.Position.Y - VerticalStrokeHeightDifferenceThreshold)
                     {
                         // 내림차순 정렬
-                        selectedColumnViewModel.SortOption = SortOption.Descending;
-                        selectedColumnViewModel.SortPriority = sortPriority++;
+                        ViewModel.SheetViewModel.Sort(selectedColumnViewModel, SortOption.Descending);
                         ViewModel.MainPageViewModel.ReflectAll();
                     }
                     else if (lastPoint.Position.Y < firstPoint.Position.Y + VerticalStrokeHeightDifferenceThreshold)
                     {
                         // 오름차순 정렬
-                        selectedColumnViewModel.SortOption = SortOption.Ascending;
-                        selectedColumnViewModel.SortPriority = sortPriority++;
+                        ViewModel.SheetViewModel.Sort(selectedColumnViewModel, SortOption.Ascending);
                         ViewModel.MainPageViewModel.ReflectAll();
                     }
                 }

@@ -21,12 +21,14 @@ namespace d3.ColorScheme
             Color.FromArgb(255, 102, 170, 0),
             Color.FromArgb(255, 184, 46, 46),
             Color.FromArgb(255, 49, 99, 149)
-            /*Color.FromArgb(255, 31, 119, 180),
-            Color.FromArgb(255, 255, 127, 14),
-            Color.FromArgb(255, 46, 160, 44),
-            Color.FromArgb(255, 214, 39, 40),
-            Color.FromArgb(255, 148, 103, 189),
-            Color.FromArgb(255, 140, 86, 75)*/
         };
+
+
+        /*Color.FromArgb(255, 31, 119, 180),
+        Color.FromArgb(255, 255, 127, 14),
+        Color.FromArgb(255, 46, 160, 44),
+        Color.FromArgb(255, 214, 39, 40),
+        Color.FromArgb(255, 148, 103, 189),
+        Color.FromArgb(255, 140, 86, 75)*/
     }
 }

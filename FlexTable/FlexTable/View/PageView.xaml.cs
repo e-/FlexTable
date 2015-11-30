@@ -25,6 +25,7 @@ using Windows.Storage.Streams;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.Graphics.Imaging;
 using FlexTable.Crayon.Chart;
+using Windows.UI.Input;
 
 // 사용자 정의 컨트롤 항목 템플릿에 대한 설명은 http://go.microsoft.com/fwlink/?LinkId=234236에 나와 있습니다.
 
@@ -629,5 +630,13 @@ namespace FlexTable.View
             }
         }
 
+        private void Button_Holding(object sender, HoldingRoutedEventArgs e)
+        {
+            if (e.HoldingState == HoldingState.Started)
+            {
+                FlashStoryboard.Begin();
+                Clipboard_Tapped(sender, null);
+            }
+        }
     }
 }

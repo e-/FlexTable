@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using FlexTable.ViewModel;
 using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -22,8 +23,7 @@ namespace FlexTable.View
 {
     public sealed partial class ColumnHeaderCellPresenter : UserControl
     {
-        ViewModel.ColumnViewModel columnViewModel;
-
+        public ColumnViewModel ViewModel => (ColumnViewModel)this.DataContext;
         public ColumnHeaderCellPresenter()
         {
             this.InitializeComponent();
@@ -33,20 +33,21 @@ namespace FlexTable.View
         {
             XAnimation.Begin();
         }
-
-        private void UserControl_Loaded(object sender, RoutedEventArgs e)
-        {
-            columnViewModel = this.DataContext as ViewModel.ColumnViewModel;
-        }
-
+        
         private void Border_PointerEntered(object sender, PointerRoutedEventArgs e)
         {
             if (e.Pointer.PointerDeviceType == PointerDeviceType.Touch)
             {
-                columnViewModel.MainPageViewModel.View.TableView.ColumnHighlighter.ColumnViewModel = columnViewModel;
-                columnViewModel.MainPageViewModel.View.TableView.ColumnHighlighter.Update();
-                columnViewModel.MainPageViewModel.ExplorationViewModel.PreviewColumn(columnViewModel);
+                Debug.WriteLine("Entered");
+                ViewModel.MainPageViewModel.View.TableView.ColumnHighlighter.ColumnViewModel = ViewModel;
+                ViewModel.MainPageViewModel.View.TableView.ColumnHighlighter.Update();
+                ViewModel.MainPageViewModel.ExplorationViewModel.PreviewColumn(ViewModel);
             }
+        }
+
+        private void Wrapper_PointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            Debug.WriteLine("Pressed");
         }
     }
 }

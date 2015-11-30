@@ -43,14 +43,6 @@ namespace FlexTable.View
                 ColumnHeaderCellPresenter chcp = ele as ColumnHeaderCellPresenter;
                 chcp.Update();
             }
-
-            /*Items.UpdateLayout();
-            foreach (var item in Items.Items)
-            {
-                var uiElement = Items.ContainerFromItem(item);
-                ColumnHeaderCellPresenter chcp = VisualTreeHelper.GetChild(uiElement, 0) as ColumnHeaderCellPresenter;
-                chcp.Update();
-            }*/
         }
 
         public void Reset()

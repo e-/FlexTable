@@ -136,7 +136,7 @@ namespace FlexTable.ViewModel
             var dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
 
 
-            ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[1]);
+            ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[3]);
 
             DispatcherTimer dispatcherTimer = new DispatcherTimer();
             dispatcherTimer.Tick += (sender, e) =>
