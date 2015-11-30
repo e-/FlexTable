@@ -103,17 +103,26 @@ namespace FlexTable.ViewModel
             if (type == ColumnType.Categorical)
                 return column.Name;
 
-            List<ColumnViewModel> selectedColumnViewModels = mainPageViewModel.ExplorationViewModel.ViewStatus.SelectedColumnViewModels;
-            if (selectedColumnViewModels.Count == 0)
+            ViewStatus viewStatus = mainPageViewModel.ExplorationViewModel.ViewStatus;
+            if (viewStatus.IsEmpty)
                 return column.Name;
-
-            if (selectedColumnViewModels.Count == 2 && selectedColumnViewModels[0].Type == ColumnType.Numerical
-                && selectedColumnViewModels[1].Type == ColumnType.Numerical)
-                return column.Name;
-
-            if (mainPageViewModel.ExplorationViewModel.ViewStatus.SelectedColumnViewModels.Count == 1 &&
-                mainPageViewModel.ExplorationViewModel.ViewStatus.SelectedColumnViewModels[0] == this)
+            
+            if (viewStatus.IsN && viewStatus.FirstColumn == this)
+            {
                 return $"Bin({column.Name})";
+            }
+
+            if (viewStatus.IsNN)
+            {
+                if(viewStatus.IsScatterplotVisible)
+                    return column.Name;
+            }
+
+            if (viewStatus.IsCNN)
+            {
+                if (viewStatus.IsScatterplotVisible)
+                    return column.Name;
+            }
 
             return FormatAggregatedName(column, type, aggregativeFunction);
         }
@@ -150,33 +159,6 @@ namespace FlexTable.ViewModel
         public ColumnViewModel(MainPageViewModel mainPageViewModel)
         {
             this.mainPageViewModel = mainPageViewModel;
-        }
-
-        public void Hide()
-        {
-            IsHidden = true;
-            /*
-            foreach (View.RowPresenter rowPresenter in mainPageViewModel.TableViewModel.AllRowPresenters)
-            {
-                rowPresenter.CellPresenters[index].Opacity = 0.15;
-            }
-            foreach (View.RowPresenter rowPresenter in mainPageViewModel.TableViewModel.GroupByRowPresenters)
-            {
-                rowPresenter.CellPresenters[index].Opacity = 0.15;
-            }*/
-        }
-
-        public void Show()
-        {
-            IsHidden = false;
-            /*foreach (View.RowPresenter rowPresenter in mainPageViewModel.TableViewModel.AllRowPresenters)
-            {
-                rowPresenter.CellPresenters[index].Opacity = 1;
-            }
-            foreach (View.RowPresenter rowPresenter in mainPageViewModel.TableViewModel.GroupByRowPresenters)
-            {
-                rowPresenter.CellPresenters[index].Opacity = 1;
-            }*/
         }
 
         public void UpdateHeaderName()

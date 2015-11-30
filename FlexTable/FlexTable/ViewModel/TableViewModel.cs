@@ -159,7 +159,7 @@ namespace FlexTable.ViewModel
                 State = TableViewState.SelectedRow;
             }
             else if (viewStatus.IsEmpty || 
-                viewStatus.IsNN || 
+                (viewStatus.IsNN && viewStatus.IsScatterplotVisible) || 
                 (viewStatus.IsCNN && viewStatus.IsScatterplotVisible))
             {
                 AllRowViewModels.Sort(new RowViewModelComparer(SheetViewModel, viewStatus));

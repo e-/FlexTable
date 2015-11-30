@@ -1,5 +1,5 @@
-Country,Region,Population,Under15,Over60,FertilityRate,LifeExpectancy,ChildMortality,CellularSubscribers
-nominal,nominal,thousands,%,%,%,age,¢¶,num
+ï»¿Country,Region,Population,Under15,Over60,FertilityRate,LifeExpectancy,ChildMortality,CellularSubscribers
+nominal,nominal,thousands,%,%,%,age,â€°,num
 Afghanistan,Eastern Mediterranean,29825,47.42,3.82,5.4,60,98.5,54.26
 Albania,Europe,3162,21.33,14.93,1.75,74,16.7,96.39
 Algeria,Africa,38482,27.42,7.17,2.83,73,20,98.99

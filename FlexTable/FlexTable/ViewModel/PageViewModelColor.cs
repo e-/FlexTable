@@ -98,6 +98,7 @@ namespace FlexTable.ViewModel
             else if (viewStatus.IsNN)
             {
                 foreach (RowViewModel rowViewModel in allRowViewModels) rowViewModel.Color = Category10FirstColor;
+                foreach (RowViewModel rowViewModel in groupedRowViewModels) rowViewModel.Color = DefaultRowHeaderColor;
             }
             else if (viewStatus.IsCCN)
             {

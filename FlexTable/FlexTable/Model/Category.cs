@@ -14,6 +14,7 @@ namespace FlexTable.Model
 
         public Int32 Order { get; set; }
         public Color Color { get; set; }
+        public Boolean IsVirtual { get; set; } = false;
 
         public override String ToString()
         {

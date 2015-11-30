@@ -10,6 +10,7 @@ using Windows.UI.Xaml.Documents;
 using Windows.UI.Text;
 using System.Diagnostics;
 using FlexTable.Crayon.Chart;
+using d3.ColorScheme;
 
 namespace FlexTable.ViewModel
 {
@@ -172,6 +173,10 @@ namespace FlexTable.ViewModel
             {
                 DrawCorrelatonStatistics(ViewStatus.FirstNumerical, ViewStatus.SecondNumerical, IsSelected);
                 DrawScatterplot(ViewStatus.FirstNumerical, ViewStatus.SecondNumerical, IsSelected);
+                if (numericalColumns[0].Unit == numericalColumns[1].Unit) // 둘의 단위가 같으면 그룹 바 차트 가능
+                {
+                    DrawGroupedBarChartNN(ViewStatus.FirstNumerical, ViewStatus.SecondNumerical, groupedRows, IsSelected);
+                }
             }
             else if (ViewStatus.IsCCC)
             {
@@ -607,6 +612,38 @@ namespace FlexTable.ViewModel
             );
         }
 
+        void DrawEditableTitleNN(StackPanel title, ColumnViewModel numerical1, ColumnViewModel numerical2)
+        {
+            AddComboBox(
+                   title,
+                   numerical1.AggregativeFunction.Name,
+                   AggregativeFunction.Names,
+                   CreateAggregationChangedHandler(numerical1)
+               );
+            AddText(title, "(");
+            AddComboBox(
+                title,
+                numerical1.Name,
+                mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical && cvm.Unit == numerical1.Unit).Select(cvm => cvm.Name),
+                CreateColumnChangedHandler(numerical1)
+            );
+
+            AddText(title, ")\x00A0and\x00A0");
+
+            AddComboBox(
+                   title,
+                   numerical2.AggregativeFunction.Name,
+                   AggregativeFunction.Names,
+                   CreateAggregationChangedHandler(numerical2)
+               );
+            AddText(title, "(");
+            AddComboBox(
+                title,
+                numerical2.Name,
+                mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical && cvm.Unit == numerical2.Unit).Select(cvm => cvm.Name),
+                CreateColumnChangedHandler(numerical2)
+            );
+        }
         void DrawEditableTitleCNN(StackPanel title, ColumnViewModel categorical, ColumnViewModel numerical1, ColumnViewModel numerical2)
         {
             AddComboBox(
@@ -1010,6 +1047,7 @@ namespace FlexTable.ViewModel
             pageView.LineChart.YStartsFromZero = false;
             pageView.LineChart.HorizontalAxisTitle = categorical.Name;
             pageView.LineChart.VerticalAxisTitle = numerical.HeaderNameWithUnit;
+            pageView.LineChart.AutoColor = false;
 
             LineChartDatum datum = new LineChartDatum()
             {
@@ -1054,6 +1092,7 @@ namespace FlexTable.ViewModel
             pageView.LineChart.YStartsFromZero = false;
             pageView.LineChart.HorizontalAxisTitle = categorical1.Name;
             pageView.LineChart.VerticalAxisTitle = numerical.HeaderNameWithUnit;
+            pageView.LineChart.AutoColor = true;
 
             var rows =
                 groupedRows
@@ -1152,7 +1191,60 @@ namespace FlexTable.ViewModel
                 .ToList();
 
             pageView.Scatterplot.Update();
-        }       
+        }
+
+        void DrawGroupedBarChartNN(ColumnViewModel numerical1, ColumnViewModel numerical2, List<GroupedRows> groupedRows, Boolean isTitleEditable)
+        {
+            IsGroupedBarChartVisible = true;
+
+            pageView.GroupedBarChartTitle.Children.Clear();
+            if (isTitleEditable)
+            {
+                DrawEditableTitleNN(pageView.GroupedBarChartTitle, numerical1, numerical2);
+            }
+            else
+            {
+                AddText(pageView.GroupedBarChartTitle, $"<b>{numerical1.AggregatedName}</b> and <b>{numerical2.AggregatedName}</b>");
+            }
+
+            pageView.GroupedBarChart.YStartsFromZero = true;
+            pageView.GroupedBarChart.HorizontalAxisTitle = "";
+            pageView.GroupedBarChart.VerticalAxisTitle = $"{numerical1.UnitString}";
+
+            Category category1 = new Category() { Value = numerical1.Name, Color = Category10.Colors[0], IsVirtual = true },
+                     category2 = new Category() { Value = numerical2.Name, Color = Category10.Colors[1], IsVirtual = true }, 
+                     dummyKey = new Category() { Value = $"{numerical1.Name} and {numerical2.Name} ", IsVirtual = true };
+
+            GroupedBarChartDatum datum = new GroupedBarChartDatum()
+            {
+                ColumnViewModel = null,
+                Key = dummyKey
+            };
+
+            datum.Children = new List<BarChartDatum>()
+                            {
+                                new BarChartDatum()
+                                {
+                                    ColumnViewModel = null,
+                                    Key = category1,
+                                    Parent = datum,
+                                    Value = numerical1.AggregativeFunction.Aggregate(mainPageViewModel.SheetViewModel.FilteredRows.Select(r => (Double)r.Cells[numerical1.Index].Content)),
+                                    Rows = mainPageViewModel.SheetViewModel.FilteredRows
+                                },
+                                new BarChartDatum()
+                                {
+                                    ColumnViewModel = null,
+                                    Key = category2,
+                                    Parent = datum,
+                                    Value = numerical1.AggregativeFunction.Aggregate(mainPageViewModel.SheetViewModel.FilteredRows.Select(r => (Double)r.Cells[numerical2.Index].Content)),
+                                    Rows = mainPageViewModel.SheetViewModel.FilteredRows
+                                }
+                            };
+
+            pageView.GroupedBarChart.Data = new List<GroupedBarChartDatum>() { datum };
+
+            pageView.GroupedBarChart.Update();
+        }
 
         void DrawGroupedBarChartCNN(ColumnViewModel categorical, ColumnViewModel numerical1, ColumnViewModel numerical2, List<GroupedRows> groupedRows, Boolean isTitleEditable)
         {
@@ -1172,6 +1264,9 @@ namespace FlexTable.ViewModel
             pageView.GroupedBarChart.HorizontalAxisTitle = categorical.Name;
             pageView.GroupedBarChart.VerticalAxisTitle = $"{numerical1.Name} and {numerical2.Name} {numerical1.UnitString}";
 
+            Category category1 = new Category() { Value = numerical1.Name, Color = Category10.Colors[0], IsVirtual = true },
+                     category2 = new Category() { Value = numerical2.Name, Color = Category10.Colors[1], IsVirtual = true };
+
             var data = groupedRows
                         .Select(g =>
                         {
@@ -1186,7 +1281,7 @@ namespace FlexTable.ViewModel
                                 new BarChartDatum()
                                 {
                                     ColumnViewModel = null,
-                                    Key = numerical1.Name,
+                                    Key = category1,
                                     Parent = datum,
                                     Value = numerical1.AggregativeFunction.Aggregate(g.Rows.Select(r => (Double)r.Cells[numerical1.Index].Content)),
                                     Rows = g.Rows
@@ -1194,7 +1289,7 @@ namespace FlexTable.ViewModel
                                 new BarChartDatum()
                                 {
                                     ColumnViewModel = null,
-                                    Key = numerical2.Name,
+                                    Key = category2,
                                     Parent = datum,
                                     Value = numerical2.AggregativeFunction.Aggregate(g.Rows.Select(r => (Double)r.Cells[numerical2.Index].Content)),
                                     Rows = g.Rows

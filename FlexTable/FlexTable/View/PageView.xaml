@@ -160,19 +160,21 @@
                              Storyboard.TargetName="ChartWrapper" Storyboard.TargetProperty="Opacity" From="0.6" To="1">
             </DoubleAnimation>
         </Storyboard>
-                
-        <x:String x:Key="TooManyElementsWarningString">There are too many visual elements. Some elements may be hidden.</x:String>
+
         <Style x:Key="TooManyElementsWarningStyle" TargetType="TextBlock">
-            <Setter Property="Height" Value="20" />
-            <Setter Property="Margin" Value="0 -20 0 0" />
+            <Setter Property="Height" Value="30" />
+            <Setter Property="Margin" Value="0 -30 0 0" />
             <Setter Property="TextAlignment" Value="Center" />
+            <Setter Property="FontSize" Value="20" />
             <Setter Property="Width" Value="{StaticResource ParagraphWidth}" />
             <Setter Property="RenderTransform">
                 <Setter.Value>
-                    <TranslateTransform Y="3" />
+                    <TranslateTransform Y="15" />
                 </Setter.Value>
             </Setter>
         </Style>
+        <x:String x:Key="TooManyElementsWarningString">There are too many visual elements. Some elements may be hidden.</x:String>
+        
     </UserControl.Resources>
     
     <StackPanel Opacity="0" x:Name="Wrapper"
@@ -332,7 +334,7 @@
                     Padding="20">
                 <StackPanel VerticalAlignment="Center">
                     <TextBlock FontSize="25" TextAlignment="Center">
-                        <Run FontFamily="FontAwesome">&#xf25a;</Run>
+                        <!--<Run FontFamily="FontAwesome">&#xf25a;</Run>-->
                         <Run>Select a column to preview.</Run>
                     </TextBlock>
                 </StackPanel>

@@ -358,12 +358,15 @@ namespace FlexTable.Crayon.Chart
 
                 if (isLegendStrikeThrough)
                 {
-                    selectedKeys.RemoveAll(key => key.Key2 == victim.Key);
-                    selectedData.RemoveAll(datum => datum.Key == victim.Key);
-
-                    if (FilterOut != null)
+                    if (!(victim.Key as Category).IsVirtual)
                     {
-                        FilterOut(this, null, ChartData.Where(datum => datum.Key == victim.Key), index);
+                        selectedKeys.RemoveAll(key => key.Key2 == victim.Key);
+                        selectedData.RemoveAll(datum => datum.Key == victim.Key);
+
+                        if (FilterOut != null)
+                        {
+                            FilterOut(this, null, ChartData.Where(datum => datum.Key == victim.Key), index);
+                        }
                     }
                 }
                 else if (isAllSelected) // 모두가 선택되었다면 선택 해제를 하면 됨

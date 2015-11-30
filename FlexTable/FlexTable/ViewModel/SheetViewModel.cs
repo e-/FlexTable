@@ -266,7 +266,7 @@ namespace FlexTable.ViewModel
         {
             if (columnViewModel.IsHidden) return;
 
-            columnViewModel.Hide();
+            columnViewModel.IsHidden = true;
             IEnumerable<ColumnViewModel> nexts = columnViewModels.Where(c => c.Order > columnViewModel.Order);
 
             foreach (ColumnViewModel cvm in nexts)
@@ -281,7 +281,7 @@ namespace FlexTable.ViewModel
         {
             if (!columnViewModel.IsHidden) return;
 
-            columnViewModel.Show();
+            columnViewModel.IsHidden = false;
             Int32 order = columnViewModels.Count(c => !c.IsHidden && c.Index < columnViewModel.Index);
             IEnumerable<ColumnViewModel> nexts = columnViewModels.Where(c => order <= c.Order && c.Order < columnViewModel.Order);
 
@@ -330,7 +330,7 @@ namespace FlexTable.ViewModel
 
             // 여기서 상황별로 왼쪽에 보일 rowViewModel을 만들어 줘야함. 여기서 만들면 tableViewModel에서 받아다가 그림
             
-            if (viewStatus.IsEmpty || viewStatus.IsNN || viewStatus.IsCNN)
+            if (viewStatus.IsEmpty || viewStatus.IsCNN)
             {
                 // 어차피 allRow가 보일 것이므로 RowViewModel 을 만들어 줄 필요는 없음 
             }
@@ -389,6 +389,40 @@ namespace FlexTable.ViewModel
 
                     groupedRowViewModels.Add(rowViewModel);
                 }
+            }
+            else if (viewStatus.IsNN)
+            {
+                groupedRowViewModels.Clear();
+
+                RowViewModel rowViewModel = new RowViewModel(mainPageViewModel)
+                {
+                    Index = 0
+                };
+
+                foreach (ColumnViewModel columnViewModel in ColumnViewModels)
+                {
+                    Cell cell = new Cell();
+
+                    cell.ColumnViewModel = columnViewModel;
+
+                    if (columnViewModel.Type == ColumnType.Categorical)
+                    {
+                        Int32 uniqueCount = FilteredRows.Select(r => r.Cells[columnViewModel.Index].Content).Distinct().Count();
+                        cell.Content = $"({uniqueCount})";
+                        cell.RawContent = $"({uniqueCount})";
+                    }
+                    else if (columnViewModel.Type == ColumnType.Numerical)
+                    {
+                        Object aggregated = columnViewModel.AggregativeFunction.Aggregate(FilteredRows.Select(r => (Double)r.Cells[columnViewModel.Index].Content));
+                        String formatted = Formatter.FormatAuto4((Double)aggregated);
+                        cell.RawContent = formatted;
+                        cell.Content = Double.Parse(formatted);
+                    }
+
+                    rowViewModel.Cells.Add(cell);
+                }
+
+                groupedRowViewModels.Add(rowViewModel);
             }
             else // 이 경우는 categorical이든 datetime이든 뭔가로 그룹핑이 된 경우 
             {
