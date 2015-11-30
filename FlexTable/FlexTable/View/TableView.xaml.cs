@@ -63,6 +63,7 @@ namespace FlexTable.View
         public ScrollViewer GroupedRowScrollViewer { get; set; }
         public ScrollViewer SelectedRowScrollViewer { get; set; }
         public ScrollViewer ActivatedScrollViewer { get; set; }
+        public Canvas AnimatingRowCanvas => AnimatingRowCanvasElement;
 
         Drawable drawable = new Drawable()
         {
@@ -147,8 +148,9 @@ namespace FlexTable.View
             {
                 HideGroupedRowViewerStoryboard.Begin();
                 HideSelectedRowViewerStoryboard.Begin();
+                HideAnimatingRowViewerStoryboard.Begin();
                 ShowAllRowViewerStoryboard.Begin();
-
+                
                 ActivatedScrollViewer = AllRowScrollViewer;
 
                 var sr = ViewModel.MainPageViewModel.SheetViewModel.FilteredRows.ToList();
@@ -162,16 +164,17 @@ namespace FlexTable.View
 
                 foreach (RowPresenter rowPresenter in selected)
                 {
-                    Canvas.SetTop(rowPresenter, index * height);
+                    Canvas.SetTop(rowPresenter, rowPresenter.RowViewModel.Y = index * height);
                     rowPresenter.Opacity = 1;
                     rowPresenter.Update();
                     colors.Add(rowPresenter.RowViewModel.Color);
                     index++;
                 }
 
+                // y 도 힌트에 저장하는게 안낫나?
                 foreach (RowPresenter rowPresenter in unselected)
                 {
-                    Canvas.SetTop(rowPresenter, index * height);
+                    Canvas.SetTop(rowPresenter, rowPresenter.RowViewModel.Y = index * height);
                     rowPresenter.Opacity = 0.2;
                     rowPresenter.Update();
                     colors.Add(rowPresenter.RowViewModel.Color);
@@ -184,6 +187,7 @@ namespace FlexTable.View
             {
                 HideAllRowViewerStoryboard.Begin();
                 HideSelectedRowViewerStoryboard.Begin();
+                HideAnimatingRowViewerStoryboard.Begin();
                 ShowGroupedRowViewerStoryboard.Begin();
 
                 ActivatedScrollViewer = GroupedRowScrollViewer;
@@ -210,10 +214,11 @@ namespace FlexTable.View
 
                 RowHeaderPresenter.SetRowNumber(colors, ViewModel.GroupedRowViewModels.Count, ViewModel.GroupedRowViewModels.Count);
             }
-            else
+            else if(state == TableViewModel.TableViewState.SelectedRow)
             {
                 HideAllRowViewerStoryboard.Begin();
                 HideGroupedRowViewerStoryboard.Begin();
+                HideAnimatingRowViewerStoryboard.Begin();
                 ShowSelectedRowViewerStoryboard.Begin();
 
                 ActivatedScrollViewer = SelectedRowScrollViewer;
@@ -246,6 +251,13 @@ namespace FlexTable.View
                 }
 
                 RowHeaderPresenter.SetRowNumber(colors, selected.Count(), colors.Count);
+            }
+            else if(state == TableViewModel.TableViewState.Animation)
+            {
+                HideAllRowViewerStoryboard.Begin();
+                HideGroupedRowViewerStoryboard.Begin();
+                HideSelectedRowViewerStoryboard.Begin();
+                ShowAnimatingRowViewerStoryboard.Begin();
             }
 
             UpdateScrollViews();
@@ -450,5 +462,7 @@ namespace FlexTable.View
             ViewModel.ScrollTop = sv.VerticalOffset;
             ViewModel.ScrollLeft = sv.HorizontalOffset;
         }
+
+
     }
 }

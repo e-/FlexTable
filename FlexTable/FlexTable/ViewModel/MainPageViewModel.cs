@@ -82,7 +82,7 @@ namespace FlexTable.ViewModel
             SheetViewModel.UpdateGroup(viewStatus);
 
             // 테이블 업데이트
-            TableViewModel.Reflect(viewStatus);
+            TableViewModel.Reflect(viewStatus, null);
 
             // 차트 업데이트
             foreach (PageView pageView in ExplorationViewModel.SelectedPageViews)
@@ -93,7 +93,7 @@ namespace FlexTable.ViewModel
 
         public async void Initialize()
         {
-            Sheet sheet = await Util.CsvLoader.Load("driving.csv"); // "Population-filtered.csv");
+            Sheet sheet = await Util.CsvLoader.Load("who.csv"); // "Population-filtered.csv");
             this.Sheet = sheet;
 
             PageHeight = Bounds.Height / 2 - 4;
@@ -132,11 +132,9 @@ namespace FlexTable.ViewModel
             // 메타데이터 초기화
             ExplorationViewModel.MetadataViewModel.Initialize();
 
-            return;
-
             var dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
 
-            ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[3]);
+            ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[1]);
 
             DispatcherTimer dispatcherTimer = new DispatcherTimer();
             dispatcherTimer.Tick += (sender, e) =>
@@ -144,17 +142,16 @@ namespace FlexTable.ViewModel
                 dispatcherTimer.Stop();
                 ExplorationViewModel.TopPageView.ViewModel.State = PageViewModel.PageViewState.Selected;
                 ExplorationViewModel.PageViewStateChanged(ExplorationViewModel.TopPageView.ViewModel, ExplorationViewModel.TopPageView);
-                
-                ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[4]);
+               
+                //ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[4]);
 
                 DispatcherTimer dispatcherTimer2 = new DispatcherTimer();
                 dispatcherTimer2.Tick += (sender2, e2) =>
                 {
-                    dispatcherTimer2.Stop();
+                /*    dispatcherTimer2.Stop();
                     ExplorationViewModel.TopPageView.ViewModel.State = PageViewModel.PageViewState.Selected;
                     ExplorationViewModel.PageViewStateChanged(ExplorationViewModel.TopPageView.ViewModel, ExplorationViewModel.TopPageView);
                     
-                    /*
                     ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[2]);
 
                     DispatcherTimer dispatcherTimer3 = new DispatcherTimer();

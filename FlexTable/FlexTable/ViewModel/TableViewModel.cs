@@ -22,9 +22,9 @@ using System.Collections.ObjectModel;
 
 namespace FlexTable.ViewModel
 {
-    public class TableViewModel : NotifyViewModel
+    public partial class TableViewModel : NotifyViewModel
     {
-        public enum TableViewState { AllRow, GroupedRow, SelectedRow};
+        public enum TableViewState { AllRow, GroupedRow, SelectedRow, Animation};
 
         MainPageViewModel mainPageViewModel;
         public MainPageViewModel MainPageViewModel => mainPageViewModel;
@@ -77,12 +77,8 @@ namespace FlexTable.ViewModel
 
         private Boolean isIndexing;
         public Boolean IsIndexing { get { return isIndexing; } set { isIndexing = value; OnPropertyChanged("IsIndexing"); } }
-        
-        //private ColumnViewModel sortBy;
-        //public ColumnViewModel SortBy { get { return sortBy; } set { sortBy = value; } }
 
-        //private SortOption sortOption;
-        //public SortOption SortOption { get { return sortOption; } set { sortOption = value; } }
+        private ViewStatus previousViewStatus = new ViewStatus();
 
         public IEnumerable<Row> SelectedRows { get; set; } = null;
 
@@ -119,9 +115,19 @@ namespace FlexTable.ViewModel
         }
 
         DispatcherTimer dispatcherTimer = null;
-        const Double DeferredReflectionTimeInMS = 1;
-        public void Reflect(ViewStatus viewStatus)
+        const Double DeferredReflectionTimeInMS = 1000;
+
+        public void Reflect(ViewStatus viewStatus, AnimationHint hint)
         {
+            // 애니메이션 로직이 들어가야함
+            Boolean isTableAnimationApplying = CreateTableAnimation(previousViewStatus, viewStatus, hint);
+
+            if (isTableAnimationApplying)
+            {
+                State = TableViewState.Animation;
+                view.TableView.ReflectState();
+            }
+
             if (dispatcherTimer != null && dispatcherTimer.IsEnabled) dispatcherTimer.Stop();
             dispatcherTimer = new DispatcherTimer();
 
@@ -140,8 +146,9 @@ namespace FlexTable.ViewModel
                 view.TableView.TopColumnHeader.Update();
                 view.TableView.BottomColumnHeader.Update();
                 view.TableView.ColumnIndexer.Update();
+                previousViewStatus = viewStatus;
             };
-            dispatcherTimer.Interval = TimeSpan.FromMilliseconds(DeferredReflectionTimeInMS);
+            dispatcherTimer.Interval = TimeSpan.FromMilliseconds(isTableAnimationApplying ? DeferredReflectionTimeInMS : 1);
             dispatcherTimer.Start();
         }
         
@@ -253,13 +260,13 @@ namespace FlexTable.ViewModel
         {
             this.SelectedRows = selectedRows;
 
-            Reflect(mainPageViewModel.ExplorationViewModel.ViewStatus);
+            Reflect(mainPageViewModel.ExplorationViewModel.ViewStatus, null);
         }
 
         public void CancelPreviewRows()
         {
             SelectedRows = null;
-            Reflect(mainPageViewModel.ExplorationViewModel.ViewStatus);
+            Reflect(mainPageViewModel.ExplorationViewModel.ViewStatus, null);
         }        
     }
 }

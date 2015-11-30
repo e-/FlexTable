@@ -293,7 +293,11 @@ namespace FlexTable.ViewModel
             columnViewModel.Order = order;
         }
  
-
+        /// <summary>
+        /// 새로운 컬럼이 선택되거나 필터링이 적용되거나 소팅이 적용되거나 등으로 인해 로우가 업데이트 되었을 때 호출됨.
+        /// 프리뷰를 한다고 호출되지 않는다는 점에 주의
+        /// </summary>
+        /// <param name="viewStatus"></param>
         public void UpdateGroup(ViewStatus viewStatus)
         {
             // column order 조정 group된 것을 맨 앞으로

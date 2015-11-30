@@ -469,7 +469,7 @@ namespace FlexTable.ViewModel
 
                 // 2. 테이블 변경
                 mainPageViewModel.SheetViewModel.UpdateGroup(ViewStatus);
-                mainPageViewModel.TableViewModel.Reflect(ViewStatus);
+                mainPageViewModel.TableViewModel.Reflect(ViewStatus, null);
 
                 // 3. 차트 변경
                 Reflect(true);
@@ -488,7 +488,7 @@ namespace FlexTable.ViewModel
 
                 // 2. 테이블 변경
                 mainPageViewModel.SheetViewModel.UpdateGroup(ViewStatus);
-                mainPageViewModel.TableViewModel.Reflect(ViewStatus);
+                mainPageViewModel.TableViewModel.Reflect(ViewStatus, null);
 
                 // 3. 차트 변경
                 Reflect(true);

@@ -113,7 +113,7 @@ namespace FlexTable.ViewModel
                 view.ExplorationView.AddNewPage();
 
                 mainPageViewModel.SheetViewModel.UpdateGroup(ViewStatus);
-                mainPageViewModel.TableViewModel.Reflect(ViewStatus);
+                mainPageViewModel.TableViewModel.Reflect(ViewStatus, null);
 
                 view.TableView.ScrollToColumnViewModel(mainPageViewModel.SheetViewModel.ColumnViewModels.OrderBy(c => c.Order).First());
 
@@ -138,8 +138,9 @@ namespace FlexTable.ViewModel
                 // 새로운 page 만들기
                 view.ExplorationView.AddNewPage();
 
+                AnimationHint hint = AnimationHint.Create(mainPageViewModel.SheetViewModel);
                 mainPageViewModel.SheetViewModel.UpdateGroup(ViewStatus);
-                mainPageViewModel.TableViewModel.Reflect(ViewStatus);               
+                mainPageViewModel.TableViewModel.Reflect(ViewStatus, hint);               
                 
                 view.TableView.ScrollToColumnViewModel(mainPageViewModel.SheetViewModel.ColumnViewModels.OrderBy(c => c.Order).First());
 
@@ -162,7 +163,7 @@ namespace FlexTable.ViewModel
                 mainPageViewModel.SheetViewModel.UpdateGroup(ViewStatus);
 
                 // Table View 업데이트
-                mainPageViewModel.TableViewModel.Reflect(ViewStatus);
+                mainPageViewModel.TableViewModel.Reflect(ViewStatus, null);
 
                 view.TableView.ScrollToColumnViewModel(mainPageViewModel.SheetViewModel.ColumnViewModels.OrderBy(c => c.Order).First());
 
@@ -179,7 +180,7 @@ namespace FlexTable.ViewModel
             mainPageViewModel.SheetViewModel.UpdateGroup(ViewStatus);
 
             // 테이블 업데이트
-            mainPageViewModel.TableViewModel.Reflect(ViewStatus);
+            mainPageViewModel.TableViewModel.Reflect(ViewStatus, null);
 
             // 차트 업데이트
             foreach(PageView pageView in selectedPageViews)
@@ -198,7 +199,7 @@ namespace FlexTable.ViewModel
             mainPageViewModel.SheetViewModel.UpdateGroup(ViewStatus);
 
             // 테이블 업데이트
-            mainPageViewModel.TableViewModel.Reflect(ViewStatus);
+            mainPageViewModel.TableViewModel.Reflect(ViewStatus, null);
 
             // 차트 업데이트
             foreach (PageView pageView in selectedPageViews)
