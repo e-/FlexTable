@@ -93,7 +93,7 @@ namespace FlexTable.ViewModel
 
         public async void Initialize()
         {
-            Sheet sheet = await Util.CsvLoader.Load("who.csv"); // "Population-filtered.csv");
+            Sheet sheet = await Util.CsvLoader.Load("driving.csv"); // "Population-filtered.csv");
             this.Sheet = sheet;
 
             PageHeight = Bounds.Height / 2 - 4;
@@ -132,6 +132,7 @@ namespace FlexTable.ViewModel
             // 메타데이터 초기화
             ExplorationViewModel.MetadataViewModel.Initialize();
 
+            return;
 
             var dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
 
