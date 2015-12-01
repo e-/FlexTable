@@ -377,7 +377,8 @@ namespace FlexTable.View
             Int32 index = PageLabelViewElement.ActivatedParagraphIndex;
             ViewModel.ViewStatus.ActivatedChart = paragraphs[index].Children.Last();
 
-            ViewModel.MainPageViewModel.TableViewModel.Reflect(ViewModel.ViewStatus);
+            if(ViewModel.IsSelected)
+                ViewModel.MainPageViewModel.TableViewModel.Reflect(ViewModel.ViewStatus, null);
         }
 
         private void Wrapper_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)

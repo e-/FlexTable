@@ -24,5 +24,36 @@ namespace FlexTable.Util
 
             return da;
         }
+
+        public static DoubleAnimation Generate(DependencyObject obj, String path, double? to, double duration)
+        {
+            DoubleAnimation da = new DoubleAnimation()
+            {
+                To = to,
+                Duration = TimeSpan.FromMilliseconds(duration),
+                EasingFunction = new QuarticEase() { EasingMode = EasingMode.EaseInOut }
+            };
+
+            Storyboard.SetTarget(da, obj);
+            Storyboard.SetTargetProperty(da, path);
+
+            return da;
+        }
+
+        public static DoubleAnimation Generate(DependencyObject obj, String path, double? to, double duration, double beginTime)
+        {
+            DoubleAnimation da = new DoubleAnimation()
+            {
+                To = to,
+                Duration = TimeSpan.FromMilliseconds(duration),
+                BeginTime = TimeSpan.FromMilliseconds(beginTime),
+                EasingFunction = new QuarticEase() { EasingMode = EasingMode.EaseInOut }
+            };
+
+            Storyboard.SetTarget(da, obj);
+            Storyboard.SetTargetProperty(da, path);
+
+            return da;
+        }
     }
 }

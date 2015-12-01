@@ -27,24 +27,7 @@ using FlexTable.Model;
 namespace FlexTable.Crayon.Chart
 {
     public sealed partial class BarChart : UserControl
-    {
-        const Double DragToFilterThreshold = 40;
-        const Double StrikeThroughMinWidth = 30;
-        const Double StrikeThroughMaxHeight = 20;
-
-        const Double PaddingLeft = 0;
-        const Double PaddingTop = 30;
-        public const Double PaddingRight = 10;
-        const Double PaddingBottom = 0;
-        const Double HorizontalAxisHeight = 25;
-        const Double HorizontalAxisLabelHeight = 20;
-        const Double VerticalAxisWidth = 40;
-        const Double VerticalAxisLabelWidth = 20;
-        public const Double LegendPatchWidth = 20;
-        public const Double LegendPatchHeight = 20;
-        public const Double LegendPatchSpace = 10;
-        const Double MinimumLegendWidth = 100;
-
+    {       
         public IList<BarChartDatum> Data { get; set; }
         public Data D3Data { get; set; }                   
 
@@ -145,14 +128,14 @@ namespace FlexTable.Crayon.Chart
         
 
         public Func<Object, Int32, Double> HandleWidthGetter { get { return (d, index) => XScale.RangeBand; } }
-        public Func<Object, Int32, Double> HandleHeightGetter { get { return (d, index) => ChartAreaEndY - PaddingTop; } }
+        public Func<Object, Int32, Double> HandleHeightGetter { get { return (d, index) => ChartAreaEndY - Const.PaddingTop; } }
         public Func<Object, Int32, Double> HandleXGetter { get { return (d, index) => XScale.Map((d as BarChartDatum).Key) - XScale.RangeBand / 2; } }        
 
         public Func<Object, Int32, Double> LegendPatchYGetter
         {
             get
             {
-                return (d, index) => (Height - Data.Count() * LegendPatchHeight - (Data.Count() - 1) * LegendPatchSpace) / 2 + index * (LegendPatchHeight + LegendPatchSpace);
+                return (d, index) => (Height - Data.Count() * Const.LegendPatchHeight - (Data.Count() - 1) * Const.LegendPatchSpace) / 2 + index * (Const.LegendPatchHeight + Const.LegendPatchSpace);
             }
         }
 
@@ -161,11 +144,11 @@ namespace FlexTable.Crayon.Chart
         {
             get
             {
-                return (d, index) => (Height - Data.Count() * LegendPatchHeight - (Data.Count() - 1) * LegendPatchSpace) / 2 + index * (LegendPatchHeight + LegendPatchSpace) - LegendPatchSpace / 2;
+                return (d, index) => (Height - Data.Count() * Const.LegendPatchHeight - (Data.Count() - 1) * Const.LegendPatchSpace) / 2 + index * (Const.LegendPatchHeight + Const.LegendPatchSpace) - Const.LegendPatchSpace / 2;
             }
         }
 
-        public Func<Object, Int32, Double> LegendTextXGetter { get { return (d, index) => LegendPatchWidth + LegendPatchSpace; } }
+        public Func<Object, Int32, Double> LegendTextXGetter { get { return (d, index) => Const.LegendPatchWidth + Const.LegendPatchSpace; } }
         public Func<Object, Int32, String> LegendTextGetter { get { return (d, index) => (d as BarChartDatum).Key.ToString(); } }
         public Func<TextBlock, Object, Int32, Double> LegendTextOpacityGetter { get { return (textBlock, d, index) => (selectedKeys.Count == 0) ? 1 : (selectedKeys.IndexOf((d as BarChartDatum).Key) < 0 ? 0.2 : 1); } }
 
@@ -219,7 +202,7 @@ namespace FlexTable.Crayon.Chart
             HandleRectangleElement.WidthGetter = HandleWidthGetter;
             HandleRectangleElement.HeightGetter = HandleHeightGetter;
             HandleRectangleElement.XGetter = HandleXGetter;
-            HandleRectangleElement.YGetter = d3.Util.CreateConstantGetter<Double>(PaddingTop);
+            HandleRectangleElement.YGetter = d3.Util.CreateConstantGetter<Double>(Const.PaddingTop);
             HandleRectangleElement.ColorGetter = d3.Util.CreateConstantGetter<Color>(Colors.Transparent);
 
             RectangleElement.Data = D3Data;
@@ -252,15 +235,15 @@ namespace FlexTable.Crayon.Chart
 
             LegendHandleRectangleElement.Data = D3Data;
             LegendHandleRectangleElement.WidthGetter = LegendHandleWidthGetter;
-            LegendHandleRectangleElement.HeightGetter = d3.Util.CreateConstantGetter<Double>(LegendPatchHeight + LegendPatchSpace);
+            LegendHandleRectangleElement.HeightGetter = d3.Util.CreateConstantGetter<Double>(Const.LegendPatchHeight + Const.LegendPatchSpace);
             LegendHandleRectangleElement.XGetter = d3.Util.CreateConstantGetter<Double>(0);
             LegendHandleRectangleElement.YGetter = LegendHandleYGetter;
             LegendHandleRectangleElement.ColorGetter = d3.Util.CreateConstantGetter<Color>(Colors.Transparent);
             LegendHandleRectangleElement.Visibility = LegendVisibility;
 
             LegendRectangleElement.Data = D3Data;
-            LegendRectangleElement.WidthGetter = d3.Util.CreateConstantGetter<Double>(LegendPatchWidth);
-            LegendRectangleElement.HeightGetter = d3.Util.CreateConstantGetter<Double>(LegendPatchHeight);
+            LegendRectangleElement.WidthGetter = d3.Util.CreateConstantGetter<Double>(Const.LegendPatchWidth);
+            LegendRectangleElement.HeightGetter = d3.Util.CreateConstantGetter<Double>(Const.LegendPatchHeight);
             LegendRectangleElement.XGetter = d3.Util.CreateConstantGetter<Double>(0);
             LegendRectangleElement.YGetter = LegendPatchYGetter;
             LegendRectangleElement.ColorGetter = ColorGetter;
@@ -269,7 +252,7 @@ namespace FlexTable.Crayon.Chart
 
             LegendTextElement.Data = D3Data;
             LegendTextElement.TextGetter = LegendTextGetter;
-            LegendTextElement.HeightGetter = d3.Util.CreateConstantGetter<Double>(LegendPatchHeight);
+            LegendTextElement.HeightGetter = d3.Util.CreateConstantGetter<Double>(Const.LegendPatchHeight);
             LegendTextElement.XGetter = LegendTextXGetter;
             LegendTextElement.YGetter = LegendPatchYGetter;
             LegendTextElement.ColorGetter = d3.Util.CreateConstantGetter<Color>(Colors.Black);
@@ -298,7 +281,7 @@ namespace FlexTable.Crayon.Chart
             Double delta = e.Cumulative.Translation.Y;
             BarChartDatum datum = datumo as BarChartDatum;
 
-            if (delta > DragToFilterThreshold)
+            if (delta > Const.DragToFilterThreshold)
             {
                 // filter out
 
@@ -334,11 +317,11 @@ namespace FlexTable.Crayon.Chart
             BarChartDatum datum = datumo as BarChartDatum;
 
             if (delta < 0) delta = 0;
-            if (delta > DragToFilterThreshold) delta = DragToFilterThreshold;
+            if (delta > Const.DragToFilterThreshold) delta = Const.DragToFilterThreshold;
 
             DragToFilterYDelta = delta;
             DragToFilterFocusedBar = datum;
-            DragToFilterOpacity = 1 - delta / DragToFilterThreshold;
+            DragToFilterOpacity = 1 - delta / Const.DragToFilterThreshold;
 
             RectangleElement.Update();
             HorizontalAxis.Update();
@@ -380,7 +363,7 @@ namespace FlexTable.Crayon.Chart
                     {
                         BarChartDatum datum = Data[index];
 
-                        if (boundingRect.Height < StrikeThroughMaxHeight && boundingRect.Width > StrikeThroughMinWidth) // legend strike through면
+                        if (boundingRect.Height < Const.StrikeThroughMaxHeight && boundingRect.Width > Const.StrikeThroughMinWidth) // legend strike through면
                         {
                             isLegendStrikeThrough = true;
                             victim = datum;
@@ -491,37 +474,37 @@ namespace FlexTable.Crayon.Chart
                 LegendTextElement.Data = D3Data;
                 LegendTextElement.Update();
 
-                LegendAreaWidth = Math.Max(LegendTextElement.MaxActualWidth + LegendPatchWidth + LegendPatchSpace + PaddingRight, MinimumLegendWidth);
+                LegendAreaWidth = Math.Max(LegendTextElement.MaxActualWidth + Const.LegendPatchWidth + Const.LegendPatchSpace + Const.PaddingRight, Const.MinimumLegendWidth);
             }
 
             Canvas.SetLeft(LegendPanel, this.Width - LegendAreaWidth);
 
             if (HorizontalAxisVisibility == Visibility.Visible)
             {
-                ChartAreaEndY = this.Height - PaddingBottom - HorizontalAxisHeight - HorizontalAxisLabelHeight;
+                ChartAreaEndY = this.Height - Const.PaddingBottom - Const.HorizontalAxisHeight - Const.HorizontalAxisLabelHeight;
             }
             else
             {
-                ChartAreaEndY = this.Height - PaddingBottom;
+                ChartAreaEndY = this.Height - Const.PaddingBottom;
             }
 
             if (LegendVisibility == Visibility.Visible)
             {
-                ChartAreaEndX = this.Width - PaddingRight - LegendAreaWidth;
+                ChartAreaEndX = this.Width - Const.PaddingRight - LegendAreaWidth;
             }
             else
             {
-                ChartAreaEndX = this.Width - PaddingRight;
+                ChartAreaEndX = this.Width - Const.PaddingRight;
             }
 
-            HorizontalAxisLabelCanvasLeft = PaddingLeft + VerticalAxisWidth + VerticalAxisLabelWidth;
-            HorizontalAxisLabelCanvasTop = ChartAreaEndY + HorizontalAxisHeight;
-            HorizontalAxisLabelWidth = ChartAreaEndX - PaddingLeft - VerticalAxisWidth - VerticalAxisLabelWidth;
+            HorizontalAxisLabelCanvasLeft = Const.PaddingLeft + Const.VerticalAxisWidth + Const.VerticalAxisLabelWidth;
+            HorizontalAxisLabelCanvasTop = ChartAreaEndY + Const.HorizontalAxisHeight;
+            HorizontalAxisLabelWidth = ChartAreaEndX - Const.PaddingLeft - Const.VerticalAxisWidth - Const.VerticalAxisLabelWidth;
 
-            VerticalAxisCanvasLeft = PaddingLeft + VerticalAxisLabelWidth + VerticalAxisWidth;
-            VerticalAxisLabelCanvasLeft = PaddingLeft + VerticalAxisLabelWidth / 2 - (ChartAreaEndY - PaddingTop) / 2;
-            VerticalAxisLabelCanvasTop = PaddingTop + (ChartAreaEndY - PaddingTop) / 2;
-            VerticalAxisLabelHeight = ChartAreaEndY - PaddingTop;
+            VerticalAxisCanvasLeft = Const.PaddingLeft + Const.VerticalAxisLabelWidth + Const.VerticalAxisWidth;
+            VerticalAxisLabelCanvasLeft = Const.PaddingLeft + Const.VerticalAxisLabelWidth / 2 - (ChartAreaEndY - Const.PaddingTop) / 2;
+            VerticalAxisLabelCanvasTop = Const.PaddingTop + (ChartAreaEndY - Const.PaddingTop) / 2;
+            VerticalAxisLabelHeight = ChartAreaEndY - Const.PaddingTop;
             
             IEnumerable<Double> values = Data.Select(d => d.Value);
             Double yMin = values.Min(), yMax = values.Max();
@@ -543,13 +526,17 @@ namespace FlexTable.Crayon.Chart
                     yMax *= 1.2;
                 }
             }
+            else
+            {
+                yMin *= 0.9;
+            }
 
             YScale = new Linear()
             {
                 DomainStart = yMin,
                 DomainEnd = yMax,
                 RangeStart = ChartAreaEndY,
-                RangeEnd = PaddingTop
+                RangeEnd = Const.PaddingTop
             };
 
             YScale.Nice();

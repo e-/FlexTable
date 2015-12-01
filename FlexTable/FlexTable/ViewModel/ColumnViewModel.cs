@@ -64,7 +64,7 @@ namespace FlexTable.ViewModel
 
         public String Name { get { return column.Name; } }
         public String HeaderName { 
-            get { return FormatHeaderName(column, Type, aggregativeFunction); } 
+            get { return FormatHeaderName(mainPageViewModel.ExplorationViewModel.ViewStatus); } 
         }
 
         public String UnitString
@@ -98,12 +98,11 @@ namespace FlexTable.ViewModel
             get { return FormatAggregatedName(column, Type, aggregativeFunction); }
         }
 
-        public String FormatHeaderName(Column column, ColumnType type, AggregativeFunction.BaseAggregation aggregativeFunction)
+        public String FormatHeaderName(ViewStatus viewStatus)
         {
-            if (type == ColumnType.Categorical)
+            if (Type == ColumnType.Categorical)
                 return column.Name;
-
-            ViewStatus viewStatus = mainPageViewModel.ExplorationViewModel.ViewStatus;
+            
             if (viewStatus.IsEmpty)
                 return column.Name;
             
@@ -124,7 +123,7 @@ namespace FlexTable.ViewModel
                     return column.Name;
             }
 
-            return FormatAggregatedName(column, type, aggregativeFunction);
+            return FormatAggregatedName(column, Type, aggregativeFunction);
         }
 
         public String FormatAggregatedName(Column column, ColumnType type, AggregativeFunction.BaseAggregation aggregativeFunction)

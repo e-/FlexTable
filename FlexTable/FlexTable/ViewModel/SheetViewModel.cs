@@ -37,12 +37,13 @@ namespace FlexTable.ViewModel
         private List<RowViewModel> groupedRowViewModels = new List<RowViewModel>();
         public List<RowViewModel> GroupedRowViewModels => groupedRowViewModels;
 
-        private List<GroupedRows> groupingResult;
-        public List<GroupedRows> GroupingResult => groupingResult;
+        private List<GroupedRows> groupedRows;
+        public List<GroupedRows> GroupedRows => groupedRows;
 
         public ObservableCollection<FilterViewModel> FilterViewModels { get; private set; } = new ObservableCollection<FilterViewModel>();
 
         MainPageViewModel mainPageViewModel;
+        public MainPageViewModel MainPageViewModel => mainPageViewModel;
 
         /// <summary>
         /// 여기도 소팅해야하나? 어차피 이 집합에 속하는지 안하는지만 테스트하고 차트 그릴때는 통계를 쓰는거라 렌더링하는 rowviewmodel이 아니면 소팅 필요없지않나
@@ -255,7 +256,6 @@ namespace FlexTable.ViewModel
         }
 
         Int32 sortPriority = 0;
-
         public void Sort(ColumnViewModel columnViewModel, SortOption sortOption)
         {
             columnViewModel.SortOption = sortOption;
@@ -293,11 +293,8 @@ namespace FlexTable.ViewModel
             columnViewModel.Order = order;
         }
  
-
-        public void UpdateGroup(ViewStatus viewStatus)
+        public void UpdateOrder(ViewStatus viewStatus)
         {
-            // column order 조정 group된 것을 맨 앞으로
-            var ordered = columnViewModels.OrderBy(c => c.Order);
             Int32 order = 0;
 
             // 우선으로 그룹된 컬럼에 순서 할당
@@ -323,241 +320,40 @@ namespace FlexTable.ViewModel
 
             // Column의 x값을 업데이트함, 위 아래 컬럼 헤더를 위한것임. 
             UpdateColumnX();
+        }
+
+        /// <summary>
+        /// 새로운 컬럼이 선택되거나 필터링이 적용되거나 소팅이 적용되거나 등으로 인해 로우가 업데이트 되었을 때 호출됨.
+        /// 프리뷰를 한다고 호출되지 않는다는 점에 주의
+        /// </summary>
+        /// <param name="viewStatus"></param>
+        public void Reflect(ViewStatus viewStatus)
+        {
+            UpdateOrder(viewStatus);            
 
             // table에 추가하는 것은 tableViewModel이 할 것이고 여기는 rowViewModels만 만들어주면 됨
             
-            Int32 index = 0;
-
             // 여기서 상황별로 왼쪽에 보일 rowViewModel을 만들어 줘야함. 여기서 만들면 tableViewModel에서 받아다가 그림
-            
-            if (viewStatus.IsEmpty || viewStatus.IsCNN)
+            if (viewStatus.IsEmpty)
             {
                 // 어차피 allRow가 보일 것이므로 RowViewModel 을 만들어 줄 필요는 없음 
             }
             else if (viewStatus.IsN) // 이 경우는 뉴메리컬 하나만 선택되어 비닝 된 결과가 보이는 경우이다.
             {
-                groupedRowViewModels.Clear();
-
-                ColumnViewModel selected = viewStatus.FirstColumn;
-                if (selected.SortOption == SortOption.None) Sort(selected, SortOption.Ascending);
-
-                List<GroupedRows> binResult = Bin(selected, FilteredRows.ToList());
-
-                // 여기서 groupedRows가 소팅되어야함 
-                // 그런데 여기서는 선택되지 않은 컬럼의 경우에는 어차피 어그리게이션되므로 소팅 순서가 의미가 없음 따라서 선택된 컬럼에 대해서만 소팅하면 된다
-
-                binResult.Sort(new GroupedRowComparer(this, viewStatus));
-
-                foreach (GroupedRows groupedRows in binResult)
-                {
-                    if (groupedRows.Rows.Count == 0) continue;
-                    RowViewModel rowViewModel = new RowViewModel(mainPageViewModel)
-                    {
-                        Index = index++
-                    };
-
-                    foreach (ColumnViewModel columnViewModel in ColumnViewModels)
-                    {
-                        Cell cell = new Cell();
-
-                        cell.ColumnViewModel = columnViewModel;
-
-                        if (columnViewModel == selected)
-                        {
-                            Bin bin = groupedRows.Keys[selected] as Bin;
-
-                            String content = $"{Formatter.FormatAuto3(bin.Min)} - {Formatter.FormatAuto3(bin.Max)} ({groupedRows.Rows.Count})";
-                            cell.RawContent = content;
-                            cell.Content = content;
-                        }
-                        else if (columnViewModel.Type == ColumnType.Categorical)
-                        {
-                            Int32 uniqueCount = groupedRows.Rows.Select(r => r.Cells[columnViewModel.Index].Content).Distinct().Count();
-                            cell.Content = $"({uniqueCount})";
-                            cell.RawContent = $"({uniqueCount})";
-                        }
-                        else //numerical
-                        {
-                            Object aggregated = columnViewModel.AggregativeFunction.Aggregate(groupedRows.Rows.Select(r => (Double)r.Cells[columnViewModel.Index].Content));
-                            String formatted = Util.Formatter.FormatAuto4((Double)aggregated);
-                            cell.RawContent = formatted;
-                            cell.Content = Double.Parse(formatted);
-                        }
-
-                        rowViewModel.Cells.Add(cell);
-                    }
-
-                    groupedRowViewModels.Add(rowViewModel);
-                }
+                groupedRowViewModels = viewStatus.GroupedRowViewModels;
             }
             else if (viewStatus.IsNN)
             {
-                groupedRowViewModels.Clear();
-
-                RowViewModel rowViewModel = new RowViewModel(mainPageViewModel)
-                {
-                    Index = 0
-                };
-
-                foreach (ColumnViewModel columnViewModel in ColumnViewModels)
-                {
-                    Cell cell = new Cell();
-
-                    cell.ColumnViewModel = columnViewModel;
-
-                    if (columnViewModel.Type == ColumnType.Categorical)
-                    {
-                        Int32 uniqueCount = FilteredRows.Select(r => r.Cells[columnViewModel.Index].Content).Distinct().Count();
-                        cell.Content = $"({uniqueCount})";
-                        cell.RawContent = $"({uniqueCount})";
-                    }
-                    else if (columnViewModel.Type == ColumnType.Numerical)
-                    {
-                        Object aggregated = columnViewModel.AggregativeFunction.Aggregate(FilteredRows.Select(r => (Double)r.Cells[columnViewModel.Index].Content));
-                        String formatted = Formatter.FormatAuto4((Double)aggregated);
-                        cell.RawContent = formatted;
-                        cell.Content = Double.Parse(formatted);
-                    }
-
-                    rowViewModel.Cells.Add(cell);
-                }
-
-                groupedRowViewModels.Add(rowViewModel);
+                groupedRowViewModels = viewStatus.GroupedRowViewModels;
             }
             else // 이 경우는 categorical이든 datetime이든 뭔가로 그룹핑이 된 경우 
             {
-                groupedRowViewModels.Clear();
-
-                groupingResult = GroupRecursive(FilteredRows.ToList(), viewStatus.SelectedColumnViewModels.Where(s => s.Type == ColumnType.Categorical).ToList() , 0);
-                groupingResult.Sort(new GroupedRowComparer(this, viewStatus));
-
-                foreach (GroupedRows groupedRows in groupingResult)
-                {
-                    RowViewModel rowViewModel = new RowViewModel(mainPageViewModel)
-                    {
-                        Index = index++
-                    };
-
-                    foreach (ColumnViewModel columnViewModel in ColumnViewModels)
-                    {
-                        Cell cell = new Cell();
-
-                        cell.ColumnViewModel = columnViewModel;
-
-                        if (groupedRows.Keys.ContainsKey(columnViewModel))
-                        {
-                            Object content = groupedRows.Keys[columnViewModel];
-                            cell.Content = content;
-                            cell.RawContent = cell.Content.ToString();
-                        }
-                        else if (columnViewModel.Type == ColumnType.Categorical)
-                        {
-                            Int32 uniqueCount = groupedRows.Rows.Select(r => r.Cells[columnViewModel.Index].Content).Distinct().Count();
-                            cell.Content = $"({uniqueCount})";
-                            cell.RawContent = $"({uniqueCount})";
-                        }
-                        else if (columnViewModel.Type == ColumnType.Numerical)
-                        {
-                            Object aggregated = columnViewModel.AggregativeFunction.Aggregate(groupedRows.Rows.Select(r => (Double)r.Cells[columnViewModel.Index].Content));
-                            String formatted = Formatter.FormatAuto4((Double)aggregated);
-                            cell.RawContent = formatted;
-                            cell.Content = Double.Parse(formatted);
-                        }
-
-                        rowViewModel.Cells.Add(cell);
-                    }
-
-                    groupedRowViewModels.Add(rowViewModel);
-                }
+                groupedRowViewModels = viewStatus.GroupedRowViewModels;
+                groupedRows = viewStatus.GroupedRows;
             }
 
             SheetHeight = groupedRowViewModels.Count * (Double)App.Current.Resources["RowHeight"];
         }
-
-        public static List<GroupedRows> GroupRecursive(List<Row> rows, List<ColumnViewModel> groupedColumnViewModels, Int32 pivotIndex)
-        {            
-            ColumnViewModel pivot = groupedColumnViewModels[pivotIndex];
-            Dictionary<Object, List<Row>> dict = GetRowsByColumnViewModel(rows, pivot);
-            
-            if (pivotIndex < groupedColumnViewModels.Count - 1) // 그루핑을 더 해야함.
-            {
-                List<GroupedRows> groupedRowsList = new List<GroupedRows>();
-                foreach(KeyValuePair<Object, List<Row>> kv in dict)
-                {
-                    List<GroupedRows> ret = GroupRecursive(kv.Value, groupedColumnViewModels, pivotIndex + 1);
-
-                    foreach (GroupedRows groupedRows in ret)
-                    {
-                        groupedRows.Keys[pivot] = kv.Key;
-                        groupedRowsList.Add(groupedRows);
-                    }
-                }
-
-                return groupedRowsList;
-            }
-            else // 마지막임
-            {
-                List<GroupedRows> groupedRowsList = new List<GroupedRows>();
-                foreach (KeyValuePair<Object, List<Row>> kv in dict)
-                {
-                    GroupedRows groupedRows = new GroupedRows();
-                    groupedRows.Keys[pivot] = kv.Key;
-                    groupedRows.Rows = kv.Value;
-
-                    groupedRowsList.Add(groupedRows);
-                }
-
-                return groupedRowsList;
-            }
-        }
-        
-        public static List<GroupedRows> Bin(ColumnViewModel selected, List<Row> rows)
-        {
-            Linear linear = new Linear()
-            {
-                DomainStart = rows.Select(r => (Double)r.Cells[selected.Index].Content).Min(),
-                DomainEnd = rows.Select(r => (Double)r.Cells[selected.Index].Content).Max(),
-            };
-
-            linear.Nice();
-
-            IEnumerable<Bin> bins = HistogramCalculator.Bin(
-                linear.DomainStart,
-                linear.DomainEnd,
-                linear.Step,
-                rows,
-                selected
-                );
-            
-            List<GroupedRows> groupedRows = new List<GroupedRows>();
-            foreach(Bin bin in bins)
-            {
-                GroupedRows grs = new GroupedRows();
-                grs.Keys[selected] = bin;
-                grs.Rows = bin.Rows.ToList();
-                groupedRows.Add(grs);
-            }
-
-            return groupedRows;
-        }
-
-        public static Dictionary<Object, List<Row>> GetRowsByColumnViewModel(IEnumerable<Row> rows, ColumnViewModel columnViewModel)
-        {
-            Dictionary<Object, List<Row>> dict = new Dictionary<Object, List<Row>>();
-            
-            foreach (Row row in rows)
-            {
-                Object content = row.Cells[columnViewModel.Index].Content;
-                if(!dict.ContainsKey(content)) {
-                    dict[content] = new List<Row>();
-                }
-
-                dict[content].Add(row);
-            }
-
-            return dict;
-        }
-
         
         public void UpdateColumnX()
         {
@@ -567,122 +363,6 @@ namespace FlexTable.ViewModel
                 columnViewModel.X = total;
                 total += columnViewModel.Width;
             }
-        }            
-    }
-
-    public class RowViewModelComparer : IComparer<RowViewModel>
-    {
-        ViewStatus ViewStatus;
-        SheetViewModel SheetViewModel;
-
-        public RowViewModelComparer(SheetViewModel sheetViewModel, ViewStatus viewStatus)
-        {
-            SheetViewModel = sheetViewModel;
-            ViewStatus = viewStatus;
         }
-
-        Int32 GetSortDirection(ColumnViewModel cvm) => cvm.SortOption == SortOption.Descending ? -1 : 1;
-
-        public int Compare(RowViewModel x, RowViewModel y)
-        {
-            IEnumerable<ColumnViewModel> sortAppliedColumnViewModels = SheetViewModel.ColumnViewModels.Where(cvm => cvm.SortOption != SortOption.None).OrderByDescending(cvm => cvm.SortPriority);
-
-            foreach(ColumnViewModel columnViewModel in sortAppliedColumnViewModels)
-            {
-                if(x.Cells[columnViewModel.Index].Content != y.Cells[columnViewModel.Index].Content)
-                {
-                    if (columnViewModel.Type == ColumnType.Numerical)
-                    {
-                        return GetSortDirection(columnViewModel) *
-                            ((Double)x.Cells[columnViewModel.Index].Content).CompareTo((Double)y.Cells[columnViewModel.Index].Content);
-                    }
-                    else if (columnViewModel.Type == ColumnType.Categorical)
-                    {
-                        return GetSortDirection(columnViewModel) *
-                            (x.Cells[columnViewModel.Index].Content as Category).Order.CompareTo((y.Cells[columnViewModel.Index].Content as Category).Order);
-                    }
-                }
-            }
-            return x.Row.Index - y.Row.Index;
-        }
-    }
-
-    public class GroupedRowComparer : IComparer<GroupedRows>
-    {
-        ViewStatus ViewStatus;
-        SheetViewModel SheetViewModel;
-
-        public GroupedRowComparer(SheetViewModel sheetViewModel, ViewStatus viewStatus)
-        {
-            SheetViewModel = sheetViewModel;
-            ViewStatus = viewStatus;
-        }
-
-        Int32 GetSortDirection(ColumnViewModel cvm) => cvm.SortOption == SortOption.Descending ? -1 : 1;
-
-        public int Compare(GroupedRows x, GroupedRows y)
-        {            
-            foreach (ColumnViewModel columnViewModel in SheetViewModel.ColumnViewModels.Where(cvm => cvm.SortOption != SortOption.None).OrderByDescending(scvm => scvm.SortPriority))
-            {
-                if(columnViewModel.Type == ColumnType.Categorical)
-                {
-                    if (x.Keys.ContainsKey(columnViewModel)) // 선택된거면 키에 있을 것
-                    {
-                        if (x.Keys[columnViewModel] != y.Keys[columnViewModel])
-                        {
-                            return (x.Keys[columnViewModel] as Category).Order.CompareTo((y.Keys[columnViewModel] as Category).Order) * GetSortDirection(columnViewModel);
-                        }
-                    }
-                    else // 선택되지 않은거면 distinct한 value의 개수로 
-                    {
-                        Int32 xCount = x.Rows.Select(r => r.Cells[columnViewModel.Index].Content).Distinct().Count();
-                        Int32 yCount = y.Rows.Select(r => r.Cells[columnViewModel.Index].Content).Distinct().Count();
-
-                        if(xCount != yCount)
-                        {
-                            return xCount.CompareTo(yCount) * GetSortDirection(columnViewModel);
-                        }
-                    }
-                }
-                else if(columnViewModel.Type == ColumnType.Numerical)
-                {
-                    if (ViewStatus.SelectedColumnViewModels.Count == 1 && columnViewModel == ViewStatus.SelectedColumnViewModels[0]) // 이 경우는 뉴메리컬 하나만 선택되어 비닝 된 결과가 보이는 경우이다.
-                    {
-                        ColumnViewModel numerical = ViewStatus.SelectedColumnViewModels[0];
-                        Double xMin = (x.Keys[numerical] as Bin).Min,
-                               yMin = (y.Keys[numerical] as Bin).Min;
-
-                        if (xMin != yMin)
-                            return xMin.CompareTo(yMin) * GetSortDirection(numerical);
-                    }
-                    else
-                    {
-                        Double xValue = columnViewModel.AggregativeFunction.Aggregate(x.Rows.Select(r => (Double)r.Cells[columnViewModel.Index].Content));
-                        Double yValue = columnViewModel.AggregativeFunction.Aggregate(y.Rows.Select(r => (Double)r.Cells[columnViewModel.Index].Content));
-
-                        if (xValue != yValue)
-                        {
-                            return xValue.CompareTo(yValue) * GetSortDirection(columnViewModel);
-                        }
-                    }
-                }
-            }
-
-            foreach (ColumnViewModel columnViewModel in ViewStatus.SelectedColumnViewModels)
-            {
-                if (columnViewModel.Type == ColumnType.Categorical)
-                {
-                    if (x.Keys[columnViewModel] != y.Keys[columnViewModel])
-                    {
-                        return (x.Keys[columnViewModel] as Category).Order.CompareTo((y.Keys[columnViewModel] as Category).Order) * GetSortDirection(columnViewModel);
-                    }
-                }
-                else if (columnViewModel.Type == ColumnType.Numerical)
-                {
-                }
-            }
-
-            return 0;
-        }
-    }
+    }    
 }

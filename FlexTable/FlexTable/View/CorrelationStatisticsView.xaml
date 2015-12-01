@@ -14,7 +14,7 @@
         </Style>
         <Style TargetType="TextBlock" x:Name="TeaserHeaderTextStyle">
             <Setter Property="FontSize" Value="30" />
-            <Setter Property="TextAlignment" Value="Center" />
+            <Setter Property="TextAlignment" Value="Left" />
         </Style>
 
         <Style TargetType="Border" x:Name="TeaserValueStyle">
@@ -47,7 +47,7 @@
         </Style>
     </UserControl.Resources>
     <StackPanel>
-        <Grid Margin="50 30 50 20">
+        <Grid Margin="20 30 20 20">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition></ColumnDefinition>
             </Grid.ColumnDefinitions>
@@ -59,7 +59,7 @@
             </Grid.RowDefinitions>
 
             <Border Grid.Column="0" Grid.Row="0" Style="{StaticResource TeaserHeaderStyle}">
-                <TextBlock Style="{StaticResource TeaserHeaderTextStyle}">Pearson Coefficient</TextBlock>
+                <TextBlock Style="{StaticResource TeaserHeaderTextStyle}">• Pearson Coefficient :</TextBlock>
             </Border>
             
             <Border Grid.Column="0" Grid.Row="1" Style="{StaticResource TeaserValueStyle}" Padding="0 0 0 50">
@@ -67,15 +67,15 @@
             </Border>
 
             <Border Grid.Column="0" Grid.Row="2" Style="{StaticResource TeaserHeaderStyle}">
-                <TextBlock Style="{StaticResource TeaserHeaderTextStyle}">Linear Regression</TextBlock>
+                <TextBlock Style="{StaticResource TeaserHeaderTextStyle}">• Linear Regression :</TextBlock>
             </Border>
 
             <Border Grid.Column="0" Grid.Row="3" Style="{StaticResource TeaserValueStyle}">
                 <TextBlock Style="{StaticResource TeaserValueTextStyle}">
-                    <Run Text="{Binding YVariableName}" FontWeight="Bold"></Run>
+                    <Run Text="{Binding YVariableName}"></Run>
                     <Run> = </Run>
-                    <Run Text="{Binding SlopeString}"></Run><Run Text="{Binding XVariableName}" FontWeight="Bold"></Run>
-                    <Run Text="{Binding YInterceptString}"></Run>
+                    <Run Text="{Binding SlopeString}" FontWeight="Bold"></Run><Run Text="{Binding XVariableName}"></Run>
+                    <Run Text="{Binding YInterceptString}" FontWeight="Bold"></Run>
                 </TextBlock>
             </Border>
         </Grid>

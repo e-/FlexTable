@@ -17,7 +17,7 @@
             <Setter Property="Background" Value="#eee" />
         </Style>        
         <Style TargetType="TextBlock" x:Name="ColumnHeaderValueTextStyle">
-            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontSize" Value="15" />
             <Setter Property="TextAlignment" Value="Center" />
             <Setter Property="HorizontalAlignment" Value="Center" />
             <Setter Property="VerticalAlignment" Value="Center" />
@@ -44,7 +44,7 @@
             <Setter Property="Background" Value="#ddd" />
         </Style>
         <Style TargetType="TextBlock" x:Name="ValueTextStyle">
-            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontSize" Value="15" />
             <Setter Property="TextAlignment" Value="Center" />
             <Setter Property="HorizontalAlignment" Value="Center" />
             <Setter Property="VerticalAlignment" Value="Center" />
@@ -76,7 +76,7 @@
                   VerticalScrollBarVisibility="Auto" VerticalScrollMode="Auto" 
                   Margin="5 10 5 10"
                   >        
-        <Grid x:Name="PivotTableElement">
+        <Grid x:Name="PivotTableElement" HorizontalAlignment="Center" VerticalAlignment="Top" MinWidth="450">
         </Grid>
     </ScrollViewer>
     <!--</Canvas>-->

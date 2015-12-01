@@ -28,7 +28,6 @@ namespace FlexTable.ViewModel
             }
         }
         public Double Y { get { return index * (Double)App.Current.Resources["RowHeight"]; } }
-        public Boolean IsFilteredOut { get; set; }
         public Row Row { get; set; }
 
         private List<Cell> cells = new List<Cell>();

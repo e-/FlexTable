@@ -9,12 +9,14 @@ using FlexTable.Model;
 using Windows.UI.Xaml;
 using System.Diagnostics;
 using Windows.UI.Xaml.Documents;
+using FlexTable.Util;
 
 namespace FlexTable.ViewModel
 {
     public class PivotTableViewModel
     {
         const Int32 MaximumCellNumber = 100;
+        const Int32 MaximumRowNumber = 20;
 
         private MainPageViewModel mainPageViewModel;
 
@@ -41,6 +43,249 @@ namespace FlexTable.ViewModel
                 Text = text,
                 Style = pivotTableView.Resources["ColumnHeaderValueTextStyle"] as Style
             };
+        }
+
+        public void Preview(ViewStatus viewStatus)
+        {
+            UIElementCollection children = pivotTableView.PivotTable.Children;
+
+            children.Clear();
+            pivotTableView.PivotTable.ColumnDefinitions.Clear();
+            pivotTableView.PivotTable.RowDefinitions.Clear();
+
+            var groupedRows = viewStatus.GroupedRows;
+            var groupedRowViewModels = viewStatus.GroupedRowViewModels;
+            var selectedColumnViewModels = viewStatus.SelectedColumnViewModels;
+
+            if (viewStatus.IsC)
+            {
+                Int32 rowN = groupedRows.Count + 1, // 테이블 전체 로우의 개수
+                      columnN = 2;
+
+                Int32 i, index, j;
+
+                // 개수만큼 추가 컬럼 및 로우 정의 추가. 이중선 말고는 별 특별한 점 없음.
+                for (i = 0; i < rowN; ++i)
+                {
+                    RowDefinition rowDefinition = new RowDefinition();
+                    rowDefinition.Height = GridLength.Auto;
+                    pivotTableView.PivotTable.RowDefinitions.Add(rowDefinition);
+                }
+
+                for (i = 0; i < columnN; ++i)
+                {
+                    ColumnDefinition columnDefinition = new ColumnDefinition();
+                    pivotTableView.PivotTable.ColumnDefinitions.Add(columnDefinition);
+                }
+
+                // 가로 이름 넣기 (인덱스 열 포함)
+
+                index = 0;
+                foreach (ColumnViewModel columnViewModel in selectedColumnViewModels)
+                {
+                    Border border = new Border()
+                    {
+                        Style = pivotTableView.Resources["ColumnHeaderBorderStyle"] as Style
+                    };
+                    TextBlock textBlock = new TextBlock()
+                    {
+                        Text = columnViewModel.FormatHeaderName(viewStatus),
+                        Style = pivotTableView.Resources["ColumnHeaderValueTextStyle"] as Style
+                    };
+                    border.Child = textBlock;
+
+                    children.Add(border);
+                    Grid.SetRow(border, 0);
+                    Grid.SetColumn(border, index++);
+                }
+
+                {
+                    Border border = new Border()
+                    {
+                        Style = pivotTableView.Resources["ColumnHeaderBorderStyle"] as Style
+                    };
+                    TextBlock textBlock = new TextBlock()
+                    {
+                        Text = $"Count({selectedColumnViewModels.First().Name})",
+                        Style = pivotTableView.Resources["ColumnHeaderValueTextStyle"] as Style
+                    };
+                    border.Child = textBlock;
+
+                    children.Add(border);
+                    Grid.SetRow(border, 0);
+                    Grid.SetColumn(border, index++);
+                }
+
+                // 데이터 넣기
+                i = 0;
+                foreach (RowViewModel rowViewModel in groupedRowViewModels.Take(MaximumRowNumber))
+                {
+                    j = 0;
+                    foreach (ColumnViewModel columnViewModel in selectedColumnViewModels)
+                    {
+                        Border border = GetNewBorder(rowViewModel.Cells[columnViewModel.Index].Content);
+
+                        children.Add(border);
+                        Grid.SetRow(border, 1 + i);
+                        Grid.SetColumn(border, j++);
+                    }
+                    {
+                        Border border = GetNewBorder(groupedRows[i].Rows.Count);
+
+                        children.Add(border);
+                        Grid.SetRow(border, 1 + i);
+                        Grid.SetColumn(border, j++);
+                    }
+                    i++;
+                }
+            }
+            else if (viewStatus.IsN)
+            {
+                Int32 rowN = groupedRows.Count + 1, // 테이블 전체 로우의 개수
+                      columnN = 2;
+
+                Int32 i, index, j;
+
+                // 개수만큼 추가 컬럼 및 로우 정의 추가. 이중선 말고는 별 특별한 점 없음.
+                for (i = 0; i < rowN; ++i)
+                {
+                    RowDefinition rowDefinition = new RowDefinition();
+                    rowDefinition.Height = GridLength.Auto;
+                    pivotTableView.PivotTable.RowDefinitions.Add(rowDefinition);
+                }
+
+                for (i = 0; i < columnN; ++i)
+                {
+                    ColumnDefinition columnDefinition = new ColumnDefinition();
+                    pivotTableView.PivotTable.ColumnDefinitions.Add(columnDefinition);
+                }
+
+                // 가로 이름 넣기 (인덱스 열 포함)
+
+                index = 0;
+                foreach (ColumnViewModel columnViewModel in selectedColumnViewModels)
+                {
+                    Border border = new Border()
+                    {
+                        Style = pivotTableView.Resources["ColumnHeaderBorderStyle"] as Style
+                    };
+                    TextBlock textBlock = new TextBlock()
+                    {
+                        Text = columnViewModel.FormatHeaderName(viewStatus),
+                        Style = pivotTableView.Resources["ColumnHeaderValueTextStyle"] as Style
+                    };
+                    border.Child = textBlock;
+
+                    children.Add(border);
+                    Grid.SetRow(border, 0);
+                    Grid.SetColumn(border, index++);
+                }
+
+                {
+                    Border border = new Border()
+                    {
+                        Style = pivotTableView.Resources["ColumnHeaderBorderStyle"] as Style
+                    };
+                    TextBlock textBlock = new TextBlock()
+                    {
+                        Text = $"Count({selectedColumnViewModels.First().Name})",
+                        Style = pivotTableView.Resources["ColumnHeaderValueTextStyle"] as Style
+                    };
+                    border.Child = textBlock;
+
+                    children.Add(border);
+                    Grid.SetRow(border, 0);
+                    Grid.SetColumn(border, index++);
+                }
+
+                // 데이터 넣기
+                i = 0;
+                foreach (GroupedRows grs in groupedRows.Take(MaximumRowNumber))
+                {
+                    j = 0;
+                    foreach (ColumnViewModel columnViewModel in selectedColumnViewModels)
+                    {
+                        Bin bin = grs.Keys[columnViewModel] as Bin;
+
+                        String content = bin.ToString();
+                        Border border = GetNewBorder(content);
+
+                        children.Add(border);
+                        Grid.SetRow(border, 1 + i);
+                        Grid.SetColumn(border, j++);
+                    }
+                    {
+                        Border border = GetNewBorder(grs.Rows.Count);
+
+                        children.Add(border);
+                        Grid.SetRow(border, 1 + i);
+                        Grid.SetColumn(border, j++);
+                    }
+                    i++;
+                }
+            }
+            else
+            {
+                Int32 rowN = groupedRows.Count + 1, // 테이블 전체 로우의 개수
+                      columnN = selectedColumnViewModels.Count/* + 1 + 1*/; // 테이블 전체 컬럼의 개수
+
+                Int32 i, index, j;
+
+                // 개수만큼 추가 컬럼 및 로우 정의 추가. 이중선 말고는 별 특별한 점 없음.
+                for (i = 0; i < rowN; ++i)
+                {
+                    RowDefinition rowDefinition = new RowDefinition();
+                    rowDefinition.Height = GridLength.Auto;
+                    pivotTableView.PivotTable.RowDefinitions.Add(rowDefinition);
+                }
+
+                for (i = 0; i < columnN; ++i)
+                {
+                    ColumnDefinition columnDefinition = new ColumnDefinition();
+                    /*if (i == 1) // 이중선
+                    {
+                        columnDefinition.Width = new GridLength(3);
+                    }*/
+                    pivotTableView.PivotTable.ColumnDefinitions.Add(columnDefinition);
+                }
+
+                // 가로 이름 넣기 (인덱스 열 포함)
+
+                index = 0;
+                foreach (ColumnViewModel columnViewModel in selectedColumnViewModels)
+                {
+                    Border border = new Border()
+                    {
+                        Style = pivotTableView.Resources["ColumnHeaderBorderStyle"] as Style
+                    };
+                    TextBlock textBlock = new TextBlock()
+                    {
+                        Text = columnViewModel.FormatHeaderName(viewStatus),
+                        Style = pivotTableView.Resources["ColumnHeaderValueTextStyle"] as Style
+                    };
+                    border.Child = textBlock;
+
+                    children.Add(border);
+                    Grid.SetRow(border, 0);
+                    Grid.SetColumn(border, index++);
+                }
+
+                // 데이터 넣기
+                i = 0;
+                foreach (RowViewModel rowViewModel in groupedRowViewModels.Take(MaximumRowNumber))
+                {
+                    j = 0;
+                    foreach (ColumnViewModel columnViewModel in selectedColumnViewModels)
+                    {
+                        Border border = GetNewBorder(rowViewModel.Cells[columnViewModel.Index].Content);
+
+                        children.Add(border);
+                        Grid.SetRow(border, 1 + i);
+                        Grid.SetColumn(border, j++);
+                    }
+                    i++;
+                }
+            }
         }
 
         public void Preview(

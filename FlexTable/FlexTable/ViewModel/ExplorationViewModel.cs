@@ -66,7 +66,10 @@ namespace FlexTable.ViewModel
             
             // 새 컬럼 추가
             selectedViewStatus.SelectedColumnViewModels.Add(columnViewModel);
-            
+
+            // 현재 추가된 컬럼으로 groupedRows와 GroupedRowViewModels를 만듦. 
+            selectedViewStatus.Generate(mainPageViewModel.SheetViewModel);
+
             // 탑 페이지 뷰 모델 가져와서
             PageViewModel pageViewModel = TopPageView.ViewModel;
 
@@ -112,8 +115,10 @@ namespace FlexTable.ViewModel
                 // 새로운 page 만들기
                 view.ExplorationView.AddNewPage();
 
-                mainPageViewModel.SheetViewModel.UpdateGroup(ViewStatus);
-                mainPageViewModel.TableViewModel.Reflect(ViewStatus);
+                mainPageViewModel.ReflectAll();
+
+                //mainPageViewModel.SheetViewModel.Reflect(ViewStatus);
+                //mainPageViewModel.TableViewModel.Reflect(ViewStatus, null);
 
                 view.TableView.ScrollToColumnViewModel(mainPageViewModel.SheetViewModel.ColumnViewModels.OrderBy(c => c.Order).First());
 
@@ -133,13 +138,16 @@ namespace FlexTable.ViewModel
                 selectedPageViews.Add(pageView);
 
                 // 차트 새로 반영 (타이틀이 업데이트 될 것임)
-                pageViewModel.Reflect(true);
+                //pageViewModel.Reflect(true);
 
                 // 새로운 page 만들기
                 view.ExplorationView.AddNewPage();
 
-                mainPageViewModel.SheetViewModel.UpdateGroup(ViewStatus);
-                mainPageViewModel.TableViewModel.Reflect(ViewStatus);               
+                mainPageViewModel.ReflectAll();
+
+                //AnimationHint hint = AnimationHint.Create(mainPageViewModel.SheetViewModel);
+                //mainPageViewModel.SheetViewModel.Reflect(ViewStatus);
+                //mainPageViewModel.TableViewModel.Reflect(ViewStatus, hint);               
                 
                 view.TableView.ScrollToColumnViewModel(mainPageViewModel.SheetViewModel.ColumnViewModels.OrderBy(c => c.Order).First());
 
@@ -158,11 +166,13 @@ namespace FlexTable.ViewModel
                 // 기존 탑 페이지 지우고 이걸 탑 페이지로 지정
                 view.ExplorationView.RemoveTopPage(pageView);
 
+                mainPageViewModel.ReflectAll();
+
                 // SheetViewModel 에서 ungrouping 하기, 이건 rowViewModels를 업데이트함
-                mainPageViewModel.SheetViewModel.UpdateGroup(ViewStatus);
+                //mainPageViewModel.SheetViewModel.Reflect(ViewStatus);
 
                 // Table View 업데이트
-                mainPageViewModel.TableViewModel.Reflect(ViewStatus);
+                //mainPageViewModel.TableViewModel.Reflect(ViewStatus, null);
 
                 view.TableView.ScrollToColumnViewModel(mainPageViewModel.SheetViewModel.ColumnViewModels.OrderBy(c => c.Order).First());
 
@@ -175,18 +185,20 @@ namespace FlexTable.ViewModel
         {
             mainPageViewModel.SheetViewModel.FilterViewModels.Insert(0, filterViewModel);
 
+            mainPageViewModel.ReflectAll(ViewStatus);
+            /*
             // sheet 업데이트
-            mainPageViewModel.SheetViewModel.UpdateGroup(ViewStatus);
+            mainPageViewModel.SheetViewModel.Reflect(ViewStatus);
 
             // 테이블 업데이트
-            mainPageViewModel.TableViewModel.Reflect(ViewStatus);
+            mainPageViewModel.TableViewModel.Reflect(ViewStatus, null);
 
             // 차트 업데이트
             foreach(PageView pageView in selectedPageViews)
             {
                 pageView.ViewModel.Reflect(true);
             }
-
+            */
             // 뒤에 숨겨진 차트들은 어떻게하나? 좀 더 빨리 안될까
         }
 
@@ -194,11 +206,14 @@ namespace FlexTable.ViewModel
         {
             mainPageViewModel.SheetViewModel.FilterViewModels.Remove(filterViewModel);
 
+            mainPageViewModel.ReflectAll(ViewStatus);
+
+            /*
             // sheet 업데이트
-            mainPageViewModel.SheetViewModel.UpdateGroup(ViewStatus);
+            mainPageViewModel.SheetViewModel.Reflect(ViewStatus);
 
             // 테이블 업데이트
-            mainPageViewModel.TableViewModel.Reflect(ViewStatus);
+            mainPageViewModel.TableViewModel.Reflect(ViewStatus, null);
 
             // 차트 업데이트
             foreach (PageView pageView in selectedPageViews)
@@ -207,6 +222,7 @@ namespace FlexTable.ViewModel
             }
 
             // 뒤에 숨겨진 차트들은 어떻게하나? 좀 더 빨리 안될까
+            */
         }
     }
 }

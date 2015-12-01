@@ -78,22 +78,37 @@ namespace FlexTable.ViewModel
 
         public void ReflectAll(ViewStatus viewStatus)
         {
+            viewStatus.Generate(sheetViewModel);
+
+            Boolean isN = viewStatus.IsN;
+            foreach (ColumnViewModel cvm in SheetViewModel.ColumnViewModels)
+            {
+                cvm.IsSelected = viewStatus.SelectedColumnViewModels.IndexOf(cvm) >= 0;
+                if(isN && cvm.IsSelected && cvm.SortOption == SortOption.None)
+                {
+                    SheetViewModel.Sort(cvm, SortOption.Ascending);
+                    viewStatus.Generate(SheetViewModel);
+                }
+            }
+
             // sheet 업데이트
-            SheetViewModel.UpdateGroup(viewStatus);
+            SheetViewModel.Reflect(viewStatus);
 
             // 테이블 업데이트
-            TableViewModel.Reflect(viewStatus);
+            TableViewModel.Reflect(viewStatus, null);
 
             // 차트 업데이트
             foreach (PageView pageView in ExplorationViewModel.SelectedPageViews)
             {
+                if(pageView.ViewModel.ViewStatus != viewStatus)
+                    pageView.ViewModel.ViewStatus.Generate(sheetViewModel);
                 pageView.ViewModel.Reflect(true);
             }
         }
 
         public async void Initialize()
         {
-            Sheet sheet = await Util.CsvLoader.Load("driving.csv"); // "Population-filtered.csv");
+            Sheet sheet = await Util.CsvLoader.Load("who.csv"); // "Population-filtered.csv");
             this.Sheet = sheet;
 
             PageHeight = Bounds.Height / 2 - 4;
@@ -132,8 +147,6 @@ namespace FlexTable.ViewModel
             // 메타데이터 초기화
             ExplorationViewModel.MetadataViewModel.Initialize();
 
-            return;
-
             var dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
 
             ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[3]);
@@ -153,9 +166,9 @@ namespace FlexTable.ViewModel
                     dispatcherTimer2.Stop();
                     ExplorationViewModel.TopPageView.ViewModel.State = PageViewModel.PageViewState.Selected;
                     ExplorationViewModel.PageViewStateChanged(ExplorationViewModel.TopPageView.ViewModel, ExplorationViewModel.TopPageView);
-                    
-                    /*
-                    ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[2]);
+
+                    return;
+                    ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[4]);
 
                     DispatcherTimer dispatcherTimer3 = new DispatcherTimer();
                     dispatcherTimer3.Tick += (sender3, e3) =>
@@ -166,7 +179,7 @@ namespace FlexTable.ViewModel
                     };
                     dispatcherTimer3.Interval = TimeSpan.FromMilliseconds(500);
                     dispatcherTimer3.Start();
-                    */
+                    
                 };
                 dispatcherTimer2.Interval = TimeSpan.FromMilliseconds(500);
                 dispatcherTimer2.Start();

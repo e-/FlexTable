@@ -14,6 +14,11 @@ namespace FlexTable.Util
         public Double Min { get; set; }
         public Double Max { get; set; }
         public IEnumerable<Row> Rows { get; set; }
+
+        public override String ToString()
+        {
+            return $"{Formatter.FormatAuto3(Min)} - {Formatter.FormatAuto3(Max)}";
+        }
     }
 
     public class HistogramCalculator

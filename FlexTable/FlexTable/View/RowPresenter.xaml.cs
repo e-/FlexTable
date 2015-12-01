@@ -53,9 +53,11 @@ namespace FlexTable.View
             foreach (Model.Cell cell in RowViewModel.Cells)
             {
                 cellPresenters[index].Text = cell.Content.ToString();
+                cellPresenters[index].Width = cell.ColumnViewModel.Width;
                 Canvas.SetLeft(cellPresenters[index], cell.ColumnViewModel.X);
                 index++;
             }
         }
     }
 }
+

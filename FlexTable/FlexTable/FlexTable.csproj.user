@@ -7,7 +7,7 @@
     <UseAuthentication>true</UseAuthentication>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
-    <RemoteDebugEnabled>true</RemoteDebugEnabled>
+    <RemoteDebugEnabled>false</RemoteDebugEnabled>
     <RemoteDebugMachine>192.168.0.12:4020 (hcil-surface)</RemoteDebugMachine>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
