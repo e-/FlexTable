@@ -16,6 +16,7 @@ using FlexTable.Model;
 using d3;
 using FlexTable.Crayon.Chart;
 using FlexTable.ViewModel;
+using FlexTable.Util;
 
 // 사용자 정의 컨트롤 항목 템플릿에 대한 설명은 http://go.microsoft.com/fwlink/?LinkId=234236에 나와 있습니다.
 
@@ -58,13 +59,19 @@ namespace FlexTable.View
 
             linear.Nice();
 
-            HistogramElement.Data = Util.HistogramCalculator.Bin(
+            List<Bin> bins = Util.HistogramCalculator.Bin(
                 linear.DomainStart,
                 linear.DomainEnd,
                 linear.Step,
                 rows,
                 numerical
-                )
+                ).ToList();
+
+            if (numerical.SortOption == SortOption.Ascending) { bins = bins.OrderBy(b=>b.Min).ToList(); }
+            else if (numerical.SortOption == SortOption.Descending) { bins = bins.OrderByDescending(b => b.Min).ToList(); }
+
+            HistogramElement.Data = 
+                bins
                 .Select(d => new BarChartDatum()
                 {
                     Key = $"~{Util.Formatter.Auto(d.Max)}",

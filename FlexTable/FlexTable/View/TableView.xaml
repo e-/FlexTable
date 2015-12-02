@@ -33,6 +33,15 @@
             </ObjectAnimationUsingKeyFrames>
         </Storyboard>
 
+        <Storyboard x:Name="SlowlyHideAllRowViewerStoryboard">
+            <DoubleAnimation Storyboard.TargetName="AllRowViewer" Storyboard.TargetProperty="Opacity"
+                             To="0" Duration="0:0:0.7" EasingFunction="{StaticResource QuarticEaseInOut}"></DoubleAnimation>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="AllRowViewer"
+                                           Storyboard.TargetProperty="Visibility">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.7" Value="Collapsed" />
+            </ObjectAnimationUsingKeyFrames>
+        </Storyboard>
+
         <Storyboard x:Name="ShowGroupedRowViewerStoryboard">
             <DoubleAnimation Storyboard.TargetName="GroupedRowViewer" Storyboard.TargetProperty="Opacity"
                              To="1" Duration="0:0:0.3" EasingFunction="{StaticResource QuarticEaseInOut}"></DoubleAnimation>

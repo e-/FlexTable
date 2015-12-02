@@ -62,12 +62,6 @@ namespace FlexTable.ViewModel
         }
 
         public IEnumerable<RowViewModel> ActivatedRowViewModels { get; set; }
-        /*private ObservableCollection<RowViewModel> selectedRowViewModels;
-        public ObservableCollection<RowViewModel> SelectedRowViewModels
-        {
-            get { return selectedRowViewModels; }
-            set { selectedRowViewModels = value; OnPropertyChanged(nameof(SelectedRowViewModels)); }
-        }*/
         
         private TableViewState oldState = TableViewState.AllRow;
         public TableViewState OldState { get { return oldState; } }
@@ -95,6 +89,7 @@ namespace FlexTable.ViewModel
 
         public void Initialize()
         {
+            State = TableViewState.AllRow;
             // 최대 row header 추가
             view.TableView.GuidelinePresenter.SetMaximumRowNumber(SheetViewModel.AllRowViewModels.Count);
             view.TableView.RowHeaderPresenter.SetRowMaximumNumber(SheetViewModel.AllRowViewModels.Count);
@@ -117,15 +112,25 @@ namespace FlexTable.ViewModel
             view.TableView.ColumnIndexer.Update();
         }
 
+        private AnimationHint stashedAnimationHint = null;
+        private ViewStatus stashedViewStatus = null;
+
+        public void StashViewStatus(ViewStatus viewStatus, AnimationHint.AnimationType animationType)
+        {
+            stashedAnimationHint = AnimationHint.Create(mainPageViewModel.SheetViewModel, this);
+            stashedAnimationHint.Type = animationType;
+            stashedViewStatus = viewStatus.Clone();
+        }
+
         DispatcherTimer dispatcherTimer = null;
         const Double DeferredReflectionTimeInMS = 1000;
 
-        public void Reflect(ViewStatus viewStatus, AnimationHint hint)
+        public void Reflect(ViewStatus viewStatus)
         {
             // 애니메이션 로직이 들어가야함
-            Boolean isTableAnimationApplying = CreateTableAnimation(previousViewStatus, viewStatus, hint);
+            Double animationTimer = CreateTableAnimation(viewStatus);
 
-            if (isTableAnimationApplying)
+            if (animationTimer > 0)
             {
                 State = TableViewState.Animation;
                 view.TableView.ReflectState(viewStatus);
@@ -138,7 +143,9 @@ namespace FlexTable.ViewModel
             {
                 dispatcherTimer.Stop();
                 Update(viewStatus);
-                
+
+                view.TableView.ReflectState(viewStatus);
+
                 // column header 업데이트
                 foreach (ColumnViewModel cvm in mainPageViewModel.SheetViewModel.ColumnViewModels)
                 {
@@ -150,7 +157,7 @@ namespace FlexTable.ViewModel
                 view.TableView.ColumnIndexer.Update();
                 previousViewStatus = viewStatus;
             };
-            dispatcherTimer.Interval = TimeSpan.FromMilliseconds(isTableAnimationApplying ? DeferredReflectionTimeInMS : 1);
+            dispatcherTimer.Interval = TimeSpan.FromMilliseconds(animationTimer > 0 ? animationTimer : 1);
             dispatcherTimer.Start();
         }
         
@@ -207,7 +214,6 @@ namespace FlexTable.ViewModel
             }
 
             viewStatus.ColorRowViewModels(allRowViewModels, groupedRowViewModels, SheetViewModel.GroupedRows);
-            view.TableView.ReflectState(viewStatus);
         }
 
         uint ignoredPointerId;
@@ -260,15 +266,18 @@ namespace FlexTable.ViewModel
 
         public void PreviewRows(IEnumerable<Row> selectedRows)
         {
+            if(this.SelectedRows == null)
+            {
+                StashViewStatus(mainPageViewModel.ExplorationViewModel.ViewStatus, AnimationHint.AnimationType.SelectRows);
+            }
             this.SelectedRows = selectedRows;
-
-            Reflect(mainPageViewModel.ExplorationViewModel.ViewStatus, null);
+            Reflect(mainPageViewModel.ExplorationViewModel.ViewStatus);
         }
 
         public void CancelPreviewRows()
         {
             SelectedRows = null;
-            Reflect(mainPageViewModel.ExplorationViewModel.ViewStatus, null);
+            Reflect(mainPageViewModel.ExplorationViewModel.ViewStatus);
         }        
     }
 }

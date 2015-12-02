@@ -54,7 +54,7 @@
                 </TextBlock>
                 <TextBlock TextAlignment="Center" HorizontalAlignment="Center"
                                 FontSize="14" Foreground="White" Padding="0 0 0 5" >
-                        Sort Ascending
+                        Sort Descending
                 </TextBlock>
             </StackPanel>
         </Border>

@@ -107,8 +107,8 @@ namespace FlexTable.View
             FilterViewModel fvm = new FilterViewModel(ViewModel.MainPageViewModel)
             {
                 Name = (values.Count() == 1) ?
-                $"{name} = ${values.First()}" :
-                $"{name} in ${String.Join(", ", values)}",
+                $"{name} = {values.First()}" :
+                $"{name} in {String.Join(", ", values)}",
                 Predicate = r => !filteredRows.Any(rr => rr == r)
             };
             ViewModel.FilterOut(fvm);
@@ -188,8 +188,9 @@ namespace FlexTable.View
             if(SelectedRows != null && SelectedRows.Count() > 0)
             {
                 Int32 count = SelectedRows.Count();
-                FilterOut(SelectedRows, $"Filtered {count} row" + (count == 1 ? String.Empty : "s"));
+                FilterOut(SelectedRows.ToList(), $"Filtered {count} row" + (count == 1 ? String.Empty : "s"));
                 SelectionChanged(new List<Row>() { });
+                ClearSelection();
             }
         }
 
@@ -378,7 +379,7 @@ namespace FlexTable.View
             ViewModel.ViewStatus.ActivatedChart = paragraphs[index].Children.Last();
 
             if(ViewModel.IsSelected)
-                ViewModel.MainPageViewModel.TableViewModel.Reflect(ViewModel.ViewStatus, null);
+                ViewModel.MainPageViewModel.TableViewModel.Reflect(ViewModel.ViewStatus);
         }
 
         private void Wrapper_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
@@ -489,6 +490,7 @@ namespace FlexTable.View
         {
             ViewModel.State = PageViewModel.PageViewState.Undoing;
             ViewModel.StateChanged(this);
+            ClearSelection();
         }
 
         private void Undo_Tapped(object sender, TappedRoutedEventArgs e)
@@ -539,11 +541,7 @@ namespace FlexTable.View
             Double delta = e.Cumulative.Translation.X;
             if (delta > SelectionDismissThreshold)
             {
-                if (ViewModel.IsBarChartVisible) BarChartElement.ClearSelection();
-                if (ViewModel.IsGroupedBarChartVisible) GroupedBarChartElement.ClearSelection();
-                if (ViewModel.IsLineChartVisible) LineChart.ClearSelection();
-                if (ViewModel.IsDistributionVisible) DistributionView.Histogram.ClearSelection();
-                if (ViewModel.IsScatterplotVisible) ScatterplotElement.ClearSelection();
+                ClearSelection();
             }
             else
             {
@@ -558,6 +556,15 @@ namespace FlexTable.View
                 FlashStoryboard.Begin();
                 Clipboard_Tapped(sender, null);
             }
+        }
+
+        private void ClearSelection()
+        {
+            if (ViewModel.IsBarChartVisible) BarChartElement.ClearSelection();
+            if (ViewModel.IsGroupedBarChartVisible) GroupedBarChartElement.ClearSelection();
+            if (ViewModel.IsLineChartVisible) LineChart.ClearSelection();
+            if (ViewModel.IsDistributionVisible) DistributionView.Histogram.ClearSelection();
+            if (ViewModel.IsScatterplotVisible) ScatterplotElement.ClearSelection();
         }
     }
 }

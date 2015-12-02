@@ -81,7 +81,13 @@ namespace FlexTable.Model
 
         public ViewStatus Clone()
         {
-            ViewStatus cloned = new ViewStatus();
+            ViewStatus cloned = new ViewStatus()
+            {
+                GroupedRowViewModels = GroupedRowViewModels != null ? new List<RowViewModel>(GroupedRowViewModels) : null,
+                GroupedRows = GroupedRows != null ? new List<GroupedRows>(GroupedRows) : null,
+                ActivatedChart = ActivatedChart
+            };
+
             foreach(ColumnViewModel cvm in selectedColumnViewModels)
             {
                 cloned.SelectedColumnViewModels.Add(cvm);
@@ -696,6 +702,7 @@ namespace FlexTable.Model
                     }
                 }
             }
+
             return x.Row.Index - y.Row.Index;
         }
     }

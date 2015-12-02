@@ -286,7 +286,7 @@ namespace FlexTable.Crayon.Chart
                 index = 0;
                 foreach (Rectangle rect in LegendHandleRectangleElement.Children)
                 {
-                    if (Canvas.GetLeft(LegendPanel) + Canvas.GetLeft(rect) <= boundingRect.Left && boundingRect.Top <= Canvas.GetTop(rect) + rect.Height && Canvas.GetTop(rect) <= boundingRect.Top + boundingRect.Height)
+                    if (Canvas.GetLeft(LegendPanel) + Canvas.GetLeft(rect) <= boundingRect.Right && boundingRect.Top <= Canvas.GetTop(rect) + rect.Height && Canvas.GetTop(rect) <= boundingRect.Top + boundingRect.Height)
                     {
                         Object datum = LegendData[index];
 

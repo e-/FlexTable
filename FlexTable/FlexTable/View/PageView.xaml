@@ -157,7 +157,7 @@
                 <DiscreteColorKeyFrame KeyTime="0:0:0.3" Value="Transparent" />
             </ColorAnimationUsingKeyFrames>
             <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.3"
-                             Storyboard.TargetName="ChartWrapper" Storyboard.TargetProperty="Opacity" From="0.6" To="1">
+                             Storyboard.TargetName="ChartWrapper" Storyboard.TargetProperty="Opacity" From="0.2" To="1">
             </DoubleAnimation>
         </Storyboard>
 

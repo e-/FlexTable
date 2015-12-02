@@ -275,6 +275,7 @@ namespace FlexTable.View
                 {
                     firstColoredColumnViewModel = secondColoredColumnViewModel = thirdColoredColumnViewModel = null;
                 }
+                if (viewStatus.IsCCN && viewStatus.IsGroupedBarChartVisible) firstColoredColumnViewModel = secondColoredColumnViewModel = thirdColoredColumnViewModel = null;
                 if (viewStatus.IsCNN && viewStatus.IsGroupedBarChartVisible) coloredColumnViewModel = null;
 
                 IEnumerable<RowPresenter> selected = selectedRowPresenters.Where(rp => sr.IndexOf(rp.RowViewModel.Row) >= 0).OrderBy(rp => rp.RowViewModel.Index),
@@ -308,10 +309,12 @@ namespace FlexTable.View
             }
             else if(state == TableViewModel.TableViewState.Animation)
             {
-                HideAllRowViewerStoryboard.Begin();
+                SlowlyHideAllRowViewerStoryboard.Begin();
                 HideGroupedRowViewerStoryboard.Begin();
                 HideSelectedRowViewerStoryboard.Begin();
-                ShowAnimatingRowViewerStoryboard.Begin();
+                AnimatingRowViewer.Opacity = 1;
+                AnimatingRowViewer.Visibility = Visibility.Visible;
+                //ShowAnimatingRowViewerStoryboard.Begin();
             }
 
             UpdateScrollViews();
@@ -452,14 +455,14 @@ namespace FlexTable.View
 
                     if (firstPoint.Position.Y < lastPoint.Position.Y - VerticalStrokeHeightDifferenceThreshold)
                     {
-                        // 내림차순 정렬
-                        this.ViewModel.SheetViewModel.Sort(selectedColumnViewModel, SortOption.Descending);
+                        // 오름차순 정렬
+                        this.ViewModel.SheetViewModel.Sort(selectedColumnViewModel, SortOption.Ascending);
                         this.ViewModel.MainPageViewModel.ReflectAll();
                     }
                     else if (lastPoint.Position.Y < firstPoint.Position.Y + VerticalStrokeHeightDifferenceThreshold)
                     {
-                        // 오름차순 정렬
-                        this.ViewModel.SheetViewModel.Sort(selectedColumnViewModel, SortOption.Ascending);
+                        // 내림차순 정렬
+                        this.ViewModel.SheetViewModel.Sort(selectedColumnViewModel, SortOption.Descending);
                         this.ViewModel.MainPageViewModel.ReflectAll();
                     }
                 }
@@ -517,7 +520,7 @@ namespace FlexTable.View
             ViewModel.ScrollLeft = sv.HorizontalOffset;
         }
 
-        void ScrollToOrigin(ScrollViewer sv)
+        public void ScrollToOrigin(ScrollViewer sv)
         {
             sv.ChangeView(0, 0, null);
         }

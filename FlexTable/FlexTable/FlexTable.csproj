@@ -193,8 +193,6 @@
     <Compile Include="Util\Formatter.cs" />
     <Compile Include="Util\HistogramCalculator.cs" />
     <Compile Include="Util\HtmlToTextBlockFormatter.cs" />
-    <Compile Include="Util\IndexToRowBackgroundConverter.cs" />
-    <Compile Include="Util\ParityConverter.cs" />
     <Compile Include="ViewModel\AnimatingRowViewModel.cs" />
     <Compile Include="ViewModel\ColumnViewModel.cs" />
     <Compile Include="ViewModel\CustomHistogramViewModel.cs" />

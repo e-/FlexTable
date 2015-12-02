@@ -69,6 +69,9 @@ namespace FlexTable.ViewModel
         {
             previewingColumnViewModel = columnViewModel;
 
+            if (ViewStatus.SelectedColumnViewModels.IndexOf(previewingColumnViewModel) >= 0)
+                return;
+
             // 현재 선택된 view status를 가져옴
             ViewStatus selectedViewStatus = ViewStatus.Clone();
             
@@ -118,15 +121,14 @@ namespace FlexTable.ViewModel
             {
                 Debug.Assert(selectedPageViews.IndexOf(pageView) < 0);
 
+                mainPageViewModel.TableViewModel.StashViewStatus(ViewStatus, AnimationHint.AnimationType.DependOnViewStatus);
+
                 selectedPageViews.Add(pageView);
 
                 // 새로운 page 만들기
                 view.ExplorationView.AddNewPage();
 
                 mainPageViewModel.ReflectAll();
-
-                //mainPageViewModel.SheetViewModel.Reflect(ViewStatus);
-                //mainPageViewModel.TableViewModel.Reflect(ViewStatus, null);
 
                 view.TableView.ScrollToColumnViewModel(mainPageViewModel.SheetViewModel.ColumnViewModels.OrderBy(c => c.Order).First());
 
@@ -142,6 +144,8 @@ namespace FlexTable.ViewModel
                 Debug.Assert(previewingColumnViewModel != null);
                 Debug.Assert(ViewStatus.SelectedColumnViewModels.IndexOf(previewingColumnViewModel) < 0); // 이미 선택한 걸 또 선택하는 경우는 없도록 이 함수 호출전에 미리 체크해야함
 
+                mainPageViewModel.TableViewModel.StashViewStatus(ViewStatus, AnimationHint.AnimationType.DependOnViewStatus);
+
                 // 현재 탭된 컬럼의 viewStatus에는 previewingColumn이 추가되어 있는 상태임.
                 selectedPageViews.Add(pageView);
 
@@ -152,10 +156,6 @@ namespace FlexTable.ViewModel
                 view.ExplorationView.AddNewPage();
 
                 mainPageViewModel.ReflectAll();
-
-                //AnimationHint hint = AnimationHint.Create(mainPageViewModel.SheetViewModel);
-                //mainPageViewModel.SheetViewModel.Reflect(ViewStatus);
-                //mainPageViewModel.TableViewModel.Reflect(ViewStatus, hint);               
                 
                 view.TableView.ScrollToColumnViewModel(mainPageViewModel.SheetViewModel.ColumnViewModels.OrderBy(c => c.Order).First());
 
@@ -175,12 +175,6 @@ namespace FlexTable.ViewModel
                 view.ExplorationView.RemoveTopPage(pageView);
 
                 mainPageViewModel.ReflectAll();
-
-                // SheetViewModel 에서 ungrouping 하기, 이건 rowViewModels를 업데이트함
-                //mainPageViewModel.SheetViewModel.Reflect(ViewStatus);
-
-                // Table View 업데이트
-                //mainPageViewModel.TableViewModel.Reflect(ViewStatus, null);
 
                 view.TableView.ScrollToColumnViewModel(mainPageViewModel.SheetViewModel.ColumnViewModels.OrderBy(c => c.Order).First());
 

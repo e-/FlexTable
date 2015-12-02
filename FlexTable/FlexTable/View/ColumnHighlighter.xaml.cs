@@ -250,7 +250,7 @@ namespace FlexTable.View
                     tvm.CancelIndexing(true);
                     break;
                 case(Command.Down):
-                    tvm.MainPageViewModel.SheetViewModel.Sort(ColumnViewModel, SortOption.Descending);
+                    tvm.MainPageViewModel.SheetViewModel.Sort(ColumnViewModel, SortOption.Ascending);
                     tvm.MainPageViewModel.ReflectAll();
                     UpperDownMenuElement.Unhighlight();
                     tvm.CancelIndexing(true);
@@ -398,7 +398,7 @@ namespace FlexTable.View
                     tvm.CancelIndexing(true);
                     break;
                 case (Command.Up):
-                    tvm.MainPageViewModel.SheetViewModel.Sort(ColumnViewModel, SortOption.Ascending);
+                    tvm.MainPageViewModel.SheetViewModel.Sort(ColumnViewModel, SortOption.Descending);
                     tvm.MainPageViewModel.ReflectAll();
                     LowerUpMenuElement.Unhighlight();
                     tvm.CancelIndexing(true);
