@@ -99,6 +99,9 @@ namespace FlexTable.ViewModel
             view.TableView.GuidelinePresenter.SetMaximumRowNumber(SheetViewModel.AllRowViewModels.Count);
             view.TableView.RowHeaderPresenter.SetRowMaximumNumber(SheetViewModel.AllRowViewModels.Count);
 
+            view.TableView.TopColumnHeader.Reset();
+            view.TableView.BottomColumnHeader.Reset();
+
             view.TableView.TopColumnHeader.Update();
             view.TableView.BottomColumnHeader.Update();
 
@@ -109,7 +112,7 @@ namespace FlexTable.ViewModel
             ActivatedRowViewModels = AllRowViewModels;
 
             view.TableView.Initialize();
-            view.TableView.ReflectState();
+            view.TableView.ReflectState(null);
 
             view.TableView.ColumnIndexer.Update();
         }
@@ -125,7 +128,7 @@ namespace FlexTable.ViewModel
             if (isTableAnimationApplying)
             {
                 State = TableViewState.Animation;
-                view.TableView.ReflectState();
+                view.TableView.ReflectState(viewStatus);
             }
 
             if (dispatcherTimer != null && dispatcherTimer.IsEnabled) dispatcherTimer.Stop();
@@ -203,8 +206,8 @@ namespace FlexTable.ViewModel
                 State = TableViewState.GroupedRow;
             }
 
-            PageViewModel.ColorRowViewModels(viewStatus, allRowViewModels, groupedRowViewModels, SheetViewModel.GroupedRows);
-            view.TableView.ReflectState();            
+            viewStatus.ColorRowViewModels(allRowViewModels, groupedRowViewModels, SheetViewModel.GroupedRows);
+            view.TableView.ReflectState(viewStatus);
         }
 
         uint ignoredPointerId;

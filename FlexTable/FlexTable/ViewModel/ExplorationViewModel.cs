@@ -52,6 +52,14 @@ namespace FlexTable.ViewModel
             mainPageViewModel.SheetViewModel.FilterViewModels.CollectionChanged += FilterViewModels_CollectionChanged;
         }
 
+        public void Initialize()
+        {
+            view.ExplorationView.Initialize();
+            TopPageView.ViewModel.ViewStatus = new ViewStatus();
+            previewingColumnViewModel = null;
+            selectedPageViews.Clear();
+        }
+
         private void FilterViewModels_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             view.ExplorationView.SetFilterEnabled(mainPageViewModel.SheetViewModel.FilterViewModels.Count > 0);

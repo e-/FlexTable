@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using FlexTable.Model;
 using FlexTable.ViewModel;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -79,26 +80,34 @@ namespace FlexTable.View
             }
         }        
 
-        public void SetRowNumber(List<Color> colors, Int32 activeRowNumber, Int32 totalRowNumber)
+        public void SetRowNumber(List<Color> colors, Int32 highlightRowNumber, Int32 visibleRowNumber)
         {
             if (last != null) last.Pause();
 
             // visible 은 세팅되어있으니까 흐리게, hidden은 세팅하고 밝게
 
             Int32 i;
+            Int32 count = colors.Count;
 
-            for (i = 0; i < activeRowNumber; ++i)
+            for (i = 0; i < highlightRowNumber; ++i)
             {
                 hiddenNumberElement.Children[i].Visibility = Visibility.Visible;
                 hiddenNumberElement.Children[i].Opacity = 1;
-                (hiddenNumberElement.Children[i] as TextBlock).Foreground = new SolidColorBrush(colors[i]);
+
+                if (i < count)
+                    (hiddenNumberElement.Children[i] as TextBlock).Foreground = new SolidColorBrush(colors[i]);
+                else
+                    (hiddenNumberElement.Children[i] as TextBlock).Foreground = ViewStatus.DefaultRowHeaderSolidColorBrush;
             }
 
-            for (; i < totalRowNumber; ++i)
+            for (; i < visibleRowNumber; ++i)
             {
                 hiddenNumberElement.Children[i].Visibility = Visibility.Visible;
                 hiddenNumberElement.Children[i].Opacity = 0.2;
-                (hiddenNumberElement.Children[i] as TextBlock).Foreground = new SolidColorBrush(colors[i]);
+                if (i < count)
+                    (hiddenNumberElement.Children[i] as TextBlock).Foreground = new SolidColorBrush(colors[i]);
+                else
+                    (hiddenNumberElement.Children[i] as TextBlock).Foreground = ViewStatus.DefaultRowHeaderSolidColorBrush;
             }
 
             for (; i < maximumRowNumber; ++i)

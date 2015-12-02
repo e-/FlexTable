@@ -99,6 +99,13 @@ namespace FlexTable.View
             GroupedRowScrollViewer.ViewChanged += ScrollViewer_ViewChanged;
             SelectedRowScrollViewer.ViewChanged += ScrollViewer_ViewChanged;
 
+            AllRowCanvas.Children.Clear();
+            allRowPresenters.Clear();
+            GroupedRowCanvas.Children.Clear();
+            groupedRowPresenters.Clear();
+            SelectedRowCanvas.Children.Clear();
+            selectedRowPresenters.Clear();
+
             foreach (RowViewModel rowViewModel in ViewModel.AllRowViewModels)
             {
                 RowPresenter rowPresenter = new RowPresenter()
@@ -106,7 +113,7 @@ namespace FlexTable.View
                     RowViewModel = rowViewModel
                 };
 
-                rowPresenter.Update();
+                rowPresenter.Update(null);
 
                 AllRowCanvas.Children.Add(rowPresenter);
                 allRowPresenters.Add(rowPresenter);
@@ -119,7 +126,7 @@ namespace FlexTable.View
                     RowViewModel = rowViewModel
                 };
 
-                rowPresenter.Update();
+                rowPresenter.Update(null);
 
                 GroupedRowCanvas.Children.Add(rowPresenter);
                 groupedRowPresenters.Add(rowPresenter);
@@ -132,17 +139,19 @@ namespace FlexTable.View
                     RowViewModel = rowViewModel
                 };
 
-                rowPresenter.Update();
+                rowPresenter.Update(null);
 
                 SelectedRowCanvas.Children.Add(rowPresenter);
                 selectedRowPresenters.Add(rowPresenter);
             }
         }
+        
 
-        public void ReflectState()
+        public void ReflectState(ViewStatus viewStatus)
         {
             TableViewModel.TableViewState state = ViewModel.State,
                 oldState = ViewModel.OldState;
+
 
             if (state == TableViewModel.TableViewState.AllRow)
             {
@@ -153,6 +162,7 @@ namespace FlexTable.View
                 
                 ActivatedScrollViewer = AllRowScrollViewer;
 
+                ColumnViewModel coloredColumnViewModel = viewStatus?.GetColoredColumnViewModel();
                 var sr = ViewModel.MainPageViewModel.SheetViewModel.FilteredRows.ToList();
 
                 IEnumerable<RowPresenter> selected = allRowPresenters.Where(rp => sr.IndexOf(rp.RowViewModel.Row) >= 0).OrderBy(rp => rp.RowViewModel.Index),
@@ -166,8 +176,8 @@ namespace FlexTable.View
                 {
                     Canvas.SetTop(rowPresenter, /*rowPresenter.RowViewModel.Y =*/ index * height);
                     rowPresenter.Opacity = 1;
-                    rowPresenter.Update();
-                    colors.Add(rowPresenter.RowViewModel.Color);
+                    rowPresenter.Update(coloredColumnViewModel); 
+                    //colors.Add(rowPresenter.RowViewModel.Color);
                     index++;
                 }
 
@@ -176,8 +186,8 @@ namespace FlexTable.View
                 {
                     Canvas.SetTop(rowPresenter, /*rowPresenter.RowViewModel.Y =*/ index * height);
                     rowPresenter.Opacity = 0.2;
-                    rowPresenter.Update();
-                    colors.Add(rowPresenter.RowViewModel.Color);
+                    rowPresenter.Update(coloredColumnViewModel);
+                    //colors.Add(rowPresenter.RowViewModel.Color);
                     index++;
                 }
 
@@ -196,14 +206,44 @@ namespace FlexTable.View
                 Double height = (Double)App.Current.Resources["RowHeight"];
                 Int32 i = 0;
                 List<Color> colors = new List<Color>();
+                ColumnViewModel coloredColumnViewModel = viewStatus?.GetColoredColumnViewModel(),
+                    firstColoredColumnViewModel = viewStatus?.GetFirstColoredColumnViewModel(),
+                    secondColoredColumnViewModel = viewStatus?.GetSecondColoredColumnViewModel(),
+                    thirdColoredColumnViewModel = viewStatus?.GetThirdColoredColumnViewModel();
+
+                // pivotTable과 barChart가 색깔을 공유함에 주의
+                if (viewStatus.IsPivotTableVisible ||
+                    viewStatus.IsCorrelationStatisticsVisible ||
+                    viewStatus.IsDescriptiveStatisticsVisible
+                    )
+                {
+                    coloredColumnViewModel = firstColoredColumnViewModel = secondColoredColumnViewModel = thirdColoredColumnViewModel = null;
+                }
+                else if (viewStatus.IsCN)
+                {
+                    if (viewStatus.IsLineChartVisible)
+                    {
+                        coloredColumnViewModel = null;
+                    }
+                    else
+                    {
+                        firstColoredColumnViewModel = null;
+                        secondColoredColumnViewModel = null;
+                    }
+                }
+                else if (viewStatus.IsCCN)
+                {
+                    firstColoredColumnViewModel = null;
+                    secondColoredColumnViewModel = null;
+                }
 
                 for (i = 0; i < ViewModel.GroupedRowViewModels.Count; ++i)
                 {
                     groupedRowPresenters[i].RowViewModel = ViewModel.GroupedRowViewModels[i];
                     Canvas.SetTop(groupedRowPresenters[i], index * height);
                     groupedRowPresenters[i].Visibility = Visibility.Visible;
-                    groupedRowPresenters[i].Update();
-                    colors.Add(groupedRowPresenters[i].RowViewModel.Color);
+                    groupedRowPresenters[i].Update(coloredColumnViewModel, firstColoredColumnViewModel, secondColoredColumnViewModel, thirdColoredColumnViewModel);
+                    //if(coloredColumnViewModel != null) colors.Add(groupedRowPresenters[i].RowViewModel.Color);
                     index++;
                 }
 
@@ -222,8 +262,20 @@ namespace FlexTable.View
                 ShowSelectedRowViewerStoryboard.Begin();
 
                 ActivatedScrollViewer = SelectedRowScrollViewer;
+                ScrollToOrigin(ActivatedScrollViewer);
 
                 var sr = ViewModel.SelectedRows.ToList();
+
+                ColumnViewModel coloredColumnViewModel = viewStatus?.GetColoredColumnViewModel(),
+                    firstColoredColumnViewModel = viewStatus?.GetFirstColoredColumnViewModel(),
+                    secondColoredColumnViewModel = viewStatus?.GetSecondColoredColumnViewModel(),
+                    thirdColoredColumnViewModel = viewStatus?.GetThirdColoredColumnViewModel();
+
+                if(!viewStatus.IsDistributionViewVisible && !viewStatus.IsGroupedBarChartVisible)
+                {
+                    firstColoredColumnViewModel = secondColoredColumnViewModel = thirdColoredColumnViewModel = null;
+                }
+                if (viewStatus.IsCNN && viewStatus.IsGroupedBarChartVisible) coloredColumnViewModel = null;
 
                 IEnumerable<RowPresenter> selected = selectedRowPresenters.Where(rp => sr.IndexOf(rp.RowViewModel.Row) >= 0).OrderBy(rp => rp.RowViewModel.Index),
                     unselected = selectedRowPresenters.Where(rp => sr.IndexOf(rp.RowViewModel.Row) < 0).OrderBy(rp => rp.RowViewModel.Index);
@@ -232,12 +284,14 @@ namespace FlexTable.View
                 Double height = (Double)App.Current.Resources["RowHeight"];
                 List<Color> colors = new List<Color>();
 
+                // selectedRow는 scatterplot과 barchart가 공유함에 주의
+
                 foreach (RowPresenter rowPresenter in selected)
                 {
                     Canvas.SetTop(rowPresenter, index * height);
                     rowPresenter.Opacity = 1;
-                    rowPresenter.Update();
-                    colors.Add(rowPresenter.RowViewModel.Color);
+                    rowPresenter.Update(coloredColumnViewModel, firstColoredColumnViewModel, secondColoredColumnViewModel, thirdColoredColumnViewModel); 
+                    //colors.Add(rowPresenter.RowViewModel.Color);
                     index++;
                 }
 
@@ -245,12 +299,12 @@ namespace FlexTable.View
                 {
                     Canvas.SetTop(rowPresenter, index * height);
                     rowPresenter.Opacity = 0.2;
-                    rowPresenter.Update();
-                    colors.Add(rowPresenter.RowViewModel.Color);
+                    rowPresenter.Update(coloredColumnViewModel, firstColoredColumnViewModel, secondColoredColumnViewModel, thirdColoredColumnViewModel);
+                    //colors.Add(rowPresenter.RowViewModel.Color);
                     index++;
                 }
 
-                RowHeaderPresenter.SetRowNumber(colors, selected.Count(), colors.Count);
+                RowHeaderPresenter.SetRowNumber(colors, selected.Count(), index);
             }
             else if(state == TableViewModel.TableViewState.Animation)
             {
@@ -463,6 +517,10 @@ namespace FlexTable.View
             ViewModel.ScrollLeft = sv.HorizontalOffset;
         }
 
+        void ScrollToOrigin(ScrollViewer sv)
+        {
+            sv.ChangeView(0, 0, null);
+        }
 
     }
 }

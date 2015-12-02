@@ -37,15 +37,12 @@ namespace FlexTable.View
                 return;
             Sheet sheet = await Util.CsvLoader.Load(file);
 
-            ViewModel.MainPageViewModel mpvm = (this.DataContext as ViewModel.MetadataViewModel).MainPageViewModel;
+            MainPageViewModel mpvm = (DataContext as ViewModel.MetadataViewModel).MainPageViewModel;
 
-            mpvm.View.TableView.TopColumnHeader.Reset();
-            mpvm.View.TableView.BottomColumnHeader.Reset();
-            mpvm.View.TableView.ColumnIndexer.Reset();
-            mpvm.ExplorationViewModel.TopPageView.ViewModel.State = PageViewModel.PageViewState.Empty;            
+            //mpvm.ExplorationViewModel.TopPageView.ViewModel.State = PageViewModel.PageViewState.Empty;            
             //mpvm.ExplorationViewModel.TopPageView.CancelUndoStoryboard.Begin();
             mpvm.Sheet = sheet;
-            mpvm.Initialize();
+            mpvm.Initialize(sheet);
         }
     }
 }

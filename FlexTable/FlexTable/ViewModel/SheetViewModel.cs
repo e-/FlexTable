@@ -105,6 +105,7 @@ namespace FlexTable.ViewModel
         public void Initialize(Sheet sheet)
         {
             Sheet = sheet;
+            FilterViewModels.Clear();
 
             Int32 index;
 
@@ -187,10 +188,6 @@ namespace FlexTable.ViewModel
             // 그냥 그대로 보여주는것으로 변경
 
             index = 0;
-            /*foreach (ColumnViewModel columnViewModel in columnViewModels.Where(c => c.Type == ColumnType.Categorical))
-            {
-                columnViewModel.Order = index++;
-            }*/
             
             foreach (ColumnViewModel columnViewModel in columnViewModels/*.Where(c => c.Type != ColumnType.Categorical)*/)
             {

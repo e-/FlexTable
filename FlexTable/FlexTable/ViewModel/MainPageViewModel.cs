@@ -106,9 +106,14 @@ namespace FlexTable.ViewModel
             }
         }
 
-        public async void Initialize()
+        public async Task Initialize()
         {
-            Sheet sheet = await Util.CsvLoader.Load("who.csv"); // "Population-filtered.csv");
+            Sheet sheet = await Util.CsvLoader.Load("barley.csv"); // "Population-filtered.csv");
+            Initialize(sheet);
+        }
+
+        public void Initialize(Sheet sheet)
+        {
             this.Sheet = sheet;
 
             PageHeight = Bounds.Height / 2 - 4;
@@ -122,30 +127,12 @@ namespace FlexTable.ViewModel
             // 가이드라인 및 헤더 컬럼 추가
             tableViewModel.Initialize();
 
-            var watch = Stopwatch.StartNew();
-            
-            // rowViewModels 추가된 것 반영 여기가 시간 많이 듬
-            // 전체 컬럼을 가지고 있는 것으로 이분화 하기로 했으므로 updateRows대신 CreateAllRows를 함
-            
-
-            // tableViewModel.UpdateRows();
-
-
-            watch.Stop();
-            var elapsedMs = watch.ElapsedMilliseconds;
-            Debug.WriteLine("elapsed " + elapsedMs);
-
-            PageViewModel pageViewModel = new PageViewModel(
-                this,
-                view.ExplorationView.TopPageView
-                )
-            {
-                ViewStatus = new ViewStatus() // 초기 비어있는 뷰 상태로 초기화
-            };
-            view.ExplorationView.TopPageView.DataContext = pageViewModel;
+            explorationViewModel.Initialize();
 
             // 메타데이터 초기화
             ExplorationViewModel.MetadataViewModel.Initialize();
+
+            return;
 
             var dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
 

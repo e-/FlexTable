@@ -1,4 +1,5 @@
 ﻿yield,variety,year,site
+amount,nominal,ordinal,nominal
 27,Manchuria,1931,University Farm
 48.86667,Manchuria,1931,Waseca
 27.43334,Manchuria,1931,Morris

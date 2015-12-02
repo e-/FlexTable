@@ -19,7 +19,7 @@ namespace FlexTable.ViewModel
         const Int32 BarChartMaximumRecordNumber = 12;
         const Int32 GroupedBarChartMaximumRecordNumber = 48;
         const Int32 LineChartMaximumSeriesNumber = BarChartMaximumRecordNumber;
-        const Int32 LineChartMaximumPointNumberInASeries = 14;
+        const Int32 LineChartMaximumPointNumberInASeries = 20;
         const Int32 ScatterplotMaximumCategoryNumber = BarChartMaximumRecordNumber;
 
         public enum PageViewState { Empty, Previewing, Selected, Undoing }
@@ -352,7 +352,7 @@ namespace FlexTable.ViewModel
         {
             if (!IsSelected)
             {
-                AddText(stackPanel, selected);
+                AddText(stackPanel, $"<b>{selected}</b>");
             }
             else
             {
@@ -1051,7 +1051,8 @@ namespace FlexTable.ViewModel
             var rows =
                 groupedRows
                 .GroupBy(grs => grs.Keys[categorical2]) // 먼저 묶고 
-                .Select(group => {
+                .Select(group =>
+                {
                     LineChartDatum datum = new LineChartDatum()
                     {
                         ColumnViewModel = categorical2,
@@ -1068,12 +1069,12 @@ namespace FlexTable.ViewModel
                     )).ToList();
 
                     return datum;
-                })
-                .Take(LineChartMaximumSeriesNumber);
+                });
 
             if (rows.Count() > LineChartMaximumSeriesNumber) IsLineChartWarningVisible = true;
             if (rows.Max(row => row.DataPoints.Count) > LineChartMaximumPointNumberInASeries) IsLineChartWarningVisible = true;
 
+            rows = rows.Take(LineChartMaximumSeriesNumber);
             pageView.LineChart.Data = rows.ToList();
             pageView.LineChart.Update();
         }

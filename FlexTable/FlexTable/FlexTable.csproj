@@ -107,16 +107,13 @@
     <Content Include="Data\barley.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\budget.csv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Data\burtin.csv">
+    <Content Include="Data\require-cleaning-budget.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Data\cars.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\climate.csv">
+    <Content Include="Data\require-cleaning-climate.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Data\crimea.csv">
@@ -128,13 +125,13 @@
     <Content Include="Data\iris.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\movie.csv">
+    <Content Include="Data\too-large-movie.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Data\population.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\weball26.csv">
+    <Content Include="Data\no-header-weball26.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="project.json" />
@@ -207,7 +204,6 @@
     <Compile Include="ViewModel\MetadataViewModel.cs" />
     <Compile Include="ViewModel\NotifyViewModel.cs" />
     <Compile Include="ViewModel\PageViewModel.cs" />
-    <Compile Include="ViewModel\PageViewModelColor.cs" />
     <Compile Include="ViewModel\PivotTableViewModel.cs" />
     <Compile Include="ViewModel\RowViewModel.cs" />
     <Compile Include="ViewModel\SheetViewModel.cs" />
