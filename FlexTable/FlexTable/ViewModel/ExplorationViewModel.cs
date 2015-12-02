@@ -91,7 +91,7 @@ namespace FlexTable.ViewModel
 
             // 이걸로 pageView를 채움
             
-            pageViewModel.Reflect(false);
+            pageViewModel.Reflect(true);
             TopPageView.ReflectState();
         }
 

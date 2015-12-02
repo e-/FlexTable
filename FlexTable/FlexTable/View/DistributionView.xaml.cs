@@ -67,8 +67,8 @@ namespace FlexTable.View
                 numerical
                 ).ToList();
 
-            if (numerical.SortOption == SortOption.Ascending) { bins = bins.OrderBy(b=>b.Min).ToList(); }
-            else if (numerical.SortOption == SortOption.Descending) { bins = bins.OrderByDescending(b => b.Min).ToList(); }
+            if (numerical.SortOption == SortOption.Descending) { bins = bins.OrderByDescending(b => b.Min).ToList(); }
+            else { bins = bins.OrderBy(b => b.Min).ToList(); }
 
             HistogramElement.Data = 
                 bins

@@ -173,7 +173,7 @@ namespace d3.Component
                         CircleCanvas.Children.Add(ellipse);
                     }
 
-                    if (newbie)
+                    if (newbie || !useTransition)
                     {
                         Canvas.SetLeft(ellipse, XGetter(datum, index) - RadiusGetter(datum, index) / 2);
                         Canvas.SetTop(ellipse, YGetter(datum, index) - RadiusGetter(datum, index) / 2);

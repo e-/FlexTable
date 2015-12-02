@@ -425,6 +425,8 @@ namespace FlexTable.Crayon.Chart
             };
             YScale.Nice();
 
+            Boolean useCircleTransition = true;
+            if (CircleElement.Data == null || CircleElement.Data.List.Count != D3Data.List.Count) useCircleTransition = false;
             CircleElement.Data = D3Data;
 
             HorizontalAxis.Scale = XScale;
@@ -455,7 +457,7 @@ namespace FlexTable.Crayon.Chart
             LegendTextElement.Visibility = LegendVisibility;
 
             LegendHandleRectangleElement.Update();
-            CircleElement.Update(true, true);
+            CircleElement.Update(useCircleTransition, true);
             HorizontalAxis.Update();
             VerticalAxis.Update();
         }
