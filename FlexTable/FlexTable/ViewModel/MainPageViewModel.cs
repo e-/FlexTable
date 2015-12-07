@@ -132,11 +132,9 @@ namespace FlexTable.ViewModel
             // 메타데이터 초기화
             ExplorationViewModel.MetadataViewModel.Initialize();
 
-            return;
-
             var dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
 
-            ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[0]);
+            ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[4]);
 
             DispatcherTimer dispatcherTimer = new DispatcherTimer();
             dispatcherTimer.Tick += (sender, e) =>
@@ -145,7 +143,7 @@ namespace FlexTable.ViewModel
                 ExplorationViewModel.TopPageView.ViewModel.State = PageViewModel.PageViewState.Selected;
                 ExplorationViewModel.PageViewStateChanged(ExplorationViewModel.TopPageView.ViewModel, ExplorationViewModel.TopPageView);
 
-
+                return;
                 ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[1]);
 
                 DispatcherTimer dispatcherTimer2 = new DispatcherTimer();

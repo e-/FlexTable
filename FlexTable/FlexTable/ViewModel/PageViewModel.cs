@@ -101,9 +101,9 @@ namespace FlexTable.ViewModel
             this.pivotTableViewModel = new PivotTableViewModel(mainPageViewModel, pageView.PivotTableView);
         }        
 
-        public void FilterOut(FilterViewModel filterViewModel)
+        public Boolean FilterOut(FilterViewModel filterViewModel)
         {
-            mainPageViewModel.ExplorationViewModel.FilterOut(filterViewModel);
+            return mainPageViewModel.ExplorationViewModel.FilterOut(filterViewModel);
         }
 
         /// <summary>

@@ -106,6 +106,8 @@ namespace d3.Component
         List<TextBlock> textBlocks = new List<TextBlock>();
         Storyboard previousStoryboard = null;
 
+        public IEnumerable<TextBlock> Children { get { return textBlocks; } }
+
         public Texts()
         {
             this.InitializeComponent();

@@ -191,7 +191,7 @@ namespace FlexTable.View
                     index++;
                 }
 
-                RowHeaderPresenter.SetRowNumber(colors, selected.Count(), colors.Count);
+                RowHeaderPresenter.SetRowNumber(colors, selected.Count(), index);
             }
             else if (state == TableViewModel.TableViewState.GroupedRow)
             {

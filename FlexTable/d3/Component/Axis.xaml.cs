@@ -117,6 +117,8 @@ namespace d3.Component
             //axis.Update();
         }
 
+        
+
         public void UpdateOrientation()
         {
             switch (Orientation)
@@ -152,6 +154,11 @@ namespace d3.Component
         }
 
         private List<TextBlock> tickLabels;
+        public IEnumerable<TextBlock> TickLabels
+        {
+            get { return tickLabels; }
+        }
+
         private List<Line> tickMarkers;
 
         Boolean Equal(ScaleBase s1, ScaleBase s2)

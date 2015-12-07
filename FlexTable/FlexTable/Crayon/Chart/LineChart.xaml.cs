@@ -547,11 +547,11 @@ namespace FlexTable.Crayon.Chart
             VerticalAxis.Update();
         }
 
-        public void ClearSelection()
+        public void ClearSelection(Boolean withHandler)
         {
             selectedKeys.Clear();
 
-            if (SelectionChanged != null)
+            if (withHandler && SelectionChanged != null)
                 SelectionChanged(null, null, Data.Where(d => selectedKeys.IndexOf(d.Key) >= 0), 0);
 
             LineElement.Update(true);

@@ -95,41 +95,79 @@ namespace FlexTable.Crayon.Chart
         private Double BarWidth { get { return Math.Min(60, XScale.RangeBand / 2); } }
         public Func<Object, Int32, Double> WidthGetter { get { return (d, index) => BarWidth; } }
         public Func<Object, Int32, Double> HeightGetter { get { return (d, index) => ChartAreaEndY - YScale.Map((d as BarChartDatum).Value); } }
-        public Func<Object, Int32, Double> XGetter { get { return (d, index) => XScale.Map((d as BarChartDatum).Key) - BarWidth / 2; } }
+        public Func<Object, Int32, Double> XGetter { get { return (d, index) => XScale.Map(d) - BarWidth / 2; } }
         public Func<Object, Int32, Double> YGetter
         {
             get
             {
-                return (d, index) => YScale.Map((d as BarChartDatum).Value) + 
-                (selectedKeys.Count > 0 ? 
-                    (selectedKeys.IndexOf((d as BarChartDatum).Key) >= 0 ? DragToFilterYDelta : 0) : 
-                    (d == DragToFilterFocusedBar ? DragToFilterYDelta : 0));
+                return (d, index) =>
+                {
+                    BarChartDatum datum = d as BarChartDatum;
+                    return YScale.Map(datum.Value) +
+                        (selectedRows.Count > 0 ?
+                         (selectedRows.Any(sr => datum.Rows.Contains(sr)) ? DragToFilterYDelta : 0) :
+                         (d == DragToFilterFocusedBar ? DragToFilterYDelta : 0));
+                };
             }
         }
         public Func<Object, Int32, Color> ColorGetter { get { return (d, index) => (AutoColor ? ((d as BarChartDatum).Key as Category).Color: Category10.Colors.First()); } }
         public Func<Object, Int32, Double> OpacityGetter { get {
-                return (d, index) => (selectedKeys.Count == 0) ? (d == DragToFilterFocusedBar ? DragToFilterOpacity : 1) : 
-                (selectedKeys.IndexOf((d as BarChartDatum).Key) < 0 ? 0.2 : DragToFilterOpacity);
+                return (d, index) =>
+                {
+                    BarChartDatum datum = d as BarChartDatum;
+                    return (selectedRows.Count > 0 ?
+                        (selectedRows.Any(sr => datum.Rows.Contains(sr)) ? DragToFilterOpacity : 0.2) :
+                        (d == DragToFilterFocusedBar ? DragToFilterOpacity : 1));
+                };
             } }
 
+        /*public Func<Object, Int32, Double> ForegroundHeightGetter { get { return (d, index) => ChartAreaEndY - YScale.Map((d as BarChartDatum).Value); } }
+        public Func<Object, Int32, Double> ForegroundYGetter
+        {
+            get
+            {
+                return (d, index) => YScale.Map((d as BarChartDatum).Value) +
+                (selectedRows.Count > 0 ?
+                    (selectedRows.IndexOf((d as BarChartDatum).Key) >= 0 ? DragToFilterYDelta : 0) :
+                    (d == DragToFilterFocusedBar ? DragToFilterYDelta : 0));
+            }
+        }
+        public Func<Object, Int32, Double> ForegroundOpacityGetter
+        {
+            get
+            {
+                return (d, index) => (selectedRows.Count == 0) ? (d == DragToFilterFocusedBar ? DragToFilterOpacity : 1) :
+                (selectedRows.IndexOf((d as BarChartDatum).Key) < 0 ? 0.2 : DragToFilterOpacity);
+            }
+        }
+        */
         public Func<Object, Int32, TextBlock, Double> HorizontalAxisLabelOpacityGetter
         {
             get
             {
-                return (d, index, textBlock) => (selectedKeys.Count == 0) ? (d == DragToFilterFocusedBar?.Key ? DragToFilterOpacity : 1) :
-                    (selectedKeys.IndexOf(d) >= 0 ? DragToFilterOpacity : 1);
+                return (d, index, textBlock) => {
+                    BarChartDatum datum = d as BarChartDatum;
+                    return (selectedRows.Count == 0) ?
+                        (d == DragToFilterFocusedBar ? DragToFilterOpacity : 1) :
+                        (selectedRows.Any(sr => datum.Rows.Contains(sr)) ? DragToFilterOpacity : 1);
+                };
             }
         }
 
         public Func<Object, Int32, TextBlock, Double> HorizontalAxisLabelYGetter { get {
-                return (d, index, textBlock) => (selectedKeys.Count == 0) ? (d == DragToFilterFocusedBar?.Key ? DragToFilterYDelta : 0) :
-                    (selectedKeys.IndexOf(d) >= 0 ? DragToFilterYDelta : 0);
+                return (d, index, textBlock) =>
+                {
+                    BarChartDatum datum = d as BarChartDatum;
+                    return (selectedRows.Count == 0) ?
+                        (d == DragToFilterFocusedBar ? DragToFilterYDelta : 0) :
+                        (selectedRows.Any(sr => datum.Rows.Contains(sr)) ? DragToFilterYDelta : 0);
+                };
             } }
         
 
         public Func<Object, Int32, Double> HandleWidthGetter { get { return (d, index) => XScale.RangeBand; } }
         public Func<Object, Int32, Double> HandleHeightGetter { get { return (d, index) => ChartAreaEndY - Const.PaddingTop; } }
-        public Func<Object, Int32, Double> HandleXGetter { get { return (d, index) => XScale.Map((d as BarChartDatum).Key) - XScale.RangeBand / 2; } }        
+        public Func<Object, Int32, Double> HandleXGetter { get { return (d, index) => XScale.Map(d) - XScale.RangeBand / 2; } }        
 
         public Func<Object, Int32, Double> LegendPatchYGetter
         {
@@ -150,20 +188,35 @@ namespace FlexTable.Crayon.Chart
 
         public Func<Object, Int32, Double> LegendTextXGetter { get { return (d, index) => Const.LegendPatchWidth + Const.LegendPatchSpace; } }
         public Func<Object, Int32, String> LegendTextGetter { get { return (d, index) => (d as BarChartDatum).Key.ToString(); } }
-        public Func<TextBlock, Object, Int32, Double> LegendTextOpacityGetter { get { return (textBlock, d, index) => (selectedKeys.Count == 0) ? 1 : (selectedKeys.IndexOf((d as BarChartDatum).Key) < 0 ? 0.2 : 1); } }
+        public Func<TextBlock, Object, Int32, Double> LegendTextOpacityGetter { get {
+                return (textBlock, d, index) =>
+                {
+                    BarChartDatum datum = d as BarChartDatum;
+                    return (selectedRows.Count == 0) ? 1 : (selectedRows.Any(sr => datum.Rows.Contains(sr)) ? 1 : 0.2);
+                };
+            } }
 
         public Func<Object, Int32, Double> IndicatorWidthGetter { get { return (d, index) => XScale.RangeBand; } }
         public Func<Object, Int32, String> IndicatorTextGetter { get { return (d, index) => d3.Format.IntegerBalanced.Format((d as BarChartDatum).Value); } }
-        public Func<Object, Int32, Double> IndicatorXGetter { get { return (d, index) => XScale.Map((d as BarChartDatum).Key) - XScale.RangeBand / 2; } }
+        public Func<Object, Int32, Double> IndicatorXGetter { get { return (d, index) => XScale.Map(d) - XScale.RangeBand / 2; } }
         public Func<Object, Int32, Double> IndicatorYGetter { get {
-                return (d, index) => YScale.Map((d as BarChartDatum).Value) - 18 + ((selectedKeys.Count == 0) ? (d == DragToFilterFocusedBar ? DragToFilterYDelta : 0) :
-                    (selectedKeys.IndexOf((d as BarChartDatum).Key) >= 0 ? DragToFilterYDelta : 0))
-                ;
+                return (d, index) =>
+                {
+                    BarChartDatum datum = d as BarChartDatum;
+                    return YScale.Map(datum.Value) - 18 + 
+                        ((selectedRows.Count == 0) ? 
+                            (d == DragToFilterFocusedBar ? DragToFilterYDelta : 0) :
+                            (selectedRows.Any(sr => datum.Rows.Contains(sr)) ? DragToFilterYDelta : 0));
+                };
             } }
         public Func<TextBlock, Object, Int32, Double> IndicatorTextOpacityGetter { get {
-                return (textBlock, d, index) => ((selectedKeys.Count == 0) ? (d == DragToFilterFocusedBar ? DragToFilterOpacity : 0) :
-                    (selectedKeys.IndexOf((d as BarChartDatum).Key) >= 0 ? DragToFilterOpacity : 0));
-                    } }
+                return (textBlock, d, index) =>
+                {
+                    BarChartDatum datum = d as BarChartDatum;
+                    return ((selectedRows.Count == 0) ? (d == DragToFilterFocusedBar ? DragToFilterOpacity : 0) :
+                    (selectedRows.Any(sr => datum.Rows.Contains(sr)) ? DragToFilterOpacity : 0));
+                };
+                } }
         
         public Double HorizontalAxisLabelCanvasTop { get; set; }
         public Double HorizontalAxisLabelCanvasLeft { get; set; }
@@ -180,7 +233,7 @@ namespace FlexTable.Crayon.Chart
         private BarChartDatum DragToFilterFocusedBar = null;
         
         public event Event.EventHandler SelectionChanged;
-        private List<Object> selectedKeys = new List<Object>();
+        private List<Row> selectedRows = new List<Row>();
 
         public event Event.EventHandler FilterIn;
         public event Event.EventHandler FilterOut;
@@ -212,6 +265,14 @@ namespace FlexTable.Crayon.Chart
             RectangleElement.YGetter = YGetter;
             RectangleElement.ColorGetter = ColorGetter;
             RectangleElement.OpacityGetter = OpacityGetter;
+
+            /*ForegroundRectangleElement.Data = D3Data;
+            ForegroundRectangleElement.WidthGetter = WidthGetter;
+            ForegroundRectangleElement.HeightGetter = ForegroundHeightGetter;
+            ForegroundRectangleElement.XGetter = XGetter;
+            ForegroundRectangleElement.YGetter = ForegroundYGetter;
+            ForegroundRectangleElement.ColorGetter = ColorGetter;
+            ForegroundRectangleElement.OpacityGetter = ForegroundOpacityGetter;*/
 
             HorizontalAxis.Scale = XScale;
             Canvas.SetTop(HorizontalAxis, ChartAreaEndY);
@@ -287,17 +348,17 @@ namespace FlexTable.Crayon.Chart
 
                 if (FilterOut != null)
                 {
-                    if (selectedKeys.Count > 0)
+                    if (selectedRows.Count > 0)
                     {
-                        FilterOut(sender, eo, Data.Where(d => selectedKeys.IndexOf(d.Key) >= 0), index);
+                        FilterOut(sender, eo, selectedRows, index);
                     }
                     else
                     {
-                        FilterOut(sender, eo, new List<BarChartDatum>() { datum }, index);
+                        FilterOut(sender, eo, datum.Rows, index);
                     }
                 }
 
-                ClearSelection();
+                ClearSelection(true);
             }
 
             DragToFilterYDelta = 0;
@@ -305,6 +366,7 @@ namespace FlexTable.Crayon.Chart
             DragToFilterOpacity = 1;
 
             RectangleElement.Update();
+            //ForegroundRectangleElement.Update();
             HorizontalAxis.Update();
             IndicatorTextElement.Update();
         }
@@ -324,6 +386,7 @@ namespace FlexTable.Crayon.Chart
             DragToFilterOpacity = 1 - delta / Const.DragToFilterThreshold;
 
             RectangleElement.Update();
+            //ForegroundRectangleElement.Update();
             HorizontalAxis.Update();
             IndicatorTextElement.Update();
         }
@@ -335,84 +398,71 @@ namespace FlexTable.Crayon.Chart
                 List<Point> points = inkManager.GetStrokes()[0].GetInkPoints().Select(ip => ip.Position).ToList();
                 Rect boundingRect = inkManager.GetStrokes()[0].BoundingRect;
 
+                // 먼저 boundingRect와 겹친 row들을 모두 찾는다.
+                List<Row> intersectedRows = new List<Row>();
                 Int32 index = 0;
-                List<BarChartDatum> selected = new List<BarChartDatum>();
-                Boolean isAllSelected = true;
-                Boolean isLegendStrikeThrough = false;
-                BarChartDatum victim = null;
 
                 index = 0;
                 foreach (Rectangle rect in RectangleElement.Children)
                 {
-                    if (boundingRect.Left <= Canvas.GetLeft(rect) + rect.Width && Canvas.GetLeft(rect) <= boundingRect.Left + boundingRect.Width)
+                    Rect r = new Rect(Canvas.GetLeft(rect), Canvas.GetTop(rect), rect.Width, rect.Height);
+
+                    if (Const.IsIntersected(r, boundingRect))
                     {
                         BarChartDatum datum = Data[index];
-                        if (selectedKeys.IndexOf(datum.Key) < 0) //선택 안된 데이터가 있으면
-                        {
-                            isAllSelected = false;
-                        }
-                        selected.Add(datum);
+                        intersectedRows = intersectedRows.Concat(datum.Rows).ToList();
+                    }
+                    index++;
+                }
+
+
+                index = 0;
+                foreach (Rectangle rect in LegendHandleRectangleElement.Children)
+                {
+                    Rect r = new Rect(Canvas.GetLeft(rect) + ChartAreaEndX, Canvas.GetTop(rect), rect.Width, rect.Height);
+
+                    if (Const.IsIntersected(r, boundingRect))
+                    {
+                        BarChartDatum datum = Data[index];
+                        intersectedRows = intersectedRows.Concat(datum.Rows).ToList();
                     }
                     index++;
                 }
 
                 index = 0;
-                foreach (Rectangle rect in LegendHandleRectangleElement.Children)
+                foreach (TextBlock label in HorizontalAxis.TickLabels)
                 {
-                    if (Canvas.GetLeft(LegendPanel) + Canvas.GetLeft(rect) <= boundingRect.Right && boundingRect.Top <= Canvas.GetTop(rect) + rect.Height && Canvas.GetTop(rect) <= boundingRect.Top + boundingRect.Height)
+                    Rect r = new Rect(Canvas.GetLeft(label), Canvas.GetTop(label), label.Width, label.Height);
+
+                    if (Const.IsIntersected(r, boundingRect))
                     {
                         BarChartDatum datum = Data[index];
-
-                        if (boundingRect.Height < Const.StrikeThroughMaxHeight && boundingRect.Width > Const.StrikeThroughMinWidth) // legend strike through면
-                        {
-                            isLegendStrikeThrough = true;
-                            victim = datum;
-                            break;
-                        }
-                        else
-                        {
-                            if (selectedKeys.IndexOf(datum.Key) < 0) //선택 안된 데이터가 있으면
-                            {
-                                isAllSelected = false;
-                            }
-                            selected.Add(datum);
-                        }
+                        intersectedRows = intersectedRows.Concat(datum.Rows).ToList();
                     }
                     index++;
                 }
 
-                if (isLegendStrikeThrough)
+                intersectedRows = intersectedRows.Distinct().ToList();
+
+                if(Const.IsStrikeThrough(boundingRect)) // strikethrough 및 무조건 필터아웃 
                 {
-                    selectedKeys.Remove(victim.Key);
                     if(FilterOut != null)
                     {
-                        FilterOut(this, null, new List<BarChartDatum>() { victim }, index);
+                        FilterOut(this, null, intersectedRows, index);
                     }
                 }
-                else if (isAllSelected) // 모두가 선택되었다면 선택 해제를 하면 됨
+                else // 아니면 무조건 셀렉션 
                 {
-                    foreach (BarChartDatum datum in selected)
-                    {
-                        selectedKeys.Remove(datum.Key);
-                    }
-                }
-                else // 하나라도 선택 안된게 있으면 선택
-                {
-                    foreach (BarChartDatum datum in selected)
-                    {
-                        if (selectedKeys.IndexOf(datum.Key) < 0) { selectedKeys.Add(datum.Key); }
-                    }
-                }
+                    selectedRows = selectedRows.Concat(intersectedRows).Distinct().ToList();
+                    if (selectedRows.Count == Data.SelectMany(d => d.Rows).Count())
+                        selectedRows.Clear();
 
-                if (selectedKeys.Count == Data.Count)
-                {
-                    selectedKeys.Clear();
+                    if (SelectionChanged != null)
+                        SelectionChanged(this, null, selectedRows, index);
                 }
-
-                if (SelectionChanged != null)
-                    SelectionChanged(this, null, Data.Where(d => selectedKeys.IndexOf(d.Key) >= 0), index);
-
+                
                 RectangleElement.Update(true);
+                //ForegroundRectangleElement.Update();
                 IndicatorTextElement.Update(true);
                 if (LegendVisibility == Visibility.Visible)
                 {
@@ -430,24 +480,25 @@ namespace FlexTable.Crayon.Chart
             if (args.PointerDeviceType == PointerDeviceType.Touch)
             {
                 BarChartDatum barChartDatum = datum as BarChartDatum;
-                if (selectedKeys.IndexOf(barChartDatum.Key) < 0)
+                if (selectedRows.Intersect(barChartDatum.Rows).Count() == barChartDatum.Rows.Count()) // contains all
                 {
-                    selectedKeys.Add(barChartDatum.Key);
+                    selectedRows = selectedRows.Except(barChartDatum.Rows).Distinct().ToList();
                 }
                 else
                 {
-                    selectedKeys.Remove(barChartDatum.Key);
+                    selectedRows = selectedRows.Concat(barChartDatum.Rows).Distinct().ToList();
                 }
                 
-                if(selectedKeys.Count == Data.Count)
+                if(selectedRows.Count == Data.SelectMany(d => d.Rows).Count())
                 {
-                    selectedKeys.Clear();
+                    selectedRows.Clear();
                 }
 
                 if (SelectionChanged != null)
-                    SelectionChanged(sender, e, Data.Where(d => selectedKeys.IndexOf(d.Key) >= 0), index);
+                    SelectionChanged(sender, e, selectedRows, index);
 
                 RectangleElement.Update(true);
+                //ForegroundRectangleElement.Update();
                 IndicatorTextElement.Update(true);
                 if(LegendVisibility == Visibility.Visible)
                 {
@@ -549,7 +600,7 @@ namespace FlexTable.Crayon.Chart
 
             foreach (BarChartDatum datum in Data)
             {
-                XScale.Domain.Add(datum.Key);
+                XScale.Domain.Add(datum);
             }
 
             // getter가 아닌 경우 재대입을 해야함 예를 들어 visibliity나 Scale등
@@ -557,6 +608,7 @@ namespace FlexTable.Crayon.Chart
             HandleRectangleElement.Data = D3Data;
 
             RectangleElement.Data = D3Data;
+            //ForegroundRectangleElement.Data = D3Data;
 
             HorizontalAxis.Scale = XScale;
             Canvas.SetTop(HorizontalAxis, ChartAreaEndY);
@@ -590,19 +642,21 @@ namespace FlexTable.Crayon.Chart
             LegendHandleRectangleElement.Update();
             HandleRectangleElement.Update();
             RectangleElement.Update();
+            //ForegroundRectangleElement.Update();
             IndicatorTextElement.Update();
             HorizontalAxis.Update();
             VerticalAxis.Update();
         }
 
-        public void ClearSelection()
+        public void ClearSelection(Boolean withHandler)
         {
-            selectedKeys.Clear();
+            selectedRows.Clear();
 
-            if (SelectionChanged != null)
-                SelectionChanged(null, null, Data.Where(d => selectedKeys.IndexOf(d.Key) >= 0), 0);
+            if (withHandler && SelectionChanged != null)
+                SelectionChanged(null, null, selectedRows, 0);
 
             RectangleElement.Update(true);
+            //ForegroundRectangleElement.Update(true);
             IndicatorTextElement.Update(true);
             if (LegendVisibility == Visibility.Visible)
             {

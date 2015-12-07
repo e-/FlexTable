@@ -104,14 +104,9 @@ namespace FlexTable.View
 
         private void FilterOut(IEnumerable<Row> filteredRows, String name, IEnumerable<String> values)
         {
-            FilterViewModel fvm = new FilterViewModel(ViewModel.MainPageViewModel)
-            {
-                Name = (values.Count() == 1) ?
+            FilterOut(filteredRows, (values.Count() == 1) ?
                 $"{name} = {values.First()}" :
-                $"{name} in {String.Join(", ", values)}",
-                Predicate = r => !filteredRows.Any(rr => rr == r)
-            };
-            ViewModel.FilterOut(fvm);
+                $"{name} in {String.Join(", ", values)}");
         }
 
         private void FilterOut(IEnumerable<Row> filteredRows, String name)
@@ -121,15 +116,19 @@ namespace FlexTable.View
                 Name = name,
                 Predicate = r => !filteredRows.Any(rr => rr == r)
             };
-            ViewModel.FilterOut(fvm);
+            if (ViewModel.FilterOut(fvm))
+            {
+                SelectionChanged(new List<Row>() { });
+                ClearSelection(false);
+            }
         }           
 
         #region Visualization Event Handlers
 
         private void BarChartElement_SelectionChanged(object sender, object e, object datum, int index)
         {
-            IEnumerable<BarChartDatum> selection = datum as IEnumerable<BarChartDatum>;
-            SelectionChanged(selection.SelectMany(s => s.Rows));
+            IEnumerable<Row> selectedRows = datum as List<Row>;
+            SelectionChanged(selectedRows);
         }
 
         private void LineChartElement_SelectionChanged(object sender, object e, object datum, int index)
@@ -152,8 +151,10 @@ namespace FlexTable.View
 
         private void BarChartElement_FilterOut(object sender, object e, object datum, int index)
         {
-            IEnumerable<BarChartDatum> filteredData = datum as IEnumerable<BarChartDatum>;
-            FilterOut(filteredData.SelectMany(bcd => bcd.Rows).ToList(), filteredData.First().ColumnViewModel.Name, filteredData.Select(d => d.Key.ToString()));
+            IEnumerable<Row> filteredRows = datum as List<Row>;
+            if (filteredRows == null || filteredRows.Count() == 0) return;
+            ColumnViewModel columnViewModel = BarChartElement.Data.First().ColumnViewModel;
+            FilterOut(filteredRows, $"Filtered by {columnViewModel.Name}");
         }
 
         private void LineChartElement_FilterOut(object sender, object e, object datum, int index)
@@ -190,7 +191,7 @@ namespace FlexTable.View
                 Int32 count = SelectedRows.Count();
                 FilterOut(SelectedRows.ToList(), $"Filtered {count} row" + (count == 1 ? String.Empty : "s"));
                 SelectionChanged(new List<Row>() { });
-                ClearSelection();
+                ClearSelection(false);
             }
         }
 
@@ -490,7 +491,7 @@ namespace FlexTable.View
         {
             ViewModel.State = PageViewModel.PageViewState.Undoing;
             ViewModel.StateChanged(this);
-            ClearSelection();
+            ClearSelection(true);
         }
 
         private void Undo_Tapped(object sender, TappedRoutedEventArgs e)
@@ -541,7 +542,7 @@ namespace FlexTable.View
             Double delta = e.Cumulative.Translation.X;
             if (delta > SelectionDismissThreshold)
             {
-                ClearSelection();
+                ClearSelection(true);
             }
             else
             {
@@ -558,13 +559,13 @@ namespace FlexTable.View
             }
         }
 
-        private void ClearSelection()
+        private void ClearSelection(Boolean withHandler)
         {
-            if (ViewModel.IsBarChartVisible) BarChartElement.ClearSelection();
-            if (ViewModel.IsGroupedBarChartVisible) GroupedBarChartElement.ClearSelection();
-            if (ViewModel.IsLineChartVisible) LineChart.ClearSelection();
-            if (ViewModel.IsDistributionVisible) DistributionView.Histogram.ClearSelection();
-            if (ViewModel.IsScatterplotVisible) ScatterplotElement.ClearSelection();
+            if (ViewModel.IsBarChartVisible) BarChartElement.ClearSelection(withHandler);
+            if (ViewModel.IsGroupedBarChartVisible) GroupedBarChartElement.ClearSelection(withHandler);
+            if (ViewModel.IsLineChartVisible) LineChart.ClearSelection(withHandler);
+            if (ViewModel.IsDistributionVisible) DistributionView.Histogram.ClearSelection(withHandler);
+            if (ViewModel.IsScatterplotVisible) ScatterplotElement.ClearSelection(withHandler);
         }
     }
 }

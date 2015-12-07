@@ -462,11 +462,11 @@ namespace FlexTable.Crayon.Chart
             VerticalAxis.Update();
         }
 
-        public void ClearSelection()
+        public void ClearSelection(Boolean withHandler)
         {
             selectedData.Clear();
 
-            if (SelectionChanged != null)
+            if (withHandler && SelectionChanged != null)
                 SelectionChanged(null, null, new List<ScatterplotDatum>(), 0);
 
             CircleElement.Update(true, false);

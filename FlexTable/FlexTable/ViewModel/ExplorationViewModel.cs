@@ -183,11 +183,16 @@ namespace FlexTable.ViewModel
             }            
         }        
 
-        public void FilterOut(FilterViewModel filterViewModel)
+        public Boolean FilterOut(FilterViewModel filterViewModel)
         {
-            mainPageViewModel.SheetViewModel.FilterViewModels.Insert(0, filterViewModel);
+            if (filterViewModel.Filter(mainPageViewModel.SheetViewModel.FilteredRows).Count() > 0)
+            {
+                mainPageViewModel.SheetViewModel.FilterViewModels.Insert(0, filterViewModel);
 
-            mainPageViewModel.ReflectAll(ViewStatus);
+                mainPageViewModel.ReflectAll(ViewStatus);
+                return true;
+            }
+            return false;
             /*
             // sheet 업데이트
             mainPageViewModel.SheetViewModel.Reflect(ViewStatus);

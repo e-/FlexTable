@@ -14,5 +14,10 @@ namespace FlexTable.Crayon.Chart
         public Double Value { get; set; }
         public GroupedBarChartDatum Parent { get; set; }
         public IEnumerable<Model.Row> Rows { get; set; }
+
+        public override string ToString()
+        {
+            return Key.ToString();
+        }
     }
 }

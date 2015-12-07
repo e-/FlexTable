@@ -640,12 +640,12 @@ namespace FlexTable.Crayon.Chart
             VerticalAxis.Update();
         }
 
-        public void ClearSelection()
+        public void ClearSelection(Boolean withHandler)
         {
             selectedKeys.Clear();
             selectedData.Clear();
 
-            if (SelectionChanged != null)
+            if (withHandler && SelectionChanged != null)
                 SelectionChanged(null, null, selectedData, 0);
 
             RectangleElement.Update(true);
