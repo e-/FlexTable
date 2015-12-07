@@ -61,11 +61,11 @@ namespace FlexTable.View
         {
             this.InitializeComponent();
 
-            BarChartElement.SelectionChanged += BarChartElement_SelectionChanged;
-            BarChartElement.FilterOut += BarChartElement_FilterOut;
+            BarChartElement.SelectionChanged += ChartElement_SelectionChanged;
+            BarChartElement.FilterOut += ChartElement_FilterOut;
 
-            GroupedBarChartElement.SelectionChanged += BarChartElement_SelectionChanged;
-            GroupedBarChartElement.FilterOut += BarChartElement_FilterOut;
+            GroupedBarChartElement.SelectionChanged += ChartElement_SelectionChanged;
+            GroupedBarChartElement.FilterOut += ChartElement_FilterOut;
          
             LineChartElement.SelectionChanged += LineChartElement_SelectionChanged; ;
             LineChartElement.FilterOut += LineChartElement_FilterOut;
@@ -125,7 +125,7 @@ namespace FlexTable.View
 
         #region Visualization Event Handlers
 
-        private void BarChartElement_SelectionChanged(object sender, object e, object datum, int index)
+        private void ChartElement_SelectionChanged(object sender, object e, object datum, int index)
         {
             IEnumerable<Row> selectedRows = datum as List<Row>;
             SelectionChanged(selectedRows);
@@ -149,12 +149,12 @@ namespace FlexTable.View
             SelectionChanged(selection.Select(s => s.Row));
         }
 
-        private void BarChartElement_FilterOut(object sender, object e, object datum, int index)
+        private void ChartElement_FilterOut(object sender, object e, object datum, int index)
         {
             IEnumerable<Row> filteredRows = datum as List<Row>;
             if (filteredRows == null || filteredRows.Count() == 0) return;
-            ColumnViewModel columnViewModel = BarChartElement.Data.First().ColumnViewModel;
-            FilterOut(filteredRows, $"Filtered by {columnViewModel.Name}");
+            //ColumnViewModel columnViewModel = BarChartElement.Data.First().ColumnViewModel;
+            FilterOut(filteredRows, e.ToString());// $"Filtered by {columnViewModel.Name}");
         }
 
         private void LineChartElement_FilterOut(object sender, object e, object datum, int index)

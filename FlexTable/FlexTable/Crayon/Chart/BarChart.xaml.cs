@@ -164,7 +164,6 @@ namespace FlexTable.Crayon.Chart
                 };
             } }
         
-
         public Func<Object, Int32, Double> HandleWidthGetter { get { return (d, index) => XScale.RangeBand; } }
         public Func<Object, Int32, Double> HandleHeightGetter { get { return (d, index) => ChartAreaEndY - Const.PaddingTop; } }
         public Func<Object, Int32, Double> HandleXGetter { get { return (d, index) => XScale.Map(d) - XScale.RangeBand / 2; } }        
@@ -350,11 +349,11 @@ namespace FlexTable.Crayon.Chart
                 {
                     if (selectedRows.Count > 0)
                     {
-                        FilterOut(sender, eo, selectedRows, index);
+                        FilterOut(sender, $"Filtered by {Data[0].ColumnViewModel.Name}", selectedRows, index);
                     }
                     else
                     {
-                        FilterOut(sender, eo, datum.Rows, index);
+                        FilterOut(sender, $"Filtered by {Data[0].ColumnViewModel.Name}", datum.Rows.ToList(), index);
                     }
                 }
 
@@ -403,7 +402,7 @@ namespace FlexTable.Crayon.Chart
                 Int32 index = 0;
 
                 index = 0;
-                foreach (Rectangle rect in RectangleElement.Children)
+                foreach (Rectangle rect in HandleRectangleElement.Children)
                 {
                     Rect r = new Rect(Canvas.GetLeft(rect), Canvas.GetTop(rect), rect.Width, rect.Height);
 
@@ -448,7 +447,7 @@ namespace FlexTable.Crayon.Chart
                 {
                     if(FilterOut != null)
                     {
-                        FilterOut(this, null, intersectedRows, index);
+                        FilterOut(this, $"Filtered by {Data[0].ColumnViewModel.Name}", intersectedRows.ToList(), index);
                     }
                 }
                 else // 아니면 무조건 셀렉션 
