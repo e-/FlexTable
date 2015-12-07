@@ -178,7 +178,7 @@ namespace FlexTable.Crayon.Chart
             {
                 return (d, index) =>
                     selectedRows.Count == 0 ? 1 : (
-                    selectedRows.Any(sr => sr.Cells[secondColumnViewModel.Index].Content == (d as BarChartDatum).Key) ? 1 : 0.2);
+                    secondColumnViewModel == null || selectedRows.Any(sr => sr.Cells[secondColumnViewModel.Index].Content == (d as BarChartDatum).Key) ? 1 : 0.2);
             }
         }
 
@@ -197,7 +197,7 @@ namespace FlexTable.Crayon.Chart
         public Func<TextBlock, Object, Int32, Double> LegendTextOpacityGetter { get {
                 return (textBlock, d, index) =>
                     selectedRows.Count == 0 ? 1 : (
-                    selectedRows.Any(sr => sr.Cells[secondColumnViewModel.Index].Content == (d as BarChartDatum).Key) ? 1 : 0.2);
+                    secondColumnViewModel == null || selectedRows.Any(sr => sr.Cells[secondColumnViewModel.Index].Content == (d as BarChartDatum).Key) ? 1 : 0.2);
         } }
 
         public Func<Object, Int32, Double> IndicatorWidthGetter { get { return (d, index) => 100; } }// XScale.RangeBand; } }
@@ -412,18 +412,21 @@ namespace FlexTable.Crayon.Chart
                     index++;
                 }
 
-                index = 0;
-                foreach (Rectangle rect in LegendHandleRectangleElement.Children)
+                if (secondColumnViewModel != null)
                 {
-                    Rect r = new Rect(Canvas.GetLeft(rect) + ChartAreaEndX, Canvas.GetTop(rect), rect.Width, rect.Height);
-
-                    if (Const.IsIntersected(r, boundingRect))
+                    index = 0;
+                    foreach (Rectangle rect in LegendHandleRectangleElement.Children)
                     {
-                        BarChartDatum datum = LegendData[index];
-                        IEnumerable<Row> rows = ChartData.Where(cd => cd.Key == datum.Key).SelectMany(cd => cd.Rows);
-                        intersectedRows = intersectedRows.Concat(rows).ToList();
+                        Rect r = new Rect(Canvas.GetLeft(rect) + ChartAreaEndX, Canvas.GetTop(rect), rect.Width, rect.Height);
+
+                        if (Const.IsIntersected(r, boundingRect))
+                        {
+                            BarChartDatum datum = LegendData[index];
+                            IEnumerable<Row> rows = ChartData.Where(cd => cd.Key == datum.Key).SelectMany(cd => cd.Rows);
+                            intersectedRows = intersectedRows.Concat(rows).ToList();
+                        }
+                        index++;
                     }
-                    index++;
                 }
 
                 index = 0;
@@ -443,7 +446,7 @@ namespace FlexTable.Crayon.Chart
                 {
                     if (FilterOut != null)
                     {
-                        FilterOut(this, $"Filtered by {secondColumnViewModel.Name}", intersectedRows, index);
+                        FilterOut(this, $"Filtered by Strikethrough", intersectedRows, index);
                     }
                 }
                 else // 하나라도 선택 안된게 있으면 선택
@@ -471,6 +474,8 @@ namespace FlexTable.Crayon.Chart
 
         private void LegendHandleRectangleElement_RectangleTapped(object sender, object e, object datum, int index)
         {
+            if (secondColumnViewModel == null) return;
+
             TappedRoutedEventArgs args = e as TappedRoutedEventArgs;
             if (args.PointerDeviceType == PointerDeviceType.Touch)
             {
