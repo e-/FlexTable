@@ -70,8 +70,8 @@ namespace FlexTable.View
             LineChartElement.SelectionChanged += LineChartElement_SelectionChanged; ;
             LineChartElement.FilterOut += LineChartElement_FilterOut;
 
-            ScatterplotElement.SelectionChanged += ScatterplotElement_SelectionChanged;
-            ScatterplotElement.FilterOut += ScatterplotElement_FilterOut;
+            ScatterplotElement.SelectionChanged += ChartElement_SelectionChanged;
+            ScatterplotElement.FilterOut += ChartElement_FilterOut;
 
             DistributionView.Histogram.SelectionChanged += Histogram_SelectionChanged;
             DistributionView.Histogram.FilterOut += Histogram_FilterOut;
@@ -80,7 +80,7 @@ namespace FlexTable.View
         }
 
         
-        private void SelectionChanged(IEnumerable<Row> selectedRows)
+        private void SelectionChanged(object sender, IEnumerable<Row> selectedRows)
         {
             Int32 count = selectedRows.Count();
             SelectedRows = selectedRows;
@@ -100,6 +100,7 @@ namespace FlexTable.View
                 SelectionMessage.Text = rowCount == 1 ? "row selected" : "rows selected";
                 ViewModel.MainPageViewModel.TableViewModel.PreviewRows(selectedRows);
             }
+            BroadcastSelection(sender);
         }
 
         private void FilterOut(IEnumerable<Row> filteredRows, String name, IEnumerable<String> values)
@@ -118,7 +119,7 @@ namespace FlexTable.View
             };
             if (ViewModel.FilterOut(fvm))
             {
-                SelectionChanged(new List<Row>() { });
+                SelectionChanged(null, new List<Row>() { });
                 ClearSelection(false);
             }
         }           
@@ -128,27 +129,21 @@ namespace FlexTable.View
         private void ChartElement_SelectionChanged(object sender, object e, object datum, int index)
         {
             IEnumerable<Row> selectedRows = datum as List<Row>;
-            SelectionChanged(selectedRows);
+            SelectionChanged(sender, selectedRows);
         }
 
         private void LineChartElement_SelectionChanged(object sender, object e, object datum, int index)
         {
             IEnumerable<LineChartDatum> selection = datum as IEnumerable<LineChartDatum>;
-            SelectionChanged(selection.SelectMany(s => s.Rows));
+            SelectionChanged(sender, selection.SelectMany(s => s.Rows));
         }
 
         private void Histogram_SelectionChanged(object sender, object e, object datum, int index)
         {
             IEnumerable<BarChartDatum> selection = datum as IEnumerable<BarChartDatum>;
-            SelectionChanged(selection.SelectMany(s => s.Rows));
+            SelectionChanged(sender, selection.SelectMany(s => s.Rows));
         }
-
-        private void ScatterplotElement_SelectionChanged(object sender, object e, object datum, int index)
-        {
-            IEnumerable<ScatterplotDatum> selection = datum as IEnumerable<ScatterplotDatum>;
-            SelectionChanged(selection.Select(s => s.Row));
-        }
-
+        
         private void ChartElement_FilterOut(object sender, object e, object datum, int index)
         {
             IEnumerable<Row> filteredRows = datum as List<Row>;
@@ -161,21 +156,7 @@ namespace FlexTable.View
         {
             IEnumerable<LineChartDatum> filteredData = datum as IEnumerable<LineChartDatum>;
             FilterOut(filteredData.SelectMany(lcd => lcd.Rows).ToList(), filteredData.First().ColumnViewModel.Name, filteredData.Select(d => d.Key.ToString()));
-        }
-
-        private void ScatterplotElement_FilterOut(object sender, object e, object datum, int index)
-        {
-            IEnumerable<ScatterplotDatum> filteredData = datum as IEnumerable<ScatterplotDatum>;
-            ScatterplotDatum first = filteredData.First();
-            if(first.ColumnViewModel == null) // filter from NN
-            {
-                FilterOut(filteredData.Select(sd => sd.Row).ToList(), "Lasso");
-            }
-            else // from CNN
-            {
-                FilterOut(filteredData.Select(sd => sd.Row).ToList(), first.ColumnViewModel.Name, new List<String>() { first.Key.ToString() });
-            }
-        }
+        }       
 
         private void Histogram_FilterOut(object sender, object e, object datum, int index)
         {
@@ -190,7 +171,7 @@ namespace FlexTable.View
             {
                 Int32 count = SelectedRows.Count();
                 FilterOut(SelectedRows.ToList(), $"Filtered {count} row" + (count == 1 ? String.Empty : "s"));
-                SelectionChanged(new List<Row>() { });
+                SelectionChanged(null, new List<Row>() { });
                 ClearSelection(false);
             }
         }
@@ -382,98 +363,7 @@ namespace FlexTable.View
             if(ViewModel.IsSelected)
                 ViewModel.MainPageViewModel.TableViewModel.Reflect(ViewModel.ViewStatus);
         }
-
-        private void Wrapper_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
-        {
-            return; // does nothing
-            if (e.PointerDeviceType != PointerDeviceType.Touch) return;
-            if (ViewModel.IsEmpty) { }
-            else if(ViewModel.IsUndoing)
-            {
-                Double delta = e.Cumulative.Translation.Y;
-                if (delta >= 0) delta = 0;
-                if (delta < -ViewModel.MainPageViewModel.PageOffset) { delta = -ViewModel.MainPageViewModel.PageOffset; }
-                Canvas.SetTop(this, ViewModel.MainPageViewModel.PageOffset + delta);
-                ChartWrapper.Opacity = 0.2 - 0.8 * delta / ViewModel.MainPageViewModel.PageOffset;
-                ViewModel.IsPrimaryUndoMessageVisible = delta > -50;
-            }
-            else if (ViewModel.IsSelected) // 선택 된 경우 내릴수만 있음
-            {
-                Double delta = e.Cumulative.Translation.Y;
-                if (delta <= 0) delta = 0;
-                if (delta > ViewModel.MainPageViewModel.PageHeight) { delta = ViewModel.MainPageViewModel.PageHeight; }
-                Canvas.SetTop(this, delta);
-                ChartWrapper.Opacity = 0.2 + 0.8 * (1 - delta / ViewModel.MainPageViewModel.PageHeight);
-                Canvas.SetZIndex(this, 10);
-            }
-            else // 선택되지 않은 경우 올릴수만 있음
-            {
-                Double delta = e.Cumulative.Translation.Y;
-                if (delta >= 0) delta = 0;
-                if (delta < -ViewModel.MainPageViewModel.PageOffset) { delta = -ViewModel.MainPageViewModel.PageOffset; }
-                Canvas.SetTop(this, ViewModel.MainPageViewModel.PageOffset + delta);
-            }            
-        }
-
-        private void Wrapper_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
-        {
-            return; // does nothing
-            /*if (e.PointerDeviceType != PointerDeviceType.Touch) return;
-            if (PageViewModel.IsEmpty) { }
-            else if (PageViewModel.IsUndoing)
-            {
-                Double delta = e.Cumulative.Translation.Y;
-                if (delta < -Const.PageViewToggleThreshold) // 많이 올라간 경우
-                {
-                    Undo_Tapped(sender, new TappedRoutedEventArgs());
-                }
-                else
-                {
-                    MoveToUnselectedPosition();
-                    EnterUndoMode();
-                }
-            }
-            else if (PageViewModel.IsSelected) // 선택 된 경우 내릴수만 있음
-            {
-                Double delta = e.Cumulative.Translation.Y;
-                if (delta > Const.PageViewToggleThreshold) // 많이 내려간 경우
-                {
-                    MoveToUnselectedPosition();
-                    EnterUndoMode();
-                    PageViewModel.StateChanged(this, false);
-                }
-                else
-                {
-                    MoveToSelectedPosition(false);
-                }
-                Canvas.SetZIndex(this, 0);
-            }
-            else // 선택되지 않은 경우 올릴수만 있음
-            {
-                Double delta = e.Cumulative.Translation.Y;
-                if(delta < -Const.PageViewToggleThreshold) // 많이 올라간 경우
-                {
-                    MoveToSelectedPosition(false);
-                    EnterSelectedMode();
-                    PageViewModel.StateChanged(this, false);
-                }
-                else
-                {
-                    MoveToUnselectedPosition();
-                }
-            }*/
-        }
-
-        private void Carousel_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
-        {
-            Wrapper_ManipulationDelta(sender, e);
-        }
-
-        private void Carousel_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
-        {
-            Wrapper_ManipulationCompleted(sender, e);
-        }
-
+        
         private void Select_Tapped(object sender, TappedRoutedEventArgs e)
         {
             // 이 페이지 뷰가 선택될수 있는지 먼저 확인하자
@@ -491,7 +381,7 @@ namespace FlexTable.View
         {
             ViewModel.State = PageViewModel.PageViewState.Undoing;
             ViewModel.StateChanged(this);
-            ClearSelection(true);
+            ClearSelection(false);
         }
 
         private void Undo_Tapped(object sender, TappedRoutedEventArgs e)
@@ -558,6 +448,17 @@ namespace FlexTable.View
                 Clipboard_Tapped(sender, null);
             }
         }
+
+
+        private void BroadcastSelection(object sender)
+        {
+            if (sender != BarChartElement && ViewModel.IsBarChartVisible) BarChartElement.ImportSelection(SelectedRows);
+            if (sender != GroupedBarChartElement && ViewModel.IsGroupedBarChartVisible) GroupedBarChartElement.ImportSelection(SelectedRows);
+            if (sender != LineChartElement && ViewModel.IsLineChartVisible) LineChart.ImportSelection(SelectedRows);
+            //if (sender != DistributionViewElement && ViewModel.IsDistributionVisible) DistributionView.Histogram.ClearSelection(withHandler);
+            if (sender != ScatterplotElement && ViewModel.IsScatterplotVisible) ScatterplotElement.ImportSelection(SelectedRows);
+        }
+
 
         private void ClearSelection(Boolean withHandler)
         {

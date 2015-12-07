@@ -8,6 +8,7 @@ using d3.ColorScheme;
 using d3.Scale;
 using FlexTable.Model;
 using FlexTable.Util;
+using FlexTable.ViewModel;
 using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -104,7 +105,7 @@ namespace FlexTable.Crayon.Chart
         {
             get
             {
-                return (d, index) => (selectedData.Count == 0) ? 0.8 : (selectedData.Exists(sd => sd.Row == (d as ScatterplotDatum).Row) ? 0.8 : 0.1);
+                return (d, index) => (selectedRows.Count == 0) ? 0.8 : (selectedRows.Contains((d as ScatterplotDatum).Row) ? 0.8 : 0.1);
             }
         }
 
@@ -124,11 +125,14 @@ namespace FlexTable.Crayon.Chart
                 return (d, index) => (Height - LegendData.Count * Const.LegendPatchHeight - (LegendData.Count - 1) * Const.LegendPatchSpace) / 2 + index * (Const.LegendPatchHeight + Const.LegendPatchSpace);
             }
         }
-        public Func<Object, Int32, Double> LegendPatchOpacityGetter { get { return (d, index) => (selectedData.Count == 0) ? 1 : (selectedData.Exists(dd => dd.Key == d) ? 1 : 0.2); } }
+        public Func<Object, Int32, Double> LegendPatchOpacityGetter { get {
+                return (d, index) => (selectedRows.Count == 0 || categoricalColumnViewModel == null) ? 1 : (selectedRows.Any(dd => dd.Cells[categoricalColumnViewModel.Index].Content == d) ? 1 : 0.2);
+            } }
 
         public Func<Object, Int32, Double> LegendTextXGetter { get { return (d, index) => Const.LegendPatchWidth + Const.LegendPatchSpace; } }
         public Func<Object, Int32, String> LegendTextGetter { get { return (d, index) => d.ToString(); } }
-        public Func<TextBlock, Object, Int32, Double> LegendTextOpacityGetter { get { return (textBlock, d, index) => (selectedData.Count == 0) ? 1 : (selectedData.Exists(dd => dd.Key == d) ? 1 : 0.2); } }
+        public Func<TextBlock, Object, Int32, Double> LegendTextOpacityGetter { get {
+                return (textBlock, d, index) => (selectedRows.Count == 0 || categoricalColumnViewModel == null) ? 1 : (selectedRows.Any(dd => dd.Cells[categoricalColumnViewModel.Index].Content == d) ? 1 : 0.2); } }
 
         public Func<Object, Int32, Color> ColorGetter
         {
@@ -157,7 +161,9 @@ namespace FlexTable.Crayon.Chart
         public Double LegendAreaWidth { get; set; } = 140;
 
         public event Event.EventHandler SelectionChanged;
-        private List<ScatterplotDatum> selectedData = new List<ScatterplotDatum>();
+        private List<Row> selectedRows = new List<Row>();
+        public List<Row> SelectedRows => selectedRows;
+        private ColumnViewModel categoricalColumnViewModel;
 
         public event Event.EventHandler FilterIn;
         public event Event.EventHandler FilterOut;
@@ -235,24 +241,24 @@ namespace FlexTable.Crayon.Chart
             TappedRoutedEventArgs args = e as TappedRoutedEventArgs;
             if (args.PointerDeviceType == PointerDeviceType.Touch)
             {
-                IEnumerable<ScatterplotDatum> selected = Data.Where(d => d.Key == datum);
+                IEnumerable<Row> selected = Data.Where(d => d.Key == datum).Select(d => d.Row);
 
-                if(selected.Except(selectedData).Count() == 0) // 모두 다이미있으면 지워야함
+                if(selected.Except(selectedRows).Count() == 0) // 모두 다이미있으면 지워야함
                 {
-                    selectedData = selectedData.Except(selected).ToList();
+                    selectedRows = selectedRows.Except(selected).Distinct().ToList();
                 }
                 else
                 {
-                    selectedData = selectedData.Concat(selected.Except(selectedData)).ToList();
+                    selectedRows = selectedRows.Concat(selected).Distinct().ToList();
                 }
 
-                if (selectedData.Count == Data.Count)
+                if (selectedRows.Count == Data.Count)
                 {
-                    selectedData.Clear();
+                    selectedRows.Clear();
                 }
 
                 if (SelectionChanged != null)
-                    SelectionChanged(sender, e, selectedData, index);
+                    SelectionChanged(this, e, selectedRows, index);
 
                 CircleElement.Update(true, false);
                 if (LegendVisibility == Visibility.Visible)
@@ -269,82 +275,46 @@ namespace FlexTable.Crayon.Chart
             if (inkManager.GetStrokes().Count > 0)
             {
                 List<Point> points = inkManager.GetStrokes()[0].GetInkPoints().Select(ip => ip.Position).ToList();
-                Boolean isAllSelected = true;
-
-                List<ScatterplotDatum> selected = Data
-                    .Where(d => d3.Util.TestPointInPolygon(new Point(XGetter(d, 0), YGetter(d, 0)), points))
-                    .ToList();
-
-                isAllSelected = selected.Except(selectedData).Count() == 0;
                 
                 Rect boundingRect = inkManager.GetStrokes()[0].BoundingRect;
+                
                 Int32 index = 0;
-                
-                Boolean isLegendStrikeThrough = false;
-                Object victim = null;
-                
+
+                IEnumerable<Row> intersectedRows = Data
+                    .Where(d => d3.Util.TestPointInPolygon(new Point(XGetter(d, 0), YGetter(d, 0)), points))
+                    .Select(d => d.Row);
+
                 index = 0;
                 foreach (Rectangle rect in LegendHandleRectangleElement.Children)
                 {
-                    if (Canvas.GetLeft(LegendPanel) + Canvas.GetLeft(rect) <= boundingRect.Right && boundingRect.Top <= Canvas.GetTop(rect) + rect.Height && Canvas.GetTop(rect) <= boundingRect.Top + boundingRect.Height)
+                    Rect r = new Rect(Canvas.GetLeft(rect) + ChartAreaEndX, Canvas.GetTop(rect), rect.Width, rect.Height);
+
+                    if (Const.IsIntersected(r, boundingRect))
                     {
                         Object datum = LegendData[index];
 
-                        if (boundingRect.Height < Const.StrikeThroughMaxHeight && boundingRect.Width > Const.StrikeThroughMinWidth) // legend strike through면
-                        {
-                            isLegendStrikeThrough = true;
-                            victim = datum;
-                            break;
-                        }
-                        else
-                        {
-                            foreach (ScatterplotDatum child in Data.Where(d => d.Key == datum))
-                            {
-                                if (selectedData.IndexOf(child) < 0) //선택 안된 데이터가 있으면
-                                {
-                                    isAllSelected = false;
-                                }
-                                selected.Add(child);
-                            }
-                        }
+                        intersectedRows = intersectedRows.Concat(Data.Where(d => d.Key == datum).Select(d => d.Row));
                     }
                     index++;
                 }
 
-                if (isLegendStrikeThrough)
+                if (Const.IsStrikeThrough(boundingRect))
                 {
-                    IEnumerable<ScatterplotDatum> dead = Data.Where(d => d.Key == victim);
-
-                    selectedData = selectedData.Except(dead).ToList();
-
                     if (FilterOut != null)
                     {
-                        FilterOut(this, null, dead, index);
+                        FilterOut(this, $"Filtered by {Data[0].ColumnViewModel.Name}", intersectedRows.ToList(), index);
                     }
-                }
-                else if (isAllSelected) // 모두가 선택되었다면 선택 해제를 하면 됨
+                } 
+                else
                 {
-                    foreach (ScatterplotDatum datum in selected)
-                    {
-                        selectedData.Remove(datum);
-                    }
-                }
-                else // 하나라도 선택 안된게 있으면 선택
-                {
-                    foreach (ScatterplotDatum datum in selected.Except(selectedData))
-                    {
-                        selectedData.Add(datum);
-                    }
-                }
+                    selectedRows = selectedRows.Concat(intersectedRows).Distinct().ToList();
+                    if (selectedRows.Count == Data.Count())
+                        selectedRows.Clear();
 
-                if (selectedData.Count == Data.Count)
-                {
-                    selectedData.Clear();
+                    if (SelectionChanged != null)
+                        SelectionChanged(this, null, selectedRows, index);
                 }
-
-                if (SelectionChanged != null)
-                    SelectionChanged(this, null, selectedData, index);
-
+                
                 CircleElement.Update(true, false);
                 if (LegendVisibility == Visibility.Visible)
                 {
@@ -358,6 +328,8 @@ namespace FlexTable.Crayon.Chart
         
         public void Update()
         {
+            categoricalColumnViewModel = Data.First().ColumnViewModel;
+
             LegendAreaWidth = 0;
             D3Data = new Data()
             {
@@ -464,16 +436,28 @@ namespace FlexTable.Crayon.Chart
 
         public void ClearSelection(Boolean withHandler)
         {
-            selectedData.Clear();
+            selectedRows.Clear();
 
             if (withHandler && SelectionChanged != null)
-                SelectionChanged(null, null, new List<ScatterplotDatum>(), 0);
+                SelectionChanged(this, null, new List<Row>(), 0);
 
             CircleElement.Update(true, false);
             if (LegendVisibility == Visibility.Visible)
             {
                 LegendRectangleElement.Update(true);
                 LegendTextElement.Update(true);
+            }
+        }
+
+        public void ImportSelection(IEnumerable<Row> importedRows)
+        {
+            selectedRows = importedRows.ToList();
+
+            CircleElement.Update(false, false);
+            if (LegendVisibility == Visibility.Visible)
+            {
+                LegendRectangleElement.Update(false);
+                LegendTextElement.Update(false);
             }
         }
     }

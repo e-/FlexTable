@@ -157,7 +157,7 @@ namespace FlexTable.ViewModel
                 view.TableView.ColumnIndexer.Update();
                 previousViewStatus = viewStatus;
             };
-            dispatcherTimer.Interval = TimeSpan.FromMilliseconds(animationTimer > 0 ? animationTimer : 1);
+            dispatcherTimer.Interval = TimeSpan.FromMilliseconds(animationTimer > 0 ? animationTimer : 1); // 700);
             dispatcherTimer.Start();
         }
         

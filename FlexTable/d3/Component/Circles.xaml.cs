@@ -25,8 +25,8 @@ namespace d3.Component
         public static readonly DependencyProperty DataProperty =
             DependencyProperty.Register("Data", typeof(Data), typeof(Circles), new PropertyMetadata(null));
         
-        public event Event.EventHandler CirclePointerPressed;
-        public event Event.EventHandler CirclePointerReleased;
+        //public event Event.EventHandler CirclePointerPressed;
+        //public event Event.EventHandler CirclePointerReleased;
 
         public Data Data
         {
@@ -134,7 +134,7 @@ namespace d3.Component
                 storyboard.BeginTime = Const.AnimationDelay;
             }
 
-            if (ReusePreviousElement || useTransition)
+            if (true) // useTransition)
             {
                 foreach (Object datum in Data.List)
                 {
@@ -144,13 +144,14 @@ namespace d3.Component
                     if (index < CircleCanvas.Children.Count)
                     {
                         ellipse = CircleCanvas.Children[index] as Ellipse;
+                        ellipse.Visibility = Visibility.Visible;
                     }
                     else
                     {
                         newbie = true;
                         ellipse = new Ellipse();
 
-                        ellipse.PointerPressed += delegate (object sender, PointerRoutedEventArgs e)
+                        /*ellipse.PointerPressed += delegate (object sender, PointerRoutedEventArgs e)
                         {
                             if (CirclePointerPressed != null)
                             {
@@ -166,9 +167,9 @@ namespace d3.Component
                                 CirclePointerReleased(ellipse, e, datum, index);
                                 e.Handled = true;
                             }
-                        };
+                        };*/
 
-                        ellipse.Tapped += circle_Tapped;
+                        //ellipse.Tapped += circle_Tapped;
 
                         CircleCanvas.Children.Add(ellipse);
                     }
@@ -198,7 +199,8 @@ namespace d3.Component
                 for (Int32 i = CircleCanvas.Children.Count - 1; i >= index; --i)
                 {
                     Ellipse child = CircleCanvas.Children[i] as Ellipse;
-                    CircleCanvas.Children.Remove(child);
+                    child.Visibility = Visibility.Collapsed;
+                    //CircleCanvas.Children.Remove(child);
                 }
             }
             else
@@ -209,7 +211,7 @@ namespace d3.Component
                 {
                     Ellipse ellipse = new Ellipse();
 
-                    ellipse.PointerPressed += delegate (object sender, PointerRoutedEventArgs e)
+                    /*ellipse.PointerPressed += delegate (object sender, PointerRoutedEventArgs e)
                     {
                         if (CirclePointerPressed != null)
                         {
@@ -227,7 +229,7 @@ namespace d3.Component
                         }
                     };
 
-                    ellipse.Tapped += circle_Tapped;
+                    ellipse.Tapped += circle_Tapped;*/
 
                     CircleCanvas.Children.Add(ellipse);
 
@@ -241,11 +243,6 @@ namespace d3.Component
                     index++;
                 }
             }
-        }
-
-        void circle_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            e.Handled = true;
         }
     }
 }

@@ -376,14 +376,14 @@ namespace FlexTable.View
                             {
                                 case "MIN":
                                     selectedColumnViewModel.AggregativeFunction = new AggregativeFunction.MinAggregation();
-                                    ViewModel.MainPageViewModel.ReflectAll();
+                                    ViewModel.MainPageViewModel.ReflectAll(false);
                                     Debug.WriteLine("Min selected");
                                     drawable.RemoveAllStrokes();
                                     timer.Stop();
                                     return;
                                 case "MAX":
                                     selectedColumnViewModel.AggregativeFunction = new AggregativeFunction.MaxAggregation();
-                                    ViewModel.MainPageViewModel.ReflectAll();
+                                    ViewModel.MainPageViewModel.ReflectAll(false);
                                     Debug.WriteLine("Max selected");
                                     drawable.RemoveAllStrokes();
                                     timer.Stop();
@@ -391,14 +391,14 @@ namespace FlexTable.View
                                 case "AVG":
                                 case "MEAN":
                                     selectedColumnViewModel.AggregativeFunction = new AggregativeFunction.AverageAggregation();
-                                    ViewModel.MainPageViewModel.ReflectAll();
+                                    ViewModel.MainPageViewModel.ReflectAll(false);
                                     Debug.WriteLine("Mean selected");
                                     drawable.RemoveAllStrokes();
                                     timer.Stop();
                                     return;
                                 case "SUM":
                                     selectedColumnViewModel.AggregativeFunction = new AggregativeFunction.SumAggregation();
-                                    ViewModel.MainPageViewModel.ReflectAll();
+                                    ViewModel.MainPageViewModel.ReflectAll(false);
                                     Debug.WriteLine("Sum selected");
                                     drawable.RemoveAllStrokes();
                                     timer.Stop();
@@ -457,13 +457,13 @@ namespace FlexTable.View
                     {
                         // 오름차순 정렬
                         this.ViewModel.SheetViewModel.Sort(selectedColumnViewModel, SortOption.Ascending);
-                        this.ViewModel.MainPageViewModel.ReflectAll();
+                        this.ViewModel.MainPageViewModel.ReflectAll(false);
                     }
                     else if (lastPoint.Position.Y < firstPoint.Position.Y + VerticalStrokeHeightDifferenceThreshold)
                     {
                         // 내림차순 정렬
                         this.ViewModel.SheetViewModel.Sort(selectedColumnViewModel, SortOption.Descending);
-                        this.ViewModel.MainPageViewModel.ReflectAll();
+                        this.ViewModel.MainPageViewModel.ReflectAll(false);
                     }
                 }
                 drawable.RemoveAllStrokes();

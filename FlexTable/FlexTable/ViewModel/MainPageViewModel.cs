@@ -71,12 +71,12 @@ namespace FlexTable.ViewModel
         /// <summary>
         /// 현재 ExplorationViewModel의 ViewStatus를 통해 SheetViewModel, TableViewModel, PageView들을 모두 업데이트 합니다
         /// </summary>
-        public void ReflectAll()
+        public void ReflectAll(Boolean updateAllPageViews)
         {
-            ReflectAll(ExplorationViewModel.ViewStatus);
+            ReflectAll(ExplorationViewModel.ViewStatus, updateAllPageViews);
         }
 
-        public void ReflectAll(ViewStatus viewStatus)
+        public void ReflectAll(ViewStatus viewStatus, Boolean updateAllPageViews)
         {
             viewStatus.Generate(sheetViewModel);
 
@@ -98,9 +98,19 @@ namespace FlexTable.ViewModel
             TableViewModel.Reflect(viewStatus);
 
             // 차트 업데이트
-            foreach (PageView pageView in ExplorationViewModel.SelectedPageViews)
+            if (updateAllPageViews)
             {
-                if(pageView.ViewModel.ViewStatus != viewStatus)
+                foreach (PageView pageView in ExplorationViewModel.SelectedPageViews)
+                {
+                    if (pageView.ViewModel.ViewStatus != viewStatus)
+                        pageView.ViewModel.ViewStatus.Generate(sheetViewModel);
+                    pageView.ViewModel.Reflect(true);
+                }
+            }
+            else
+            {
+                PageView pageView = ExplorationViewModel.SelectedPageViews.Last();
+                if (pageView.ViewModel.ViewStatus != viewStatus)
                     pageView.ViewModel.ViewStatus.Generate(sheetViewModel);
                 pageView.ViewModel.Reflect(true);
             }
@@ -132,6 +142,7 @@ namespace FlexTable.ViewModel
             // 메타데이터 초기화
             ExplorationViewModel.MetadataViewModel.Initialize();
 
+            return;
             var dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
 
             ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[4]);

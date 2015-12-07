@@ -393,7 +393,7 @@ namespace FlexTable.Crayon.Chart
                 }
 
                 if (SelectionChanged != null)
-                    SelectionChanged(sender, e, Data.Where(d => selectedKeys.IndexOf(d.Key) >= 0), index);
+                    SelectionChanged(this, e, Data.Where(d => selectedKeys.IndexOf(d.Key) >= 0), index);
 
                 LineElement.Update(true);
                 CircleElement.Update(true, false);
@@ -552,7 +552,7 @@ namespace FlexTable.Crayon.Chart
             selectedKeys.Clear();
 
             if (withHandler && SelectionChanged != null)
-                SelectionChanged(null, null, Data.Where(d => selectedKeys.IndexOf(d.Key) >= 0), 0);
+                SelectionChanged(this, null, Data.Where(d => selectedKeys.IndexOf(d.Key) >= 0), 0);
 
             LineElement.Update(true);
             CircleElement.Update(true, false);
@@ -562,6 +562,18 @@ namespace FlexTable.Crayon.Chart
                 LegendRectangleElement.Update(true);
                 LegendTextElement.Update(true);
             }
+        }
+
+        public void ImportSelection(IEnumerable<Row> importedRows)
+        {
+            /*selectedRows = importedRows.ToList();
+
+            CircleElement.Update(false, false);
+            if (LegendVisibility == Visibility.Visible)
+            {
+                LegendRectangleElement.Update(false);
+                LegendTextElement.Update(false);
+            }*/
         }
     }
 }

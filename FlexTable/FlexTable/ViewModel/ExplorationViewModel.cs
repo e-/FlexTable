@@ -128,7 +128,7 @@ namespace FlexTable.ViewModel
                 // 새로운 page 만들기
                 view.ExplorationView.AddNewPage();
 
-                mainPageViewModel.ReflectAll();
+                mainPageViewModel.ReflectAll(false);
 
                 view.TableView.ScrollToColumnViewModel(mainPageViewModel.SheetViewModel.ColumnViewModels.OrderBy(c => c.Order).First());
 
@@ -155,7 +155,7 @@ namespace FlexTable.ViewModel
                 // 새로운 page 만들기
                 view.ExplorationView.AddNewPage();
 
-                mainPageViewModel.ReflectAll();
+                mainPageViewModel.ReflectAll(false);
                 
                 view.TableView.ScrollToColumnViewModel(mainPageViewModel.SheetViewModel.ColumnViewModels.OrderBy(c => c.Order).First());
 
@@ -174,7 +174,7 @@ namespace FlexTable.ViewModel
                 // 기존 탑 페이지 지우고 이걸 탑 페이지로 지정
                 view.ExplorationView.RemoveTopPage(pageView);
 
-                mainPageViewModel.ReflectAll();
+                mainPageViewModel.ReflectAll(true);
 
                 view.TableView.ScrollToColumnViewModel(mainPageViewModel.SheetViewModel.ColumnViewModels.OrderBy(c => c.Order).First());
 
@@ -189,7 +189,7 @@ namespace FlexTable.ViewModel
             {
                 mainPageViewModel.SheetViewModel.FilterViewModels.Insert(0, filterViewModel);
 
-                mainPageViewModel.ReflectAll(ViewStatus);
+                mainPageViewModel.ReflectAll(ViewStatus, false);
                 return true;
             }
             return false;
@@ -213,7 +213,7 @@ namespace FlexTable.ViewModel
         {
             mainPageViewModel.SheetViewModel.FilterViewModels.Remove(filterViewModel);
 
-            mainPageViewModel.ReflectAll(ViewStatus);
+            mainPageViewModel.ReflectAll(ViewStatus, false);
 
             /*
             // sheet 업데이트

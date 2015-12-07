@@ -233,6 +233,7 @@ namespace FlexTable.Crayon.Chart
         
         public event Event.EventHandler SelectionChanged;
         private List<Row> selectedRows = new List<Row>();
+        public List<Row> SelectedRows => selectedRows;
 
         public event Event.EventHandler FilterIn;
         public event Event.EventHandler FilterOut;
@@ -453,7 +454,7 @@ namespace FlexTable.Crayon.Chart
                 else // 아니면 무조건 셀렉션 
                 {
                     selectedRows = selectedRows.Concat(intersectedRows).Distinct().ToList();
-                    if (selectedRows.Count == Data.SelectMany(d => d.Rows).Count())
+                    if (selectedRows.Count == Data.SelectMany(d => d.Rows).Distinct().Count())
                         selectedRows.Clear();
 
                     if (SelectionChanged != null)
@@ -488,13 +489,13 @@ namespace FlexTable.Crayon.Chart
                     selectedRows = selectedRows.Concat(barChartDatum.Rows).Distinct().ToList();
                 }
                 
-                if(selectedRows.Count == Data.SelectMany(d => d.Rows).Count())
+                if(selectedRows.Count == Data.SelectMany(d => d.Rows).Distinct().Count())
                 {
                     selectedRows.Clear();
                 }
 
                 if (SelectionChanged != null)
-                    SelectionChanged(sender, e, selectedRows, index);
+                    SelectionChanged(this, e, selectedRows, index);
 
                 RectangleElement.Update(true);
                 //ForegroundRectangleElement.Update();
@@ -652,7 +653,7 @@ namespace FlexTable.Crayon.Chart
             selectedRows.Clear();
 
             if (withHandler && SelectionChanged != null)
-                SelectionChanged(null, null, selectedRows, 0);
+                SelectionChanged(this, null, selectedRows, 0);
 
             RectangleElement.Update(true);
             //ForegroundRectangleElement.Update(true);
@@ -661,6 +662,19 @@ namespace FlexTable.Crayon.Chart
             {
                 LegendRectangleElement.Update(true);
                 LegendTextElement.Update(true);
+            }
+        }
+
+        public void ImportSelection(IEnumerable<Row> importedRows)
+        {
+            selectedRows = importedRows.ToList();
+            RectangleElement.Update(false);
+            //ForegroundRectangleElement.Update(true);
+            IndicatorTextElement.Update(false);
+            if (LegendVisibility == Visibility.Visible)
+            {
+                LegendRectangleElement.Update(false);
+                LegendTextElement.Update(false);
             }
         }
     }

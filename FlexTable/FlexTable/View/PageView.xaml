@@ -54,14 +54,14 @@
         </Storyboard>
 
         <Storyboard x:Name="UndoDimmingStoryboard">
-            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.4" BeginTime="00:00:00.2"
+            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.7"
                              Storyboard.TargetName="ChartWrapper" Storyboard.TargetProperty="Opacity" To="0.1">
             </DoubleAnimation>
             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="UndoMessage"
                                            Storyboard.TargetProperty="Visibility">
                 <DiscreteObjectKeyFrame KeyTime="0" Value="Visible" />
             </ObjectAnimationUsingKeyFrames>
-            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.4" BeginTime="00:00:00.2"
+            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.7"
                              Storyboard.TargetName="UndoMessage" Storyboard.TargetProperty="Opacity" To="1">
             </DoubleAnimation>
         </Storyboard>
@@ -176,12 +176,9 @@
         <x:String x:Key="TooManyElementsWarningString">There are too many visual elements. Some elements may be hidden.</x:String>
         
     </UserControl.Resources>
-    
+
     <StackPanel Opacity="0" x:Name="Wrapper"
-                Background="Transparent"
-                ManipulationMode="TranslateY" 
-                ManipulationDelta="Wrapper_ManipulationDelta"
-                ManipulationCompleted="Wrapper_ManipulationCompleted">
+                Background="Transparent">
         <Grid>
             <!-- Visibility="{Binding IsPreviewVisible, Converter={StaticResource BooleanToVisibilityConverter}}" -->
             <StackPanel Height="{Binding MainPageViewModel.PageHeight}"
@@ -193,8 +190,6 @@
                               ViewChanged="Carousel_ViewChanged">
                     <Canvas x:Name="ParagraphContainerCanvasElement" Height="{StaticResource ParagraphContainerHeight}"
                             ManipulationMode="TranslateY,System"
-                              ManipulationDelta="Carousel_ManipulationDelta"
-                              ManipulationCompleted="Carousel_ManipulationCompleted"
                             >
                         <StackPanel Visibility="{Binding IsBarChartVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Bar Chart" Background="Transparent">
                             <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="BarChartTitleElement"></StackPanel>
