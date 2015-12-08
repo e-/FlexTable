@@ -689,17 +689,20 @@ namespace FlexTable.Model
 
             foreach (ColumnViewModel columnViewModel in sortAppliedColumnViewModels)
             {
-                if (x.Cells[columnViewModel.Index].Content != y.Cells[columnViewModel.Index].Content)
+                if (columnViewModel.Type == ColumnType.Numerical)
                 {
-                    if (columnViewModel.Type == ColumnType.Numerical)
+                    if ((Double)x.Cells[columnViewModel.Index].Content != (Double)y.Cells[columnViewModel.Index].Content)
                     {
                         return GetSortDirection(columnViewModel) *
                             ((Double)x.Cells[columnViewModel.Index].Content).CompareTo((Double)y.Cells[columnViewModel.Index].Content);
                     }
-                    else if (columnViewModel.Type == ColumnType.Categorical)
+                }
+                else
+                {
+                    if (x.Cells[columnViewModel.Index].Content != y.Cells[columnViewModel.Index].Content)
                     {
                         return GetSortDirection(columnViewModel) *
-                            (x.Cells[columnViewModel.Index].Content as Category).Order.CompareTo((y.Cells[columnViewModel.Index].Content as Category).Order);
+                    (x.Cells[columnViewModel.Index].Content as Category).Order.CompareTo((y.Cells[columnViewModel.Index].Content as Category).Order);
                     }
                 }
             }
