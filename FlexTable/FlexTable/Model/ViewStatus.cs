@@ -241,7 +241,8 @@ namespace FlexTable.Model
                 {
                     RowViewModel rowViewModel = new RowViewModel(sheetViewModel.MainPageViewModel)
                     {
-                        Index = index++
+                        Index = index++,
+                        Rows = groupedRows.Rows
                     };
 
                     foreach (ColumnViewModel columnViewModel in orderedColumnViewModels)

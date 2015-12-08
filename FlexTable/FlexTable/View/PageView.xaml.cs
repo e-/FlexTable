@@ -80,9 +80,15 @@ namespace FlexTable.View
         }
 
         
-        private void SelectionChanged(object sender, IEnumerable<Row> selectedRows)
+        public void SelectionChanged(object sender, IEnumerable<Row> selectedRows)
         {
             Int32 count = selectedRows.Count();
+            if(count == ViewModel.MainPageViewModel.SheetViewModel.FilteredRows.Count())
+            {
+                selectedRows = new List<Row>();
+                count = 0;
+            }
+
             SelectedRows = selectedRows;
             if (count == 0)
             {

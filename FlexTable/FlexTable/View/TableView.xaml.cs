@@ -439,8 +439,15 @@ namespace FlexTable.View
                 return;
             }
 
-            if (strokes[0].BoundingRect.Y < columnHeaderHeight
-                || strokes[0].BoundingRect.Y + strokes[0].BoundingRect.Height > screenHeight - columnHeaderHeight) // 컬럼 헤더에서 스트로크가 쓰여졌을때에는 다음 글자가 쓰여질때까지 기다린다
+            InkPoint firstInkPoint = strokes[0].GetInkPoints().First();
+
+            if (
+                strokes[0].BoundingRect.Y + strokes[0].BoundingRect.Height < columnHeaderHeight * 1.2 ||
+                screenHeight - columnHeaderHeight * 1.2 < strokes[0].BoundingRect.Y
+                /*(firstInkPoint.Position.Y < columnHeaderHeight
+                || firstInkPoint.Position.Y > screenHeight - columnHeaderHeight) */
+
+                ) // 컬럼 헤더에서 스트로크가 쓰여졌을때에는 다음 글자가 쓰여질때까지 기다린다
             {
                 if(timer.IsEnabled)timer.Stop();
                 timer.Start();
@@ -465,6 +472,13 @@ namespace FlexTable.View
                         this.ViewModel.SheetViewModel.Sort(selectedColumnViewModel, SortOption.Descending);
                         this.ViewModel.MainPageViewModel.ReflectAll(false);
                     }
+                }
+                else // 아니면 선택하라는 것임
+                {
+                    Double startY = strokes[0].BoundingRect.Y + ActivatedScrollViewer.VerticalOffset - columnHeaderHeight,
+                        endY = strokes[0].BoundingRect.Y + strokes[0].BoundingRect.Height + ActivatedScrollViewer.VerticalOffset - columnHeaderHeight;
+
+                    ViewModel.SelectRowsByRange(startY, endY);
                 }
                 drawable.RemoveAllStrokes();
             }

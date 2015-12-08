@@ -29,6 +29,7 @@ namespace FlexTable.ViewModel
         }
         public Double Y { get { return index * (Double)App.Current.Resources["RowHeight"]; } }
         public Row Row { get; set; }
+        public IEnumerable<Row> Rows { get; set; }
 
         private List<Cell> cells = new List<Cell>();
         public List<Cell> Cells { get { return cells; } }

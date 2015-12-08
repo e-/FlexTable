@@ -279,5 +279,44 @@ namespace FlexTable.ViewModel
             SelectedRows = null;
             Reflect(mainPageViewModel.ExplorationViewModel.ViewStatus);
         }        
+
+        public void SelectRowsByRange(Double startY, Double endY)
+        {
+            if(mainPageViewModel.ExplorationViewModel.SelectedPageViews.Count == 0)
+            {
+                return;
+            }
+
+            PageView topPageView = mainPageViewModel.ExplorationViewModel.SelectedPageViews.Last();
+            PageViewModel topPageViewModel = topPageView.ViewModel;
+
+            Double rowHeight = (Double)App.Current.Resources["RowHeight"];
+
+            //startY = Math.Floor(startY / rowHeight) * rowHeight;
+            //endY = Math.Ceiling(endY / rowHeight) * rowHeight;
+
+            startY -= rowHeight / 2; // row의 중앙을 기준으로 테스트 하기 위함임
+            endY -= rowHeight / 2;
+
+            if(State == TableViewState.AllRow)
+            {
+                IEnumerable<Row> selectedRows = allRowViewModels.Where(rvm => startY <= rvm.Y && rvm.Y < endY).Select(rvm => rvm.Row);
+                topPageView.SelectionChanged(null, selectedRows);
+            }
+            else if(State == TableViewState.GroupedRow)
+            {
+                IEnumerable<Row> selectedRows = groupedRowViewModels.Where(rvm => startY <= rvm.Y && rvm.Y < endY).SelectMany(rvm => rvm.Rows);
+                topPageView.SelectionChanged(null, selectedRows);
+            }
+            else if(State == TableViewState.SelectedRow)
+            {
+                IEnumerable<Row> selectedRows = allRowViewModels.Where(rvm => startY <= rvm.Y && rvm.Y < endY).Select(rvm => rvm.Row);
+                topPageView.SelectionChanged(null, selectedRows);
+            }
+            else
+            {
+                return;
+            }
+        }
     }
 }
