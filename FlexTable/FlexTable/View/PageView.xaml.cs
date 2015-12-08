@@ -67,14 +67,14 @@ namespace FlexTable.View
             GroupedBarChartElement.SelectionChanged += ChartElement_SelectionChanged;
             GroupedBarChartElement.FilterOut += ChartElement_FilterOut;
          
-            LineChartElement.SelectionChanged += LineChartElement_SelectionChanged; ;
-            LineChartElement.FilterOut += LineChartElement_FilterOut;
+            LineChartElement.SelectionChanged += ChartElement_SelectionChanged; ;
+            LineChartElement.FilterOut += ChartElement_FilterOut;
 
             ScatterplotElement.SelectionChanged += ChartElement_SelectionChanged;
             ScatterplotElement.FilterOut += ChartElement_FilterOut;
 
-            DistributionView.Histogram.SelectionChanged += Histogram_SelectionChanged;
-            DistributionView.Histogram.FilterOut += Histogram_FilterOut;
+            DistributionView.Histogram.SelectionChanged += ChartElement_SelectionChanged;
+            DistributionView.Histogram.FilterOut += ChartElement_FilterOut;
 
             PageLabelViewElement.LabelTapped += PageLabelViewElement_LabelTapped;
         }
@@ -131,18 +131,6 @@ namespace FlexTable.View
             IEnumerable<Row> selectedRows = datum as List<Row>;
             SelectionChanged(sender, selectedRows);
         }
-
-        private void LineChartElement_SelectionChanged(object sender, object e, object datum, int index)
-        {
-            IEnumerable<LineChartDatum> selection = datum as IEnumerable<LineChartDatum>;
-            SelectionChanged(sender, selection.SelectMany(s => s.Rows));
-        }
-
-        private void Histogram_SelectionChanged(object sender, object e, object datum, int index)
-        {
-            IEnumerable<BarChartDatum> selection = datum as IEnumerable<BarChartDatum>;
-            SelectionChanged(sender, selection.SelectMany(s => s.Rows));
-        }
         
         private void ChartElement_FilterOut(object sender, object e, object datum, int index)
         {
@@ -151,19 +139,6 @@ namespace FlexTable.View
             //ColumnViewModel columnViewModel = BarChartElement.Data.First().ColumnViewModel;
             FilterOut(filteredRows, e.ToString());// $"Filtered by {columnViewModel.Name}");
         }
-
-        private void LineChartElement_FilterOut(object sender, object e, object datum, int index)
-        {
-            IEnumerable<LineChartDatum> filteredData = datum as IEnumerable<LineChartDatum>;
-            FilterOut(filteredData.SelectMany(lcd => lcd.Rows).ToList(), filteredData.First().ColumnViewModel.Name, filteredData.Select(d => d.Key.ToString()));
-        }       
-
-        private void Histogram_FilterOut(object sender, object e, object datum, int index)
-        {
-            IEnumerable<BarChartDatum> filteredData = datum as IEnumerable<BarChartDatum>;
-            FilterOut(filteredData.SelectMany(bcd => bcd.Rows).ToList(), filteredData.First().ColumnViewModel.Name, filteredData.Select(d => d.Key.ToString()));
-        }
-
 
         private void SelectionFilterButton_Tapped(object sender, TappedRoutedEventArgs e)
         {

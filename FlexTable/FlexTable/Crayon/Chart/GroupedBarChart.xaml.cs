@@ -433,7 +433,7 @@ namespace FlexTable.Crayon.Chart
                 index = 0;
                 foreach (TextBlock label in HorizontalAxis.TickLabels)
                 {
-                    Rect r = new Rect(Canvas.GetLeft(label), Canvas.GetTop(label), label.Width, label.Height);
+                    Rect r = new Rect(Canvas.GetLeft(label), Canvas.GetTop(label) + ChartAreaEndY, label.Width, label.ActualHeight);
 
                     if (Const.IsIntersected(r, boundingRect))
                     {
@@ -459,15 +459,17 @@ namespace FlexTable.Crayon.Chart
 
                     if (SelectionChanged != null)
                         SelectionChanged(this, null, selectedRows, index);
+
+                    RectangleElement.Update(true);
+                    IndicatorTextElement.Update(true);
+                    if (LegendVisibility == Visibility.Visible)
+                    {
+                        LegendRectangleElement.Update(true);
+                        LegendTextElement.Update(true);
+                    }
                 }
                 
-                RectangleElement.Update(true);
-                IndicatorTextElement.Update(true);
-                if (LegendVisibility == Visibility.Visible)
-                {
-                    LegendRectangleElement.Update(true);
-                    LegendTextElement.Update(true);
-                }
+                
             }
 
             drawable.RemoveAllStrokes();

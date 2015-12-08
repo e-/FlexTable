@@ -18,7 +18,8 @@
         <com:Circles ReusePreviousElement="False" x:Name="CircleElement" IsHitTestVisible="False"/>
 
         
-        <com:Axis Orientation="Horizontal" Canvas.Left="0" x:Name="HorizontalAxis" />
+        <com:Axis Orientation="Horizontal" x:Name="HorizontalAxis" />
+        <Canvas x:Name="HorizontalAxis2" />
 
         <TextBlock TextAlignment="Center" FontSize="12" x:Name="HorizontalAxisTitleElement"></TextBlock>
 

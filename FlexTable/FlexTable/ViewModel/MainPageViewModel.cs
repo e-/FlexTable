@@ -118,7 +118,7 @@ namespace FlexTable.ViewModel
 
         public async Task Initialize()
         {
-            Sheet sheet = await Util.CsvLoader.Load("iris.csv"); // "Population-filtered.csv");
+            Sheet sheet = await Util.CsvLoader.Load("temperature.csv"); // "Population-filtered.csv");
             Initialize(sheet);
         }
 
@@ -142,10 +142,9 @@ namespace FlexTable.ViewModel
             // 메타데이터 초기화
             ExplorationViewModel.MetadataViewModel.Initialize();
 
-            return;
             var dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
 
-            ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[4]);
+            ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[0]);
 
             DispatcherTimer dispatcherTimer = new DispatcherTimer();
             dispatcherTimer.Tick += (sender, e) =>

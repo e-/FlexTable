@@ -111,16 +111,24 @@ namespace FlexTable.Crayon.Chart
         public Func<Object, Int32, Color> ColorGetter { get { return (datum, index) => (AutoColor ? ((datum as LineChartDatum).Key as Category).Color : Category10.Colors.First()); } }
         public Func<Object, Int32, Color> LineStrokeGetter { get { return (datum, index) => (AutoColor ? ((datum as LineChartDatum).Key as Category).Color : Category10.Colors.First()); } }
         public Func<Object, Int32, Double> LineOpacityGetter { get {
-                return (d, index) => ((selectedKeys.Count == 0) ? 0.8 :
-                    (selectedKeys.IndexOf((d as LineChartDatum).Key) >= 0 ? 0.9 : 0.1));
-                    } }
+                return (d, index) =>
+                {
+                    LineChartDatum datum = d as LineChartDatum;
+                    return (selectedRows.Count == 0) ? 0.8 :
+                    (selectedRows.Any(sr => datum.Rows.Contains(sr)) ? 0.9 : 0.1);
+                };
+            }}
 
         public Func<Object, Int32, Double> CircleXGetter { get { return (d, index) => XScale.Map((d as DataPoint).Item1); } }
         public Func<Object, Int32, Double> CircleYGetter { get { return (d, index) => YScale.Map((d as DataPoint).Item2); } }
         public Func<Object, Int32, Color> CircleColorGetter { get { return (d, index) => (AutoColor ? (((d as DataPoint).Parent as LineChartDatum).Key as Category).Color : Category10.Colors.First()); } }
         public Func<Object, Int32, Double> CircleOpacityGetter{ get {
-                return (d, index) => ((selectedKeys.Count == 0) ? 0.9 :
-                    (selectedKeys.IndexOf((d as DataPoint).Parent.Key) >= 0 ? 1 : 0.1));
+                return (d, index) =>
+                {
+                    LineChartDatum datum = (d as DataPoint).Parent as LineChartDatum;
+                    return (selectedRows.Count == 0) ? 0.9 :
+                    (selectedRows.Any(sr => datum.Rows.Contains(sr)) ? 1 : 0.1);
+                };
             } }
 
         public Func<Object, Int32, Double> LegendHandleWidthGetter { get { return (d, index) => LegendAreaWidth; } }
@@ -144,12 +152,21 @@ namespace FlexTable.Crayon.Chart
         public Func<Object, Int32, String> LegendTextGetter { get { return (d, index) => (d as LineChartDatum).Key.ToString(); } }
         public Func<Object, Int32, Double> LegendOpacityGetter { get
             {
-                return (d, index) => ((selectedKeys.Count == 0) ? 1 :
-                    (selectedKeys.IndexOf((d as LineChartDatum).Key) >= 0 ? 1 : 0.2));
+                return (d, index) =>
+                {
+                    LineChartDatum datum = d as LineChartDatum;
+                    return (selectedRows.Count == 0) ? 1 :
+                        (selectedRows.Any(sr => datum.Rows.Contains(sr)) ? 1 : 0.2);
+                };
             } }
+
         public Func<TextBlock, Object, Int32, Double> LegendTextOpacityGetter { get {
-                return (textBlock, d, index) => ((selectedKeys.Count == 0) ? 1 :
-                    (selectedKeys.IndexOf((d as LineChartDatum).Key) >= 0 ? 1 : 0.2));
+                return (textBlock, d, index) =>
+                {
+                    LineChartDatum datum = d as LineChartDatum;
+                    return (selectedRows.Count == 0) ? 1 :
+                        (selectedRows.Any(sr => datum.Rows.Contains(sr)) ? 1 : 0.2);
+                };
             } }
 
         public Func<Object, Int32, Double> IndicatorWidthGetter { get { return (d, index) => XScale.RangeBand; } }
@@ -161,8 +178,12 @@ namespace FlexTable.Crayon.Chart
         {
             get
             {
-                return (textBlock, d, index) => ((selectedKeys.Count == 0) ? 0 : 
-                    (selectedKeys.IndexOf((d as DataPoint).Parent.Key) >= 0 ? 1 : 0));
+                return (textBlock, d, index) =>
+                {
+                    DataPoint datum = d as DataPoint;
+                    return (selectedRows.Count == 0) ? 0 :
+                        (selectedRows.Any(sr => datum.Rows.Contains(sr)) ? 1 : 0);
+                };
             }
         }
 
@@ -183,7 +204,8 @@ namespace FlexTable.Crayon.Chart
         /// <summary>
         /// BarChartDatum 의 key가 들어가야함
         /// </summary>
-        private List<Object> selectedKeys = new List<Object>();
+        private List<Row> selectedRows = new List<Row>();
+        public List<Row> SelectedRows => selectedRows;
 
         Drawable drawable = new Drawable()
         {
@@ -278,11 +300,36 @@ namespace FlexTable.Crayon.Chart
                 List<Point> points = inkManager.GetStrokes()[0].GetInkPoints().Select(ip => ip.Position).ToList();
                 Rect boundingRect = inkManager.GetStrokes()[0].BoundingRect;
 
+                List<Row> intersectedRows = new List<Row>();
                 Int32 index = 0;
-                List<LineChartDatum> selected = new List<LineChartDatum>();
-                Boolean isAllSelected = true;
-                Boolean isLegendStrikeThrough = false;
-                LineChartDatum victim = null;
+
+                index = 0;
+                foreach (Rectangle rect in LegendHandleRectangleElement.Children)
+                {
+                    Rect r = new Rect(Canvas.GetLeft(rect) + ChartAreaEndX, Canvas.GetTop(rect), rect.Width, rect.Height);
+
+                    if (Const.IsIntersected(r, boundingRect))
+                    {
+                        LineChartDatum datum = Data[index];
+                        intersectedRows = intersectedRows.Concat(datum.Rows).ToList();
+                    }
+                    index++;
+                }
+
+                index = 0;
+                foreach (TextBlock label in HorizontalAxis.TickLabels)
+                {
+                    Rect r = new Rect(Canvas.GetLeft(label), Canvas.GetTop(label) + ChartAreaEndY, label.Width, label.ActualHeight);                    
+
+                    if (Const.IsIntersected(r, boundingRect))
+                    {
+                        Object xScaleCategory = XScale.Domain[index];
+                        intersectedRows = intersectedRows.Concat(
+                            Data.SelectMany(d => d.DataPoints).Where(dp => dp.Item1 == xScaleCategory).SelectMany(dp => dp.Rows)
+                            ).ToList();
+                    }
+                    index++;
+                }
 
                 index = 0;
                 foreach (LineChartDatum datum in Data)
@@ -291,80 +338,39 @@ namespace FlexTable.Crayon.Chart
 
                     if(circlePoints.Exists(cp => boundingRect.Contains(cp))) // 하나라도 포함되는 포인트가 있으면 예를 선택
                     {
-                        if (selectedKeys.IndexOf(datum.Key) < 0) //선택 안된 데이터가 있으면
-                        {
-                            isAllSelected = false;
-                        }
-                        selected.Add(datum);
+                        intersectedRows = intersectedRows.Concat(datum.Rows).ToList();
                     }
 
                     index++;
                 }
 
-                index = 0;
-                foreach (Rectangle rect in LegendHandleRectangleElement.Children)
-                {
-                    if (Canvas.GetLeft(LegendPanel) + Canvas.GetLeft(rect) <= boundingRect.Right && boundingRect.Top <= Canvas.GetTop(rect) + rect.Height && Canvas.GetTop(rect) <= boundingRect.Top + boundingRect.Height)
-                    {
-                        LineChartDatum datum = Data[index];
+                intersectedRows = intersectedRows.Distinct().ToList();
 
-                        if (boundingRect.Height < Const.StrikeThroughMaxHeight && boundingRect.Width > Const.StrikeThroughMinWidth) // legend strike through면
-                        {
-                            isLegendStrikeThrough = true;
-                            victim = datum;
-                            break;
-                        }
-                        else
-                        {
-                            if (selectedKeys.IndexOf(datum.Key) < 0) //선택 안된 데이터가 있으면
-                            {
-                                isAllSelected = false;
-                            }
-                            selected.Add(datum);
-                        }
-                    }
-                    index++;
-                }
-
-                if (isLegendStrikeThrough)
+                if (Const.IsStrikeThrough(boundingRect)) // strikethrough 및 무조건 필터아웃 
                 {
-                    selectedKeys.Remove(victim.Key);
                     if (FilterOut != null)
                     {
-                        FilterOut(this, null, new List<LineChartDatum>() { victim }, index);
+                        FilterOut(this, $"Filtered by {Data[0].ColumnViewModel.Name}", intersectedRows.ToList(), index);
                     }
                 }
-                else if (isAllSelected) // 모두가 선택되었다면 선택 해제를 하면 됨
+                else // 아니면 무조건 셀렉션 
                 {
-                    foreach (LineChartDatum datum in selected)
+                    selectedRows = selectedRows.Concat(intersectedRows).Distinct().ToList();
+                    if (selectedRows.Count == Data.SelectMany(d => d.Rows).Distinct().Count())
+                        selectedRows.Clear();
+
+                    if (SelectionChanged != null)
+                        SelectionChanged(this, null, selectedRows, index);
+
+                    LineElement.Update(true);
+                    CircleElement.Update(true, false);
+                    IndicatorTextElement.Update(true);
+
+                    if (LegendVisibility == Visibility.Visible)
                     {
-                        selectedKeys.Remove(datum.Key);
+                        LegendRectangleElement.Update(true);
+                        LegendTextElement.Update(true);
                     }
-                }
-                else // 하나라도 선택 안된게 있으면 선택
-                {
-                    foreach (LineChartDatum datum in selected)
-                    {
-                        if (selectedKeys.IndexOf(datum.Key) < 0) { selectedKeys.Add(datum.Key); }
-                    }
-                }
-
-                if (selectedKeys.Count == Data.Count)
-                {
-                    selectedKeys.Clear();
-                }
-
-                if (SelectionChanged != null)
-                    SelectionChanged(this, null, Data.Where(d => selectedKeys.IndexOf(d.Key) >= 0), index);
-
-                LineElement.Update(true);
-                CircleElement.Update(true, false);
-                IndicatorTextElement.Update(true);
-
-                if (LegendVisibility == Visibility.Visible)
-                {
-                    LegendRectangleElement.Update(true);
-                    LegendTextElement.Update(true);
                 }
             }
 
@@ -378,22 +384,21 @@ namespace FlexTable.Crayon.Chart
             if (args.PointerDeviceType == PointerDeviceType.Touch)
             {
                 LineChartDatum lineChartDatum = datum as LineChartDatum;
-                if (selectedKeys.IndexOf(lineChartDatum.Key) < 0)
+
+                if (selectedRows.Intersect(lineChartDatum.Rows).Count() == lineChartDatum.Rows.Count()) // contains all
                 {
-                    selectedKeys.Add(lineChartDatum.Key);
+                    selectedRows = selectedRows.Except(lineChartDatum.Rows).Distinct().ToList();
                 }
                 else
                 {
-                    selectedKeys.Remove(lineChartDatum.Key);
+                    selectedRows = selectedRows.Concat(lineChartDatum.Rows).Distinct().ToList();
                 }
 
-                if (selectedKeys.Count == Data.Count)
-                {
-                    selectedKeys.Clear();
-                }
+                if (selectedRows.Count == Data.SelectMany(d => d.Rows).Distinct().Count())
+                    selectedRows.Clear();
 
                 if (SelectionChanged != null)
-                    SelectionChanged(this, e, Data.Where(d => selectedKeys.IndexOf(d.Key) >= 0), index);
+                    SelectionChanged(this, e, selectedRows, index);
 
                 LineElement.Update(true);
                 CircleElement.Update(true, false);
@@ -513,6 +518,8 @@ namespace FlexTable.Crayon.Chart
 
             LineElement.Data = D3Data;
 
+            Boolean useCircleTransition = true;
+            if (CircleElement.Data == null || CircleElement.Data.List.Count != Data.SelectMany(d => d.Rows).Distinct().Count()) useCircleTransition = false;
             CircleElement.Data = D3CircleData;
 
             HorizontalAxis.Scale = XScale;
@@ -540,19 +547,36 @@ namespace FlexTable.Crayon.Chart
 
             HandleLineElement.Update();
             LineElement.Update();
-            CircleElement.Update(false, false);
+            CircleElement.Update(useCircleTransition, false);
             LegendHandleRectangleElement.Update();
             IndicatorTextElement.Update();
             HorizontalAxis.Update();
             VerticalAxis.Update();
+
+
+            /*HorizontalAxis2.Children.Clear();
+            Canvas.SetTop(HorizontalAxis2, ChartAreaEndY);
+
+            foreach (TextBlock label in HorizontalAxis.TickLabels)
+            {
+                Border border = new Border()
+                {
+                    Width = label.ActualWidth,
+                    Height = 5,
+                    Background = new SolidColorBrush(Colors.Red)
+                };
+                HorizontalAxis2.Children.Add(border);
+                Canvas.SetLeft(border, Canvas.GetLeft(label));
+            }
+            */
         }
 
         public void ClearSelection(Boolean withHandler)
         {
-            selectedKeys.Clear();
+            selectedRows.Clear();
 
             if (withHandler && SelectionChanged != null)
-                SelectionChanged(this, null, Data.Where(d => selectedKeys.IndexOf(d.Key) >= 0), 0);
+                SelectionChanged(this, null, selectedRows, 0);
 
             LineElement.Update(true);
             CircleElement.Update(true, false);
@@ -566,14 +590,16 @@ namespace FlexTable.Crayon.Chart
 
         public void ImportSelection(IEnumerable<Row> importedRows)
         {
-            /*selectedRows = importedRows.ToList();
+            selectedRows = importedRows.ToList();
 
+            LineElement.Update(false);
             CircleElement.Update(false, false);
+            IndicatorTextElement.Update(false);
             if (LegendVisibility == Visibility.Visible)
             {
                 LegendRectangleElement.Update(false);
                 LegendTextElement.Update(false);
-            }*/
+            }
         }
     }
 }

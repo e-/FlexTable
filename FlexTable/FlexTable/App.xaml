@@ -699,7 +699,7 @@
                                     <Border x:Name="PopupBorder"
                                         Background="{ThemeResource SystemControlBackgroundChromeMediumLowBrush}"
                                         BorderBrush="{ThemeResource SystemControlForegroundBaseMediumHighBrush}"
-                                        BorderThickness="{ThemeResource ComboBoxDropdownBorderThickness}"
+                                        BorderThickness="0"
                                         HorizontalAlignment="Stretch"
                                             CornerRadius="3"
                                             >

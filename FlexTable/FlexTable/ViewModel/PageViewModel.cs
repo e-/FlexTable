@@ -1014,7 +1014,8 @@ namespace FlexTable.ViewModel
                 .Select(g => new DataPoint(
                     g.Keys[categorical],
                     numerical.AggregativeFunction.Aggregate(g.Rows.Select(r => (Double)r.Cells[numerical.Index].Content)),
-                    datum
+                    datum,
+                    g.Rows
                 ))
                 .Take(LineChartMaximumPointNumberInASeries)
                 .ToList();
@@ -1065,7 +1066,8 @@ namespace FlexTable.ViewModel
                         numerical.AggregativeFunction.Aggregate(
                                 g.Rows.Select(r => (Double)r.Cells[numerical.Index].Content)
                             ),
-                        datum
+                        datum,
+                        g.Rows
                     )).ToList();
 
                     return datum;
