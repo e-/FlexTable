@@ -353,16 +353,17 @@ namespace FlexTable.View
             if (ViewModel.MainPageViewModel.ExplorationViewModel.ViewStatus.SelectedColumnViewModels.IndexOf(
                 ViewModel.ViewStatus.SelectedColumnViewModels.Last()
                 ) >= 0) return; // 선택된 컬럼이 이미 선택되어잇으면
-
+            
             ViewModel.State = PageViewModel.PageViewState.Selected; 
             ViewModel.StateChanged(this);
+            SelectionChanged(null, new List<Row>());
         }
 
         private void Unselect_Tapped(object sender, TappedRoutedEventArgs e)
         {
             ViewModel.State = PageViewModel.PageViewState.Undoing;
+            SelectionChanged(null, new List<Row>());
             ViewModel.StateChanged(this);
-            ClearSelection(false);
         }
 
         private void Undo_Tapped(object sender, TappedRoutedEventArgs e)

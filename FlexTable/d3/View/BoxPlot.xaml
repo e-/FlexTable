@@ -96,6 +96,6 @@
         </Canvas>
 
 
-        <com:Axis Orientation="Horizontal" Scale="{Binding Scale}" Canvas.Top="40" x:Name="BoxPlotAxis"/>
+        <com:Axis Orientation="Horizontal" Canvas.Top="40" x:Name="BoxPlotAxis"/>
     </Canvas>
 </UserControl>

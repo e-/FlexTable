@@ -90,6 +90,8 @@ namespace d3.View
             viewModel.Width = this.Width;
             viewModel.Update();
 
+            BoxPlotAxis.Scale = viewModel.Scale;
+
             BoxPlotAxis.Update();
             UpdateStoryboard.Pause();
             UpdateStoryboard.Begin();

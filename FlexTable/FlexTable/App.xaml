@@ -13,6 +13,7 @@
             <x:Double x:Key="ColumnHeaderHeight">50</x:Double>
             <SolidColorBrush x:Key="BrighterGridLineBrush" Color="#F0F0F0" />
             <SolidColorBrush x:Key="GridLineBrush" Color="#EEEEEE" />
+            <SolidColorBrush x:Key="WhiteBrush" Color="#FFFFFF" />
             <Color x:Key="DarkerGridLineColor">#DDDDDD</Color>
             <SolidColorBrush x:Key="DarkerGridLineBrush" Color="{StaticResource DarkerGridLineColor}" />
             <Color x:Key="HighlightColor1">#1FAF9b</Color>
@@ -791,12 +792,13 @@
                                             <Storyboard>
                                                 <ObjectAnimationUsingKeyFrames Storyboard.TargetName="LayoutRoot"
                                              Storyboard.TargetProperty="Background">
-                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightListAccentLowBrush}" />
+                                                    <!--<DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightListAccentLowBrush}" />-->
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightListMediumBrush}" />
                                                 </ObjectAnimationUsingKeyFrames>
-                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter"
+                                                <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter"
                                              Storyboard.TargetProperty="Foreground">
-                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightAltBaseHighBrush}" />
-                                                </ObjectAnimationUsingKeyFrames>
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource WhiteBrush}" />
+                                                </ObjectAnimationUsingKeyFrames>-->
                                                 <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter"
                                                 Storyboard.TargetProperty="FontWeight">
                                                     <DiscreteObjectKeyFrame KeyTime="0" Value="Bold" />
@@ -828,12 +830,13 @@
                                             <Storyboard>
                                                 <ObjectAnimationUsingKeyFrames Storyboard.TargetName="LayoutRoot"
                                              Storyboard.TargetProperty="Background">
-                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightListAccentMediumBrush}" />
+                                                    <!--<DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightListAccentMediumBrush}" />-->
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightListMediumBrush}" />
                                                 </ObjectAnimationUsingKeyFrames>
-                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter"
+                                                <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter"
                                              Storyboard.TargetProperty="Foreground">
-                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightAltBaseHighBrush}" />
-                                                </ObjectAnimationUsingKeyFrames>
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource WhiteBrush}" />
+                                                </ObjectAnimationUsingKeyFrames>-->
                                                 <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter"
                                                 Storyboard.TargetProperty="FontWeight">
                                                     <DiscreteObjectKeyFrame KeyTime="0" Value="Bold" />
@@ -845,12 +848,13 @@
                                             <Storyboard>
                                                 <ObjectAnimationUsingKeyFrames Storyboard.TargetName="LayoutRoot"
                                              Storyboard.TargetProperty="Background">
-                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightListAccentHighBrush}" />
+                                                    <!--<DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightListAccentHighBrush}" />-->
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightListMediumBrush}" />
                                                 </ObjectAnimationUsingKeyFrames>
-                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter"
+                                                <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter"
                                              Storyboard.TargetProperty="Foreground">
-                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightAltBaseHighBrush}" />
-                                                </ObjectAnimationUsingKeyFrames>
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource WhiteBrush}" />
+                                                </ObjectAnimationUsingKeyFrames>-->
                                                 <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter"
                                                 Storyboard.TargetProperty="FontWeight">
                                                     <DiscreteObjectKeyFrame KeyTime="0" Value="Bold" />
