@@ -10,5 +10,6 @@
     d:DesignWidth="400">
 
     <Canvas x:Name="LineCanvas">
+
     </Canvas>
 </UserControl>

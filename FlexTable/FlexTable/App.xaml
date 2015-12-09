@@ -448,6 +448,10 @@
                     </Setter.Value>
                 </Setter>
             </Style>
+
+            <Style x:Key="SeamlessComboBoxStyle2" TargetType="ComboBox" BasedOn="{StaticResource SeamlessComboBoxStyle}">
+                <Setter Property="FontFamily" Value="Roboto Slab" />
+            </Style>
             
             <Style x:Key="SeamlessComboBoxStyle" TargetType="ComboBox">
                 <Setter Property="Padding" Value="2,0,-6,0" />

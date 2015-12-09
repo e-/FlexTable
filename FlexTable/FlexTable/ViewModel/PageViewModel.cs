@@ -350,6 +350,11 @@ namespace FlexTable.ViewModel
 
         void AddComboBox(StackPanel stackPanel, String selected, IEnumerable<String> candidates, SelectionChangedEventHandler selectionChanged)
         {
+            AddComboBox(stackPanel, selected, candidates, selectionChanged, true);
+        }
+
+        void AddComboBox(StackPanel stackPanel, String selected, IEnumerable<String> candidates, SelectionChangedEventHandler selectionChanged, Boolean isColumnName)
+        {
             if (!IsSelected)
             {
                 AddText(stackPanel, $"<b>{selected}</b>");
@@ -358,7 +363,7 @@ namespace FlexTable.ViewModel
             {
                 ComboBox comboBox = new ComboBox()
                 {
-                    Style = App.Current.Resources["SeamlessComboBoxStyle"] as Style,
+                    Style = App.Current.Resources[isColumnName ? "SeamlessComboBoxStyle" : "SeamlessComboBoxStyle2"] as Style,
                     VerticalAlignment = VerticalAlignment.Center,
                     FontSize = 30
                 };
@@ -468,7 +473,8 @@ namespace FlexTable.ViewModel
                    title,
                    numerical.AggregativeFunction.Name,
                    AggregativeFunction.Names,
-                   CreateAggregationChangedHandler(numerical)
+                   CreateAggregationChangedHandler(numerical),
+                   false
                );
             AddText(title, "(");
             AddComboBox(
