@@ -121,7 +121,7 @@ namespace FlexTable.ViewModel
 
         public async Task Initialize()
         {
-            Sheet sheet = await Util.CsvLoader.Load("iris.csv"); // "Population-filtered.csv");
+            Sheet sheet = await Util.CsvLoader.Load("barley.csv"); // "Population-filtered.csv");
             Initialize(sheet);
         }
 
@@ -147,7 +147,7 @@ namespace FlexTable.ViewModel
             
             var dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
 
-            ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[4]);
+            ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[1]);
 
             DispatcherTimer dispatcherTimer = new DispatcherTimer();
             dispatcherTimer.Tick += (sender, e) =>
@@ -155,12 +155,11 @@ namespace FlexTable.ViewModel
                 dispatcherTimer.Stop();
                 ExplorationViewModel.TopPageView.ViewModel.State = PageViewModel.PageViewState.Selected;
                 ExplorationViewModel.PageViewStateChanged(ExplorationViewModel.TopPageView.ViewModel, ExplorationViewModel.TopPageView);
-
                 
                 //TableViewModel.SelectRowsByRange(0, 300);
 
 
-                ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[1]);
+                ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[3]);
 
                 DispatcherTimer dispatcherTimer2 = new DispatcherTimer();
                 dispatcherTimer2.Tick += (sender2, e2) =>
@@ -183,7 +182,7 @@ namespace FlexTable.ViewModel
                     dispatcherTimer3.Start();
                     
                 };
-                dispatcherTimer2.Interval = TimeSpan.FromMilliseconds(500);
+                dispatcherTimer2.Interval = TimeSpan.FromMilliseconds(3000);
                 dispatcherTimer2.Start();
             };
             dispatcherTimer.Interval = TimeSpan.FromMilliseconds(500);

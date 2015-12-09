@@ -166,6 +166,8 @@ namespace FlexTable.ViewModel
             }
             else if(state == PageViewModel.PageViewState.Undoing) // 선택해제하는 경우
             {
+                mainPageViewModel.TableViewModel.StashViewStatus(ViewStatus, AnimationHint.AnimationType.DependOnViewStatus);
+
                 selectedPageViews.Remove(pageView);
 
                 // Preview 풀기 (만약 되어있다면)
