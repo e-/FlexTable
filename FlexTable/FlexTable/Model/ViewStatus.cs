@@ -16,7 +16,7 @@ namespace FlexTable.Model
 {
     public class ViewStatus
     {
-        public static readonly Color DefaultRowHeaderColor = Colors.Black;
+        public static readonly Color DefaultCellForegroundColor = Colors.Black;
         public static readonly SolidColorBrush DefaultRowHeaderSolidColorBrush = new SolidColorBrush(Colors.Black);
 
         public static readonly Color Category10FirstColor = Category10.Colors[0];
@@ -382,7 +382,7 @@ namespace FlexTable.Model
 
             if (IsEmpty)
             {
-                foreach (RowViewModel rowViewModel in allRowViewModels) rowViewModel.Color = DefaultRowHeaderColor;
+                foreach (RowViewModel rowViewModel in allRowViewModels) rowViewModel.Color = DefaultCellForegroundColor;
             }
             else if (IsC)
             {
@@ -398,7 +398,7 @@ namespace FlexTable.Model
                     index++;
                 }
 
-                foreach (RowViewModel rowViewModel in allRowViewModels) rowViewModel.Color = dictionary.ContainsKey(rowViewModel.Row) ? dictionary[rowViewModel.Row] : DefaultRowHeaderColor;
+                foreach (RowViewModel rowViewModel in allRowViewModels) rowViewModel.Color = dictionary.ContainsKey(rowViewModel.Row) ? dictionary[rowViewModel.Row] : DefaultCellForegroundColor;
             }
             else if (IsN)
             {
@@ -418,7 +418,7 @@ namespace FlexTable.Model
                     index++;
                 }
 
-                foreach (RowViewModel rowViewModel in allRowViewModels) rowViewModel.Color = dictionary.ContainsKey(rowViewModel.Row) ? dictionary[rowViewModel.Row] : DefaultRowHeaderColor;
+                foreach (RowViewModel rowViewModel in allRowViewModels) rowViewModel.Color = dictionary.ContainsKey(rowViewModel.Row) ? dictionary[rowViewModel.Row] : DefaultCellForegroundColor;
             }
             else if (IsCN)
             {
@@ -441,13 +441,13 @@ namespace FlexTable.Model
                         index++;
                     }
 
-                    foreach (RowViewModel rowViewModel in allRowViewModels) rowViewModel.Color = dictionary.ContainsKey(rowViewModel.Row) ? dictionary[rowViewModel.Row] : DefaultRowHeaderColor;
+                    foreach (RowViewModel rowViewModel in allRowViewModels) rowViewModel.Color = dictionary.ContainsKey(rowViewModel.Row) ? dictionary[rowViewModel.Row] : DefaultCellForegroundColor;
                 }
             }
             else if (IsNN)
             {
                 foreach (RowViewModel rowViewModel in allRowViewModels) rowViewModel.Color = Category10FirstColor;
-                foreach (RowViewModel rowViewModel in groupedRowViewModels) rowViewModel.Color = DefaultRowHeaderColor;
+                foreach (RowViewModel rowViewModel in groupedRowViewModels) rowViewModel.Color = DefaultCellForegroundColor;
             }
             else if (IsCCN)
             {
@@ -463,12 +463,12 @@ namespace FlexTable.Model
                     index++;
                 }
 
-                foreach (RowViewModel rowViewModel in allRowViewModels) rowViewModel.Color = dictionary.ContainsKey(rowViewModel.Row) ? dictionary[rowViewModel.Row] : DefaultRowHeaderColor;
+                foreach (RowViewModel rowViewModel in allRowViewModels) rowViewModel.Color = dictionary.ContainsKey(rowViewModel.Row) ? dictionary[rowViewModel.Row] : DefaultCellForegroundColor;
             }
             else if (IsCNN)
             {
                 // grouped by 는 색깔 안넣는걸로 
-                foreach (RowViewModel rowViewModel in groupedRowViewModels) rowViewModel.Color = DefaultRowHeaderColor;
+                foreach (RowViewModel rowViewModel in groupedRowViewModels) rowViewModel.Color = DefaultCellForegroundColor;
 
                 // all row는 categorical 별로 색깔
                 ColumnViewModel categorical = FirstCategorical;

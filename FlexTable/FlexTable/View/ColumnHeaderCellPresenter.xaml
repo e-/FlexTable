@@ -14,10 +14,7 @@
     <UserControl.Resources>
         <Storyboard x:Name="XAnimation">
             <DoubleAnimation Storyboard.TargetName="CompositeTransform" Storyboard.TargetProperty="TranslateX" 
-                             To="{Binding X}" Duration="00:00:00.3">
-                <DoubleAnimation.EasingFunction>
-                    <ExponentialEase EasingMode="EaseInOut" />
-                </DoubleAnimation.EasingFunction>
+                             To="{Binding X}" Duration="00:00:00.5" EasingFunction="{StaticResource QuarticEaseInOut}">
             </DoubleAnimation>
         </Storyboard>
         

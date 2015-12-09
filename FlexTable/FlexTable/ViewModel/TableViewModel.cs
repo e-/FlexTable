@@ -128,9 +128,9 @@ namespace FlexTable.ViewModel
         public void Reflect(ViewStatus viewStatus)
         {
             // 애니메이션 로직이 들어가야함
-            Double animationTimer = CreateTableAnimation(viewStatus);
+            AnimationScenario animationScenario = CreateTableAnimation(viewStatus);
 
-            if (animationTimer > 0)
+            if (animationScenario.TotalAnimationDuration > 0)
             {
                 State = TableViewState.Animation;
                 view.TableView.ReflectState(viewStatus);
@@ -145,7 +145,7 @@ namespace FlexTable.ViewModel
                 Update(viewStatus);
 
                 view.TableView.ReflectState(viewStatus);
-
+                
                 // column header 업데이트
                 foreach (ColumnViewModel cvm in mainPageViewModel.SheetViewModel.ColumnViewModels)
                 {
@@ -157,8 +157,19 @@ namespace FlexTable.ViewModel
                 view.TableView.ColumnIndexer.Update();
                 previousViewStatus = viewStatus;
             };
-            dispatcherTimer.Interval = TimeSpan.FromMilliseconds(animationTimer > 0 ? animationTimer : 1); // 700);
+            dispatcherTimer.Interval = TimeSpan.FromMilliseconds(animationScenario.TotalAnimationDuration > 0 ? animationScenario.TotalAnimationDuration : 1); // 700);
             dispatcherTimer.Start();
+
+            if(animationScenario.TotalAnimationDuration > 0)
+            {
+                foreach (ColumnViewModel cvm in mainPageViewModel.SheetViewModel.ColumnViewModels)
+                {
+                    cvm.UpdateHeaderName();
+                }
+
+                view.TableView.TopColumnHeader.Update(animationScenario.TableHeaderUpdateTime);
+                view.TableView.BottomColumnHeader.Update(animationScenario.TableHeaderUpdateTime);
+            }
         }
         
         void Update(ViewStatus viewStatus)

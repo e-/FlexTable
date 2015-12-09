@@ -155,10 +155,9 @@ namespace FlexTable.ViewModel
                 dispatcherTimer.Stop();
                 ExplorationViewModel.TopPageView.ViewModel.State = PageViewModel.PageViewState.Selected;
                 ExplorationViewModel.PageViewStateChanged(ExplorationViewModel.TopPageView.ViewModel, ExplorationViewModel.TopPageView);
-                
+
                 //TableViewModel.SelectRowsByRange(0, 300);
-
-
+                
                 ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[3]);
 
                 DispatcherTimer dispatcherTimer2 = new DispatcherTimer();

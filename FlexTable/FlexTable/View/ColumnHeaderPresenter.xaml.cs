@@ -25,6 +25,11 @@ namespace FlexTable.View
 
         public void Update()
         {
+            Update(0);
+        }
+
+        public void Update(Double delayBeforeAnimation)
+        {
             if (Items.Children.Count == 0)
             {
                 ViewModel.SheetViewModel sheetViewModel = (this.DataContext as ViewModel.TableViewModel).SheetViewModel;
@@ -41,7 +46,7 @@ namespace FlexTable.View
             foreach (UIElement ele in Items.Children)
             {
                 ColumnHeaderCellPresenter chcp = ele as ColumnHeaderCellPresenter;
-                chcp.Update();
+                chcp.Update(delayBeforeAnimation);
             }
         }
 

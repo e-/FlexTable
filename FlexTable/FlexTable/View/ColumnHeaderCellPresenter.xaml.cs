@@ -29,8 +29,9 @@ namespace FlexTable.View
             this.InitializeComponent();
         }
 
-        public void Update()
+        public void Update(Double delayBeforeAnimation)
         {
+            XAnimation.BeginTime = TimeSpan.FromMilliseconds(delayBeforeAnimation);
             XAnimation.Begin();
         }
         
