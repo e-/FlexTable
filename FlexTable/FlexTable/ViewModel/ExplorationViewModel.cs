@@ -67,6 +67,8 @@ namespace FlexTable.ViewModel
 
         public void PreviewColumn(ColumnViewModel columnViewModel)
         {
+            mainPageViewModel.TableViewModel.SkipAllAnimationToFill();
+
             previewingColumnViewModel = columnViewModel;
 
             if (ViewStatus.SelectedColumnViewModels.IndexOf(previewingColumnViewModel) >= 0)

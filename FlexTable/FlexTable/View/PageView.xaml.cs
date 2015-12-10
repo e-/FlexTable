@@ -89,7 +89,6 @@ namespace FlexTable.View
                 count = 0;
             }
 
-            SelectedRows = selectedRows;
             if (count == 0)
             {
                 ShowSelectionIndicatorStoryboard.Pause();
@@ -98,6 +97,7 @@ namespace FlexTable.View
             }
             else
             {
+                SelectedRows = selectedRows;
                 Int32 rowCount = selectedRows.Count();
 
                 HideSelectionIndicatorStoryboard.Pause();
@@ -356,7 +356,7 @@ namespace FlexTable.View
             
             ViewModel.State = PageViewModel.PageViewState.Selected; 
             ViewModel.StateChanged(this);
-            SelectionChanged(null, new List<Row>());
+            //SelectionChanged(null, new List<Row>());
         }
 
         private void Unselect_Tapped(object sender, TappedRoutedEventArgs e)

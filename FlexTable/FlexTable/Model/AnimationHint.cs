@@ -12,6 +12,7 @@ namespace FlexTable.Model
         public enum AnimationType
         {
             SelectRows,
+            UnselectRows,
             DependOnViewStatus
         };
 

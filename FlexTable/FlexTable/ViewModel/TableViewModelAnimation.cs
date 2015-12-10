@@ -17,11 +17,13 @@ namespace FlexTable.ViewModel
         {
             public Double TotalAnimationDuration { get; set; }
             public Double TableHeaderUpdateTime { get; set; }
+            public Storyboard AnimationStoryboard { get; set; }
 
             public static AnimationScenario None = new AnimationScenario()
             {
                 TotalAnimationDuration = -1,
-                TableHeaderUpdateTime = -1
+                TableHeaderUpdateTime = -1,
+                AnimationStoryboard = null
             };
         }
 
@@ -150,13 +152,13 @@ namespace FlexTable.ViewModel
                 }
             }
 
-            storyboard.Begin();
             stashedViewStatus = null;
 
             return new AnimationScenario()
             {
                 TotalAnimationDuration = 1400 + horizontalAnimationDuration,
-                TableHeaderUpdateTime = 1400
+                TableHeaderUpdateTime = 1400,
+                AnimationStoryboard = storyboard
             };
         }
 
@@ -273,12 +275,12 @@ namespace FlexTable.ViewModel
                     index++;
                 }
             }
-            storyboard.Begin();
             stashedViewStatus = null;
             return new AnimationScenario()
             {
                 TotalAnimationDuration = 1000 + movingCellDuration,
-                TableHeaderUpdateTime = 1000
+                TableHeaderUpdateTime = 1000,
+                AnimationStoryboard = storyboard
             };
         }
 
@@ -352,9 +354,8 @@ namespace FlexTable.ViewModel
                     .OrderBy(rvm => positionUpdatedRowViewModels.IndexOf(rvm))
                     .Take(50);
 
-
                 Storyboard storyboard = new Storyboard();
-
+                Double rowHeight = (Double)App.Current.Resources["RowHeight"];
                 Int32 index = 0;
                 foreach (RowViewModel rvm in targetRowViewModels)
                 {
@@ -378,7 +379,7 @@ namespace FlexTable.ViewModel
                     arp.CellPresenter.Foreground = new SolidColorBrush(rvm.Color);
 
                     storyboard.Children.Add(
-                        Util.Animator.Generate(arp, "(Canvas.Top)", positionUpdatedRowViewModels.IndexOf(rvm) * (Double)App.Current.Resources["RowHeight"], 500, 200)
+                        Util.Animator.Generate(arp, "(Canvas.Top)", positionUpdatedRowViewModels.IndexOf(rvm) * rowHeight, 500, 200)
                     );
 
                     storyboard.Children.Add(Util.Animator.Generate(arp, "Opacity", 1, 500, 200));
@@ -386,15 +387,99 @@ namespace FlexTable.ViewModel
                     index++;
                 }
 
-                storyboard.Begin();
                 stashedViewStatus = null;
                 return new AnimationScenario()
                 {
                     TotalAnimationDuration = 700,
-                    TableHeaderUpdateTime = 0
+                    TableHeaderUpdateTime = 0,
+                    AnimationStoryboard = storyboard
                 };
             }
-            
+            else if (hint.Type == AnimationHint.AnimationType.UnselectRows && (viewStatus.IsC || viewStatus.IsCN) && stashedSelectedRows != null && stashedSelectedRows.Count() > 0)
+            {
+                view.TableView.GroupedRowScrollViewer.ChangeView(0, 0, null, true);
+                view.TableView.SelectedRowScrollViewer.ChangeView(0, 0, null, true);
+
+                ColumnViewModel categorical = viewStatus.FirstCategorical;
+
+                // 선택되었던 row들을 가장 많이 포함하는 groupingColumnViewModel을 고른다.
+                RowViewModel pivotRowViewModel = viewStatus.GroupedRowViewModels
+                    .OrderByDescending(rvm => rvm.Rows.Intersect(stashedSelectedRows).Count())
+                    .First();
+
+                List<RowViewModel> positionUpdatedRowViewModels = new List<RowViewModel>(AllRowViewModels.Where(rvm => stashedSelectedRows.Contains(rvm.Row)));
+                positionUpdatedRowViewModels.Sort(new RowViewModelComparer(SheetViewModel, viewStatus));
+
+                IEnumerable<RowViewModel> targetRowViewModels =
+                    SheetViewModel.AllRowViewModels
+                    .Where(rvm => pivotRowViewModel.Rows.Contains(rvm.Row))
+                    .Take(50);
+
+                Storyboard storyboard = new Storyboard();
+                Double rowHeight = (Double)App.Current.Resources["RowHeight"];
+                Int32 index = 0;
+
+                /*{
+                    AnimatingRowViewModel arvm = new AnimatingRowViewModel()
+                    {
+                        RowViewModel = pivotRowViewModel,
+                        X = categorical.X,
+                        ColumnViewModel = categorical
+                    };
+
+                    AnimatingRowPresenter arp = new AnimatingRowPresenter()
+                    {
+                        AnimatingRowViewModel = arvm
+                    };
+
+                    arp.Opacity = 0;
+                    arp.Update();
+                    Canvas.SetTop(arp, pivotRowViewModel.Y);
+                    canvas.Children.Add(arp);
+                    arp.CellPresenter.Foreground = new SolidColorBrush(pivotRowViewModel.Color);
+
+                    storyboard.Children.Add(Util.Animator.Generate(arp, "Opacity", 1, 500, 200));
+                }*/
+
+                foreach (RowViewModel rvm in targetRowViewModels)
+                {
+                    AnimatingRowViewModel arvm = new AnimatingRowViewModel()
+                    {
+                        RowViewModel = rvm,
+                        X = hint.ColumnViewModelPosition[categorical],
+                        ColumnViewModel = categorical
+                    };
+
+                    AnimatingRowPresenter arp = new AnimatingRowPresenter()
+                    {
+                        AnimatingRowViewModel = arvm
+                    };
+
+                    arp.Opacity = 1;
+                    arp.Update();
+                    canvas.Children.Add(arp);
+
+                    Canvas.SetTop(arp, positionUpdatedRowViewModels.IndexOf(rvm) * rowHeight);
+                    arp.CellPresenter.Foreground = new SolidColorBrush(rvm.Color);
+
+                    storyboard.Children.Add(
+                        Util.Animator.Generate(arp, "(Canvas.Top)", pivotRowViewModel.Y, 500, 200)
+                    );
+                    if(index > 0)
+                    storyboard.Children.Add(Util.Animator.Generate(arp, "Opacity", 0, 500, 200));
+
+                    index++;
+                }
+
+                stashedViewStatus = null;
+                return new AnimationScenario()
+                {
+                    TotalAnimationDuration = 700,
+                    TableHeaderUpdateTime = 0,
+                    AnimationStoryboard = storyboard
+                };
+            }
+
             return AnimationScenario.None;
         }
     }

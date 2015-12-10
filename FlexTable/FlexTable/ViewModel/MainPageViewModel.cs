@@ -144,7 +144,7 @@ namespace FlexTable.ViewModel
 
             // 메타데이터 초기화
             ExplorationViewModel.MetadataViewModel.Initialize();
-            
+
             var dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
 
             ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[1]);
@@ -157,7 +157,8 @@ namespace FlexTable.ViewModel
                 ExplorationViewModel.PageViewStateChanged(ExplorationViewModel.TopPageView.ViewModel, ExplorationViewModel.TopPageView);
 
                 //TableViewModel.SelectRowsByRange(0, 300);
-                
+
+                return;
                 ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[3]);
 
                 DispatcherTimer dispatcherTimer2 = new DispatcherTimer();
@@ -167,7 +168,6 @@ namespace FlexTable.ViewModel
                     ExplorationViewModel.TopPageView.ViewModel.State = PageViewModel.PageViewState.Selected;
                     ExplorationViewModel.PageViewStateChanged(ExplorationViewModel.TopPageView.ViewModel, ExplorationViewModel.TopPageView);
 
-                    return;
                     ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[4]);
 
                     DispatcherTimer dispatcherTimer3 = new DispatcherTimer();
@@ -181,7 +181,7 @@ namespace FlexTable.ViewModel
                     dispatcherTimer3.Start();
                     
                 };
-                dispatcherTimer2.Interval = TimeSpan.FromMilliseconds(3000);
+                dispatcherTimer2.Interval = TimeSpan.FromMilliseconds(300);
                 dispatcherTimer2.Start();
             };
             dispatcherTimer.Interval = TimeSpan.FromMilliseconds(500);

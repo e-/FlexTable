@@ -24,7 +24,7 @@ namespace FlexTable.ViewModel
 {
     public partial class TableViewModel : NotifyViewModel
     {
-        public enum TableViewState { AllRow, GroupedRow, SelectedRow, Animation};
+        public enum TableViewState { AllRow, GroupedRow, SelectedRow, Animation };
 
         MainPageViewModel mainPageViewModel;
         public MainPageViewModel MainPageViewModel => mainPageViewModel;
@@ -34,7 +34,7 @@ namespace FlexTable.ViewModel
 
         public Double ScrollLeft { get; set; }
         public Double ScrollTop { get; set; }
-       
+
         public Double Width => mainPageViewModel.Bounds.Width;
         public Double Height => mainPageViewModel.Bounds.Height;
 
@@ -46,7 +46,7 @@ namespace FlexTable.ViewModel
 
         private Double paddedSheetHeight;
         public Double PaddedSheetHeight { get { return paddedSheetHeight; } set { paddedSheetHeight = value; OnPropertyChanged(nameof(PaddedSheetHeight)); } }
-        
+
         private List<RowViewModel> allRowViewModels;
         public List<RowViewModel> AllRowViewModels
         {
@@ -62,7 +62,7 @@ namespace FlexTable.ViewModel
         }
 
         public IEnumerable<RowViewModel> ActivatedRowViewModels { get; set; }
-        
+
         private TableViewState oldState = TableViewState.AllRow;
         public TableViewState OldState { get { return oldState; } }
 
@@ -71,8 +71,6 @@ namespace FlexTable.ViewModel
 
         private Boolean isIndexing;
         public Boolean IsIndexing { get { return isIndexing; } set { isIndexing = value; OnPropertyChanged("IsIndexing"); } }
-
-        private ViewStatus previousViewStatus = new ViewStatus();
 
         public IEnumerable<Row> SelectedRows { get; set; } = null;
 
@@ -114,64 +112,117 @@ namespace FlexTable.ViewModel
 
         private AnimationHint stashedAnimationHint = null;
         private ViewStatus stashedViewStatus = null;
+        private IEnumerable<Row> stashedSelectedRows = null;
 
         public void StashViewStatus(ViewStatus viewStatus, AnimationHint.AnimationType animationType)
         {
             stashedAnimationHint = AnimationHint.Create(mainPageViewModel.SheetViewModel, this);
             stashedAnimationHint.Type = animationType;
+            stashedSelectedRows = SelectedRows;
             stashedViewStatus = viewStatus.Clone();
         }
 
         DispatcherTimer dispatcherTimer = null;
         const Double DeferredReflectionTimeInMS = 1000;
+        AnimationScenario previousAnimationScenario = null;
+        Action tableUpdateCallback;
+        Int32 callbackCount = 0, callbackLimitCount = 0;
 
         public void Reflect(ViewStatus viewStatus)
         {
             // 애니메이션 로직이 들어가야함
+            if (previousAnimationScenario?.AnimationStoryboard != null)
+            {
+                previousAnimationScenario?.AnimationStoryboard.SkipToFill();
+            }
+
             AnimationScenario animationScenario = CreateTableAnimation(viewStatus);
+            previousAnimationScenario = animationScenario;
+
+            if (dispatcherTimer != null && dispatcherTimer.IsEnabled) dispatcherTimer.Stop();
+            dispatcherTimer = new DispatcherTimer();
 
             if (animationScenario.TotalAnimationDuration > 0)
             {
                 State = TableViewState.Animation;
                 view.TableView.ReflectState(viewStatus);
-            }
-
-            if (dispatcherTimer != null && dispatcherTimer.IsEnabled) dispatcherTimer.Stop();
-            dispatcherTimer = new DispatcherTimer();
-
-            dispatcherTimer.Tick += (sender, e) =>
-            {
-                dispatcherTimer.Stop();
-                Update(viewStatus);
-
-                view.TableView.ReflectState(viewStatus);
-                
-                // column header 업데이트
                 foreach (ColumnViewModel cvm in mainPageViewModel.SheetViewModel.ColumnViewModels)
                 {
                     cvm.UpdateHeaderName();
                 }
 
-                view.TableView.TopColumnHeader.Update();
-                view.TableView.BottomColumnHeader.Update();
-                view.TableView.ColumnIndexer.Update();
-                previousViewStatus = viewStatus;
-            };
-            dispatcherTimer.Interval = TimeSpan.FromMilliseconds(animationScenario.TotalAnimationDuration > 0 ? animationScenario.TotalAnimationDuration : 1); // 700);
-            dispatcherTimer.Start();
-
-            if(animationScenario.TotalAnimationDuration > 0)
-            {
-                foreach (ColumnViewModel cvm in mainPageViewModel.SheetViewModel.ColumnViewModels)
-                {
-                    cvm.UpdateHeaderName();
-                }
-
+                animationScenario.AnimationStoryboard.Begin();
                 view.TableView.TopColumnHeader.Update(animationScenario.TableHeaderUpdateTime);
                 view.TableView.BottomColumnHeader.Update(animationScenario.TableHeaderUpdateTime);
+
+                callbackLimitCount++;
+
+                tableUpdateCallback = () =>
+                {
+                    if (callbackCount < callbackLimitCount) callbackCount = callbackLimitCount;
+                    else return;
+
+                    dispatcherTimer.Stop();
+
+                    Update(viewStatus);
+                    view.TableView.ReflectState(viewStatus);
+                    view.TableView.ColumnIndexer.Update();
+                };
+
+                dispatcherTimer.Tick += (sender, e) =>
+                {
+                    tableUpdateCallback();
+                };
+
+                dispatcherTimer.Interval = TimeSpan.FromMilliseconds(animationScenario.TotalAnimationDuration);
             }
+            else
+            {
+                callbackLimitCount++;
+
+                tableUpdateCallback = () =>
+                {
+                    if (callbackCount < callbackLimitCount) callbackCount = callbackLimitCount;
+                    else return;
+
+                    dispatcherTimer.Stop();
+                    Update(viewStatus);
+
+                    view.TableView.ReflectState(viewStatus);
+
+                    // column header 업데이트
+                    foreach (ColumnViewModel cvm in mainPageViewModel.SheetViewModel.ColumnViewModels)
+                    {
+                        cvm.UpdateHeaderName();
+                    }
+
+                    view.TableView.TopColumnHeader.Update();
+                    view.TableView.BottomColumnHeader.Update();
+                    view.TableView.ColumnIndexer.Update();
+                };
+
+                dispatcherTimer.Tick += (sender, e) =>
+                {
+                    tableUpdateCallback();
+                };
+
+                dispatcherTimer.Interval = TimeSpan.FromMilliseconds(1);
+            }
+
+            dispatcherTimer.Start();
         }
-        
+
+        public void SkipAllAnimationToFill()
+        {
+            if (previousAnimationScenario?.AnimationStoryboard != null)
+            {
+                previousAnimationScenario?.AnimationStoryboard.SkipToFill();
+            }
+
+            if (tableUpdateCallback != null)
+                tableUpdateCallback();
+        }
+
         void Update(ViewStatus viewStatus)
         {
             Int32 index = 0;
@@ -277,16 +328,20 @@ namespace FlexTable.ViewModel
 
         public void PreviewRows(IEnumerable<Row> selectedRows)
         {
-            if(this.SelectedRows == null)
+            if(SelectedRows == null)
             {
                 StashViewStatus(mainPageViewModel.ExplorationViewModel.ViewStatus, AnimationHint.AnimationType.SelectRows);
             }
-            this.SelectedRows = selectedRows;
+            SelectedRows = selectedRows.ToList();
             Reflect(mainPageViewModel.ExplorationViewModel.ViewStatus);
         }
 
         public void CancelPreviewRows()
         {
+            if (SelectedRows != null)
+            {
+                StashViewStatus(mainPageViewModel.ExplorationViewModel.ViewStatus, AnimationHint.AnimationType.UnselectRows);
+            }
             SelectedRows = null;
             Reflect(mainPageViewModel.ExplorationViewModel.ViewStatus);
         }        
