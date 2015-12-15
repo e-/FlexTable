@@ -78,7 +78,7 @@ namespace FlexTable.ViewModel
 
         public void ReflectAll(ViewStatus viewStatus, Boolean updateAllPageViews)
         {
-            viewStatus.Generate(sheetViewModel);
+            //viewStatus.Generate(sheetViewModel);
 
             Boolean isN = viewStatus.IsN;
             foreach (ColumnViewModel cvm in SheetViewModel.ColumnViewModels)
@@ -87,9 +87,10 @@ namespace FlexTable.ViewModel
                 if(isN && cvm.IsSelected && cvm.SortOption == SortOption.None)
                 {
                     SheetViewModel.Sort(cvm, SortOption.Ascending);
-                    viewStatus.Generate(SheetViewModel);
                 }
             }
+
+            viewStatus.Generate(SheetViewModel);
 
             // sheet 업데이트
             SheetViewModel.Reflect(viewStatus);
@@ -147,7 +148,7 @@ namespace FlexTable.ViewModel
 
             var dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
 
-            ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[1]);
+            ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[0]);
 
             DispatcherTimer dispatcherTimer = new DispatcherTimer();
             dispatcherTimer.Tick += (sender, e) =>

@@ -89,6 +89,8 @@ namespace FlexTable.View
                 count = 0;
             }
 
+            SelectedRows = selectedRows;
+
             if (count == 0)
             {
                 ShowSelectionIndicatorStoryboard.Pause();
@@ -97,7 +99,6 @@ namespace FlexTable.View
             }
             else
             {
-                SelectedRows = selectedRows;
                 Int32 rowCount = selectedRows.Count();
 
                 HideSelectionIndicatorStoryboard.Pause();
@@ -434,11 +435,14 @@ namespace FlexTable.View
 
         private void BroadcastSelection(object sender)
         {
-            if (sender != BarChartElement && ViewModel.IsBarChartVisible) BarChartElement.ImportSelection(SelectedRows);
-            if (sender != GroupedBarChartElement && ViewModel.IsGroupedBarChartVisible) GroupedBarChartElement.ImportSelection(SelectedRows);
-            if (sender != LineChartElement && ViewModel.IsLineChartVisible) LineChart.ImportSelection(SelectedRows);
+            IEnumerable<Row> selectedRows = SelectedRows;
+            if (selectedRows == null) selectedRows = new List<Row>();
+
+            if (sender != BarChartElement && ViewModel.IsBarChartVisible) BarChartElement.ImportSelection(selectedRows);
+            if (sender != GroupedBarChartElement && ViewModel.IsGroupedBarChartVisible) GroupedBarChartElement.ImportSelection(selectedRows);
+            if (sender != LineChartElement && ViewModel.IsLineChartVisible) LineChart.ImportSelection(selectedRows);
             //if (sender != DistributionViewElement && ViewModel.IsDistributionVisible) DistributionView.Histogram.ClearSelection(withHandler);
-            if (sender != ScatterplotElement && ViewModel.IsScatterplotVisible) ScatterplotElement.ImportSelection(SelectedRows);
+            if (sender != ScatterplotElement && ViewModel.IsScatterplotVisible) ScatterplotElement.ImportSelection(selectedRows);
         }
 
 

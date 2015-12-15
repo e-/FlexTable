@@ -110,16 +110,18 @@ namespace FlexTable.ViewModel
             view.TableView.ColumnIndexer.Update();
         }
 
-        private AnimationHint stashedAnimationHint = null;
+        //private AnimationHint stashedAnimationHint = null;
         private ViewStatus stashedViewStatus = null;
-        private IEnumerable<Row> stashedSelectedRows = null;
+        //private IEnumerable<Row> stashedSelectedRows = null;
 
         public void StashViewStatus(ViewStatus viewStatus, AnimationHint.AnimationType animationType)
         {
-            stashedAnimationHint = AnimationHint.Create(mainPageViewModel.SheetViewModel, this);
-            stashedAnimationHint.Type = animationType;
-            stashedSelectedRows = SelectedRows;
+            AnimationHint hint = AnimationHint.Create(mainPageViewModel.SheetViewModel, this);
+            hint.Type = animationType;
             stashedViewStatus = viewStatus.Clone();
+            stashedViewStatus.TableViewState = state;
+            stashedViewStatus.SelectedRows = SelectedRows;
+            stashedViewStatus.AnimationHint = hint;            
         }
 
         DispatcherTimer dispatcherTimer = null;
@@ -237,9 +239,7 @@ namespace FlexTable.ViewModel
 
                 State = TableViewState.SelectedRow;
             }
-            else if (viewStatus.IsEmpty || 
-                (viewStatus.IsNN && viewStatus.IsScatterplotVisible) || 
-                (viewStatus.IsCNN && viewStatus.IsScatterplotVisible))
+            else if (viewStatus.IsAllRowViewModelVisible)
             {
                 AllRowViewModels.Sort(new RowViewModelComparer(SheetViewModel, viewStatus));
                 index = 0;
@@ -254,13 +254,13 @@ namespace FlexTable.ViewModel
             {
                 Boolean isDirty = false;
                 if (GroupedRowViewModels == null) isDirty = true;
-                else if (GroupedRowViewModels.Count != SheetViewModel.GroupedRowViewModels.Count) isDirty = true;
+                else if (GroupedRowViewModels.Count != viewStatus.GroupedRowViewModels.Count) isDirty = true;
                 else
                 {
                     Int32 count = GroupedRowViewModels.Count, i;
                     for (i = 0; i < count; ++i)
                     {
-                        if (GroupedRowViewModels[i] != SheetViewModel.GroupedRowViewModels[i])
+                        if (GroupedRowViewModels[i] != viewStatus.GroupedRowViewModels[i])
                         {
                             isDirty = true;
                             break;
@@ -269,13 +269,13 @@ namespace FlexTable.ViewModel
                 }
 
                 if(isDirty)
-                    GroupedRowViewModels = new List<RowViewModel>(SheetViewModel.GroupedRowViewModels);
+                    GroupedRowViewModels = new List<RowViewModel>(viewStatus.GroupedRowViewModels);
 
                 ActivatedRowViewModels = GroupedRowViewModels;
                 State = TableViewState.GroupedRow;
             }
 
-            viewStatus.ColorRowViewModels(allRowViewModels, groupedRowViewModels, SheetViewModel.GroupedRows);
+            viewStatus.ColorRowViewModels(allRowViewModels, groupedRowViewModels, viewStatus.GroupedRows);
         }
 
         uint ignoredPointerId;

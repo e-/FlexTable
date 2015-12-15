@@ -32,32 +32,33 @@ namespace FlexTable.Model
         public IEnumerable<ColumnViewModel> NumericalColumnViewModels => selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical);
         public IEnumerable<ColumnViewModel> CategoricalColumnViewModels => selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical);
 
-        private Int32 totalCount => selectedColumnViewModels.Count;
-        private Int32 numericalCount => selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical).Count();
-        private Int32 categoricalCount => selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).Count();
+        public Int32 SelectedCount => selectedColumnViewModels.Count;
+        public Int32 NumericalCount => selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical).Count();
+        public Int32 CategoricalCount => selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).Count();
          
 
-        public Boolean IsEmpty => totalCount == 0;
+        public Boolean IsEmpty => SelectedCount == 0;
 
-        public Boolean IsC => totalCount == 1 && categoricalCount == 1;
-        public Boolean IsN => totalCount == 1 && numericalCount == 1;
+        public Boolean IsC => SelectedCount == 1 && CategoricalCount == 1;
+        public Boolean IsN => SelectedCount == 1 && NumericalCount == 1;
 
-        public Boolean IsCC => totalCount == 2 && categoricalCount == 2;
-        public Boolean IsCN => totalCount == 2 && categoricalCount == 1 && numericalCount == 1;
-        public Boolean IsNN => totalCount == 2 && numericalCount == 2;
+        public Boolean IsCC => SelectedCount == 2 && CategoricalCount == 2;
+        public Boolean IsCN => SelectedCount == 2 && CategoricalCount == 1 && NumericalCount == 1;
+        public Boolean IsNN => SelectedCount == 2 && NumericalCount == 2;
 
-        public Boolean IsCCC => totalCount == 3 && categoricalCount == 3;
-        public Boolean IsCCN => totalCount == 3 && categoricalCount == 2 && numericalCount == 1;
-        public Boolean IsCNN => totalCount == 3 && categoricalCount == 1 && numericalCount == 2;
-        public Boolean IsNNN => totalCount == 3 && numericalCount == 3;
+        public Boolean IsCCC => SelectedCount == 3 && CategoricalCount == 3;
+        public Boolean IsCCN => SelectedCount == 3 && CategoricalCount == 2 && NumericalCount == 1;
+        public Boolean IsCNN => SelectedCount == 3 && CategoricalCount == 1 && NumericalCount == 2;
+        public Boolean IsNNN => SelectedCount == 3 && NumericalCount == 3;
 
-        public Boolean IsCnN0 => numericalCount == 0;
-        public Boolean IsCnN1 => numericalCount == 1;
-        public Boolean IsCnNn => numericalCount >= 1;
+        public Boolean IsCnN0 => NumericalCount == 0;
+        public Boolean IsCnN1 => NumericalCount == 1;
+        public Boolean IsCnNn => NumericalCount >= 1;
 
-        public Boolean IsCn => categoricalCount >= 1;
+        public Boolean IsCn => CategoricalCount >= 1;
 
         public ColumnViewModel FirstColumn => selectedColumnViewModels.First();
+        public ColumnViewModel LastColumn => selectedColumnViewModels.Last();
         public ColumnViewModel FirstCategorical => selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).First();
         public ColumnViewModel SecondCategorical => selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).ElementAt(1);
         public ColumnViewModel ThirdCategorical => selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).ElementAt(2);
@@ -76,8 +77,13 @@ namespace FlexTable.Model
         public Boolean IsDescriptiveStatisticsVisible => ActivatedChart is DescriptiveStatisticsView;
         public Boolean IsDistributionViewVisible => ActivatedChart is DistributionView;
 
+        public Boolean IsAllRowViewModelVisible => IsEmpty || (IsNN && IsScatterplotVisible) || (IsCNN && IsScatterplotVisible);
+
         public List<RowViewModel> GroupedRowViewModels { get; set; }
         public List<GroupedRows> GroupedRows { get; set; }
+        public TableViewModel.TableViewState TableViewState { get; set; }
+        public AnimationHint AnimationHint { get; set; }
+        public IEnumerable<Row> SelectedRows { get; set; }
 
         public ViewStatus Clone()
         {
@@ -156,7 +162,8 @@ namespace FlexTable.Model
                     if (groupedRows.Rows.Count == 0) continue;
                     RowViewModel rowViewModel = new RowViewModel(sheetViewModel.MainPageViewModel)
                     {
-                        Index = index++
+                        Index = index++,
+                        Rows = groupedRows.Rows
                     };
 
                     foreach (ColumnViewModel columnViewModel in orderedColumnViewModels)
@@ -227,7 +234,7 @@ namespace FlexTable.Model
 
                 GroupedRowViewModels.Add(rowViewModel);
             }
-            else if(categoricalCount > 0)// 이 경우는 categorical이든 datetime이든 뭔가로 그룹핑이 된 경우 
+            else if(CategoricalCount > 0)// 이 경우는 categorical이든 datetime이든 뭔가로 그룹핑이 된 경우 
             {
                 GroupedRows = GroupRecursive(
                     sheetViewModel.FilteredRows.ToList(), 
@@ -340,7 +347,7 @@ namespace FlexTable.Model
 
         public ColumnViewModel GetColoredColumnViewModel()
         {
-            Int32 categoricalCount = this.categoricalCount;
+            Int32 categoricalCount = this.CategoricalCount;
 
             if (1 <= categoricalCount && categoricalCount <= 2) return CategoricalColumnViewModels.Last();
             return null;
@@ -348,19 +355,19 @@ namespace FlexTable.Model
 
         public ColumnViewModel GetFirstColoredColumnViewModel()
         {
-            if (numericalCount >= 1) return FirstNumerical;
+            if (NumericalCount >= 1) return FirstNumerical;
             return null;
         }
 
         public ColumnViewModel GetSecondColoredColumnViewModel()
         {
-            if (numericalCount >= 2) return SecondNumerical;
+            if (NumericalCount >= 2) return SecondNumerical;
             return null;
         }
 
         public ColumnViewModel GetThirdColoredColumnViewModel()
         {
-            if (numericalCount >= 3) return ThirdNumerical;
+            if (NumericalCount >= 3) return ThirdNumerical;
             return null;
         }
 
@@ -403,6 +410,7 @@ namespace FlexTable.Model
             else if (IsN)
             {
                 foreach (RowViewModel rowViewModel in allRowViewModels) rowViewModel.Color = Category10FirstColor;
+                foreach (RowViewModel rowViewModel in groupedRowViewModels) rowViewModel.Color = Category10FirstColor;
             }
             else if (IsCC)
             {

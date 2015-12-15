@@ -33,13 +33,6 @@ namespace FlexTable.ViewModel
         private List<RowViewModel> allRowViewModels = new List<RowViewModel>();
         public List<RowViewModel> AllRowViewModels => allRowViewModels;
 
-        // group된 일시적인 테이블
-        private List<RowViewModel> groupedRowViewModels = new List<RowViewModel>();
-        public List<RowViewModel> GroupedRowViewModels => groupedRowViewModels;
-
-        private List<GroupedRows> groupedRows;
-        public List<GroupedRows> GroupedRows => groupedRows;
-
         public ObservableCollection<FilterViewModel> FilterViewModels { get; private set; } = new ObservableCollection<FilterViewModel>();
 
         MainPageViewModel mainPageViewModel;
@@ -289,7 +282,20 @@ namespace FlexTable.ViewModel
 
             columnViewModel.Order = order;
         }
- 
+
+
+        /// <summary>
+        /// 새로운 컬럼이 선택되거나 필터링이 적용되거나 소팅이 적용되거나 등으로 인해 로우가 업데이트 되었을 때 호출됨.
+        /// 프리뷰를 한다고 호출되지 않는다는 점에 주의
+        /// </summary>
+        /// <param name="viewStatus"></param>
+        public void Reflect(ViewStatus viewStatus)
+        {
+            UpdateOrder(viewStatus);
+
+            //SheetHeight = groupedRowViewModels.Count * (Double)App.Current.Resources["RowHeight"];
+        }
+
         public void UpdateOrder(ViewStatus viewStatus)
         {
             Int32 order = 0;
@@ -305,7 +311,7 @@ namespace FlexTable.ViewModel
                 groupedColumnViewModel.Order = order++;
             }
 
-            foreach (ColumnViewModel remainingColumnViewModel in columnViewModels.Except(viewStatus.SelectedColumnViewModels).Where(d => !d.IsHidden).OrderBy(d => d.Index))
+            foreach (ColumnViewModel remainingColumnViewModel in columnViewModels.Except(viewStatus.SelectedColumnViewModels).Where(d => !d.IsHidden).OrderBy(d => d.Order))
             {
                 remainingColumnViewModel.Order = order++;
             }
@@ -317,39 +323,6 @@ namespace FlexTable.ViewModel
 
             // Column의 x값을 업데이트함, 위 아래 컬럼 헤더를 위한것임. 
             UpdateColumnX();
-        }
-
-        /// <summary>
-        /// 새로운 컬럼이 선택되거나 필터링이 적용되거나 소팅이 적용되거나 등으로 인해 로우가 업데이트 되었을 때 호출됨.
-        /// 프리뷰를 한다고 호출되지 않는다는 점에 주의
-        /// </summary>
-        /// <param name="viewStatus"></param>
-        public void Reflect(ViewStatus viewStatus)
-        {
-            UpdateOrder(viewStatus);            
-
-            // table에 추가하는 것은 tableViewModel이 할 것이고 여기는 rowViewModels만 만들어주면 됨
-            
-            // 여기서 상황별로 왼쪽에 보일 rowViewModel을 만들어 줘야함. 여기서 만들면 tableViewModel에서 받아다가 그림
-            if (viewStatus.IsEmpty)
-            {
-                // 어차피 allRow가 보일 것이므로 RowViewModel 을 만들어 줄 필요는 없음 
-            }
-            else if (viewStatus.IsN) // 이 경우는 뉴메리컬 하나만 선택되어 비닝 된 결과가 보이는 경우이다.
-            {
-                groupedRowViewModels = viewStatus.GroupedRowViewModels;
-            }
-            else if (viewStatus.IsNN)
-            {
-                groupedRowViewModels = viewStatus.GroupedRowViewModels;
-            }
-            else // 이 경우는 categorical이든 datetime이든 뭔가로 그룹핑이 된 경우 
-            {
-                groupedRowViewModels = viewStatus.GroupedRowViewModels;
-                groupedRows = viewStatus.GroupedRows;
-            }
-
-            SheetHeight = groupedRowViewModels.Count * (Double)App.Current.Resources["RowHeight"];
         }
         
         public void UpdateColumnX()

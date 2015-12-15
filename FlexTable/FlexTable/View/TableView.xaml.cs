@@ -174,20 +174,18 @@ namespace FlexTable.View
 
                 foreach (RowPresenter rowPresenter in selected)
                 {
-                    Canvas.SetTop(rowPresenter, /*rowPresenter.RowViewModel.Y =*/ index * height);
+                    Canvas.SetTop(rowPresenter, index * height);
                     rowPresenter.Opacity = 1;
                     rowPresenter.Update(coloredColumnViewModel); 
-                    //colors.Add(rowPresenter.RowViewModel.Color);
                     index++;
                 }
 
                 // y 도 힌트에 저장하는게 안낫나?
                 foreach (RowPresenter rowPresenter in unselected)
                 {
-                    Canvas.SetTop(rowPresenter, /*rowPresenter.RowViewModel.Y =*/ index * height);
+                    Canvas.SetTop(rowPresenter, index * height);
                     rowPresenter.Opacity = 0.2;
                     rowPresenter.Update(coloredColumnViewModel);
-                    //colors.Add(rowPresenter.RowViewModel.Color);
                     index++;
                 }
 
@@ -212,8 +210,7 @@ namespace FlexTable.View
                     thirdColoredColumnViewModel = viewStatus?.GetThirdColoredColumnViewModel();
 
                 // pivotTable과 barChart가 색깔을 공유함에 주의
-                if (viewStatus.IsPivotTableVisible ||
-                    viewStatus.IsCorrelationStatisticsVisible ||
+                if (viewStatus.IsCorrelationStatisticsVisible ||
                     viewStatus.IsDescriptiveStatisticsVisible
                     )
                 {
@@ -243,7 +240,6 @@ namespace FlexTable.View
                     Canvas.SetTop(groupedRowPresenters[i], index * height);
                     groupedRowPresenters[i].Visibility = Visibility.Visible;
                     groupedRowPresenters[i].Update(coloredColumnViewModel, firstColoredColumnViewModel, secondColoredColumnViewModel, thirdColoredColumnViewModel);
-                    //if(coloredColumnViewModel != null) colors.Add(groupedRowPresenters[i].RowViewModel.Color);
                     index++;
                 }
 
@@ -312,9 +308,9 @@ namespace FlexTable.View
                 SlowlyHideAllRowViewerStoryboard.Begin();
                 HideGroupedRowViewerStoryboard.Begin();
                 HideSelectedRowViewerStoryboard.Begin();
-                AnimatingRowViewer.Opacity = 1;
-                AnimatingRowViewer.Visibility = Visibility.Visible;
-                //ShowAnimatingRowViewerStoryboard.Begin();
+                /*AnimatingRowViewer.Opacity = 1;
+                AnimatingRowViewer.Visibility = Visibility.Visible;*/
+                ShowAnimatingRowViewerStoryboard.Begin();
             }
 
             UpdateScrollViews();

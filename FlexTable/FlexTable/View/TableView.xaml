@@ -88,12 +88,12 @@
         </Storyboard>
 
         <Storyboard x:Name="HideAnimatingRowViewerStoryboard">
-            <!--<DoubleAnimation Storyboard.TargetName="AnimatingRowViewer" Storyboard.TargetProperty="Opacity"
-                         To="0" Duration="0:0:0.3" EasingFunction="{StaticResource QuarticEaseInOut}"></DoubleAnimation>-->
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="AnimatingRowViewer"
+            <DoubleAnimation Storyboard.TargetName="AnimatingRowViewer" Storyboard.TargetProperty="Opacity"
+                         To="0" Duration="0:0:0.3" EasingFunction="{StaticResource QuarticEaseInOut}"></DoubleAnimation>
+            <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="AnimatingRowViewer"
                                        Storyboard.TargetProperty="Opacity">
             <DiscreteObjectKeyFrame KeyTime="0:0:0.3" Value="0" />
-            </ObjectAnimationUsingKeyFrames>
+            </ObjectAnimationUsingKeyFrames>-->
             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="AnimatingRowViewer"
                                        Storyboard.TargetProperty="Visibility">
                 <DiscreteObjectKeyFrame KeyTime="0:0:0.3" Value="Collapsed" />

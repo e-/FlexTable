@@ -10,6 +10,7 @@ using Windows.UI.Xaml;
 using System.Diagnostics;
 using Windows.UI.Xaml.Documents;
 using FlexTable.Util;
+using Windows.UI.Xaml.Media;
 
 namespace FlexTable.ViewModel
 {
@@ -57,89 +58,7 @@ namespace FlexTable.ViewModel
             var groupedRowViewModels = viewStatus.GroupedRowViewModels;
             var selectedColumnViewModels = viewStatus.SelectedColumnViewModels;
 
-            if (viewStatus.IsC)
-            {
-                Int32 rowN = groupedRows.Count + 1, // 테이블 전체 로우의 개수
-                      columnN = 2;
-
-                Int32 i, index, j;
-
-                // 개수만큼 추가 컬럼 및 로우 정의 추가. 이중선 말고는 별 특별한 점 없음.
-                for (i = 0; i < rowN; ++i)
-                {
-                    RowDefinition rowDefinition = new RowDefinition();
-                    rowDefinition.Height = GridLength.Auto;
-                    pivotTableView.PivotTable.RowDefinitions.Add(rowDefinition);
-                }
-
-                for (i = 0; i < columnN; ++i)
-                {
-                    ColumnDefinition columnDefinition = new ColumnDefinition();
-                    pivotTableView.PivotTable.ColumnDefinitions.Add(columnDefinition);
-                }
-
-                // 가로 이름 넣기 (인덱스 열 포함)
-
-                index = 0;
-                foreach (ColumnViewModel columnViewModel in selectedColumnViewModels)
-                {
-                    Border border = new Border()
-                    {
-                        Style = pivotTableView.Resources["ColumnHeaderBorderStyle"] as Style
-                    };
-                    TextBlock textBlock = new TextBlock()
-                    {
-                        Text = columnViewModel.FormatHeaderName(viewStatus),
-                        Style = pivotTableView.Resources["ColumnHeaderValueTextStyle"] as Style
-                    };
-                    border.Child = textBlock;
-
-                    children.Add(border);
-                    Grid.SetRow(border, 0);
-                    Grid.SetColumn(border, index++);
-                }
-
-                {
-                    Border border = new Border()
-                    {
-                        Style = pivotTableView.Resources["ColumnHeaderBorderStyle"] as Style
-                    };
-                    TextBlock textBlock = new TextBlock()
-                    {
-                        Text = $"Count({selectedColumnViewModels.First().Name})",
-                        Style = pivotTableView.Resources["ColumnHeaderValueTextStyle"] as Style
-                    };
-                    border.Child = textBlock;
-
-                    children.Add(border);
-                    Grid.SetRow(border, 0);
-                    Grid.SetColumn(border, index++);
-                }
-
-                // 데이터 넣기
-                i = 0;
-                foreach (RowViewModel rowViewModel in groupedRowViewModels.Take(MaximumRowNumber))
-                {
-                    j = 0;
-                    foreach (ColumnViewModel columnViewModel in selectedColumnViewModels)
-                    {
-                        Border border = GetNewBorder(rowViewModel.Cells[columnViewModel.Index].Content);
-
-                        children.Add(border);
-                        Grid.SetRow(border, 1 + i);
-                        Grid.SetColumn(border, j++);
-                    }
-                    {
-                        Border border = GetNewBorder(groupedRows[i].Rows.Count);
-
-                        children.Add(border);
-                        Grid.SetRow(border, 1 + i);
-                        Grid.SetColumn(border, j++);
-                    }
-                    i++;
-                }
-            }
-            else if (viewStatus.IsN)
+            if (viewStatus.IsN)
             {
                 Int32 rowN = groupedRows.Count + 1, // 테이블 전체 로우의 개수
                       columnN = 2;
@@ -224,8 +143,93 @@ namespace FlexTable.ViewModel
                     i++;
                 }
             }
+            /*else if (viewStatus.IsC)
+            {
+                Int32 rowN = groupedRows.Count + 1, // 테이블 전체 로우의 개수
+                      columnN = 2;
+
+                Int32 i, index, j;
+
+                // 개수만큼 추가 컬럼 및 로우 정의 추가. 이중선 말고는 별 특별한 점 없음.
+                for (i = 0; i < rowN; ++i)
+                {
+                    RowDefinition rowDefinition = new RowDefinition();
+                    rowDefinition.Height = GridLength.Auto;
+                    pivotTableView.PivotTable.RowDefinitions.Add(rowDefinition);
+                }
+
+                for (i = 0; i < columnN; ++i)
+                {
+                    ColumnDefinition columnDefinition = new ColumnDefinition();
+                    pivotTableView.PivotTable.ColumnDefinitions.Add(columnDefinition);
+                }
+
+                // 가로 이름 넣기 (인덱스 열 포함)
+
+                index = 0;
+                foreach (ColumnViewModel columnViewModel in selectedColumnViewModels)
+                {
+                    Border border = new Border()
+                    {
+                        Style = pivotTableView.Resources["ColumnHeaderBorderStyle"] as Style
+                    };
+                    TextBlock textBlock = new TextBlock()
+                    {
+                        Text = columnViewModel.FormatHeaderName(viewStatus),
+                        Style = pivotTableView.Resources["ColumnHeaderValueTextStyle"] as Style
+                    };
+                    border.Child = textBlock;
+
+                    children.Add(border);
+                    Grid.SetRow(border, 0);
+                    Grid.SetColumn(border, index++);
+                }
+
+                {
+                    Border border = new Border()
+                    {
+                        Style = pivotTableView.Resources["ColumnHeaderBorderStyle"] as Style
+                    };
+                    TextBlock textBlock = new TextBlock()
+                    {
+                        Text = $"Count({selectedColumnViewModels.First().Name})",
+                        Style = pivotTableView.Resources["ColumnHeaderValueTextStyle"] as Style
+                    };
+                    border.Child = textBlock;
+
+                    children.Add(border);
+                    Grid.SetRow(border, 0);
+                    Grid.SetColumn(border, index++);
+                }
+
+                // 데이터 넣기
+                i = 0;
+                foreach (RowViewModel rowViewModel in groupedRowViewModels.Take(MaximumRowNumber))
+                {
+                    j = 0;
+                    foreach (ColumnViewModel columnViewModel in selectedColumnViewModels)
+                    {
+                        Border border = GetNewBorder(rowViewModel.Cells[columnViewModel.Index].Content);
+
+                        children.Add(border);
+                        (border.Child as TextBlock).Foreground = new SolidColorBrush(rowViewModel.Color);
+                        Grid.SetRow(border, 1 + i);
+                        Grid.SetColumn(border, j++);
+                    }
+                    {
+                        Border border = GetNewBorder(groupedRows[i].Rows.Count);
+
+                        children.Add(border);
+                        Grid.SetRow(border, 1 + i);
+                        Grid.SetColumn(border, j++);
+                    }
+                    i++;
+                }
+            }*/
             else
             {
+                // TODO Cx 의 경우 Count 컬럼 추가하고 값 넣어야함
+
                 Int32 rowN = groupedRows.Count + 1, // 테이블 전체 로우의 개수
                       columnN = selectedColumnViewModels.Count/* + 1 + 1*/; // 테이블 전체 컬럼의 개수
 
@@ -242,10 +246,6 @@ namespace FlexTable.ViewModel
                 for (i = 0; i < columnN; ++i)
                 {
                     ColumnDefinition columnDefinition = new ColumnDefinition();
-                    /*if (i == 1) // 이중선
-                    {
-                        columnDefinition.Width = new GridLength(3);
-                    }*/
                     pivotTableView.PivotTable.ColumnDefinitions.Add(columnDefinition);
                 }
 
@@ -280,6 +280,8 @@ namespace FlexTable.ViewModel
                         Border border = GetNewBorder(rowViewModel.Cells[columnViewModel.Index].Content);
 
                         children.Add(border);
+                        (border.Child as TextBlock).Foreground = new SolidColorBrush(rowViewModel.Color);
+
                         Grid.SetRow(border, 1 + i);
                         Grid.SetColumn(border, j++);
                     }
@@ -288,6 +290,7 @@ namespace FlexTable.ViewModel
             }
         }
 
+        /*
         public void Preview(
             List<ColumnViewModel> verticals, // 세로축에 올것 모두 카테고리컬
             ColumnViewModel horizontal, // 가로축에 올것 카테고리컬
@@ -310,7 +313,7 @@ namespace FlexTable.ViewModel
              * 3. hozirontal != null 이고 columns.Count == 0 -> 이 경우 헤더 로우 두개를 써야함 (horizontal의 카운트를 보여주면 됨)
              * 4. horizontal == null 이고 columns.Count >= 1 -> 이 경우 헤더 로우 하나를 써야함 (한 컬럼의 통계값을 보여주면 됨)
              * 5. horizontal == null 이고 columns.Count == 0 은 있을 수 없음
-             */
+             *
 
             Int32 rowN, // 테이블 전체 로우의 개수
                   columnN; // 테이블 전체 컬럼의 개수
@@ -775,7 +778,7 @@ namespace FlexTable.ViewModel
                 border.Style = pivotTableView.Resources["MaxBorderStyle"] as Style;
                 (border.Child as TextBlock).Style = pivotTableView.Resources["MaxValueTextStyle"] as Style;
             }
-        }
+        }*/
 
         private Border GetNewBorder(Object value)
         {
