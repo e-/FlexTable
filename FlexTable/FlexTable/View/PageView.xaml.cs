@@ -69,7 +69,7 @@ namespace FlexTable.View
             BarChartElement.SelectionChanged += SelectionChanged;
             BarChartElement.FilterOut += FilterOut;
 
-            GroupedBarChartElement.SelectionChanged += ChartElement_SelectionChanged;
+            /*GroupedBarChartElement.SelectionChanged += ChartElement_SelectionChanged;
             GroupedBarChartElement.FilterOut += ChartElement_FilterOut;
          
             LineChartElement.SelectionChanged += ChartElement_SelectionChanged; ;
@@ -77,6 +77,7 @@ namespace FlexTable.View
 
             ScatterplotElement.SelectionChanged += ChartElement_SelectionChanged;
             ScatterplotElement.FilterOut += ChartElement_FilterOut;
+            */
 
             DistributionView.Histogram.SelectionChanged += SelectionChanged;
             DistributionView.Histogram.FilterOut += FilterOut;
@@ -84,12 +85,14 @@ namespace FlexTable.View
             PageLabelViewElement.LabelTapped += PageLabelViewElement_LabelTapped;
         }
 
-        public void SelectionChanged(object sender, IEnumerable<Row> rows, SelectionChangedType selectionChangedType)
+        public void SelectionChanged(object sender, IEnumerable<Row> rows, SelectionChangedType selectionChangedType, ReflectReason reason)
         {
             if (selectionChangedType == SelectionChangedType.Add)
                 SelectedRows = SelectedRows.Concat(rows).Distinct().ToList();
             else if (selectionChangedType == SelectionChangedType.Remove)
                 SelectedRows = SelectedRows.Except(rows).Distinct().ToList();
+            else if (selectionChangedType == SelectionChangedType.Replace)
+                SelectedRows = rows.ToList();
             else
                 SelectedRows = new List<Row>();
 
@@ -116,40 +119,8 @@ namespace FlexTable.View
                 ViewModel.MainPageViewModel.TableViewModel.PreviewRows(SelectedRows);
             }
 
-            ViewModel.Reflect(ReflectType.OnSelectionChanged);
-        }
-
-        public void SelectionChanged(object sender, IEnumerable<Row> selectedRows)
-        {
-            Int32 count = selectedRows.Count();
-
-            if(count == ViewModel.MainPageViewModel.SheetViewModel.FilteredRows.Count())
-            {
-                selectedRows = new List<Row>();
-                count = 0;
-            }
-
-            SelectedRows = selectedRows;
-
-            if (count == 0)
-            {
-                ShowSelectionIndicatorStoryboard.Pause();
-                HideSelectionIndicatorStoryboard.Begin();
-                ViewModel.MainPageViewModel.TableViewModel.CancelPreviewRows();
-            }
-            else
-            {
-                Int32 rowCount = selectedRows.Count();
-
-                HideSelectionIndicatorStoryboard.Pause();
-                ShowSelectionIndicatorStoryboard.Begin();
-                SelectedRowCountIndicator.Text = rowCount.ToString();
-                SelectionMessage.Text = rowCount == 1 ? "row selected" : "rows selected";
-                ViewModel.MainPageViewModel.TableViewModel.PreviewRows(selectedRows);
-            }
-
-            ViewModel.Reflect(ReflectType.OnSelectionChanged);
-        }
+            ViewModel.Reflect(ReflectType.OnSelectionChanged, reason);
+        }        
 
         private void FilterOut(object sender, String name, IEnumerable<Row> filteredRows)
         {
@@ -159,56 +130,30 @@ namespace FlexTable.View
                 Predicate = r => !filteredRows.Any(rr => rr == r)
             };
 
-            if (ViewModel.FilterOut(fvm))
-            {
-                SelectionChanged(null, new List<Row>() { });
-            }
+            SelectedRows = new List<Row>();
+            ShowSelectionIndicatorStoryboard.Pause();
+            HideSelectionIndicatorStoryboard.Begin();
+            ViewModel.MainPageViewModel.TableViewModel.SelectedRows = null;
+            ViewModel.MainPageViewModel.ExplorationViewModel.FilterOut(fvm);
         }
 
-        private void FilterOut(IEnumerable<Row> filteredRows, String name, IEnumerable<String> values)
+        /*private void FilterOut(IEnumerable<Row> filteredRows, String name, IEnumerable<String> values)
         {
             FilterOut(filteredRows, (values.Count() == 1) ?
                 $"{name} = {values.First()}" :
                 $"{name} in {String.Join(", ", values)}");
         }
-
-        private void FilterOut(IEnumerable<Row> filteredRows, String name)
-        {
-            FilterViewModel fvm = new FilterViewModel(ViewModel.MainPageViewModel)
-            {
-                Name = name,
-                Predicate = r => !filteredRows.Any(rr => rr == r)
-            };
-            if (ViewModel.FilterOut(fvm))
-            {
-                SelectionChanged(this, null, SelectionChangedType.Clear);
-            }
-        }
-
-        
+        */        
 
         #region Visualization Event Handlers
-
-        private void ChartElement_SelectionChanged(object sender, object e, object datum, int index)
-        {
-            IEnumerable<Row> selectedRows = datum as List<Row>;
-            SelectionChanged(sender, selectedRows);
-        }
         
-        private void ChartElement_FilterOut(object sender, object e, object datum, int index)
-        {
-            IEnumerable<Row> filteredRows = datum as List<Row>;
-            if (filteredRows == null || filteredRows.Count() == 0) return;
-            FilterOut(filteredRows, e.ToString());
-        }
-
         private void SelectionFilterButton_Tapped(object sender, TappedRoutedEventArgs e)
         {
             if(SelectedRows.Count() > 0)
             {
                 Int32 count = SelectedRows.Count();
-                FilterOut(SelectedRows.ToList(), $"Filtered {count} row" + (count == 1 ? String.Empty : "s"));
-                SelectionChanged(this, null, SelectionChangedType.Clear);
+                FilterOut(this, $"Filtered {count} row" + (count == 1 ? String.Empty : "s"), SelectedRows.ToList());
+                SelectionChanged(this, null, SelectionChangedType.Clear, ReflectReason.FilterOut);
             }
         }
 
@@ -417,7 +362,7 @@ namespace FlexTable.View
         private void Unselect_Tapped(object sender, TappedRoutedEventArgs e)
         {
             ViewModel.State = PageViewModel.PageViewState.Undoing;
-            SelectionChanged(null, new List<Row>());
+            SelectionChanged(null, null, SelectionChangedType.Clear, ReflectReason.ChartSelection);
             ViewModel.StateChanged(this);
         }
 
@@ -469,7 +414,7 @@ namespace FlexTable.View
             Double delta = e.Cumulative.Translation.X;
             if (delta > SelectionDismissThreshold)
             {
-                SelectionChanged(this, null, SelectionChangedType.Clear);
+                SelectionChanged(this, null, SelectionChangedType.Clear, ReflectReason.ChartSelection);
             }
             else
             {

@@ -32,7 +32,7 @@ namespace FlexTable.View
             this.InitializeComponent();
         }
 
-        public void Update(IEnumerable<Row> rows, ColumnViewModel numerical)
+        public void Feed(IEnumerable<Row> rows, ColumnViewModel numerical)
         {
             DescriptiveStatisticsResult result = DescriptiveStatistics.Analyze(
                        rows.Select(r => (Double)r.Cells[numerical.Index].Content)
@@ -59,7 +59,7 @@ namespace FlexTable.View
 
             linear.Nice();
 
-            List<Bin> bins = Util.HistogramCalculator.Bin(
+            List<Bin> bins = HistogramCalculator.Bin(
                 linear.DomainStart,
                 linear.DomainEnd,
                 linear.Step,
@@ -70,17 +70,17 @@ namespace FlexTable.View
             if (numerical.SortOption == SortOption.Descending) { bins = bins.OrderByDescending(b => b.Min).ToList(); }
             else { bins = bins.OrderBy(b => b.Min).ToList(); }
 
-            HistogramElement.Data = 
+            HistogramElement.Data =
                 bins
                 .Select(d => new BarChartDatum()
                 {
-                    Key = $"~{Util.Formatter.Auto(d.Max)}",
+                    Key = $"~{Formatter.Auto(d.Max)}",
                     ColumnViewModel = numerical,
                     Value = d.Rows.Count(),
-                    Rows = d.Rows
+                    EnvelopeValue = d.Rows.Count(),
+                    Rows = d.Rows,
+                    EnvelopeRows = d.Rows
                 }).ToList();
-                   
-            HistogramElement.Update(false);
         }
     }
 }

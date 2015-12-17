@@ -189,13 +189,17 @@ namespace d3.Component
             return false;
         }
 
-        public void UpdateWithoutAnimation()
+        public void UpdateWithSameScale(Boolean useTransition)
         {
             // tickLabels
             // tickMarkers
 
             Int32 i;
             List<Tick> ticks = Scale.GetTicks();
+
+            Storyboard axisStoryboard = new Storyboard()
+            {
+            };
 
             for (i = 0; i < tickLabels.Count; ++i)
             {
@@ -205,22 +209,38 @@ namespace d3.Component
 
                 if (LabelOpacityGetter != null)
                 {
-                    label.Opacity = LabelOpacityGetter(tick.DomainValue, i, label);
+                    if (useTransition)
+                    {
+                        axisStoryboard.Children.Add(Util.GenerateDoubleAnimation(label, "Opacity", LabelOpacityGetter(tick.DomainValue, i, label)));
+                    }
+                    else
+                    {
+                        label.Opacity = LabelOpacityGetter(tick.DomainValue, i, label);
+                    }
                 }
 
                 if (LabelYGetter != null)
                 {
                     Double original = Orientation == Orientations.Horizontal ? (24 - label.ActualHeight) / 2 : -label.ActualWidth - 10;
-                    Canvas.SetTop(label, original + LabelYGetter(tick.DomainValue, i, label));
+                    if (useTransition)
+                    {
+                        axisStoryboard.Children.Add(Util.GenerateDoubleAnimation(label, "(Canvas.Top)", original + LabelYGetter(tick.DomainValue, i, label)));
+                    }
+                    else
+                    {
+                        Canvas.SetTop(label, original + LabelYGetter(tick.DomainValue, i, label));
+                    }
                 }
             }
+
+            axisStoryboard.Begin();
         }
 
-        public void Update()
+        public void Update(Boolean useTransition)
         {
             if (Equal(previousScale, Scale))
             {
-                UpdateWithoutAnimation();
+                UpdateWithSameScale(useTransition);
                 return;
             }
 
@@ -240,46 +260,60 @@ namespace d3.Component
             };
 
             #region remove previous ticks
-            
+
             if (previousTickLabels != null)
             {
-                Int32 index = 0;
-                List<Tick> ticks = previousScale.GetTicks();
-                foreach (TextBlock tickLabel in previousTickLabels)
+                if (useTransition)
                 {
-                    Tick tick = ticks[index];
-                    Line tickMarker = previousTickMarkers[index];
-
-                    if (previousScale.GetType() == Scale.GetType() && !(Scale is Ordinal)) // 같고 ordinal이 아니어야 (linear)야 position animation 가능
+                    Int32 index = 0;
+                    List<Tick> ticks = previousScale.GetTicks();
+                    foreach (TextBlock tickLabel in previousTickLabels)
                     {
-                        // text block animation
-                        axisStoryboard.Children.Add(
-                            Util.GenerateDoubleAnimation(tickLabel, canvasPrimaryString, Scale.ClampedMap(tick.DomainValue) - (Double)tickLabel.GetValue(tickLabelSizeProperty) / 2)
-                        );
+                        Tick tick = ticks[index];
+                        Line tickMarker = previousTickMarkers[index];
 
-                        // tick marker animation 1 & 2 (for two Xs or Ys)
-                        axisStoryboard.Children.Add(
-                            Util.GenerateDoubleAnimation(tickMarker, linePrimary1String, Scale.ClampedMap(tick.DomainValue), true)
+                        if (previousScale.GetType() == Scale.GetType() && !(Scale is Ordinal)) // 같고 ordinal이 아니어야 (linear)야 position animation 가능
+                        {
+                            // text block animation
+                            axisStoryboard.Children.Add(
+                                Util.GenerateDoubleAnimation(tickLabel, canvasPrimaryString, Scale.ClampedMap(tick.DomainValue) - (Double)tickLabel.GetValue(tickLabelSizeProperty) / 2)
                             );
 
+                            // tick marker animation 1 & 2 (for two Xs or Ys)
+                            axisStoryboard.Children.Add(
+                                Util.GenerateDoubleAnimation(tickMarker, linePrimary1String, Scale.ClampedMap(tick.DomainValue), true)
+                                );
+
+                            axisStoryboard.Children.Add(
+                                Util.GenerateDoubleAnimation(tickMarker, linePrimary2String, Scale.ClampedMap(tick.DomainValue), true)
+                                );
+                        }
+
+                        // make text block opacity 0
                         axisStoryboard.Children.Add(
-                            Util.GenerateDoubleAnimation(tickMarker, linePrimary2String, Scale.ClampedMap(tick.DomainValue), true)
+                            Util.GenerateDoubleAnimation(tickLabel, "Opacity", 0)
                             );
+
+                        // make tick marker opacity 0
+                        axisStoryboard.Children.Add(
+                            Util.GenerateDoubleAnimation(tickMarker, "Opacity", 0)
+                            );
+
+                        tickLabel.SetValue(canvasSecondary, Orientation == Orientations.Horizontal ? (24 - tickLabel.ActualHeight) / 2 : -tickLabel.ActualWidth - 10);
+                    }
+                    index++;
+                }
+                else
+                {
+                    foreach (TextBlock tickLabel in previousTickLabels)
+                    {
+                        AxisCanvas.Children.Remove(tickLabel);
                     }
 
-                    // make text block opacity 0
-                    axisStoryboard.Children.Add(
-                        Util.GenerateDoubleAnimation(tickLabel, "Opacity", 0)
-                        );
-
-                    // make tick marker opacity 0
-                    axisStoryboard.Children.Add(
-                        Util.GenerateDoubleAnimation(tickMarker, "Opacity", 0)
-                        );
-
-                    tickLabel.SetValue(canvasSecondary, Orientation == Orientations.Horizontal ? (24 - tickLabel.ActualHeight) / 2 : -tickLabel.ActualWidth - 10);
-
-                    index++;
+                    foreach (Line tickMarker in previousTickMarkers)
+                    {
+                        AxisCanvas.Children.Remove(tickMarker);
+                    }
                 }
             }
 
@@ -334,8 +368,7 @@ namespace d3.Component
                 tickMarker.SetValue(lineSecondary1, 0);
                 tickMarker.SetValue(lineSecondary2, Orientation == Orientations.Horizontal ? 3 : -3);
 
-
-                if (previousScale.GetType() != Scale.GetType() || Scale is Ordinal) // position animation disabled because two scales have different types
+                if (!useTransition || (previousScale.GetType() != Scale.GetType() || Scale is Ordinal)) // position animation disabled because two scales have different types
                 {
                     tickLabel.SetValue(canvasPrimary, tick.RangeValue - (Double)tickLabel.GetValue(tickLabelSizeProperty) / 2);
                     tickMarker.SetValue(linePrimary1, tick.RangeValue);
@@ -356,14 +389,22 @@ namespace d3.Component
                         );
                 }
 
-                axisStoryboard.Children.Add(
-                    Util.GenerateDoubleAnimation(tickLabel, "Opacity", LabelOpacityGetter == null ? 1 : LabelOpacityGetter(tick.DomainValue, 0, tickLabel))
-                    );
+                if (useTransition)
+                {
+                    axisStoryboard.Children.Add(
+                        Util.GenerateDoubleAnimation(tickLabel, "Opacity", LabelOpacityGetter == null ? 1 : LabelOpacityGetter(tick.DomainValue, 0, tickLabel))
+                        );
 
-                axisStoryboard.Children.Add(
-                    Util.GenerateDoubleAnimation(tickMarker, "Opacity", 1)
+                    axisStoryboard.Children.Add(
+                        Util.GenerateDoubleAnimation(tickMarker, "Opacity", 1)
 
-                    );
+                        );
+                }
+                else
+                {
+                    tickLabel.Opacity = LabelOpacityGetter == null ? 1 : LabelOpacityGetter(tick.DomainValue, 0, tickLabel);
+                    tickMarker.Opacity = 1;
+                }
 
                 tickLabels.Add(tickLabel);
                 tickMarkers.Add(tickMarker);

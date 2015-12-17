@@ -92,7 +92,7 @@ namespace d3.View
 
             BoxPlotAxis.Scale = viewModel.Scale;
 
-            BoxPlotAxis.Update();
+            BoxPlotAxis.Update(true);
             UpdateStoryboard.Pause();
             UpdateStoryboard.Begin();
         }

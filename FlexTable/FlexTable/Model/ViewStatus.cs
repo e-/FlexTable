@@ -710,7 +710,7 @@ namespace FlexTable.Model
                 if (FilteredRows.Contains(x.Row)) return -1;
                 return 1;
             }
-            if (SelectedRows.Contains(x.Row) != SelectedRows.Contains(y.Row))
+            if (SelectedRows != null && SelectedRows.Contains(x.Row) != SelectedRows.Contains(y.Row))
             {
                 if (SelectedRows.Contains(x.Row)) return -1;
                 return 1;

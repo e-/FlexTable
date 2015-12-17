@@ -360,8 +360,8 @@ namespace FlexTable.Crayon.Chart
 
             EnvelopeRectangleElement.Update(TransitionType.All);
             RectangleElement.Update(TransitionType.All);
-            HorizontalAxis.Update();
-            IndicatorTextElement.Update(TransitionType.Opacity);
+            HorizontalAxis.Update(true);
+            IndicatorTextElement.Update(TransitionType.Opacity | TransitionType.Position);
         }
         
         private void HandleRectangleElement_RectangleManipulationDelta(object sender, object eo, object datumo, int index)
@@ -380,7 +380,7 @@ namespace FlexTable.Crayon.Chart
 
             EnvelopeRectangleElement.Update(TransitionType.None);
             RectangleElement.Update(TransitionType.None);
-            HorizontalAxis.Update();
+            HorizontalAxis.Update(false);
             IndicatorTextElement.Update(TransitionType.None);
         }
        
@@ -447,7 +447,7 @@ namespace FlexTable.Crayon.Chart
                 {
                     if (SelectionChanged != null)
                     {
-                        SelectionChanged(this, intersectedRows, SelectionChangedType.Add);
+                        SelectionChanged(this, intersectedRows, SelectionChangedType.Add, ReflectReason.ChartSelection);
                     }
                 }
             }
@@ -464,9 +464,9 @@ namespace FlexTable.Crayon.Chart
             if (SelectionChanged != null)
             {
                 if(barChartDatum.Rows == null || barChartDatum.Rows.Count() < barChartDatum.EnvelopeRows.Count())
-                    SelectionChanged(this, barChartDatum.EnvelopeRows, SelectionChangedType.Add);
+                    SelectionChanged(this, barChartDatum.EnvelopeRows, SelectionChangedType.Add, ReflectReason.ChartSelection);
                 else
-                    SelectionChanged(this, barChartDatum.Rows, SelectionChangedType.Remove);
+                    SelectionChanged(this, barChartDatum.Rows, SelectionChangedType.Remove, ReflectReason.ChartSelection);
             }
 
             args.Handled = true;            
@@ -594,28 +594,11 @@ namespace FlexTable.Crayon.Chart
 
             LegendHandleRectangleElement.Update(TransitionType.None);
             HandleRectangleElement.Update(TransitionType.None);
-            EnvelopeRectangleElement.Update(TransitionType.All);
-            RectangleElement.Update(TransitionType.All);
-            IndicatorTextElement.Update(TransitionType.Opacity);
-            HorizontalAxis.Update();
-            VerticalAxis.Update();
-        }
-
-        public void ClearSelection(Boolean withHandler)
-        {
-            //selectedRows.Clear();
-
-            /*if (withHandler && SelectionChanged != null)
-                SelectionChanged(this, null, selectedRows, 0);*/
-
-            EnvelopeRectangleElement.Update(TransitionType.All);
-            RectangleElement.Update(TransitionType.All);
-            IndicatorTextElement.Update(TransitionType.Opacity);
-            if (LegendVisibility == Visibility.Visible)
-            {
-                LegendRectangleElement.Update(TransitionType.All);
-                LegendTextElement.Update(TransitionType.Opacity);
-            }
+            EnvelopeRectangleElement.Update(useTransition ? TransitionType.All : TransitionType.None);
+            RectangleElement.Update(useTransition ? TransitionType.All : TransitionType.None);
+            IndicatorTextElement.Update(useTransition ? TransitionType.All : TransitionType.None);
+            HorizontalAxis.Update(useTransition);
+            VerticalAxis.Update(useTransition);
         }
     }
 }

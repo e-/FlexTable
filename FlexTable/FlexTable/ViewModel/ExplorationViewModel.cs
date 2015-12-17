@@ -93,7 +93,7 @@ namespace FlexTable.ViewModel
 
             // 이걸로 pageView를 채움
             
-            pageViewModel.Reflect(ReflectType.TrackPreviousParagraph | ReflectType.OnCreate);
+            pageViewModel.Reflect(ReflectType.TrackPreviousParagraph | ReflectType.OnCreate, ReflectReason.None);
             TopPageView.ReflectState();
         }
 
@@ -103,7 +103,7 @@ namespace FlexTable.ViewModel
             if (TopPageView.ViewModel.State == PageViewModel.PageViewState.Previewing)
             {
                 TopPageView.ViewModel.State = PageViewModel.PageViewState.Empty;
-                TopPageView.ViewModel.Reflect(ReflectType.Default);
+                TopPageView.ViewModel.Reflect(ReflectType.Default, ReflectReason.None);
                 TopPageView.ReflectState();
             }
         }

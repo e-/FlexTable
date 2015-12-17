@@ -154,8 +154,17 @@ namespace d3.Component
                     if (HeightGetter != null) border.Height = HeightGetter(datum, index);
                     textBlock.Text = TextGetter(datum, index);
                     textBlock.Foreground = ColorGetter == null ? new SolidColorBrush(Colors.Black) : new SolidColorBrush(ColorGetter(datum, index));
-                    Canvas.SetLeft(border, XGetter(datum, index));
-                    Canvas.SetTop(border, YGetter(datum, index));
+
+                    if (transitionType.HasFlag(TransitionType.Position))
+                    {
+                        sb.Children.Add(Util.GenerateDoubleAnimation(border, "(Canvas.Left)", XGetter(datum, index)));
+                        sb.Children.Add(Util.GenerateDoubleAnimation(border, "(Canvas.Top)", YGetter(datum, index)));
+                    }
+                    else
+                    {
+                        Canvas.SetLeft(border, XGetter(datum, index));
+                        Canvas.SetTop(border, YGetter(datum, index));
+                    }
 
                     //textBlock.Measure(new Size(10000, 10000));
                     if (transitionType.HasFlag(TransitionType.Opacity) && OpacityGetter != null && textBlock.Opacity != OpacityGetter(textBlock, datum, index))

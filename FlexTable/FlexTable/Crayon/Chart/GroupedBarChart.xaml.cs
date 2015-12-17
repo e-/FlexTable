@@ -349,7 +349,7 @@ namespace FlexTable.Crayon.Chart
 
             RectangleElement.Update(TransitionType.None);
             //ForegroundRectangleElement.Update();
-            HorizontalAxis.Update();
+            HorizontalAxis.Update(false);
             IndicatorTextElement.Update(TransitionType.None);
         }
 
@@ -386,7 +386,7 @@ namespace FlexTable.Crayon.Chart
 
             RectangleElement.Update(TransitionType.None);
             //ForegroundRectangleElement.Update();
-            HorizontalAxis.Update();
+            HorizontalAxis.Update(true);
             IndicatorTextElement.Update(TransitionType.None);
         }
 
@@ -711,8 +711,8 @@ namespace FlexTable.Crayon.Chart
             HandleRectangleElement.Update(TransitionType.None);
             RectangleElement.Update(TransitionType.None);
             IndicatorTextElement.Update(TransitionType.None);
-            HorizontalAxis.Update();
-            VerticalAxis.Update();
+            HorizontalAxis.Update(true);
+            VerticalAxis.Update(true);
         }
 
         public void ClearSelection(Boolean withHandler)

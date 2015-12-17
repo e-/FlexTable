@@ -14,14 +14,6 @@ using d3.ColorScheme;
 
 namespace FlexTable.ViewModel
 {
-    [Flags]
-    public enum ReflectType
-    {
-        Default = 0,
-        TrackPreviousParagraph = 1 << 0,
-        OnCreate = 1 << 1,
-        OnSelectionChanged = 1 << 2
-    }
 
     public partial class PageViewModel : NotifyViewModel
     {
@@ -110,11 +102,6 @@ namespace FlexTable.ViewModel
             this.pivotTableViewModel = new PivotTableViewModel(mainPageViewModel, pageView.PivotTableView);
         }        
 
-        public Boolean FilterOut(FilterViewModel filterViewModel)
-        {
-            return mainPageViewModel.ExplorationViewModel.FilterOut(filterViewModel);
-        }
-
         /// <summary>
         /// 상태가 바뀌었으면 일단 exploration에 보고를 한 후 거기서 reflect 메소드를 호출해서 이 페이지 뷰와 뷰모델에 반영한다.
         /// </summary>
@@ -129,7 +116,7 @@ namespace FlexTable.ViewModel
         /// 페이지뷰의 상태가 바꾸면 우선 exploration view에 보고를 한 후 거기서 reflect를 호출함. exploration view에 호출하지 않아도 될 때만 직접 reflect를 해야함
         /// </summary>
         /// <param name="trackPreviousParagraph"></param>
-        public void Reflect(ReflectType reflectType)
+        public void Reflect(ReflectType reflectType, ReflectReason reason)
         {
             Boolean trackPreviousParagraph = reflectType.HasFlag(ReflectType.TrackPreviousParagraph);
             Boolean onCreate = reflectType.HasFlag(ReflectType.OnCreate);
@@ -167,12 +154,25 @@ namespace FlexTable.ViewModel
                 {
                     SetFrequencyHistogramSelection(ViewStatus.FirstCategorical, groupedRows, pageView.SelectedRows);
                 }
+
+                if (onSelectionChanged && !onCreate) pageView.BarChart.Update(true);
+                else pageView.BarChart.Update(reason != ReflectReason.FilterOut && reason != ReflectReason.None);
             }
             else if (ViewStatus.IsN)
             {
-                DrawDescriptiveStatistics(ViewStatus.FirstNumerical);
-                DrawDistributionHistogram(ViewStatus.FirstNumerical);
-                DrawPivotTable();
+                if (onCreate)
+                {
+                    DrawDistributionHistogram(ViewStatus.FirstNumerical);
+                    DrawDescriptiveStatistics(ViewStatus.FirstNumerical);
+                    DrawPivotTable();
+                }
+
+                if (onSelectionChanged)
+                {
+                    SetDistributionHistogramSelection(ViewStatus.FirstNumerical, pageView.SelectedRows);
+                }
+
+                pageView.DistributionView.Histogram.Update((onSelectionChanged && !onCreate) || (reason != ReflectReason.FilterOut && reason != ReflectReason.None));
             }
             else if (ViewStatus.IsCC)
             {
@@ -809,7 +809,6 @@ namespace FlexTable.ViewModel
                 })
                 .Take(BarChartMaximumRecordNumber).ToList();
             if (groupedRows.Count > BarChartMaximumRecordNumber) IsBarChartWarningVisible = true;
-            pageView.BarChart.Update(false);
         }
 
         void SetFrequencyHistogramSelection(ColumnViewModel categorical, List<GroupedRows> groupedRows, IEnumerable<Row> selectedRows)
@@ -827,8 +826,6 @@ namespace FlexTable.ViewModel
                     barChartDatum.Value = barChartDatum.Rows.Count();
                 }
             }
-
-            pageView.BarChart.Update(true);
         }
 
         void DrawDescriptiveStatistics(ColumnViewModel numerical)
@@ -865,11 +862,24 @@ namespace FlexTable.ViewModel
             }
             
             IsDistributionVisible = true;
-            
-            pageView.DistributionView.Update(
-                mainPageViewModel.SheetViewModel.FilteredRows, 
-                numerical
-                ); // 히스토그램 업데이트
+            pageView.DistributionView.Feed(mainPageViewModel.SheetViewModel.FilteredRows, numerical);
+        }
+
+        void SetDistributionHistogramSelection(ColumnViewModel numerical, IEnumerable<Row> selectedRows)
+        {
+            foreach (BarChartDatum barChartDatum in pageView.DistributionView.Histogram.Data)
+            {
+                if (selectedRows.Count() == 0)
+                {
+                    barChartDatum.Rows = null;
+                    barChartDatum.Value = barChartDatum.EnvelopeValue;
+                }
+                else
+                {
+                    barChartDatum.Rows = barChartDatum.EnvelopeRows.Intersect(selectedRows).ToList();
+                    barChartDatum.Value = barChartDatum.Rows.Count();
+                }
+            }
         }
 
         void DrawGroupedBarChart(ColumnViewModel categorical1, ColumnViewModel categorical2, List<GroupedRows> groupedRows)

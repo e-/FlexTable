@@ -430,8 +430,8 @@ namespace FlexTable.Crayon.Chart
 
             LegendHandleRectangleElement.Update(TransitionType.None);
             CircleElement.Update(useCircleTransition, true);
-            HorizontalAxis.Update();
-            VerticalAxis.Update();
+            HorizontalAxis.Update(true);
+            VerticalAxis.Update(true);
         }
 
         public void ClearSelection(Boolean withHandler)

@@ -550,8 +550,8 @@ namespace FlexTable.Crayon.Chart
             CircleElement.Update(useCircleTransition, false);
             LegendHandleRectangleElement.Update(TransitionType.None);
             IndicatorTextElement.Update(TransitionType.None);
-            HorizontalAxis.Update();
-            VerticalAxis.Update();
+            HorizontalAxis.Update(true);
+            VerticalAxis.Update(true);
 
 
             /*HorizontalAxis2.Children.Clear();

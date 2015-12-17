@@ -265,7 +265,7 @@ namespace FlexTable.View
             xScale.Nice();
 
             AxisElement.Scale = xScale;
-            AxisElement.Update();
+            AxisElement.Update(true);
 
             List<Double> pivots = new List<Double>(); 
 

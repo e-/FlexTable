@@ -105,7 +105,11 @@ namespace FlexTable.ViewModel
                 {
                     if (pageView.ViewModel.ViewStatus != viewStatus)
                         pageView.ViewModel.ViewStatus.Generate(sheetViewModel);
-                    pageView.ViewModel.Reflect(ReflectType.TrackPreviousParagraph | ReflectType.OnCreate);
+
+                    if (pageView.SelectedRows.Count() > 0)
+                        pageView.ViewModel.Reflect(ReflectType.TrackPreviousParagraph | ReflectType.OnCreate | ReflectType.OnSelectionChanged, ReflectReason.None);
+                    else
+                        pageView.ViewModel.Reflect(ReflectType.TrackPreviousParagraph | ReflectType.OnCreate, ReflectReason.None);
                 }
             }
             else
@@ -115,7 +119,11 @@ namespace FlexTable.ViewModel
                     PageView pageView = ExplorationViewModel.SelectedPageViews.Last();
                     if (pageView.ViewModel.ViewStatus != viewStatus)
                         pageView.ViewModel.ViewStatus.Generate(sheetViewModel);
-                    pageView.ViewModel.Reflect(ReflectType.TrackPreviousParagraph | ReflectType.OnCreate);
+
+                    if (pageView.SelectedRows.Count() > 0)
+                        pageView.ViewModel.Reflect(ReflectType.TrackPreviousParagraph | ReflectType.OnCreate | ReflectType.OnSelectionChanged, ReflectReason.None);
+                    else
+                        pageView.ViewModel.Reflect(ReflectType.TrackPreviousParagraph | ReflectType.OnCreate, ReflectReason.None);
                 }
             }
         }
@@ -148,7 +156,7 @@ namespace FlexTable.ViewModel
 
             var dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
 
-            ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[1]);
+            ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[0]);
 
             DispatcherTimer dispatcherTimer = new DispatcherTimer();
             dispatcherTimer.Tick += (sender, e) =>
@@ -157,8 +165,10 @@ namespace FlexTable.ViewModel
                 ExplorationViewModel.TopPageView.ViewModel.State = PageViewModel.PageViewState.Selected;
                 ExplorationViewModel.PageViewStateChanged(ExplorationViewModel.TopPageView.ViewModel, ExplorationViewModel.TopPageView);
 
+                return;
+
                 PageView topPageView = ExplorationViewModel.SelectedPageViews.Last();
-                topPageView.SelectionChanged(null, sheetViewModel.FilteredRows.Where((r, index) => index < 50).ToList());
+                topPageView.SelectionChanged(null, sheetViewModel.FilteredRows.Where((r, index) => index < 50).ToList(), SelectionChangedType.Add, ReflectReason.ChartSelection);
 
                 return;
                 ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[3]);
