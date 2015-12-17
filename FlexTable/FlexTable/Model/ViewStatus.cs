@@ -56,12 +56,14 @@ namespace FlexTable.Model
         public Boolean IsCnNn => NumericalCount >= 1;
 
         public Boolean IsCn => CategoricalCount >= 1;
+        public Boolean IsOnlyCn => CategoricalCount >= 1 && NumericalCount == 0;
 
         public ColumnViewModel FirstColumn => selectedColumnViewModels.First();
         public ColumnViewModel LastColumn => selectedColumnViewModels.Last();
         public ColumnViewModel FirstCategorical => selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).First();
         public ColumnViewModel SecondCategorical => selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).ElementAt(1);
         public ColumnViewModel ThirdCategorical => selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).ElementAt(2);
+        public ColumnViewModel LastCategorical => selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).Last();
 
         public ColumnViewModel FirstNumerical => selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical).First();
         public ColumnViewModel SecondNumerical => selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical).ElementAt(1);

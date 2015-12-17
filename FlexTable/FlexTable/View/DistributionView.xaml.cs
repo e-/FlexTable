@@ -78,7 +78,7 @@ namespace FlexTable.View
                     ColumnViewModel = numerical,
                     Value = d.Rows.Count(),
                     EnvelopeValue = d.Rows.Count(),
-                    Rows = d.Rows,
+                    Rows = null,
                     EnvelopeRows = d.Rows
                 }).ToList();
         }

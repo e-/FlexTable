@@ -129,6 +129,8 @@ namespace FlexTable.ViewModel
                         String content = bin.ToString();
                         Border border = GetNewBorder(content);
 
+                        (border.Child as TextBlock).Foreground = ViewStatus.Category10FirstSolidColorBrush;
+
                         children.Add(border);
                         Grid.SetRow(border, 1 + i);
                         Grid.SetColumn(border, j++);
@@ -232,8 +234,10 @@ namespace FlexTable.ViewModel
 
                 Int32 rowN = groupedRows.Count + 1, // 테이블 전체 로우의 개수
                       columnN = selectedColumnViewModels.Count/* + 1 + 1*/; // 테이블 전체 컬럼의 개수
+                Boolean isOnlyCn = viewStatus.IsOnlyCn;
 
                 Int32 i, index, j;
+                if (isOnlyCn) columnN ++;
 
                 // 개수만큼 추가 컬럼 및 로우 정의 추가. 이중선 말고는 별 특별한 점 없음.
                 for (i = 0; i < rowN; ++i)
@@ -270,8 +274,28 @@ namespace FlexTable.ViewModel
                     Grid.SetColumn(border, index++);
                 }
 
+                if(isOnlyCn)
+                {
+                    Border border = new Border()
+                    {
+                        Style = pivotTableView.Resources["ColumnHeaderBorderStyle"] as Style
+                    };
+                    TextBlock textBlock = new TextBlock()
+                    {
+                        Text = "Count",
+                        Style = pivotTableView.Resources["ColumnHeaderValueTextStyle"] as Style
+                    };
+                    border.Child = textBlock;
+
+                    children.Add(border);
+                    Grid.SetRow(border, 0);
+                    Grid.SetColumn(border, columnN - 1);
+                }
+
                 // 데이터 넣기
                 i = 0;
+                ColumnViewModel lastCategorical = viewStatus.LastCategorical;
+
                 foreach (RowViewModel rowViewModel in groupedRowViewModels.Take(MaximumRowNumber))
                 {
                     j = 0;
@@ -280,10 +304,22 @@ namespace FlexTable.ViewModel
                         Border border = GetNewBorder(rowViewModel.Cells[columnViewModel.Index].Content);
 
                         children.Add(border);
-                        (border.Child as TextBlock).Foreground = new SolidColorBrush(rowViewModel.Color);
+
+                        if(columnViewModel == lastCategorical)
+                            (border.Child as TextBlock).Foreground = new SolidColorBrush(rowViewModel.Color);
 
                         Grid.SetRow(border, 1 + i);
                         Grid.SetColumn(border, j++);
+                    }
+
+                    if(isOnlyCn)
+                    {
+                        Border border = GetNewBorder(rowViewModel.Rows.Count().ToString());
+
+                        children.Add(border);
+
+                        Grid.SetRow(border, 1 + i);
+                        Grid.SetColumn(border, columnN - 1);
                     }
                     i++;
                 }

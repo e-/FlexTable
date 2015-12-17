@@ -152,7 +152,7 @@ namespace FlexTable.ViewModel
 
                 if (onSelectionChanged)
                 {
-                    SetFrequencyHistogramSelection(ViewStatus.FirstCategorical, groupedRows, pageView.SelectedRows);
+                    SetFrequencyHistogramSelection(ViewStatus.FirstCategorical, pageView.SelectedRows);
                 }
 
                 if (onSelectionChanged && !onCreate) pageView.BarChart.Update(true);
@@ -181,9 +181,26 @@ namespace FlexTable.ViewModel
             }
             else if (ViewStatus.IsCN)
             {
-                DrawBarChart(ViewStatus.FirstCategorical, ViewStatus.FirstNumerical, groupedRows);
-                DrawLineChart(ViewStatus.FirstCategorical, ViewStatus.FirstNumerical, groupedRows);
-                DrawPivotTable();
+                if (onCreate)
+                {
+                    DrawBarChart(ViewStatus.FirstCategorical, ViewStatus.FirstNumerical, groupedRows);
+                    DrawLineChart(ViewStatus.FirstCategorical, ViewStatus.FirstNumerical, groupedRows);
+                    DrawPivotTable();
+                }
+
+                if (onSelectionChanged)
+                {
+                    SetBarChartSelection(ViewStatus.FirstCategorical, ViewStatus.FirstNumerical, pageView.SelectedRows);
+                }
+
+                if (onSelectionChanged && !onCreate)
+                {
+                    pageView.BarChart.Update(true);
+                }
+                else
+                {
+                    pageView.BarChart.Update(reason != ReflectReason.FilterOut && reason != ReflectReason.None);
+                }
 
                 firstChartTag = ViewStatus.FirstCategorical.CategoricalType == CategoricalType.Ordinal ? pageView.LineChart.Tag : pageView.BarChart.Tag;
             }
@@ -811,7 +828,7 @@ namespace FlexTable.ViewModel
             if (groupedRows.Count > BarChartMaximumRecordNumber) IsBarChartWarningVisible = true;
         }
 
-        void SetFrequencyHistogramSelection(ColumnViewModel categorical, List<GroupedRows> groupedRows, IEnumerable<Row> selectedRows)
+        void SetFrequencyHistogramSelection(ColumnViewModel categorical, IEnumerable<Row> selectedRows)
         {
             foreach(BarChartDatum barChartDatum in pageView.BarChart.Data)
             {
@@ -1037,13 +1054,31 @@ namespace FlexTable.ViewModel
                 {
                     Key = g.Keys[categorical],
                     Value = numerical.AggregativeFunction.Aggregate(g.Rows.Select(r => (Double)r.Cells[numerical.Index].Content)),
-                    Rows = g.Rows,
+                    EnvelopeValue = numerical.AggregativeFunction.Aggregate(g.Rows.Select(r => (Double)r.Cells[numerical.Index].Content)),
+                    Rows = null,
+                    EnvelopeRows = g.Rows,
                     ColumnViewModel = categorical
                 })
                 .Take(BarChartMaximumRecordNumber).ToList();
 
             if (groupedRows.Count > BarChartMaximumRecordNumber) IsBarChartWarningVisible = true;
-            pageView.BarChart.Update(false);
+        }
+
+        void SetBarChartSelection(ColumnViewModel categorical, ColumnViewModel numerical, IEnumerable<Row> selectedRows)
+        {
+            foreach (BarChartDatum barChartDatum in pageView.BarChart.Data)
+            {
+                if (selectedRows.Count() == 0)
+                {
+                    barChartDatum.Rows = null;
+                    barChartDatum.Value = barChartDatum.EnvelopeValue;
+                }
+                else
+                {
+                    barChartDatum.Rows = barChartDatum.EnvelopeRows.Intersect(selectedRows).ToList();
+                    barChartDatum.Value = numerical.AggregativeFunction.Aggregate(barChartDatum.Rows.Select(r => (Double)r.Cells[numerical.Index].Content));
+                }
+            }
         }
 
         void DrawLineChart(ColumnViewModel categorical, ColumnViewModel numerical, List<GroupedRows> groupedRows) // 라인 하나

@@ -300,8 +300,9 @@ namespace d3.Component
                             );
 
                         tickLabel.SetValue(canvasSecondary, Orientation == Orientations.Horizontal ? (24 - tickLabel.ActualHeight) / 2 : -tickLabel.ActualWidth - 10);
+
+                        index++;
                     }
-                    index++;
                 }
                 else
                 {
@@ -397,7 +398,6 @@ namespace d3.Component
 
                     axisStoryboard.Children.Add(
                         Util.GenerateDoubleAnimation(tickMarker, "Opacity", 1)
-
                         );
                 }
                 else
