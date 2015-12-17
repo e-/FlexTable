@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace FlexTable.Crayon
-{
+{    
     class Key
     {
         public Object Key1;

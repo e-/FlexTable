@@ -646,6 +646,7 @@ namespace FlexTable.ViewModel
         /// <returns></returns>
         private AnimationScenario CreateTableAnimation(ViewStatus viewStatus)
         {
+            return AnimationScenario.None;
             if (stashedViewStatus == null) return AnimationScenario.None;
             AnimationHint hint = stashedViewStatus.AnimationHint;
             if (hint == null) return AnimationScenario.None;

@@ -159,6 +159,7 @@
     </Compile>
     <Compile Include="Crayon\Chart\ScatterplotDatum.cs" />
     <Compile Include="Crayon\Const.cs" />
+    <Compile Include="Crayon\Event.cs" />
     <Compile Include="Crayon\Key.cs" />
     <Compile Include="IMainPage.cs" />
     <Compile Include="MainPage.xaml.cs">

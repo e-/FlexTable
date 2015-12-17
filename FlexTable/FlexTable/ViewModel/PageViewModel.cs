@@ -14,13 +14,22 @@ using d3.ColorScheme;
 
 namespace FlexTable.ViewModel
 {
+    [Flags]
+    public enum ReflectType
+    {
+        Default = 0,
+        TrackPreviousParagraph = 1 << 0,
+        OnCreate = 1 << 1,
+        OnSelectionChanged = 1 << 2
+    }
+
     public partial class PageViewModel : NotifyViewModel
     {
-        const Int32 BarChartMaximumRecordNumber = 12;
-        const Int32 GroupedBarChartMaximumRecordNumber = 48;
-        const Int32 LineChartMaximumSeriesNumber = BarChartMaximumRecordNumber;
-        const Int32 LineChartMaximumPointNumberInASeries = 20;
-        const Int32 ScatterplotMaximumCategoryNumber = BarChartMaximumRecordNumber;
+        public const Int32 BarChartMaximumRecordNumber = 12;
+        public const Int32 GroupedBarChartMaximumRecordNumber = 48;
+        public const Int32 LineChartMaximumSeriesNumber = BarChartMaximumRecordNumber;
+        public const Int32 LineChartMaximumPointNumberInASeries = 20;
+        public const Int32 ScatterplotMaximumCategoryNumber = BarChartMaximumRecordNumber;
 
         public enum PageViewState { Empty, Previewing, Selected, Undoing }
 
@@ -120,33 +129,44 @@ namespace FlexTable.ViewModel
         /// 페이지뷰의 상태가 바꾸면 우선 exploration view에 보고를 한 후 거기서 reflect를 호출함. exploration view에 호출하지 않아도 될 때만 직접 reflect를 해야함
         /// </summary>
         /// <param name="trackPreviousParagraph"></param>
-        public void Reflect(Boolean trackPreviousParagraph)
+        public void Reflect(ReflectType reflectType)
         {
-            IsBarChartVisible = false;
-            IsLineChartVisible = false;
-            IsDescriptiveStatisticsVisible = false;
-            IsDistributionVisible = false;
-            IsGroupedBarChartVisible = false;
-            IsScatterplotVisible = false;
-            IsPivotTableVisible = false;
-            IsCorrelationStatisticsVisible = false;
+            Boolean trackPreviousParagraph = reflectType.HasFlag(ReflectType.TrackPreviousParagraph);
+            Boolean onCreate = reflectType.HasFlag(ReflectType.OnCreate);
+            Boolean onSelectionChanged = reflectType.HasFlag(ReflectType.OnSelectionChanged);
 
-            IsBarChartWarningVisible = false;
-            IsLineChartWarningVisible = false;
-            IsGroupedBarChartWarningVisible = false;
-            IsScatterplotWarningVisible = false;
+            if (onCreate)
+            {
+                IsBarChartVisible = false;
+                IsLineChartVisible = false;
+                IsDescriptiveStatisticsVisible = false;
+                IsDistributionVisible = false;
+                IsGroupedBarChartVisible = false;
+                IsScatterplotVisible = false;
+                IsPivotTableVisible = false;
+                IsCorrelationStatisticsVisible = false;
 
-            List<ColumnViewModel> selectedColumnViewModels = ViewStatus.SelectedColumnViewModels;
-            List<ColumnViewModel> numericalColumns = selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical).ToList();
-            List<ColumnViewModel> categoricalColumns = selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).ToList();
+                IsBarChartWarningVisible = false;
+                IsLineChartWarningVisible = false;
+                IsGroupedBarChartWarningVisible = false;
+                IsScatterplotWarningVisible = false;
+            }
 
             List<GroupedRows> groupedRows = ViewStatus.GroupedRows;
             Object firstChartTag = "dummy tag wer";
 
             if (ViewStatus.IsC)
             {
-                DrawFrequencyHistogram(ViewStatus.FirstCategorical, groupedRows);
-                DrawPivotTable();
+                if (onCreate)
+                {
+                    DrawFrequencyHistogram(ViewStatus.FirstCategorical, groupedRows);
+                    DrawPivotTable();
+                }
+
+                if (onSelectionChanged)
+                {
+                    SetFrequencyHistogramSelection(ViewStatus.FirstCategorical, groupedRows, pageView.SelectedRows);
+                }
             }
             else if (ViewStatus.IsN)
             {
@@ -189,7 +209,7 @@ namespace FlexTable.ViewModel
             else if (ViewStatus.IsCNN)
             {
                 // 스캐터플롯을 그린다.
-                DrawScatterplot(categoricalColumns.First(), numericalColumns[0], numericalColumns[1]);
+                DrawScatterplot(ViewStatus.FirstCategorical, ViewStatus.FirstNumerical, ViewStatus.SecondNumerical);
 
                 if(ViewStatus.FirstNumerical.Unit == ViewStatus.SecondNumerical.Unit) // 둘의 단위가 같으면 그룹 바 차트 가능
                 {
@@ -778,10 +798,37 @@ namespace FlexTable.ViewModel
             pageView.BarChart.HorizontalAxisTitle = categorical.Name;
             pageView.BarChart.VerticalAxisTitle = String.Format("Frequency");
             pageView.BarChart.Data = groupedRows
-                .Select(grs => new BarChartDatum() { Key = grs.Keys[categorical], Value = grs.Rows.Count, Rows = grs.Rows, ColumnViewModel = categorical })
+                .Select(grs => new BarChartDatum()
+                {
+                    Key = grs.Keys[categorical],
+                    Value = grs.Rows.Count,
+                    EnvelopeValue = grs.Rows.Count,
+                    Rows = null,
+                    EnvelopeRows = grs.Rows,
+                    ColumnViewModel = categorical
+                })
                 .Take(BarChartMaximumRecordNumber).ToList();
             if (groupedRows.Count > BarChartMaximumRecordNumber) IsBarChartWarningVisible = true;
-            pageView.BarChart.Update();
+            pageView.BarChart.Update(false);
+        }
+
+        void SetFrequencyHistogramSelection(ColumnViewModel categorical, List<GroupedRows> groupedRows, IEnumerable<Row> selectedRows)
+        {
+            foreach(BarChartDatum barChartDatum in pageView.BarChart.Data)
+            {
+                if (selectedRows.Count() == 0)
+                {
+                    barChartDatum.Rows = null;
+                    barChartDatum.Value = barChartDatum.EnvelopeValue;
+                }
+                else
+                {
+                    barChartDatum.Rows = barChartDatum.EnvelopeRows.Intersect(selectedRows).ToList();
+                    barChartDatum.Value = barChartDatum.Rows.Count();
+                }
+            }
+
+            pageView.BarChart.Update(true);
         }
 
         void DrawDescriptiveStatistics(ColumnViewModel numerical)
@@ -986,7 +1033,7 @@ namespace FlexTable.ViewModel
                 .Take(BarChartMaximumRecordNumber).ToList();
 
             if (groupedRows.Count > BarChartMaximumRecordNumber) IsBarChartWarningVisible = true;
-            pageView.BarChart.Update();
+            pageView.BarChart.Update(false);
         }
 
         void DrawLineChart(ColumnViewModel categorical, ColumnViewModel numerical, List<GroupedRows> groupedRows) // 라인 하나
@@ -1290,5 +1337,7 @@ namespace FlexTable.ViewModel
             pageView.CorrelationStatisticsView.DataContext = result;
         }
         #endregion
+
+        
     }
 }

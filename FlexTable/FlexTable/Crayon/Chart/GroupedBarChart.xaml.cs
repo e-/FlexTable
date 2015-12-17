@@ -238,12 +238,12 @@ namespace FlexTable.Crayon.Chart
         private Double DragToFilterOpacity = 1;
         private GroupedBarChartDatum DragToFilterFocusedBar = null;
 
-        public event Event.EventHandler SelectionChanged;
+        public event d3.Event.EventHandler SelectionChanged;
         private List<Row> selectedRows = new List<Row>();
         public List<Row> SelectedRows => selectedRows;
 
-        public event Event.EventHandler FilterIn;
-        public event Event.EventHandler FilterOut;
+        public event d3.Event.EventHandler FilterIn;
+        public event d3.Event.EventHandler FilterOut;
 
         Drawable drawable = new Drawable()
         {
@@ -347,10 +347,10 @@ namespace FlexTable.Crayon.Chart
             DragToFilterFocusedBar = datum;
             DragToFilterOpacity = 1 - delta / Const.DragToFilterThreshold;
 
-            RectangleElement.Update();
+            RectangleElement.Update(TransitionType.None);
             //ForegroundRectangleElement.Update();
             HorizontalAxis.Update();
-            IndicatorTextElement.Update();
+            IndicatorTextElement.Update(TransitionType.None);
         }
 
 
@@ -384,10 +384,10 @@ namespace FlexTable.Crayon.Chart
             DragToFilterFocusedBar = null;
             DragToFilterOpacity = 1;
 
-            RectangleElement.Update();
+            RectangleElement.Update(TransitionType.None);
             //ForegroundRectangleElement.Update();
             HorizontalAxis.Update();
-            IndicatorTextElement.Update();
+            IndicatorTextElement.Update(TransitionType.None);
         }
 
         private void Drawable_StrokeAdded(InkManager inkManager)
@@ -460,12 +460,12 @@ namespace FlexTable.Crayon.Chart
                     if (SelectionChanged != null)
                         SelectionChanged(this, null, selectedRows, index);
 
-                    RectangleElement.Update(true);
-                    IndicatorTextElement.Update(true);
+                    RectangleElement.Update(TransitionType.All);
+                    IndicatorTextElement.Update(TransitionType.Opacity);
                     if (LegendVisibility == Visibility.Visible)
                     {
-                        LegendRectangleElement.Update(true);
-                        LegendTextElement.Update(true);
+                        LegendRectangleElement.Update(TransitionType.All);
+                        LegendTextElement.Update(TransitionType.Opacity);
                     }
                 }
                 
@@ -502,12 +502,12 @@ namespace FlexTable.Crayon.Chart
                 if (SelectionChanged != null)
                     SelectionChanged(this, e, selectedRows, index);
 
-                RectangleElement.Update(true);
-                IndicatorTextElement.Update(true);
+                RectangleElement.Update(TransitionType.All);
+                IndicatorTextElement.Update(TransitionType.Opacity);
                 if (LegendVisibility == Visibility.Visible)
                 {
-                    LegendRectangleElement.Update(true);
-                    LegendTextElement.Update(true);
+                    LegendRectangleElement.Update(TransitionType.All);
+                    LegendTextElement.Update(TransitionType.Opacity);
                 }
                 args.Handled = true;
             }
@@ -537,12 +537,12 @@ namespace FlexTable.Crayon.Chart
                 if (SelectionChanged != null)
                     SelectionChanged(this, e, selectedRows, index);                
 
-                RectangleElement.Update(true);
-                IndicatorTextElement.Update(true);
+                RectangleElement.Update(TransitionType.All);
+                IndicatorTextElement.Update(TransitionType.Opacity);
                 if (LegendVisibility == Visibility.Visible)
                 {
-                    LegendRectangleElement.Update(true);
-                    LegendTextElement.Update(true);
+                    LegendRectangleElement.Update(TransitionType.All);
+                    LegendTextElement.Update(TransitionType.Opacity);
                 }
                 args.Handled = true;
             }
@@ -582,10 +582,10 @@ namespace FlexTable.Crayon.Chart
                 }
 
                 LegendRectangleElement.Data = new Data() { List = LegendData.Select(d => d as Object).ToList() };
-                LegendRectangleElement.Update();
+                LegendRectangleElement.Update(TransitionType.None);
 
                 LegendTextElement.Data = new Data() { List = LegendData.Select(d => d as Object).ToList() };
-                LegendTextElement.Update();
+                LegendTextElement.Update(TransitionType.None);
 
                 LegendAreaWidth = Math.Max(LegendTextElement.MaxActualWidth + Const.LegendPatchWidth + Const.LegendPatchSpace + Const.PaddingRight, Const.MinimumLegendWidth);
             }
@@ -707,10 +707,10 @@ namespace FlexTable.Crayon.Chart
 
             IndicatorTextElement.Data = new Data() { List = ChartData.Select(d => d as Object).ToList() };
 
-            LegendHandleRectangleElement.Update();
-            HandleRectangleElement.Update();
-            RectangleElement.Update();
-            IndicatorTextElement.Update();
+            LegendHandleRectangleElement.Update(TransitionType.None);
+            HandleRectangleElement.Update(TransitionType.None);
+            RectangleElement.Update(TransitionType.None);
+            IndicatorTextElement.Update(TransitionType.None);
             HorizontalAxis.Update();
             VerticalAxis.Update();
         }
@@ -722,25 +722,25 @@ namespace FlexTable.Crayon.Chart
             if (withHandler && SelectionChanged != null)
                 SelectionChanged(this, null, selectedRows, 0);
 
-            RectangleElement.Update(true);
-            IndicatorTextElement.Update(true);
+            RectangleElement.Update(TransitionType.All);
+            IndicatorTextElement.Update(TransitionType.Opacity);
             if (LegendVisibility == Visibility.Visible)
             {
-                LegendRectangleElement.Update(true);
-                LegendTextElement.Update(true);
+                LegendRectangleElement.Update(TransitionType.All);
+                LegendTextElement.Update(TransitionType.Opacity);
             }
         }
 
         public void ImportSelection(IEnumerable<Row> importedRows)
         {
             selectedRows = importedRows.ToList();
-            RectangleElement.Update(false);
+            RectangleElement.Update(TransitionType.None);
             //ForegroundRectangleElement.Update(true);
-            IndicatorTextElement.Update(false);
+            IndicatorTextElement.Update(TransitionType.None);
             if (LegendVisibility == Visibility.Visible)
             {
-                LegendRectangleElement.Update(false);
-                LegendTextElement.Update(false);
+                LegendRectangleElement.Update(TransitionType.None);
+                LegendTextElement.Update(TransitionType.None);
             }
         }
     }

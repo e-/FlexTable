@@ -105,7 +105,7 @@ namespace FlexTable.ViewModel
                 {
                     if (pageView.ViewModel.ViewStatus != viewStatus)
                         pageView.ViewModel.ViewStatus.Generate(sheetViewModel);
-                    pageView.ViewModel.Reflect(true);
+                    pageView.ViewModel.Reflect(ReflectType.TrackPreviousParagraph | ReflectType.OnCreate);
                 }
             }
             else
@@ -115,7 +115,7 @@ namespace FlexTable.ViewModel
                     PageView pageView = ExplorationViewModel.SelectedPageViews.Last();
                     if (pageView.ViewModel.ViewStatus != viewStatus)
                         pageView.ViewModel.ViewStatus.Generate(sheetViewModel);
-                    pageView.ViewModel.Reflect(true);
+                    pageView.ViewModel.Reflect(ReflectType.TrackPreviousParagraph | ReflectType.OnCreate);
                 }
             }
         }
@@ -148,7 +148,7 @@ namespace FlexTable.ViewModel
 
             var dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
 
-            ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[0]);
+            ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[1]);
 
             DispatcherTimer dispatcherTimer = new DispatcherTimer();
             dispatcherTimer.Tick += (sender, e) =>
@@ -157,7 +157,8 @@ namespace FlexTable.ViewModel
                 ExplorationViewModel.TopPageView.ViewModel.State = PageViewModel.PageViewState.Selected;
                 ExplorationViewModel.PageViewStateChanged(ExplorationViewModel.TopPageView.ViewModel, ExplorationViewModel.TopPageView);
 
-                //TableViewModel.SelectRowsByRange(0, 300);
+                PageView topPageView = ExplorationViewModel.SelectedPageViews.Last();
+                topPageView.SelectionChanged(null, sheetViewModel.FilteredRows.Where((r, index) => index < 50).ToList());
 
                 return;
                 ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[3]);

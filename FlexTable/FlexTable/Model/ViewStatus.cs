@@ -682,17 +682,40 @@ namespace FlexTable.Model
     {
         ViewStatus ViewStatus;
         SheetViewModel SheetViewModel;
+        IEnumerable<Row> FilteredRows;
+        IEnumerable<Row> SelectedRows;
 
         public RowViewModelComparer(SheetViewModel sheetViewModel, ViewStatus viewStatus)
         {
             SheetViewModel = sheetViewModel;
             ViewStatus = viewStatus;
+            FilteredRows = sheetViewModel.FilteredRows;
+            SelectedRows = null;
+        }
+
+        public RowViewModelComparer(SheetViewModel sheetViewModel, ViewStatus viewStatus, IEnumerable<Row> selectedRows)
+        {
+            SheetViewModel = sheetViewModel;
+            ViewStatus = viewStatus;
+            FilteredRows = sheetViewModel.FilteredRows;
+            SelectedRows = selectedRows;
         }
 
         Int32 GetSortDirection(ColumnViewModel cvm) => cvm.SortOption == SortOption.Descending ? -1 : 1;
 
         public int Compare(RowViewModel x, RowViewModel y)
         {
+            if(FilteredRows.Contains(x.Row) != FilteredRows.Contains(y.Row))
+            {
+                if (FilteredRows.Contains(x.Row)) return -1;
+                return 1;
+            }
+            if (SelectedRows.Contains(x.Row) != SelectedRows.Contains(y.Row))
+            {
+                if (SelectedRows.Contains(x.Row)) return -1;
+                return 1;
+            }
+
             IEnumerable<ColumnViewModel> sortAppliedColumnViewModels = SheetViewModel.ColumnViewModels.Where(cvm => cvm.SortOption != SortOption.None).OrderByDescending(cvm => cvm.SortPriority);
 
             foreach (ColumnViewModel columnViewModel in sortAppliedColumnViewModels)

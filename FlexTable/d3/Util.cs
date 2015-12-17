@@ -12,7 +12,7 @@ namespace d3
 {
     public class Util
     {
-        static QuarticEase qe = new QuarticEase() { EasingMode = EasingMode.EaseInOut };
+        static QuadraticEase qe = new QuadraticEase() { EasingMode = EasingMode.EaseInOut };
         static Duration duration = TimeSpan.FromMilliseconds(300);
         
         public static DoubleAnimation GenerateDoubleAnimation(DependencyObject obj, String path, double? to)
@@ -20,8 +20,8 @@ namespace d3
             DoubleAnimation da = new DoubleAnimation()
             {
                 To = to,
-                Duration = duration,
-                EasingFunction = qe
+                EasingFunction = qe,
+                Duration = duration
             };
 
             Storyboard.SetTarget(da, obj);

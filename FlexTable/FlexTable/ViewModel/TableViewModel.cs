@@ -19,6 +19,7 @@ using FlexTable.Model;
 using System.Threading;
 using Windows.UI.Core;
 using System.Collections.ObjectModel;
+using FlexTable.Crayon;
 
 namespace FlexTable.ViewModel
 {
@@ -205,8 +206,10 @@ namespace FlexTable.ViewModel
 
                 dispatcherTimer.Tick += (sender, e) =>
                 {
-                    tableUpdateCallback();
+                    
                 };
+
+                tableUpdateCallback();
 
                 dispatcherTimer.Interval = TimeSpan.FromMilliseconds(1);
             }
@@ -230,7 +233,7 @@ namespace FlexTable.ViewModel
             Int32 index = 0;
             if(SelectedRows != null) // 로우 선택 중
             {
-                AllRowViewModels.Sort(new RowViewModelComparer(SheetViewModel, viewStatus));
+                AllRowViewModels.Sort(new RowViewModelComparer(SheetViewModel, viewStatus, SelectedRows));
                 index = 0;
                 foreach (RowViewModel rowViewModel in AllRowViewModels)
                 {
@@ -366,18 +369,20 @@ namespace FlexTable.ViewModel
 
             if(State == TableViewState.AllRow)
             {
-                IEnumerable<Row> selectedRows = allRowViewModels.Where(rvm => startY <= rvm.Y && rvm.Y < endY).Select(rvm => rvm.Row);
-                topPageView.SelectionChanged(null, selectedRows);
+                IEnumerable<Row> filteredRows = SheetViewModel.FilteredRows;
+                IEnumerable<Row> selectedRows = allRowViewModels.Where(rvm => filteredRows.Contains(rvm.Row) && startY <= rvm.Y && rvm.Y < endY).Select(rvm => rvm.Row);
+                topPageView.SelectionChanged(null, selectedRows, SelectionChangedType.Add);
             }
             else if(State == TableViewState.GroupedRow)
             {
                 IEnumerable<Row> selectedRows = groupedRowViewModels.Where(rvm => startY <= rvm.Y && rvm.Y < endY).SelectMany(rvm => rvm.Rows);
-                topPageView.SelectionChanged(null, selectedRows);
+                topPageView.SelectionChanged(null, selectedRows, SelectionChangedType.Add);
             }
             else if(State == TableViewState.SelectedRow)
             {
-                IEnumerable<Row> selectedRows = allRowViewModels.Where(rvm => startY <= rvm.Y && rvm.Y < endY).Select(rvm => rvm.Row);
-                topPageView.SelectionChanged(null, selectedRows);
+                IEnumerable<Row> filteredRows = SheetViewModel.FilteredRows;
+                IEnumerable<Row> selectedRows = allRowViewModels.Where(rvm => filteredRows.Contains(rvm.Row) && startY <= rvm.Y && rvm.Y < endY).Select(rvm => rvm.Row);
+                topPageView.SelectionChanged(null, selectedRows, SelectionChangedType.Add);
             }
             else
             {

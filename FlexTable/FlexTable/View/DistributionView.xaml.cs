@@ -80,7 +80,7 @@ namespace FlexTable.View
                     Rows = d.Rows
                 }).ToList();
                    
-            HistogramElement.Update();
+            HistogramElement.Update(false);
         }
     }
 }

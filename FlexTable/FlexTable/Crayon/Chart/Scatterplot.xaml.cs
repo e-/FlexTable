@@ -160,13 +160,13 @@ namespace FlexTable.Crayon.Chart
 
         public Double LegendAreaWidth { get; set; } = 140;
 
-        public event Event.EventHandler SelectionChanged;
+        public event d3.Event.EventHandler SelectionChanged;
         private List<Row> selectedRows = new List<Row>();
         public List<Row> SelectedRows => selectedRows;
         private ColumnViewModel categoricalColumnViewModel;
 
-        public event Event.EventHandler FilterIn;
-        public event Event.EventHandler FilterOut;
+        public event d3.Event.EventHandler FilterIn;
+        public event d3.Event.EventHandler FilterOut;
         
         Drawable drawable = new Drawable()
         {
@@ -263,8 +263,8 @@ namespace FlexTable.Crayon.Chart
                 CircleElement.Update(true, false);
                 if (LegendVisibility == Visibility.Visible)
                 {
-                    LegendRectangleElement.Update(true);
-                    LegendTextElement.Update(true);
+                    LegendRectangleElement.Update(TransitionType.All);
+                    LegendTextElement.Update(TransitionType.Opacity);
                 }
                 args.Handled = true;
             }
@@ -318,8 +318,8 @@ namespace FlexTable.Crayon.Chart
                 CircleElement.Update(true, false);
                 if (LegendVisibility == Visibility.Visible)
                 {
-                    LegendRectangleElement.Update(true);
-                    LegendTextElement.Update(true);
+                    LegendRectangleElement.Update(TransitionType.All);
+                    LegendTextElement.Update(TransitionType.Opacity);
                 }
             }
 
@@ -342,10 +342,10 @@ namespace FlexTable.Crayon.Chart
             if (LegendVisibility == Visibility.Visible)
             {
                 LegendRectangleElement.Data = D3LegendData;
-                LegendRectangleElement.Update();
+                LegendRectangleElement.Update(TransitionType.None);
 
                 LegendTextElement.Data = D3LegendData;
-                LegendTextElement.Update();
+                LegendTextElement.Update(TransitionType.None);
 
                 LegendAreaWidth = LegendTextElement.MaxActualWidth + Const.LegendPatchWidth + Const.LegendPatchSpace + Const.PaddingRight;
             }
@@ -428,7 +428,7 @@ namespace FlexTable.Crayon.Chart
             LegendTextElement.Data = D3LegendData;
             LegendTextElement.Visibility = LegendVisibility;
 
-            LegendHandleRectangleElement.Update();
+            LegendHandleRectangleElement.Update(TransitionType.None);
             CircleElement.Update(useCircleTransition, true);
             HorizontalAxis.Update();
             VerticalAxis.Update();
@@ -444,8 +444,8 @@ namespace FlexTable.Crayon.Chart
             CircleElement.Update(true, false);
             if (LegendVisibility == Visibility.Visible)
             {
-                LegendRectangleElement.Update(true);
-                LegendTextElement.Update(true);
+                LegendRectangleElement.Update(TransitionType.All);
+                LegendTextElement.Update(TransitionType.Opacity);
             }
         }
 
@@ -456,8 +456,8 @@ namespace FlexTable.Crayon.Chart
             CircleElement.Update(false, false);
             if (LegendVisibility == Visibility.Visible)
             {
-                LegendRectangleElement.Update(false);
-                LegendTextElement.Update(false);
+                LegendRectangleElement.Update(TransitionType.None);
+                LegendTextElement.Update(TransitionType.None);
             }
         }
     }

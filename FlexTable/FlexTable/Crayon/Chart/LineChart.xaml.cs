@@ -197,9 +197,9 @@ namespace FlexTable.Crayon.Chart
 
         public Double LegendAreaWidth { get; set; } = 140;
 
-        public event Event.EventHandler SelectionChanged;
-        public event Event.EventHandler FilterIn;
-        public event Event.EventHandler FilterOut;
+        public event d3.Event.EventHandler SelectionChanged;
+        public event d3.Event.EventHandler FilterIn;
+        public event d3.Event.EventHandler FilterOut;
 
         /// <summary>
         /// BarChartDatum 의 key가 들어가야함
@@ -364,12 +364,12 @@ namespace FlexTable.Crayon.Chart
 
                     LineElement.Update(true);
                     CircleElement.Update(true, false);
-                    IndicatorTextElement.Update(true);
+                    IndicatorTextElement.Update(TransitionType.Opacity);
 
                     if (LegendVisibility == Visibility.Visible)
                     {
-                        LegendRectangleElement.Update(true);
-                        LegendTextElement.Update(true);
+                        LegendRectangleElement.Update(TransitionType.All);
+                        LegendTextElement.Update(TransitionType.Opacity);
                     }
                 }
             }
@@ -402,12 +402,12 @@ namespace FlexTable.Crayon.Chart
 
                 LineElement.Update(true);
                 CircleElement.Update(true, false);
-                IndicatorTextElement.Update(true);
+                IndicatorTextElement.Update(TransitionType.Opacity);
 
                 if (LegendVisibility == Visibility.Visible)
                 {
-                    LegendRectangleElement.Update(true);
-                    LegendTextElement.Update(true);
+                    LegendRectangleElement.Update(TransitionType.All);
+                    LegendTextElement.Update(TransitionType.Opacity);
                 }
                 args.Handled = true;
             }
@@ -430,10 +430,10 @@ namespace FlexTable.Crayon.Chart
             if (LegendVisibility == Visibility.Visible)
             {
                 LegendRectangleElement.Data = D3Data;
-                LegendRectangleElement.Update();
+                LegendRectangleElement.Update(TransitionType.None);
 
                 LegendTextElement.Data = D3Data;
-                LegendTextElement.Update();
+                LegendTextElement.Update(TransitionType.None);
 
                 LegendAreaWidth = Math.Max(LegendTextElement.MaxActualWidth + Const.LegendPatchWidth + Const.LegendPatchSpace + Const.PaddingRight, Const.MinimumLegendWidth);
             }
@@ -548,8 +548,8 @@ namespace FlexTable.Crayon.Chart
             HandleLineElement.Update();
             LineElement.Update();
             CircleElement.Update(useCircleTransition, false);
-            LegendHandleRectangleElement.Update();
-            IndicatorTextElement.Update();
+            LegendHandleRectangleElement.Update(TransitionType.None);
+            IndicatorTextElement.Update(TransitionType.None);
             HorizontalAxis.Update();
             VerticalAxis.Update();
 
@@ -580,11 +580,11 @@ namespace FlexTable.Crayon.Chart
 
             LineElement.Update(true);
             CircleElement.Update(true, false);
-            IndicatorTextElement.Update(true);
+            IndicatorTextElement.Update(TransitionType.Opacity);
             if (LegendVisibility == Visibility.Visible)
             {
-                LegendRectangleElement.Update(true);
-                LegendTextElement.Update(true);
+                LegendRectangleElement.Update(TransitionType.All);
+                LegendTextElement.Update(TransitionType.Opacity);
             }
         }
 
@@ -594,11 +594,11 @@ namespace FlexTable.Crayon.Chart
 
             LineElement.Update(false);
             CircleElement.Update(false, false);
-            IndicatorTextElement.Update(false);
+            IndicatorTextElement.Update(TransitionType.None);
             if (LegendVisibility == Visibility.Visible)
             {
-                LegendRectangleElement.Update(false);
-                LegendTextElement.Update(false);
+                LegendRectangleElement.Update(TransitionType.None);
+                LegendTextElement.Update(TransitionType.None);
             }
         }
     }

@@ -49,4 +49,11 @@ namespace FlexTable.Crayon
                 (r1.Y >= r2.Y + r2.Height && r1.Y + r1.Height >= r2.Y + r2.Height));
         }
     }
+
+    public enum SelectionChangedType
+    {
+        Add,
+        Remove,
+        Clear
+    }
 }

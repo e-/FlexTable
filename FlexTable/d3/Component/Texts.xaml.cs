@@ -22,7 +22,7 @@ namespace d3.Component
     public sealed partial class Texts : UserControl
     {
         public static readonly DependencyProperty DataProperty =
-            DependencyProperty.Register("Data", typeof(Data), typeof(Texts), new PropertyMetadata(null, new PropertyChangedCallback(DataChanged)));
+            DependencyProperty.Register("Data", typeof(Data), typeof(Texts), new PropertyMetadata(null));
 
         public Data Data
         {
@@ -92,13 +92,7 @@ namespace d3.Component
             get { return (Func<TextBlock, Object, Int32, Double>)GetValue(OpacityGetterProperty); }
             set { SetValue(OpacityGetterProperty, value); }
         }
-
-        private static void DataChanged(DependencyObject source, DependencyPropertyChangedEventArgs e)
-        {
-            Texts textBlocks = source as Texts;
-            textBlocks.Update();
-        }
-
+        
         public Double MaxActualWidth { get { 
             return textBlocks.Select(tb => tb.ActualWidth).Max(); 
         } }
@@ -113,101 +107,81 @@ namespace d3.Component
             this.InitializeComponent();
         }
 
-        public void Update()
+        public void Update(TransitionType transitionType)
         {
-            Update(false);
-        }
+            Storyboard sb = new Storyboard();
 
-        public void Update(Boolean allowTransition)
-        {
-            if (allowTransition)
+            Int32 index = 0;
+
+            foreach (Object datum in Data.List)
             {
-                if (previousStoryboard != null) previousStoryboard.Pause();
-                Storyboard sb = new Storyboard();
+                Border border;
+                TextBlock textBlock;
 
-                Int32 index = 0;
-                foreach (Object datum in Data.List)
+                if (index >= TextCanvas.Children.Count) // 없는 사각형은 새로 만듦
                 {
-                    TextBlock textBlock = textBlocks[index];
-                    
-                    if(OpacityGetter != null && textBlock.Opacity != OpacityGetter(textBlock, datum, index))
+                    border = new Border();
+
+                    if (WidthGetter != null) border.Width = WidthGetter(datum, index);
+                    if (HeightGetter != null) border.Height = HeightGetter(datum, index);
+
+                    textBlock = new TextBlock()
+                    {
+                        HorizontalAlignment = HorizontalAlignment.Center,
+                        VerticalAlignment = VerticalAlignment.Center,
+                        Text = TextGetter(datum, index),
+                        Foreground = ColorGetter == null ? new SolidColorBrush(Colors.Black) : new SolidColorBrush(ColorGetter(datum, index))
+                    };
+
+                    border.Child = textBlock;
+
+                    Canvas.SetLeft(border, XGetter(datum, index));
+                    Canvas.SetTop(border, YGetter(datum, index));
+
+                    TextCanvas.Children.Add(border);
+                    textBlocks.Add(textBlock);
+
+                    border.Measure(new Size(Double.MaxValue, Double.MaxValue));
+
+                    textBlock.Opacity = OpacityGetter(textBlock, datum, index);
+                }
+                else
+                {
+                    border = TextCanvas.Children[index] as Border;
+                    textBlock = border.Child as TextBlock;
+
+                    if (WidthGetter != null) border.Width = WidthGetter(datum, index);
+                    if (HeightGetter != null) border.Height = HeightGetter(datum, index);
+                    textBlock.Text = TextGetter(datum, index);
+                    textBlock.Foreground = ColorGetter == null ? new SolidColorBrush(Colors.Black) : new SolidColorBrush(ColorGetter(datum, index));
+                    Canvas.SetLeft(border, XGetter(datum, index));
+                    Canvas.SetTop(border, YGetter(datum, index));
+
+                    //textBlock.Measure(new Size(10000, 10000));
+                    if (transitionType.HasFlag(TransitionType.Opacity) && OpacityGetter != null && textBlock.Opacity != OpacityGetter(textBlock, datum, index))
                     {
                         sb.Children.Add(Util.GenerateDoubleAnimation(textBlock, "Opacity", OpacityGetter(textBlock, datum, index)));
                     }
-                    //TODO
-                    /*Border border = new Border();
-
-                    if (WidthGetter != null) border.Width = WidthGetter(datum, index);
-                    if (HeightGetter != null) border.Height = HeightGetter(datum, index);
-
-                    TextBlock textBlock = new TextBlock()
+                    else
                     {
-                        HorizontalAlignment = HorizontalAlignment.Center,
-                        VerticalAlignment = VerticalAlignment.Center,
-                        Text = TextGetter(datum, index),
-                        Foreground = ColorGetter == null ? new SolidColorBrush(Colors.Black) : new SolidColorBrush(ColorGetter(datum, index))
-                    };
-
-                    border.Child = textBlock;
-
-                    Canvas.SetLeft(border, XGetter(datum, index));
-                    Canvas.SetTop(border, YGetter(datum, index));
-
-                    TextCanvas.Children.Add(border);
-                    textBlocks.Add(textBlock);
-                    border.Measure(new Size(Double.MaxValue, Double.MaxValue));
-
-                    if (OpacityGetter != null)
-                    {
-                        textBlock.Measure(new Size(10000, 10000));
-                        Double opacity = OpacityGetter(textBlock, datum, index);
-                        textBlock.Opacity = opacity;
-                    }*/
-
-                    index++;
-                }
-                previousStoryboard = sb;
-                sb.Begin();
-            }
-            else
-            {
-                TextCanvas.Children.Clear();
-                textBlocks.Clear();
-
-                Int32 index = 0;
-                foreach (Object datum in Data.List)
-                {
-                    Border border = new Border();
-
-                    if (WidthGetter != null) border.Width = WidthGetter(datum, index);
-                    if (HeightGetter != null) border.Height = HeightGetter(datum, index);
-
-                    TextBlock textBlock = new TextBlock()
-                    {
-                        HorizontalAlignment = HorizontalAlignment.Center,
-                        VerticalAlignment = VerticalAlignment.Center,
-                        Text = TextGetter(datum, index),
-                        Foreground = ColorGetter == null ? new SolidColorBrush(Colors.Black) : new SolidColorBrush(ColorGetter(datum, index))
-                    };
-
-                    border.Child = textBlock;
-
-                    Canvas.SetLeft(border, XGetter(datum, index));
-                    Canvas.SetTop(border, YGetter(datum, index));
-
-                    TextCanvas.Children.Add(border);
-                    textBlocks.Add(textBlock);
-                    border.Measure(new Size(Double.MaxValue, Double.MaxValue));
-
-                    if (OpacityGetter != null)
-                    {
-                        textBlock.Measure(new Size(10000, 10000));
-                        Double opacity = OpacityGetter(textBlock, datum, index);
-                        textBlock.Opacity = opacity;
+                        textBlock.Opacity = OpacityGetter(textBlock, datum, index);
                     }
-                    index++;
                 }
+                
+                index++;
             }
+
+            for (Int32 i = TextCanvas.Children.Count - 1; i >= index; --i)
+            {
+                TextCanvas.Children.RemoveAt(i);
+            }
+
+            if (previousStoryboard != null) previousStoryboard.Pause();
+            if (sb.Children.Count > 0)
+            {
+                sb.Begin();
+                previousStoryboard = sb;
+            }            
         }
     }
 }

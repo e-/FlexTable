@@ -260,7 +260,7 @@ namespace FlexTable.View
                 ActivatedScrollViewer = SelectedRowScrollViewer;
                 ScrollToOrigin(ActivatedScrollViewer);
 
-                var sr = ViewModel.SelectedRows.ToList();
+                IEnumerable<Row> filteredRows = ViewModel.SheetViewModel.FilteredRows;
 
                 ColumnViewModel coloredColumnViewModel = viewStatus?.GetColoredColumnViewModel(),
                     firstColoredColumnViewModel = viewStatus?.GetFirstColoredColumnViewModel(),
@@ -273,35 +273,28 @@ namespace FlexTable.View
                 }
                 if (viewStatus.IsCCN && viewStatus.IsGroupedBarChartVisible) firstColoredColumnViewModel = secondColoredColumnViewModel = thirdColoredColumnViewModel = null;
                 if (viewStatus.IsCNN && viewStatus.IsGroupedBarChartVisible) coloredColumnViewModel = null;
-
-                IEnumerable<RowPresenter> selected = selectedRowPresenters.Where(rp => sr.IndexOf(rp.RowViewModel.Row) >= 0).OrderBy(rp => rp.RowViewModel.Index),
-                    unselected = selectedRowPresenters.Where(rp => sr.IndexOf(rp.RowViewModel.Row) < 0).OrderBy(rp => rp.RowViewModel.Index);
-
+                
                 Int32 index = 0;
                 Double height = (Double)App.Current.Resources["RowHeight"];
                 List<Color> colors = new List<Color>();
 
                 // selectedRow는 scatterplot과 barchart가 공유함에 주의
 
-                foreach (RowPresenter rowPresenter in selected)
+                foreach (RowPresenter rowPresenter in selectedRowPresenters.OrderBy(rp => rp.RowViewModel.Index))
                 {
                     Canvas.SetTop(rowPresenter, index * height);
-                    rowPresenter.Opacity = 1;
-                    rowPresenter.Update(coloredColumnViewModel, firstColoredColumnViewModel, secondColoredColumnViewModel, thirdColoredColumnViewModel); 
-                    //colors.Add(rowPresenter.RowViewModel.Color);
-                    index++;
-                }
-
-                foreach (RowPresenter rowPresenter in unselected)
-                {
-                    Canvas.SetTop(rowPresenter, index * height);
-                    rowPresenter.Opacity = 0.2;
                     rowPresenter.Update(coloredColumnViewModel, firstColoredColumnViewModel, secondColoredColumnViewModel, thirdColoredColumnViewModel);
-                    //colors.Add(rowPresenter.RowViewModel.Color);
+                    if(filteredRows.Contains(rowPresenter.RowViewModel.Row) && (ViewModel.SelectedRows.Count() == 0 || ViewModel.SelectedRows.Contains(rowPresenter.RowViewModel.Row)))
+                    {
+                        rowPresenter.Opacity = 1;
+                    }
+                    else
+                    {
+                        rowPresenter.Opacity = 0.2;
+                    }
                     index++;
                 }
-
-                RowHeaderPresenter.SetRowNumber(colors, selected.Count(), index);
+                RowHeaderPresenter.SetRowNumber(colors, ViewModel.SelectedRows.Count(), index);
             }
             else if(state == TableViewModel.TableViewState.Animation)
             {

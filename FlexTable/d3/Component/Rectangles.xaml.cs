@@ -22,6 +22,15 @@ using Windows.UI.Xaml.Media.Animation;
 
 namespace d3.Component
 {
+    public class D3Rectangle
+    {
+        public Double X { get; set; }
+        public Double Y { get; set; }
+        public Double Width { get; set; }
+        public Double Height { get; set; }
+        public Rectangle Rectangle { get; set; }
+    }
+
     /// <summary>
     /// 자체에서 사용하거나 프레임 내에서 탐색할 수 있는 빈 페이지입니다.
     /// </summary>
@@ -30,8 +39,6 @@ namespace d3.Component
         public static readonly DependencyProperty DataProperty =
             DependencyProperty.Register("Data", typeof(Data), typeof(Rectangles), new PropertyMetadata(null));
         
-        public event Event.EventHandler RectanglePointerPressed;
-        public event Event.EventHandler RectanglePointerReleased;
         public event Event.EventHandler RectangleTapped;
         public event Event.EventHandler RectangleManipulationDelta;
         public event Event.EventHandler RectangleManipulationCompleted;
@@ -96,172 +103,76 @@ namespace d3.Component
             set { SetValue(OpacityGetterProperty, value); }
         }
 
+        public IEnumerable<D3Rectangle> ChildRectangles
+        {
+            get
+            {
+                return RectangleCanvas.Children.Select(child =>
+                {
+                    Rectangle rect = child as Rectangle;
+
+                    return new D3Rectangle()
+                    {
+                        X = (rect.RenderTransform as CompositeTransform).TranslateX,
+                        Y = (rect.RenderTransform as CompositeTransform).TranslateY,
+                        Width = (rect.RenderTransform as CompositeTransform).ScaleX,
+                        Height = (rect.RenderTransform as CompositeTransform).ScaleY,
+                        Rectangle = rect
+                    };
+                });
+            }
+        }
+
         public IEnumerable<Rectangle> Children { get { return RectangleCanvas.Children.Select(child => child as Rectangle); } }
+        public TransitionPivotType TransitionPivotType { get; set; }
 
         public Rectangles()
         {
             this.InitializeComponent();
         }        
 
-        public void Update()
-        {
-            Update(false);
-        }
-
         Storyboard previousStoryboard = null;
 
-        public void Update(Boolean allowTransition)
+        public void Update(TransitionType transitionType)
         {
-            if (allowTransition)
+
+            Int32 index = 0;
+            Storyboard sb = new Storyboard()
             {
-                Int32 index = 0;
-                Storyboard sb = new Storyboard()
-                {
-                    //BeginTime = Const.AnimationDelay
-                };
-                foreach (Object datum in Data.List)
-                {
-                    Rectangle rect = null;
+                //BeginTime = Const.AnimationDelay
+            };
 
-                    if (index >= RectangleCanvas.Children.Count)
-                    {
-                        Int32 localIndex = index;
-                        rect = new Rectangle()
-                        {
-                            Width = WidthGetter(datum, index),
-                            Height = HeightGetter(datum, index),
-                            Fill = ColorGetter == null ? new SolidColorBrush(Colors.LightGray) : new SolidColorBrush(ColorGetter(datum, index)),
-                            Opacity = OpacityGetter == null ? 1 : OpacityGetter(datum, index)
-                        };
-
-                        if (RectanglePointerPressed != null)
-                        {
-                            rect.PointerPressed += delegate (object sender, PointerRoutedEventArgs e)
-                            {
-                                RectanglePointerPressed(rect, e, datum, localIndex);
-                            };
-                        }
-
-                        if (RectanglePointerReleased != null)
-                        {
-                            rect.PointerReleased += delegate (object sender, PointerRoutedEventArgs e)
-                            {
-                                RectanglePointerReleased(rect, e, datum, localIndex);
-                            };
-                        };
-
-                        rect.Tapped += delegate (object sender, TappedRoutedEventArgs e)
-                        {
-                            if (RectangleTapped != null)
-                            {
-                                RectangleTapped(rect, e, datum, localIndex);
-                            }
-                        };
-
-                        if (RectangleManipulationDelta != null)
-                        {
-                            rect.ManipulationMode = ManipulationModes.TranslateY | ManipulationModes.System;
-                            rect.ManipulationDelta += delegate (object sender, ManipulationDeltaRoutedEventArgs e)
-                            {
-                                RectangleManipulationDelta(sender, e, datum, localIndex);
-                            };
-                        }
-
-                        if (RectangleManipulationCompleted != null)
-                        {
-                            rect.ManipulationCompleted += delegate (object sender, ManipulationCompletedRoutedEventArgs e)
-                            {
-                                RectangleManipulationCompleted(sender, e, datum, localIndex);
-                            };
-                        }
-
-                        RectangleCanvas.Children.Add(rect);
-                    }
-                    else
-                    {
-                        rect = RectangleCanvas.Children[index] as Rectangle;
-                        
-                        if(XGetter(datum, index) != Canvas.GetLeft(rect))
-                        {
-                            sb.Children.Add(Util.GenerateDoubleAnimation(rect, "(Canvas.Left)", XGetter(datum, index)));
-                        }
-
-                        if (YGetter(datum, index) != Canvas.GetTop(rect))
-                        {
-                            sb.Children.Add(Util.GenerateDoubleAnimation(rect, "(Canvas.Top)", YGetter(datum, index)));
-                        }
-
-                        if (ColorGetter != null && ColorGetter(datum, index) != (rect.Fill as SolidColorBrush).Color)
-                        {
-                            sb.Children.Add(Util.GenerateColorAnimation(rect, "Fill.Color", ColorGetter(datum, index)));
-                        }
-
-                        if (OpacityGetter != null && OpacityGetter(datum, index) != rect.Opacity)
-                        {
-                            sb.Children.Add(Util.GenerateDoubleAnimation(rect, "Opacity", OpacityGetter(datum, index)));
-                        }
-                    }
-
-                    index++;                    
-                }
-
-                for (Int32 i = RectangleCanvas.Children.Count - 1; i >= index; --i)
-                {
-                    RectangleCanvas.Children.RemoveAt(i);
-                }
-
-                if (previousStoryboard != null) previousStoryboard.Pause();
-                sb.Begin();
-                previousStoryboard = sb;
-            }
-            else
+            foreach (Object datum in Data.List)
             {
-                RectangleCanvas.Children.Clear();
+                Rectangle rect = null;
 
-                Int32 index = 0;
-                foreach (Object datum in Data.List)
+                if (index >= RectangleCanvas.Children.Count) // 없는 사각형은 새로 만듦
                 {
                     Int32 localIndex = index;
 
-                    Rectangle rect = new Rectangle()
+                    rect = new Rectangle()
                     {
-                        Width = WidthGetter(datum, index),
-                        Height = HeightGetter(datum, index),
+                        Width = 1, //WidthGetter(datum, index),
+                        Height = 1, //HeightGetter(datum, index),
                         Fill = ColorGetter == null ? new SolidColorBrush(Colors.LightGray) : new SolidColorBrush(ColorGetter(datum, index)),
-                        Opacity = OpacityGetter == null ? 1 : OpacityGetter(datum, index)
-                    };
-
-                    /*rect.PointerPressed += delegate (object sender, PointerRoutedEventArgs e)
-                    {
-                        rect.CapturePointer(e.Pointer);
-                        if (RectanglePointerPressed != null)
-                        {
-                            RectanglePointerPressed(rect, e, datum, localIndex);
-                        }
+                        Opacity = OpacityGetter == null ? 1 : OpacityGetter(datum, index),
+                        RenderTransform = new CompositeTransform()
                     };
                     
-                    rect.PointerCaptureLost += delegate (object sender, PointerRoutedEventArgs e)
-                    {
-                        if (RectanglePointerReleased != null)
-                        {
-                            RectanglePointerReleased(rect, e, datum, localIndex);
-                        }
-                    };*/
-
                     rect.Tapped += delegate (object sender, TappedRoutedEventArgs e)
                     {
                         if (RectangleTapped != null)
                         {
-                            RectangleTapped(rect, e, datum, localIndex);
+                            RectangleTapped(rect, e, Data.List[localIndex], localIndex);
                         }
                     };
-
+                
                     if (RectangleManipulationDelta != null)
                     {
                         rect.ManipulationMode = ManipulationModes.TranslateY | ManipulationModes.System;
                         rect.ManipulationDelta += delegate (object sender, ManipulationDeltaRoutedEventArgs e)
                         {
-                            RectangleManipulationDelta(sender, e, datum, localIndex);
+                            RectangleManipulationDelta(sender, e, Data.List[localIndex], localIndex);
                         };
                     }
 
@@ -269,21 +180,126 @@ namespace d3.Component
                     {
                         rect.ManipulationCompleted += delegate (object sender, ManipulationCompletedRoutedEventArgs e)
                         {
-                            RectangleManipulationCompleted(sender, e, datum, localIndex);
+                            RectangleManipulationCompleted(sender, e, Data.List[localIndex], localIndex);
                         };
                     }
 
-                    Canvas.SetLeft(rect, XGetter(datum, index));
-                    Canvas.SetTop(rect, YGetter(datum, index));
-                    index++;
+                    //Canvas.SetLeft(rect, XGetter(datum, index));
+                    //Canvas.SetTop(rect, YGetter(datum, index));
+                    (rect.RenderTransform as CompositeTransform).TranslateX = XGetter(datum, index);
+                    (rect.RenderTransform as CompositeTransform).TranslateY = YGetter(datum, index);
+                    (rect.RenderTransform as CompositeTransform).ScaleX = WidthGetter(datum, index);
+                    (rect.RenderTransform as CompositeTransform).ScaleY = HeightGetter(datum, index);
                     RectangleCanvas.Children.Add(rect);
                 }
+                else
+                {
+                    rect = RectangleCanvas.Children[index] as Rectangle;
+
+                    if (WidthGetter(datum, index) != rect.Width)
+                    {
+                        if (transitionType.HasFlag(TransitionType.Size))
+                        {
+                            //sb.Children.Add(Util.GenerateDoubleAnimation(rect, "Width", WidthGetter(datum, index), true));
+                            sb.Children.Add(Util.GenerateDoubleAnimation(rect.RenderTransform, "ScaleX", WidthGetter(datum, index), true));
+                        }
+                        else
+                        {
+                            //rect.Width = WidthGetter(datum, index);
+                            (rect.RenderTransform as CompositeTransform).ScaleX = WidthGetter(datum, index);
+                        }
+                    }
+
+                    
+                    if (HeightGetter(datum, index) != rect.Height)
+                    {
+                        if (transitionType.HasFlag(TransitionType.Size))
+                        {
+                            //sb.Children.Add(Util.GenerateDoubleAnimation(rect, "Height", HeightGetter(datum, index), true));
+                            sb.Children.Add(Util.GenerateDoubleAnimation(rect.RenderTransform, "ScaleY", HeightGetter(datum, index), true));
+                        }
+                        else
+                        {
+                            //rect.Height = HeightGetter(datum, index);
+                            (rect.RenderTransform as CompositeTransform).ScaleY = HeightGetter(datum, index);
+                        }
+                    }
+
+                    if (XGetter(datum, index) != Canvas.GetLeft(rect))
+                    {
+                        if (transitionType.HasFlag(TransitionType.Position))
+                        {
+                            //sb.Children.Add(Util.GenerateDoubleAnimation(rect, "(Canvas.Left)", XGetter(datum, index)));
+                            sb.Children.Add(Util.GenerateDoubleAnimation(rect.RenderTransform, "TranslateX", XGetter(datum, index), true));
+                        }
+                        else
+                        {
+                            //Canvas.SetLeft(rect, XGetter(datum, index));
+                            (rect.RenderTransform as CompositeTransform).TranslateX = XGetter(datum, index);
+                        }
+                    }
+
+                    if (YGetter(datum, index) != Canvas.GetTop(rect))
+                    {
+                        if (transitionType.HasFlag(TransitionType.Position))
+                        {
+                            /*if (TransitionPivotType.HasFlag(TransitionPivotType.Bottom) && rect.Height < HeightGetter(datum, index))
+                            {
+                                Canvas.SetTop(rect, YGetter(datum, index) + HeightGetter(datum, index));
+                                sb.Children.Add(Util.GenerateDoubleAnimation(rect, "(Canvas.Top)", YGetter(datum, index), true));
+                            }
+                            else
+                            {*/
+                            //sb.Children.Add(Util.GenerateDoubleAnimation(rect, "(Canvas.Top)", YGetter(datum, index), true));
+                            sb.Children.Add(Util.GenerateDoubleAnimation(rect.RenderTransform, "TranslateY", YGetter(datum, index), true));
+                            //}
+                        }
+                        else
+                        {
+                            (rect.RenderTransform as CompositeTransform).TranslateY = YGetter(datum, index);
+                            //Canvas.SetTop(rect, YGetter(datum, index));
+                        }
+                    }                   
+
+                    if (ColorGetter != null && ColorGetter(datum, index) != (rect.Fill as SolidColorBrush).Color)
+                    {
+                        if (transitionType.HasFlag(TransitionType.Color))
+                        {
+                            sb.Children.Add(Util.GenerateColorAnimation(rect, "(Rectangle.Fill).(SolidColorBrush.Color)", ColorGetter(datum, index)));
+                        }
+                        else
+                        {
+                            rect.Fill = new SolidColorBrush(ColorGetter(datum, index));
+                        }
+                    }
+
+                    if (OpacityGetter != null && OpacityGetter(datum, index) != rect.Opacity)
+                    {
+                        if (transitionType.HasFlag(TransitionType.Opacity))
+                        {
+                            sb.Children.Add(Util.GenerateDoubleAnimation(rect, "Opacity", OpacityGetter(datum, index)));
+                        }
+                        else
+                        {
+                            rect.Opacity = OpacityGetter(datum, index);
+                        }
+                    }
+                }
+
+                index++;                    
+            }
+
+            for (Int32 i = RectangleCanvas.Children.Count - 1; i >= index; --i)
+            {
+                RectangleCanvas.Children.RemoveAt(i);
+            }
+
+            if (previousStoryboard != null) previousStoryboard.Pause();
+            if (sb.Children.Count > 0)
+            {
+                sb.Begin();
+                previousStoryboard = sb;
             }
         }
-
-        /*void rect_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            e.Handled = true;
-        }*/
     }
 }

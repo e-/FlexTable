@@ -13,8 +13,8 @@
     <Canvas x:Name="RootCanvas" Background="Transparent">
         <com:Rectangles x:Name="HandleRectangleElement"/>
 
+        <com:Rectangles x:Name="EnvelopeRectangleElement" IsHitTestVisible="False" />
         <com:Rectangles x:Name="RectangleElement" IsHitTestVisible="False" />
-        <!--<com:Rectangles x:Name="ForegroundRectangleElement" IsHitTestVisible="False" />-->
                         
         <com:Axis Orientation="Horizontal" Canvas.Left="0" x:Name="HorizontalAxis" />
 
