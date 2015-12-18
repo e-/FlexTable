@@ -101,7 +101,16 @@ namespace FlexTable.Crayon.Chart
 
         public Func<Object, Int32, Double> WidthGetter { get { return (d, index) => BarWidth; } }
         public Func<Object, Int32, Double> EnvelopeHeightGetter { get { return (d, index) => ChartAreaEndY - YScale.Map((d as BarChartDatum).EnvelopeValue); } }
-        public Func<Object, Int32, Double> HeightGetter { get { return (d, index) => ChartAreaEndY - YScale.Map((d as BarChartDatum).Value); } }
+
+        public Func<Object, Int32, Double> HeightGetter { get {
+                return (d, index) => {
+                    BarChartDatum datum = d as BarChartDatum;
+                    BarState barState = datum.BarState;
+                    if (barState == BarState.Unselected) return 0;
+                    return ChartAreaEndY - YScale.Map((d as BarChartDatum).Value);
+                };
+        } }
+
         public Func<Object, Int32, Double> XGetter
         {
             get
@@ -121,8 +130,8 @@ namespace FlexTable.Crayon.Chart
                 {
                     BarChartDatum datum = d as BarChartDatum;
                     BarState barState = datum.BarState;
-                    return YScale.Map(datum.EnvelopeValue) + 
-                    ((barState == BarState.PartiallySelected || barState == BarState.FullySelected || (barState == BarState.Default && datum.Parent == DragToFilterFocusedBar)) ? DragToFilterYDelta : 0);
+                    return YScale.Map(datum.EnvelopeValue) +
+                        ((barState == BarState.PartiallySelected || barState == BarState.FullySelected || (barState == BarState.Default && datum.Parent == DragToFilterFocusedBar)) ? DragToFilterYDelta : 0);
                 };
             }
         }
@@ -131,8 +140,12 @@ namespace FlexTable.Crayon.Chart
             {
                 BarChartDatum datum = d as BarChartDatum;
                 BarState barState = datum.BarState;
-                return YScale.Map(datum.Value) + 
-                ((barState == BarState.PartiallySelected || barState == BarState.FullySelected || (barState == BarState.Default && datum.Parent == DragToFilterFocusedBar)) ? DragToFilterYDelta : 0);
+                if (barState == BarState.Unselected) return ChartAreaEndY;
+                else
+                {
+                    return YScale.Map(datum.Value) +
+                    ((barState == BarState.PartiallySelected || barState == BarState.FullySelected || (barState == BarState.Default && datum.Parent == DragToFilterFocusedBar)) ? DragToFilterYDelta : 0);
+                }
             };
         } }
 
@@ -145,6 +158,7 @@ namespace FlexTable.Crayon.Chart
                 {
                     BarChartDatum datum = d as BarChartDatum;
                     BarState barState = datum.BarState;
+                    if (barState == BarState.Unselected) return 0.2;
                     return (barState == BarState.PartiallySelected || barState == BarState.FullySelected || (barState == BarState.Default && datum.Parent == DragToFilterFocusedBar)) ? DragToFilterOpacity * 0.2 : 0.2;
                 };
             }
@@ -154,6 +168,7 @@ namespace FlexTable.Crayon.Chart
                 {
                     BarChartDatum datum = d as BarChartDatum;
                     BarState barState = datum.BarState;
+                    if (barState == BarState.Unselected) return 0.2;
                     return (barState == BarState.PartiallySelected || barState == BarState.FullySelected || (barState == BarState.Default && datum.Parent == DragToFilterFocusedBar)) ? DragToFilterOpacity : 1;
                 };
         } }
@@ -233,6 +248,7 @@ namespace FlexTable.Crayon.Chart
                 {
                     BarChartDatum datum = d as BarChartDatum;
                     BarState barState = datum.BarState;
+                    if (barState == BarState.Unselected) return YScale.RangeStart - 18;
                     return YScale.Map(datum.Value) - 18 + ((barState == BarState.PartiallySelected || barState == BarState.FullySelected || (barState == BarState.Default && datum.Parent == DragToFilterFocusedBar)) ? DragToFilterYDelta : 0);
                 };
             } }
@@ -616,7 +632,8 @@ namespace FlexTable.Crayon.Chart
             }
             else
             {
-                yMin *= 0.9;
+                if (yMin > 0) yMin *= 0.9;
+                else yMin *= 1.1;
             }
 
             YScale = new Linear()

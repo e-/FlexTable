@@ -365,20 +365,34 @@ namespace FlexTable.Crayon.Chart
 
             XScale = new Linear()
             {
-                DomainStart = Data.Select(d => d.Value1).Min() * 0.9,
-                DomainEnd = Data.Select(d => d.Value1).Max() * 1.1,
+                DomainStart = Data.Select(d => d.Value1).Min(),
+                DomainEnd = Data.Select(d => d.Value1).Max(),
                 RangeStart = VerticalAxisCanvasLeft,
                 RangeEnd = ChartAreaEndX + Const.PaddingLeft
             };
+
+            if (XScale.DomainStart < 0) XScale.DomainStart *= 1.1;
+            else XScale.DomainStart *= 0.9;
+
+            if (XScale.DomainEnd < 0) XScale.DomainEnd *= 0.9;
+            else XScale.DomainEnd *= 1.1;
+
             XScale.Nice();
 
             YScale = new Linear()
             {
-                DomainStart = Data.Select(d => d.Value2).Min() * 0.9,
-                DomainEnd = Data.Select(d => d.Value2).Max() * 1.1,
+                DomainStart = Data.Select(d => d.Value2).Min(),
+                DomainEnd = Data.Select(d => d.Value2).Max(),
                 RangeStart = ChartAreaEndY,
                 RangeEnd = Const.PaddingTop
             };
+
+            if (YScale.DomainStart < 0) YScale.DomainStart *= 1.1;
+            else YScale.DomainStart *= 0.9;
+
+            if (YScale.DomainEnd < 0) YScale.DomainEnd *= 0.9;
+            else YScale.DomainEnd *= 1.1;
+
             YScale.Nice();
 
             CircleElement.Data = D3Data;

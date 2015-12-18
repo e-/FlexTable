@@ -129,7 +129,7 @@ namespace d3.Scale
 
         public void Nice(Int32 m)
         {
-            Double span = DomainEnd - domainStart,
+            Double span = domainEnd - domainStart,
                    step = Math.Pow(10, Math.Floor(Math.Log10(span / m))),
                    err = m / span * step;
 

@@ -114,7 +114,7 @@ namespace FlexTable.Crayon.Chart
             {
                 return (d, index) => (d as LineChartDatum).DataPoints.Select<DataPoint, Point>(dp => new Point(
                    XScale.Map(dp.Item1),
-                   YScale.Map(dp.Item2)
+                   dp.Rows?.Count() == 0 ? YScale.RangeStart : YScale.Map(dp.Item2)
                    )).ToList();
             }
         }
@@ -126,20 +126,20 @@ namespace FlexTable.Crayon.Chart
                 {
                     LineChartDatum datum = d as LineChartDatum;
                     LineState lineState = datum.LineState;
-                    return (lineState == LineState.Default) ? 0.8 : (lineState == LineState.Selected ? 0.9 : 0.1);
+                    return (lineState == LineState.Default) ? 0.8 : (lineState == LineState.Selected ? 0.9 : 0);
                 };
             }}
 
         public Func<Object, Int32, Double> EnvelopeCircleYGetter { get { return (d, index) => YScale.Map((d as DataPoint).EnvelopeItem2); } }
         public Func<Object, Int32, Double> CircleXGetter { get { return (d, index) => XScale.Map((d as DataPoint).Item1); } }
-        public Func<Object, Int32, Double> CircleYGetter { get { return (d, index) => YScale.Map((d as DataPoint).Item2); } }
+        public Func<Object, Int32, Double> CircleYGetter { get { return (d, index) => (d as DataPoint).Rows?.Count() == 0 ? YScale.RangeStart : YScale.Map((d as DataPoint).Item2); } }
         public Func<Object, Int32, Color> CircleColorGetter { get { return (d, index) => (AutoColor ? (((d as DataPoint).Parent as LineChartDatum).Key as Category).Color : Category10.Colors.First()); } }
         public Func<Object, Int32, Double> CircleOpacityGetter{ get {
                 return (d, index) =>
                 {
                     LineChartDatum datum = (d as DataPoint).Parent as LineChartDatum;
                     LineState lineState = datum.LineState;
-                    return (lineState == LineState.Default) ? 0.8 : (lineState == LineState.Selected ? 1 : 0.1);
+                    return (lineState == LineState.Default) ? 0.8 : (lineState == LineState.Selected ? 1 : 0);
                 };
             } }
 
@@ -476,7 +476,8 @@ namespace FlexTable.Crayon.Chart
             }
             else
             {
-                yMin *= 0.9;
+                if (yMin > 0) yMin *= 0.9;
+                else yMin *= 1.1;
             }
 
             YScale = new Linear()

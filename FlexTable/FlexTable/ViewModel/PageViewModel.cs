@@ -185,7 +185,7 @@ namespace FlexTable.ViewModel
                 if (onSelectionChanged)
                 {
                     SetBarChartSelection(ViewStatus.FirstCategorical, ViewStatus.FirstNumerical, pageView.SelectedRows);
-                    SetLineChartSelection(ViewStatus.FirstCategorical, ViewStatus.FirstNumerical, pageView.SelectedRows);
+                    SetLineChartSelection(ViewStatus.FirstNumerical, pageView.SelectedRows);
                 }
 
                 pageView.BarChart.Update((onSelectionChanged && !onCreate) || (reason != ReflectReason.FilterOut && reason != ReflectReason.None));
@@ -241,7 +241,6 @@ namespace FlexTable.ViewModel
             }
             else if (ViewStatus.IsCCN)
             {
-                // TODO
                 if (onCreate)
                 {
                     DrawGroupedBarChart(ViewStatus.FirstCategorical, ViewStatus.SecondCategorical, ViewStatus.FirstNumerical, groupedRows);
@@ -251,8 +250,8 @@ namespace FlexTable.ViewModel
 
                 if (onSelectionChanged)
                 {
-                    //SetGroupedBarChartSelection(ViewStatus.FirstCategorical, ViewStatus.SecondCategorical, ViewStatus.FirstNumerical, pageView.SelectedRows);
-                    //SetLineChartSelection(ViewStatus.FirstCategorical, ViewStatus.SecondCategorical, ViewStatus.FirstNumerical, pageView.SelectedRows);
+                    SetGroupedBarChartSelection(ViewStatus.FirstCategorical, ViewStatus.SecondCategorical, ViewStatus.FirstNumerical, pageView.SelectedRows);
+                    SetLineChartSelection(ViewStatus.FirstNumerical, pageView.SelectedRows);
                 }
 
                 pageView.GroupedBarChart.Update((onSelectionChanged && !onCreate) || (reason != ReflectReason.FilterOut && reason != ReflectReason.None));
@@ -578,16 +577,42 @@ namespace FlexTable.ViewModel
                             {
                                 Key = g.Keys[categorical2],
                                 Value = numerical.AggregativeFunction.Aggregate(g.Rows.Select(row => (Double)row.Cells[numerical.Index].Content)),
+                                EnvelopeValue = numerical.AggregativeFunction.Aggregate(g.Rows.Select(row => (Double)row.Cells[numerical.Index].Content)),
                                 ColumnViewModel = categorical2,
                                 Parent = datum,
-                                Rows = g.Rows
+                                Rows = null,
+                                EnvelopeRows = g.Rows
                             }).ToList();
                             return datum;
                         })
                         .Where(datum => datum.Children != null && datum.Children.Count > 0)
                         .ToList();
+        }
 
-            pageView.GroupedBarChart.Update(true);
+        void SetGroupedBarChartSelection(ColumnViewModel categorical1, ColumnViewModel categorical2, ColumnViewModel numerical, IEnumerable<Row> selectedRows)
+        {
+            if(selectedRows.Count() == 0)
+            {
+                foreach(GroupedBarChartDatum gbcd in pageView.GroupedBarChart.Data)
+                {
+                    foreach(BarChartDatum bcd in gbcd.Children)
+                    {
+                        bcd.Rows = null;
+                        bcd.Value = bcd.EnvelopeValue;
+                    }
+                }
+            }
+            else
+            {
+                foreach (GroupedBarChartDatum gbcd in pageView.GroupedBarChart.Data)
+                {
+                    foreach (BarChartDatum bcd in gbcd.Children)
+                    {
+                        bcd.Rows = bcd.EnvelopeRows.Intersect(selectedRows).ToList();
+                        bcd.Value = numerical.AggregativeFunction.Aggregate(bcd.Rows.Select(row => (Double)row.Cells[numerical.Index].Content));
+                    }
+                }
+            }
         }
 
         void DrawBarChart(ColumnViewModel categorical, ColumnViewModel numerical, List<GroupedRows> groupedRows)
@@ -681,7 +706,7 @@ namespace FlexTable.ViewModel
             if (groupedRows.Count > LineChartMaximumPointNumberInASeries) IsLineChartWarningVisible = true;
         }
 
-        void SetLineChartSelection(ColumnViewModel categorical, ColumnViewModel numerical, IEnumerable<Row> selectedRows)
+        void SetLineChartSelection(ColumnViewModel numerical, IEnumerable<Row> selectedRows)
         {
 
             if (selectedRows.Count() == 0)

@@ -98,8 +98,25 @@ namespace FlexTable.Crayon.Chart
         #region Attribute Getter
         private Double BarWidth { get { return Math.Min(60, XScale.RangeBand / 2); } }
         public Func<Object, Int32, Double> WidthGetter { get { return (d, index) => BarWidth; } }
-        public Func<Object, Int32, Double> EnvelopeHeightGetter { get { return (d, index) => ChartAreaEndY - YScale.Map((d as BarChartDatum).EnvelopeValue); } }
+        
         public Func<Object, Int32, Double> XGetter { get { return (d, index) => XScale.Map(d) - BarWidth / 2; } }
+        public Func<Object, Int32, Color> ColorGetter { get { return (d, index) => (AutoColor ? ((d as BarChartDatum).Key as Category).Color: Category10.Colors.First()); } }
+
+        public Func<Object, Int32, Double> EnvelopeHeightGetter { get { return (d, index) => ChartAreaEndY - YScale.Map((d as BarChartDatum).EnvelopeValue); } }
+        public Func<Object, Int32, Double> HeightGetter
+        {
+            get
+            {
+                return (d, index) =>
+                {
+                    BarChartDatum datum = d as BarChartDatum;
+                    BarState barState = datum.BarState;
+                    if (barState == BarState.Unselected) return 0;
+                    return ChartAreaEndY - YScale.Map((d as BarChartDatum).Value);
+                };
+            }
+        }
+
         public Func<Object, Int32, Double> EnvelopeYGetter
         {
             get
@@ -111,17 +128,7 @@ namespace FlexTable.Crayon.Chart
                 };
             }
         }
-        public Func<Object, Int32, Color> ColorGetter { get { return (d, index) => (AutoColor ? ((d as BarChartDatum).Key as Category).Color: Category10.Colors.First()); } }
-        public Func<Object, Int32, Double> EnvelopeOpacityGetter { get {
-                return (d, index) =>
-                {
-                    BarChartDatum datum = d as BarChartDatum;
-                    BarState barState = datum.BarState;
-                    return (barState == BarState.PartiallySelected || barState == BarState.FullySelected || datum == DragToFilterFocusedBar) ? DragToFilterOpacity * 0.2 : 0.2;
-                };
-            } }
 
-        public Func<Object, Int32, Double> HeightGetter { get { return (d, index) => ChartAreaEndY - YScale.Map((d as BarChartDatum).Value); } }
         public Func<Object, Int32, Double> YGetter
         {
             get
@@ -129,10 +136,30 @@ namespace FlexTable.Crayon.Chart
                 return (d, index) =>
                 {
                     BarChartDatum datum = d as BarChartDatum;
-                    return YScale.Map(datum.Value) + ((datum.Rows?.Count() > 0) || (d == DragToFilterFocusedBar) ? DragToFilterYDelta : 0);
+                    BarState barState = datum.BarState;
+                    if (barState == BarState.Unselected) return ChartAreaEndY;
+                    else
+                    {
+                        return YScale.Map(datum.Value) + ((datum.Rows?.Count() > 0) || (d == DragToFilterFocusedBar) ? DragToFilterYDelta : 0);
+                    }
                 };
             }
         }
+
+
+        public Func<Object, Int32, Double> EnvelopeOpacityGetter
+        {
+            get
+            {
+                return (d, index) =>
+                {
+                    BarChartDatum datum = d as BarChartDatum;
+                    BarState barState = datum.BarState;
+                    return (barState == BarState.PartiallySelected || barState == BarState.FullySelected || datum == DragToFilterFocusedBar) ? DragToFilterOpacity * 0.2 : 0.2;
+                };
+            }
+        }
+
         public Func<Object, Int32, Double> OpacityGetter
         {
             get
@@ -204,6 +231,8 @@ namespace FlexTable.Crayon.Chart
                 return (d, index) =>
                 {
                     BarChartDatum datum = d as BarChartDatum;
+                    BarState barState = datum.BarState;
+                    if (barState == BarState.Unselected) return YScale.RangeStart - 18;
                     return YScale.Map(datum.Value) - 18 + ((datum.Rows?.Count() > 0) || (d == DragToFilterFocusedBar) ? DragToFilterYDelta : 0);
                 };
             } }
@@ -532,7 +561,8 @@ namespace FlexTable.Crayon.Chart
             }
             else
             {
-                yMin *= 0.9;
+                if (yMin > 0) yMin *= 0.9;
+                else yMin *= 1.1;
             }
 
             YScale = new Linear()
