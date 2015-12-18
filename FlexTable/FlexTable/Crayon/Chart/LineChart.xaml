@@ -12,10 +12,12 @@
 
     <Canvas x:Name="RootCanvas" Background="Transparent">
         <com:Lines x:Name="HandleLineElement" />
+
+        <com:Lines x:Name="EnvelopeLineElement" IsHitTestVisible="False"/>
+        <com:Circles x:Name="EnvelopeCircleElement" IsHitTestVisible="False"/>
         
         <com:Lines x:Name="LineElement" IsHitTestVisible="False"/>
-
-        <com:Circles ReusePreviousElement="False" x:Name="CircleElement" IsHitTestVisible="False"/>
+        <com:Circles x:Name="CircleElement" IsHitTestVisible="False"/>
 
         
         <com:Axis Orientation="Horizontal" x:Name="HorizontalAxis" />

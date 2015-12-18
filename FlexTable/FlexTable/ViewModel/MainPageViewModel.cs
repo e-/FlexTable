@@ -130,7 +130,7 @@ namespace FlexTable.ViewModel
 
         public async Task Initialize()
         {
-            Sheet sheet = await Util.CsvLoader.Load("barley.csv"); // "Population-filtered.csv");
+            Sheet sheet = await Util.CsvLoader.Load("fitts.csv"); // "Population-filtered.csv");
             Initialize(sheet);
         }
 

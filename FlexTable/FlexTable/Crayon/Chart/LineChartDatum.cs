@@ -8,6 +8,13 @@ using FlexTable.ViewModel;
 
 namespace FlexTable.Crayon.Chart
 {
+    public enum LineState
+    {
+        Default,
+        Unselected,
+        Selected
+    }
+
     public class LineChartDatum
     {
         public ColumnViewModel ColumnViewModel { get; set; }
@@ -15,8 +22,29 @@ namespace FlexTable.Crayon.Chart
 
         public List<DataPoint> DataPoints { get; set; }
 
-        public IEnumerable<Row> Rows { get; set; }
+        public LineState LineState
+        {
+            get
+            {
+                if (Rows == null) return LineState.Default;
+                if (Rows.Count() == 0) return LineState.Unselected;
+                return LineState.Selected;
+            }
+        }
 
+        public IEnumerable<Row> EnvelopeRows
+        {
+            get { return DataPoints.SelectMany(dp => dp.EnvelopeRows); }
+        }
+
+        public IEnumerable<Row> Rows
+        {
+            get {
+                if (DataPoints.All(dp => dp.Rows == null)) return null;
+                else return DataPoints.Where(dp => dp.Rows != null).SelectMany(dp => dp.Rows);
+            }
+        }
+        
         public override string ToString()
         {
             return Key.ToString();
@@ -27,15 +55,11 @@ namespace FlexTable.Crayon.Chart
     {
         public Object Item1 { get; set; }
         public Object Item2 { get; set; }
-        public LineChartDatum Parent { get; set; }
-        public IEnumerable<Row> Rows { get; set; }
+        public Object EnvelopeItem2 { get; set; }
 
-        public DataPoint(Object item1, Object item2, LineChartDatum parent, IEnumerable<Row> rows)
-        {
-            this.Item1 = item1;
-            this.Item2 = item2;
-            this.Parent = parent;
-            this.Rows = rows;
-        }
+        public LineChartDatum Parent { get; set; }
+
+        public IEnumerable<Row> Rows { get; set; }
+        public IEnumerable<Row> EnvelopeRows { get; set; }
     }
 }

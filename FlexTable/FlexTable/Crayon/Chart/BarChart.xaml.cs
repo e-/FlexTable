@@ -458,7 +458,7 @@ namespace FlexTable.Crayon.Chart
         void RectangleElement_RectangleTapped(object sender, object e, object datum, Int32 index)
         {
             TappedRoutedEventArgs args = e as TappedRoutedEventArgs;
-            if (args.PointerDeviceType == PointerDeviceType.Pen) return;
+            //if (args.PointerDeviceType == PointerDeviceType.Pen) return;
             BarChartDatum barChartDatum = datum as BarChartDatum;
 
             if (SelectionChanged != null)

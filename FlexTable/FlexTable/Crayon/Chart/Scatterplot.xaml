@@ -11,7 +11,7 @@
     d:DesignWidth="400">
 
     <Canvas x:Name="RootCanvas" Background="Transparent">
-        <com:Circles ReusePreviousElement="True" x:Name="CircleElement"/>
+        <com:Circles x:Name="CircleElement"/>
         
         <com:Axis Orientation="Horizontal" Canvas.Left="0" x:Name="HorizontalAxis" />
 

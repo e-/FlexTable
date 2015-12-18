@@ -70,12 +70,12 @@ namespace FlexTable.View
             BarChartElement.FilterOut += FilterOut;
 
             /*GroupedBarChartElement.SelectionChanged += ChartElement_SelectionChanged;
-            GroupedBarChartElement.FilterOut += ChartElement_FilterOut;
+            GroupedBarChartElement.FilterOut += ChartElement_FilterOut;*/
          
-            LineChartElement.SelectionChanged += ChartElement_SelectionChanged; ;
-            LineChartElement.FilterOut += ChartElement_FilterOut;
+            LineChartElement.SelectionChanged += SelectionChanged; ;
+            LineChartElement.FilterOut += FilterOut;
 
-            ScatterplotElement.SelectionChanged += ChartElement_SelectionChanged;
+            /*ScatterplotElement.SelectionChanged += ChartElement_SelectionChanged;
             ScatterplotElement.FilterOut += ChartElement_FilterOut;
             */
 
@@ -119,7 +119,7 @@ namespace FlexTable.View
                 ViewModel.MainPageViewModel.TableViewModel.PreviewRows(SelectedRows);
             }
 
-            ViewModel.Reflect(ReflectType.OnSelectionChanged, reason);
+            ViewModel.Reflect(ReflectType.OnSelectionChanged | ReflectType.TrackPreviousParagraph, reason);
         }        
 
         private void FilterOut(object sender, String name, IEnumerable<Row> filteredRows)

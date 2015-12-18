@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FlexTable.ViewModel;
+using FlexTable.Model;
 
 namespace FlexTable.Crayon.Chart
 {
@@ -26,8 +27,8 @@ namespace FlexTable.Crayon.Chart
 
         public GroupedBarChartDatum Parent { get; set; }
 
-        public IEnumerable<Model.Row> EnvelopeRows { get; set; }
-        public IEnumerable<Model.Row> Rows { get; set; }
+        public IEnumerable<Row> EnvelopeRows { get; set; }
+        public IEnumerable<Row> Rows { get; set; }
 
         public BarState BarState { get
             {

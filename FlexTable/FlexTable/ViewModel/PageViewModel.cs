@@ -174,11 +174,6 @@ namespace FlexTable.ViewModel
 
                 pageView.DistributionView.Histogram.Update((onSelectionChanged && !onCreate) || (reason != ReflectReason.FilterOut && reason != ReflectReason.None));
             }
-            else if (ViewStatus.IsCC)
-            {
-                DrawGroupedBarChart(ViewStatus.FirstCategorical, ViewStatus.SecondCategorical, groupedRows);
-                DrawPivotTable();
-            }
             else if (ViewStatus.IsCN)
             {
                 if (onCreate)
@@ -191,24 +186,42 @@ namespace FlexTable.ViewModel
                 if (onSelectionChanged)
                 {
                     SetBarChartSelection(ViewStatus.FirstCategorical, ViewStatus.FirstNumerical, pageView.SelectedRows);
+                    SetLineChartSelection(ViewStatus.FirstCategorical, ViewStatus.FirstNumerical, pageView.SelectedRows);
                 }
 
                 if (onSelectionChanged && !onCreate)
                 {
                     pageView.BarChart.Update(true);
+                    pageView.LineChart.Update(true);
                 }
                 else
                 {
                     pageView.BarChart.Update(reason != ReflectReason.FilterOut && reason != ReflectReason.None);
+                    pageView.LineChart.Update(reason != ReflectReason.FilterOut && reason != ReflectReason.None);
                 }
 
                 firstChartTag = ViewStatus.FirstCategorical.CategoricalType == CategoricalType.Ordinal ? pageView.LineChart.Tag : pageView.BarChart.Tag;
+            }
+            else if (ViewStatus.IsCC)
+            {
+                if (onCreate)
+                {
+                    DrawGroupedBarChart(ViewStatus.FirstCategorical, ViewStatus.SecondCategorical, groupedRows);
+                    DrawPivotTable();
+                }
+
+                if (onSelectionChanged)
+                {
+                    SetGroupedBarChartSelection(ViewStatus.FirstCategorical, ViewStatus.SecondCategorical, pageView.SelectedRows);
+                }
+
+                pageView.GroupedBarChart.Update((onSelectionChanged && !onCreate) || (reason != ReflectReason.FilterOut && reason != ReflectReason.None));
             }
             else if (ViewStatus.IsNN)
             {
                 DrawCorrelatonStatistics(ViewStatus.FirstNumerical, ViewStatus.SecondNumerical);
                 DrawScatterplot(ViewStatus.FirstNumerical, ViewStatus.SecondNumerical);
-                if (ViewStatus.FirstNumerical.Unit == ViewStatus.SecondNumerical.Unit) // 둘의 단위가 같으면 그룹 바 차트 가능
+                if (ViewStatus.FirstNumerical.Unit == ViewStatus.SecondNumerical.Unit)
                 {
                     DrawGroupedBarChartNN(ViewStatus.FirstNumerical, ViewStatus.SecondNumerical, groupedRows);
                 }
@@ -225,12 +238,12 @@ namespace FlexTable.ViewModel
             }
             else if (ViewStatus.IsCNN)
             {
-                // 스캐터플롯을 그린다.
                 DrawScatterplot(ViewStatus.FirstCategorical, ViewStatus.FirstNumerical, ViewStatus.SecondNumerical);
 
-                if(ViewStatus.FirstNumerical.Unit == ViewStatus.SecondNumerical.Unit) // 둘의 단위가 같으면 그룹 바 차트 가능
+                if (ViewStatus.FirstNumerical.Unit == ViewStatus.SecondNumerical.Unit)
                 {
                     DrawGroupedBarChartCNN(ViewStatus.FirstCategorical, ViewStatus.FirstNumerical, ViewStatus.SecondNumerical, groupedRows);
+                    //둘 단위 같으면 라인 차트 가능
                 }
 
                 DrawPivotTable();
@@ -968,8 +981,23 @@ namespace FlexTable.ViewModel
                         })
                         .Where(datum => datum.Children != null && datum.Children.Count > 0)
                         .ToList();            
+        }
 
-            pageView.GroupedBarChart.Update();           
+        void SetGroupedBarChartSelection(ColumnViewModel categorical1, ColumnViewModel categorical2, IEnumerable<Row> selectedRows)
+        {
+            foreach (BarChartDatum barChartDatum in pageView.BarChart.Data)
+            {
+                if (selectedRows.Count() == 0)
+                {
+                    barChartDatum.Rows = null;
+                    barChartDatum.Value = barChartDatum.EnvelopeValue;
+                }
+                else
+                {
+                    barChartDatum.Rows = barChartDatum.EnvelopeRows.Intersect(selectedRows).ToList();
+                    barChartDatum.Value = barChartDatum.Rows.Count();
+                }
+            }
         }
 
         void DrawGroupedBarChart(ColumnViewModel categorical1, ColumnViewModel categorical2, ColumnViewModel numerical, List<GroupedRows> groupedRows)
@@ -1104,25 +1132,52 @@ namespace FlexTable.ViewModel
             LineChartDatum datum = new LineChartDatum()
             {
                 ColumnViewModel = numerical,
-                Key = numerical.AggregatedName,
-                Rows = mainPageViewModel.SheetViewModel.FilteredRows
+                Key = numerical.AggregatedName
             };
 
             datum.DataPoints = groupedRows
-                .Select(g => new DataPoint(
-                    g.Keys[categorical],
-                    numerical.AggregativeFunction.Aggregate(g.Rows.Select(r => (Double)r.Cells[numerical.Index].Content)),
-                    datum,
-                    g.Rows
-                ))
+                .Select(g => new DataPoint() {
+                    Item1 = g.Keys[categorical],
+                    Item2 = numerical.AggregativeFunction.Aggregate(g.Rows.Select(r => (Double)r.Cells[numerical.Index].Content)),
+                    EnvelopeItem2 = numerical.AggregativeFunction.Aggregate(g.Rows.Select(r => (Double)r.Cells[numerical.Index].Content)),
+                    Parent = datum,
+                    EnvelopeRows = g.Rows,
+                    Rows = null
+                })
                 .Take(LineChartMaximumPointNumberInASeries)
                 .ToList();
 
             pageView.LineChart.Data = new List<LineChartDatum>() { datum };
             if (groupedRows.Count > LineChartMaximumPointNumberInASeries) IsLineChartWarningVisible = true;
-            
-            pageView.LineChart.Update();
         }
+
+        void SetLineChartSelection(ColumnViewModel categorical, ColumnViewModel numerical, IEnumerable<Row> selectedRows)
+        {
+
+            if (selectedRows.Count() == 0)
+            {
+                foreach (LineChartDatum lineChartDatum in pageView.LineChart.Data)
+                {
+                    foreach (DataPoint dataPoint in lineChartDatum.DataPoints)
+                    {
+                        dataPoint.Rows = null;
+                        dataPoint.Item2 = dataPoint.EnvelopeItem2;
+                    }
+                }
+            }
+            else
+            {
+                foreach (LineChartDatum lineChartDatum in pageView.LineChart.Data)
+                {
+                    foreach (DataPoint dataPoint in lineChartDatum.DataPoints)
+                    {
+                        dataPoint.Rows = dataPoint.EnvelopeRows.Intersect(selectedRows).ToList();
+                        dataPoint.Item2 = numerical.AggregativeFunction.Aggregate(dataPoint.Rows.Select(r => (Double)r.Cells[numerical.Index].Content));
+                    }
+                }
+            }
+        }
+
 
         void DrawLineChart(ColumnViewModel categorical1, ColumnViewModel categorical2, ColumnViewModel numerical, List<GroupedRows> groupedRows)
         {
@@ -1155,18 +1210,18 @@ namespace FlexTable.ViewModel
                     LineChartDatum datum = new LineChartDatum()
                     {
                         ColumnViewModel = categorical2,
-                        Key = group.Key,
-                        Rows = group.SelectMany(grs => grs.Rows)
+                        Key = group.Key
                     };
 
-                    datum.DataPoints = group.Select(g => new DataPoint(
-                        g.Keys[categorical1],
-                        numerical.AggregativeFunction.Aggregate(
-                                g.Rows.Select(r => (Double)r.Cells[numerical.Index].Content)
-                            ),
-                        datum,
-                        g.Rows
-                    )).ToList();
+                    datum.DataPoints = group.Select(g => new DataPoint()
+                    {
+                        Item1 = g.Keys[categorical1],
+                        Item2 = numerical.AggregativeFunction.Aggregate(g.Rows.Select(r => (Double)r.Cells[numerical.Index].Content)),
+                        EnvelopeItem2 = numerical.AggregativeFunction.Aggregate(g.Rows.Select(r => (Double)r.Cells[numerical.Index].Content)),
+                        Parent = datum,
+                        Rows = null,
+                        EnvelopeRows = g.Rows
+                    }).ToList();
 
                     return datum;
                 });
@@ -1176,7 +1231,7 @@ namespace FlexTable.ViewModel
 
             rows = rows.Take(LineChartMaximumSeriesNumber);
             pageView.LineChart.Data = rows.ToList();
-            pageView.LineChart.Update();
+            pageView.LineChart.Update(false);
         }
 
         void DrawScatterplot(ColumnViewModel categorical, ColumnViewModel numerical1, ColumnViewModel numerical2)

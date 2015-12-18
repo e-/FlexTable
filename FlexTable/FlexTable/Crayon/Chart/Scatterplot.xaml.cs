@@ -260,7 +260,7 @@ namespace FlexTable.Crayon.Chart
                 if (SelectionChanged != null)
                     SelectionChanged(this, e, selectedRows, index);
 
-                CircleElement.Update(true, false);
+                //CircleElement.Update(true, false);
                 if (LegendVisibility == Visibility.Visible)
                 {
                     LegendRectangleElement.Update(TransitionType.All);
@@ -315,7 +315,7 @@ namespace FlexTable.Crayon.Chart
                         SelectionChanged(this, null, selectedRows, index);
                 }
                 
-                CircleElement.Update(true, false);
+                //CircleElement.Update(true, false);
                 if (LegendVisibility == Visibility.Visible)
                 {
                     LegendRectangleElement.Update(TransitionType.All);
@@ -429,36 +429,9 @@ namespace FlexTable.Crayon.Chart
             LegendTextElement.Visibility = LegendVisibility;
 
             LegendHandleRectangleElement.Update(TransitionType.None);
-            CircleElement.Update(useCircleTransition, true);
+            //CircleElement.Update(useCircleTransition, true);
             HorizontalAxis.Update(true);
             VerticalAxis.Update(true);
-        }
-
-        public void ClearSelection(Boolean withHandler)
-        {
-            selectedRows.Clear();
-
-            if (withHandler && SelectionChanged != null)
-                SelectionChanged(this, null, new List<Row>(), 0);
-
-            CircleElement.Update(true, false);
-            if (LegendVisibility == Visibility.Visible)
-            {
-                LegendRectangleElement.Update(TransitionType.All);
-                LegendTextElement.Update(TransitionType.Opacity);
-            }
-        }
-
-        public void ImportSelection(IEnumerable<Row> importedRows)
-        {
-            selectedRows = importedRows.ToList();
-
-            CircleElement.Update(false, false);
-            if (LegendVisibility == Visibility.Visible)
-            {
-                LegendRectangleElement.Update(TransitionType.None);
-                LegendTextElement.Update(TransitionType.None);
-            }
         }
     }
 }

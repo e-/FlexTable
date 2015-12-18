@@ -89,84 +89,42 @@ namespace d3.Component
 
         List<Path> previousPaths = new List<Path>();
         Storyboard previousStoryboard = null;
-
-        public void Update()
+        
+        public void Update(TransitionType transitionType)
         {
-            Update(false);
-        }
-
-        public void Update(Boolean useTransition)
-        {
-            if (useTransition)
+            if (previousStoryboard != null) previousStoryboard.Pause();
+            Storyboard sb = new Storyboard()
             {
-                Int32 index = 0;
-                if (previousStoryboard != null) previousStoryboard.Pause();
-                Storyboard sb = new Storyboard()
-                {
-                    ///BeginTime = Const.AnimationDelay
-                };
-                foreach (Object datum in Data.List)
-                {
-                    Path path = LineCanvas.Children[index] as Path;
+                ///BeginTime = Const.AnimationDelay
+            };
 
-                    if (OpacityGetter != null && path.Opacity != OpacityGetter(datum, index))
-                    {
-                        sb.Children.Add(Util.GenerateDoubleAnimation(path, "Opacity", OpacityGetter(datum, index)));
-                    }
-                    index++;
-                }
-                previousStoryboard = sb;
-                sb.Begin();
-            }
-            else
+            Int32 index = 0;
+            foreach (Object datum in Data.List)
             {
-                foreach (Path path in previousPaths)
+                Path path;
+                Int32 localIndex = index;
+
+                if (LineCanvas.Children.Count > index)
                 {
-                    LineCanvas.Children.Remove(path);
+                    path = LineCanvas.Children[index] as Path;
+                    path.Visibility = Visibility.Visible;
                 }
-                previousPaths.Clear();
-
-                Int32 index = 0;
-                foreach (Object datum in Data.List)
+                else
                 {
-                    List<Point> points = CoordinateGetter(datum, index);
-
-                    if (points.Count == 0)
+                    path = new Path()
                     {
-                        throw new Exception("No coordinate found");
-                    }
-
-                    PathFigure pathFigure = new PathFigure();
-
-                    pathFigure.StartPoint = points.First();
-
-                    foreach (Point point in points.Where((p, i) => i > 0))
-                    {
-                        LineSegment lineSegment = new LineSegment();
-                        lineSegment.Point = point;
-                        pathFigure.Segments.Add(lineSegment);
-                    }
-
-                    PathGeometry pathGeometry = new PathGeometry();
-                    pathGeometry.Figures = new PathFigureCollection();
-
-                    pathGeometry.Figures.Add(pathFigure);
-
-                    Path path = new Path()
-                    {
-                        Data = pathGeometry,
                         StrokeStartLineCap = PenLineCap.Round,
                         StrokeEndLineCap = PenLineCap.Round,
                         Stroke = StrokeGetter == null ? new SolidColorBrush(Colors.LightGray) : new SolidColorBrush(StrokeGetter(datum, index)),
                         StrokeThickness = StrokeThicknessGetter == null ? 2 : StrokeThicknessGetter(datum, index),
-                        Opacity = OpacityGetter == null ? 1 : OpacityGetter(datum, index)
+                        Opacity = 0
                     };
 
                     if (LinePointerPressed != null)
                     {
                         path.PointerPressed += delegate (object sender, PointerRoutedEventArgs e)
                         {
-                            LinePointerPressed(path, e, datum, index);
+                            LinePointerPressed(path, e, Data.List[localIndex], localIndex);
                         };
                     }
 
@@ -174,22 +132,62 @@ namespace d3.Component
                     {
                         path.PointerReleased += delegate (object sender, PointerRoutedEventArgs e)
                         {
-                            LinePointerReleased(path, e, datum, index);
+                            LinePointerReleased(path, e, Data.List[localIndex], localIndex);
                         };
                     }
 
-                    if(LineTapped != null)
+                    if (LineTapped != null)
                     {
                         path.Tapped += delegate (object sender, TappedRoutedEventArgs e)
                         {
-                            LineTapped(path, e, datum, index);
+                            LineTapped(path, e, Data.List[localIndex], localIndex);
                         };
                     }
 
-                    index++;
                     LineCanvas.Children.Add(path);
-                    previousPaths.Add(path);
                 }
+
+                List<Point> points = CoordinateGetter(datum, index);
+
+                if (points.Count == 0)
+                {
+                    throw new Exception("No coordinate found");
+                }
+
+                PathFigure pathFigure = new PathFigure();
+
+                pathFigure.StartPoint = points.First();
+
+                foreach (Point point in points.Where((p, i) => i > 0))
+                {
+                    LineSegment lineSegment = new LineSegment();
+                    lineSegment.Point = point;
+                    pathFigure.Segments.Add(lineSegment);
+                }
+
+                PathGeometry pathGeometry = new PathGeometry();
+                pathGeometry.Figures = new PathFigureCollection();
+
+                pathGeometry.Figures.Add(pathFigure);
+
+                path.Data = pathGeometry;
+
+                if (transitionType.HasFlag(TransitionType.Opacity)) {
+                    sb.Children.Add(Util.GenerateDoubleAnimation(path, "Opacity", OpacityGetter == null ? 1 : OpacityGetter(datum, index)));
+                }
+                else
+                {
+                    path.Opacity = OpacityGetter == null ? 1 : OpacityGetter(datum, index);
+                }
+                index++;
+            }
+
+            previousStoryboard = sb;
+            sb.Begin();
+
+            for (Int32 i = LineCanvas.Children.Count - 1; i >= index; i--)
+            {
+                LineCanvas.Children[i].Visibility = Visibility.Collapsed;
             }
         }
         
