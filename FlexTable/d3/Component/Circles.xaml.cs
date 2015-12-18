@@ -115,32 +115,36 @@ namespace d3.Component
                     ellipse.Visibility = Visibility.Visible;
                     ellipse.Fill = ColorGetter == null ? new SolidColorBrush(Colors.LightGray) : new SolidColorBrush(ColorGetter(datum, index));
 
-                    if (transitionType.HasFlag(TransitionType.Size))
+                    Double newRadius = RadiusGetter(datum, index);
+                    /*if (transitionType.HasFlag(TransitionType.Size))
                     {
-                        if (ellipse.Height != RadiusGetter(datum, index))
+                        if (ellipse.Height != newRadius)
                         {
-                            storyboard.Children.Add(Util.GenerateDoubleAnimation(ellipse, "Height", RadiusGetter(datum, index), true));
-                            storyboard.Children.Add(Util.GenerateDoubleAnimation(ellipse, "Width", RadiusGetter(datum, index), true));
+                            storyboard.Children.Add(Util.GenerateDoubleAnimation(ellipse, "Height", newRadius, true));
+                            storyboard.Children.Add(Util.GenerateDoubleAnimation(ellipse, "Width", newRadius, true));
                         }
                     }
                     else
-                    {
-                        ellipse.Height = RadiusGetter(datum, index);
-                        ellipse.Width = RadiusGetter(datum, index);
-                    }
+                    {*/
+                        ellipse.Height = newRadius;
+                        ellipse.Width = newRadius;
+                    //}
 
 
                     if (transitionType.HasFlag(TransitionType.Position))
                     {
-                        if((ellipse.RenderTransform as TranslateTransform).X != XGetter(datum, index) - RadiusGetter(datum, index) / 2) 
-                            storyboard.Children.Add(Util.GenerateDoubleAnimation(ellipse.RenderTransform, "X", XGetter(datum, index) - RadiusGetter(datum, index) / 2));
-                        if((ellipse.RenderTransform as TranslateTransform).Y != YGetter(datum, index) - RadiusGetter(datum, index) / 2)
-                            storyboard.Children.Add(Util.GenerateDoubleAnimation(ellipse.RenderTransform, "Y", YGetter(datum, index) - RadiusGetter(datum, index) / 2));
+                        Double newX = XGetter(datum, index) - newRadius / 2;
+                        Double newY = YGetter(datum, index) - newRadius / 2;
+
+                        if ((ellipse.RenderTransform as TranslateTransform).X != newX)
+                            storyboard.Children.Add(Util.GenerateDoubleAnimation(ellipse.RenderTransform, "X", newX));
+                        if((ellipse.RenderTransform as TranslateTransform).Y != newY)
+                            storyboard.Children.Add(Util.GenerateDoubleAnimation(ellipse.RenderTransform, "Y", newY));
                     }
                     else
                     {
-                        (ellipse.RenderTransform as TranslateTransform).X = XGetter(datum, index) - RadiusGetter(datum, index) / 2;
-                        (ellipse.RenderTransform as TranslateTransform).Y = YGetter(datum, index) - RadiusGetter(datum, index) / 2;
+                        (ellipse.RenderTransform as TranslateTransform).X = XGetter(datum, index) - newRadius / 2;
+                        (ellipse.RenderTransform as TranslateTransform).Y = YGetter(datum, index) - newRadius / 2;
                     }
 
                     if (transitionType.HasFlag(TransitionType.Opacity))

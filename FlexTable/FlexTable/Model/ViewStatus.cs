@@ -478,10 +478,10 @@ namespace FlexTable.Model
             else if (IsCNN)
             {
                 // grouped by 는 색깔 안넣는걸로 
-                foreach (RowViewModel rowViewModel in groupedRowViewModels) rowViewModel.Color = DefaultCellForegroundColor;
+                ColumnViewModel categorical = LastCategorical;
+                foreach (RowViewModel rowViewModel in groupedRowViewModels) rowViewModel.Color = (rowViewModel.Cells[categorical.Index].Content as Category).Color;
 
                 // all row는 categorical 별로 색깔
-                ColumnViewModel categorical = FirstCategorical;
                 foreach (RowViewModel rowViewModel in allRowViewModels) rowViewModel.Color = (rowViewModel.Row.Cells[categorical.Index].Content as Category).Color;
             }
             /*else if (categoricalCount == 0 && numericalCount == 1)

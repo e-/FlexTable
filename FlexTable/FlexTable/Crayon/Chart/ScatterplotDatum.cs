@@ -8,21 +8,20 @@ using FlexTable.ViewModel;
 
 namespace FlexTable.Crayon.Chart
 {
+    public enum ScatterplotState
+    {
+        Default,
+        Unselected,
+        Selected
+    }
+
     public class ScatterplotDatum
     {
         public Object Key { get; set; }
         public Double Value1 { get; set; }
         public Double Value2 { get; set; }
         public Row Row { get; set; }
+        public ScatterplotState State { get; set; }
         public ColumnViewModel ColumnViewModel { get; set; }
-
-        public ScatterplotDatum(Object key, Double value1, Double value2, Row row, ColumnViewModel columnViewModel)
-        {
-            this.Key = key;
-            this.Value1 = value1;
-            this.Value2 = value2;
-            this.Row = row;
-            this.ColumnViewModel = columnViewModel;
-        }
     }
 }

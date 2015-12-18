@@ -556,10 +556,10 @@ namespace FlexTable.Crayon.Chart
                 }
 
                 LegendRectangleElement.Data = new Data() { List = LegendData.Select(d => d as Object).ToList() };
-                LegendRectangleElement.Update(TransitionType.None);
+                LegendRectangleElement.Update(useTransition ? TransitionType.Opacity : TransitionType.None);
 
                 LegendTextElement.Data = new Data() { List = LegendData.Select(d => d as Object).ToList() };
-                LegendTextElement.Update(TransitionType.Opacity);
+                LegendTextElement.Update(useTransition ? TransitionType.Opacity : TransitionType.None);
 
                 LegendAreaWidth = Math.Max(LegendTextElement.MaxActualWidth + Const.LegendPatchWidth + Const.LegendPatchSpace + Const.PaddingRight, Const.MinimumLegendWidth);
             }

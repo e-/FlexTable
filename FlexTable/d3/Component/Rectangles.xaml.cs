@@ -195,93 +195,86 @@ namespace d3.Component
                 else
                 {
                     rect = RectangleCanvas.Children[index] as Rectangle;
+                    rect.Visibility = Visibility.Visible;
 
-                    if (WidthGetter(datum, index) != rect.Width)
+                    Double newWidth = WidthGetter(datum, index);
+                    if (newWidth != rect.Width)
                     {
                         if (transitionType.HasFlag(TransitionType.Size))
                         {
-                            //sb.Children.Add(Util.GenerateDoubleAnimation(rect, "Width", WidthGetter(datum, index), true));
-                            sb.Children.Add(Util.GenerateDoubleAnimation(rect.RenderTransform, "ScaleX", WidthGetter(datum, index), true));
+                            sb.Children.Add(Util.GenerateDoubleAnimation(rect.RenderTransform, "ScaleX", newWidth));
                         }
                         else
                         {
-                            //rect.Width = WidthGetter(datum, index);
-                            (rect.RenderTransform as CompositeTransform).ScaleX = WidthGetter(datum, index);
+                            (rect.RenderTransform as CompositeTransform).ScaleX = newWidth;
                         }
                     }
 
-                    
-                    if (HeightGetter(datum, index) != rect.Height)
+                    Double newHeight = HeightGetter(datum, index);
+                    if (newHeight != rect.Height)
                     {
                         if (transitionType.HasFlag(TransitionType.Size))
                         {
-                            //sb.Children.Add(Util.GenerateDoubleAnimation(rect, "Height", HeightGetter(datum, index), true));
-                            sb.Children.Add(Util.GenerateDoubleAnimation(rect.RenderTransform, "ScaleY", HeightGetter(datum, index), true));
+                            sb.Children.Add(Util.GenerateDoubleAnimation(rect.RenderTransform, "ScaleY", newHeight));
                         }
                         else
                         {
-                            //rect.Height = HeightGetter(datum, index);
-                            (rect.RenderTransform as CompositeTransform).ScaleY = HeightGetter(datum, index);
+                            (rect.RenderTransform as CompositeTransform).ScaleY = newHeight;
                         }
                     }
 
-                    if (XGetter(datum, index) != Canvas.GetLeft(rect))
+                    Double newX = XGetter(datum, index);
+                    if (newX != (rect.RenderTransform as CompositeTransform).TranslateX)
                     {
                         if (transitionType.HasFlag(TransitionType.Position))
                         {
-                            //sb.Children.Add(Util.GenerateDoubleAnimation(rect, "(Canvas.Left)", XGetter(datum, index)));
-                            sb.Children.Add(Util.GenerateDoubleAnimation(rect.RenderTransform, "TranslateX", XGetter(datum, index), true));
+                            sb.Children.Add(Util.GenerateDoubleAnimation(rect.RenderTransform, "TranslateX", newX));
                         }
                         else
                         {
-                            //Canvas.SetLeft(rect, XGetter(datum, index));
-                            (rect.RenderTransform as CompositeTransform).TranslateX = XGetter(datum, index);
+                            (rect.RenderTransform as CompositeTransform).TranslateX = newX;
                         }
                     }
 
-                    if (YGetter(datum, index) != Canvas.GetTop(rect))
+                    Double newY = YGetter(datum, index);
+                    if (newY != (rect.RenderTransform as CompositeTransform).TranslateY)
                     {
                         if (transitionType.HasFlag(TransitionType.Position))
                         {
-                            /*if (TransitionPivotType.HasFlag(TransitionPivotType.Bottom) && rect.Height < HeightGetter(datum, index))
-                            {
-                                Canvas.SetTop(rect, YGetter(datum, index) + HeightGetter(datum, index));
-                                sb.Children.Add(Util.GenerateDoubleAnimation(rect, "(Canvas.Top)", YGetter(datum, index), true));
-                            }
-                            else
-                            {*/
-                            //sb.Children.Add(Util.GenerateDoubleAnimation(rect, "(Canvas.Top)", YGetter(datum, index), true));
-                            sb.Children.Add(Util.GenerateDoubleAnimation(rect.RenderTransform, "TranslateY", YGetter(datum, index), true));
-                            //}
+                            sb.Children.Add(Util.GenerateDoubleAnimation(rect.RenderTransform, "TranslateY", newY));
                         }
                         else
                         {
-                            (rect.RenderTransform as CompositeTransform).TranslateY = YGetter(datum, index);
-                            //Canvas.SetTop(rect, YGetter(datum, index));
+                            (rect.RenderTransform as CompositeTransform).TranslateY = newY;
                         }
-                    }                   
+                    }
 
-                    if (ColorGetter != null && ColorGetter(datum, index) != (rect.Fill as SolidColorBrush).Color)
+                    Color newColor = ColorGetter(datum, index);
+                    if (newColor != (rect.Fill as SolidColorBrush).Color)
                     {
                         if (transitionType.HasFlag(TransitionType.Color))
                         {
-                            sb.Children.Add(Util.GenerateColorAnimation(rect, "(Rectangle.Fill).(SolidColorBrush.Color)", ColorGetter(datum, index)));
+                            sb.Children.Add(Util.GenerateColorAnimation(rect, "(Rectangle.Fill).(SolidColorBrush.Color)", newColor));
                         }
                         else
                         {
-                            rect.Fill = new SolidColorBrush(ColorGetter(datum, index));
+                            rect.Fill = new SolidColorBrush(newColor);
                         }
                     }
 
-                    if (OpacityGetter != null && OpacityGetter(datum, index) != rect.Opacity)
+                    if (OpacityGetter != null)
                     {
-                        if (transitionType.HasFlag(TransitionType.Opacity))
+                        Double newOpacity = OpacityGetter(datum, index);
+                        if (newOpacity != rect.Opacity)
                         {
-                            sb.Children.Add(Util.GenerateDoubleAnimation(rect, "Opacity", OpacityGetter(datum, index)));
-                        }
-                        else
-                        {
-                            rect.Opacity = OpacityGetter(datum, index);
+                            if (transitionType.HasFlag(TransitionType.Opacity))
+                            {
+                                sb.Children.Add(Util.GenerateDoubleAnimation(rect, "Opacity", newOpacity));
+                            }
+                            else
+                            {
+                                rect.Opacity = newOpacity;
+                            }
                         }
                     }
                 }
@@ -291,7 +284,7 @@ namespace d3.Component
 
             for (Int32 i = RectangleCanvas.Children.Count - 1; i >= index; --i)
             {
-                RectangleCanvas.Children.RemoveAt(i);
+                RectangleCanvas.Children[i].Visibility = Visibility.Collapsed;
             }
 
             if (previousStoryboard != null) previousStoryboard.Pause();

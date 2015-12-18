@@ -201,6 +201,16 @@
                                              IsHitTestVisible="False" Tag="Bar Chart"/>
                         </StackPanel>
 
+                        <StackPanel Visibility="{Binding IsGroupedBarChartVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Grouped Bar Chart" Background="Transparent">
+                            <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="GroupedBarChartTitleElement"></StackPanel>
+                            <TextBlock Style="{StaticResource TooManyElementsWarningStyle}" Visibility="{Binding IsGroupedBarChartWarningVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <Run FontFamily="FontAwesome" Foreground="#CC0000">&#xf071;</Run>
+                                <Run Text="{StaticResource TooManyElementsWarningString}"></Run>
+                            </TextBlock>
+                            <crayon:GroupedBarChart x:Name="GroupedBarChartElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}" 
+                                                    IsHitTestVisible="False" Tag="Grouped Bar Chart"/>
+                        </StackPanel>
+
                         <StackPanel Visibility="{Binding IsLineChartVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Line Chart" Background="Transparent">
                             <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="LineChartTitleElement"></StackPanel>
                             <TextBlock Style="{StaticResource TooManyElementsWarningStyle}" Visibility="{Binding IsLineChartWarningVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
@@ -221,16 +231,6 @@
                             <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="DescriptiveStatisticsTitleElement"></StackPanel>
                             <local:DescriptiveStatisticsView x:Name="DescriptiveStatisticsViewElement" Width="{StaticResource ParagraphWidth}" 
                                                              Height="{StaticResource ParagraphHeight}" Tag="Statistics"/>
-                        </StackPanel>
-
-                        <StackPanel Visibility="{Binding IsGroupedBarChartVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Grouped Bar Chart" Background="Transparent">
-                            <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="GroupedBarChartTitleElement"></StackPanel>
-                            <TextBlock Style="{StaticResource TooManyElementsWarningStyle}" Visibility="{Binding IsGroupedBarChartWarningVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                <Run FontFamily="FontAwesome" Foreground="#CC0000">&#xf071;</Run>
-                                <Run Text="{StaticResource TooManyElementsWarningString}"></Run>
-                            </TextBlock>
-                            <crayon:GroupedBarChart x:Name="GroupedBarChartElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}" 
-                                                    IsHitTestVisible="False" Tag="Grouped Bar Chart"/>
                         </StackPanel>
 
                         <StackPanel Visibility="{Binding IsScatterplotVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Scatterplot" Background="Transparent">

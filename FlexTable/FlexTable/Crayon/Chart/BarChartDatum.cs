@@ -27,16 +27,50 @@ namespace FlexTable.Crayon.Chart
 
         public GroupedBarChartDatum Parent { get; set; }
 
-        public IEnumerable<Row> EnvelopeRows { get; set; }
-        public IEnumerable<Row> Rows { get; set; }
-
-        public BarState BarState { get
+        private IEnumerable<Row> envelopeRows;
+        public IEnumerable<Row> EnvelopeRows
+        {
+            get
             {
-                if (Rows == null) return BarState.Default;
-                if (Rows.Count() == 0) return BarState.Unselected;
-                if (Rows.Count() < EnvelopeRows.Count()) return BarState.PartiallySelected;
-                return BarState.FullySelected;
-            } }
+                return envelopeRows;
+            }
+            set
+            {
+                envelopeRows = value;
+                UpdateBarState();
+            }
+        }
+
+        private IEnumerable<Row> rows;
+        public IEnumerable<Row> Rows
+        {
+            get
+            {
+                return rows;
+            }
+            set
+            {
+                rows = value;
+                UpdateBarState();
+            }
+        }
+
+        void UpdateBarState()
+        {
+            if (rows == null) barState = BarState.Default;
+            else if (rows.Count() == 0) barState = BarState.Unselected;
+            else if (rows.Count() < envelopeRows.Count()) barState = BarState.PartiallySelected;
+            else barState = BarState.FullySelected;
+        }
+
+        private BarState barState;
+        public BarState BarState
+        {
+            get
+            {
+                return barState;
+            }
+        }
         
         public BarChartDatum()
         {

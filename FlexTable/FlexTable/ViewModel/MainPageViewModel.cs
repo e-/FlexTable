@@ -130,7 +130,7 @@ namespace FlexTable.ViewModel
 
         public async Task Initialize()
         {
-            Sheet sheet = await Util.CsvLoader.Load("fitts.csv"); // "Population-filtered.csv");
+            Sheet sheet = await Util.CsvLoader.Load("iris.csv"); // "Population-filtered.csv");
             Initialize(sheet);
         }
 
@@ -177,8 +177,6 @@ namespace FlexTable.ViewModel
 
                     ExplorationViewModel.TopPageView.ViewModel.State = PageViewModel.PageViewState.Selected;
                     ExplorationViewModel.PageViewStateChanged(ExplorationViewModel.TopPageView.ViewModel, ExplorationViewModel.TopPageView);
-
-                    return;
 
                     ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[4]);
 

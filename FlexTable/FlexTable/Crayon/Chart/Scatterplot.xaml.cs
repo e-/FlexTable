@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using d3;
 using d3.ColorScheme;
+using d3.Component;
 using d3.Scale;
 using FlexTable.Model;
 using FlexTable.Util;
@@ -105,7 +106,7 @@ namespace FlexTable.Crayon.Chart
         {
             get
             {
-                return (d, index) => (selectedRows.Count == 0) ? 0.8 : (selectedRows.Contains((d as ScatterplotDatum).Row) ? 0.8 : 0.1);
+                return (d, index) => (d as ScatterplotDatum).State != ScatterplotState.Unselected ? 0.8 : 0.1;
             }
         }
 
@@ -126,13 +127,13 @@ namespace FlexTable.Crayon.Chart
             }
         }
         public Func<Object, Int32, Double> LegendPatchOpacityGetter { get {
-                return (d, index) => (selectedRows.Count == 0 || categoricalColumnViewModel == null) ? 1 : (selectedRows.Any(dd => dd.Cells[categoricalColumnViewModel.Index].Content == d) ? 1 : 0.2);
+                return (d, index) => (categoricalColumnViewModel == null) ? 1 : (Data.Where(dd => dd.Key == d).Any(dd => dd.State != ScatterplotState.Unselected) ? 1 : 0.2);
             } }
 
         public Func<Object, Int32, Double> LegendTextXGetter { get { return (d, index) => Const.LegendPatchWidth + Const.LegendPatchSpace; } }
         public Func<Object, Int32, String> LegendTextGetter { get { return (d, index) => d.ToString(); } }
         public Func<TextBlock, Object, Int32, Double> LegendTextOpacityGetter { get {
-                return (textBlock, d, index) => (selectedRows.Count == 0 || categoricalColumnViewModel == null) ? 1 : (selectedRows.Any(dd => dd.Cells[categoricalColumnViewModel.Index].Content == d) ? 1 : 0.2); } }
+                return (textBlock, d, index) => (categoricalColumnViewModel == null) ? 1 : (Data.Where(dd => dd.Key == d).Any(dd => dd.State != ScatterplotState.Unselected) ? 1 : 0.2); } }
 
         public Func<Object, Int32, Color> ColorGetter
         {
@@ -160,13 +161,10 @@ namespace FlexTable.Crayon.Chart
 
         public Double LegendAreaWidth { get; set; } = 140;
 
-        public event d3.Event.EventHandler SelectionChanged;
-        private List<Row> selectedRows = new List<Row>();
-        public List<Row> SelectedRows => selectedRows;
+        public event Event.SelectionChangedEventHandler SelectionChanged;
         private ColumnViewModel categoricalColumnViewModel;
 
-        public event d3.Event.EventHandler FilterIn;
-        public event d3.Event.EventHandler FilterOut;
+        public event Event.FilterOutEventHandler FilterOut;
         
         Drawable drawable = new Drawable()
         {
@@ -239,35 +237,21 @@ namespace FlexTable.Crayon.Chart
         private void LegendHandleRectangleElement_RectangleTapped(object sender, object e, object datum, int index)
         {
             TappedRoutedEventArgs args = e as TappedRoutedEventArgs;
-            if (args.PointerDeviceType == PointerDeviceType.Touch)
-            {
-                IEnumerable<Row> selected = Data.Where(d => d.Key == datum).Select(d => d.Row);
+            IEnumerable<ScatterplotDatum> selected = Data.Where(d => d.Key == datum);
 
-                if(selected.Except(selectedRows).Count() == 0) // 모두 다이미있으면 지워야함
+            if (SelectionChanged != null)
+            {
+                if (selected.Count() == selected.Where(sd => sd.State != ScatterplotState.Selected).Count())
                 {
-                    selectedRows = selectedRows.Except(selected).Distinct().ToList();
+                    SelectionChanged(this, selected.Select(sd => sd.Row), SelectionChangedType.Add, ReflectReason.ChartSelection);
                 }
                 else
                 {
-                    selectedRows = selectedRows.Concat(selected).Distinct().ToList();
+                    SelectionChanged(this, selected.Select(sd => sd.Row), SelectionChangedType.Remove, ReflectReason.ChartSelection);
                 }
-
-                if (selectedRows.Count == Data.Count)
-                {
-                    selectedRows.Clear();
-                }
-
-                if (SelectionChanged != null)
-                    SelectionChanged(this, e, selectedRows, index);
-
-                //CircleElement.Update(true, false);
-                if (LegendVisibility == Visibility.Visible)
-                {
-                    LegendRectangleElement.Update(TransitionType.All);
-                    LegendTextElement.Update(TransitionType.Opacity);
-                }
-                args.Handled = true;
             }
+
+            args.Handled = true;
         }
         
         private void Drawable_StrokeAdded(InkManager inkManager)
@@ -285,9 +269,9 @@ namespace FlexTable.Crayon.Chart
                     .Select(d => d.Row);
 
                 index = 0;
-                foreach (Rectangle rect in LegendHandleRectangleElement.Children)
+                foreach (D3Rectangle rect in LegendHandleRectangleElement.ChildRectangles)
                 {
-                    Rect r = new Rect(Canvas.GetLeft(rect) + ChartAreaEndX, Canvas.GetTop(rect), rect.Width, rect.Height);
+                    Rect r = new Rect(rect.X + ChartAreaEndX, rect.Y, rect.Width, rect.Height);
 
                     if (Const.IsIntersected(r, boundingRect))
                     {
@@ -298,21 +282,21 @@ namespace FlexTable.Crayon.Chart
                     index++;
                 }
 
+                intersectedRows = intersectedRows.Distinct().ToList();
+
                 if (Const.IsStrikeThrough(boundingRect))
                 {
                     if (FilterOut != null)
                     {
-                        FilterOut(this, $"Filtered by {Data[0].ColumnViewModel.Name}", intersectedRows.ToList(), index);
+                        FilterOut(this, $"Filtered by {Data[0].ColumnViewModel.Name}", intersectedRows.ToList());
                     }
                 } 
                 else
                 {
-                    selectedRows = selectedRows.Concat(intersectedRows).Distinct().ToList();
-                    if (selectedRows.Count == Data.Count())
-                        selectedRows.Clear();
-
                     if (SelectionChanged != null)
-                        SelectionChanged(this, null, selectedRows, index);
+                    {
+                        SelectionChanged(this, intersectedRows, SelectionChangedType.Replace, ReflectReason.ChartSelection);
+                    }
                 }
                 
                 //CircleElement.Update(true, false);
@@ -326,7 +310,7 @@ namespace FlexTable.Crayon.Chart
             drawable.RemoveAllStrokes();
         }
         
-        public void Update()
+        public void Update(Boolean useTransition)
         {
             categoricalColumnViewModel = Data.First().ColumnViewModel;
 
@@ -342,10 +326,10 @@ namespace FlexTable.Crayon.Chart
             if (LegendVisibility == Visibility.Visible)
             {
                 LegendRectangleElement.Data = D3LegendData;
-                LegendRectangleElement.Update(TransitionType.None);
+                LegendRectangleElement.Update(useTransition ? TransitionType.Opacity : TransitionType.None);
 
                 LegendTextElement.Data = D3LegendData;
-                LegendTextElement.Update(TransitionType.None);
+                LegendTextElement.Update(useTransition ? TransitionType.Opacity : TransitionType.None);
 
                 LegendAreaWidth = LegendTextElement.MaxActualWidth + Const.LegendPatchWidth + Const.LegendPatchSpace + Const.PaddingRight;
             }
@@ -397,8 +381,6 @@ namespace FlexTable.Crayon.Chart
             };
             YScale.Nice();
 
-            Boolean useCircleTransition = true;
-            if (CircleElement.Data == null || CircleElement.Data.List.Count != D3Data.List.Count) useCircleTransition = false;
             CircleElement.Data = D3Data;
 
             HorizontalAxis.Scale = XScale;
@@ -429,9 +411,9 @@ namespace FlexTable.Crayon.Chart
             LegendTextElement.Visibility = LegendVisibility;
 
             LegendHandleRectangleElement.Update(TransitionType.None);
-            //CircleElement.Update(useCircleTransition, true);
-            HorizontalAxis.Update(true);
-            VerticalAxis.Update(true);
+            CircleElement.Update(useTransition ? TransitionType.All : TransitionType.None);
+            HorizontalAxis.Update(useTransition);
+            VerticalAxis.Update(useTransition);
         }
     }
 }

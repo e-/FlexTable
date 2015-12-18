@@ -203,6 +203,7 @@
     <Compile Include="ViewModel\MetadataViewModel.cs" />
     <Compile Include="ViewModel\NotifyViewModel.cs" />
     <Compile Include="ViewModel\PageViewModel.cs" />
+    <Compile Include="ViewModel\PageViewModelEditableTitle.cs" />
     <Compile Include="ViewModel\PivotTableViewModel.cs" />
     <Compile Include="ViewModel\RowViewModel.cs" />
     <Compile Include="ViewModel\SheetViewModel.cs" />

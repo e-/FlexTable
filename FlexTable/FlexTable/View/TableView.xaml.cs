@@ -210,9 +210,7 @@ namespace FlexTable.View
                     thirdColoredColumnViewModel = viewStatus?.GetThirdColoredColumnViewModel();
 
                 // pivotTable과 barChart가 색깔을 공유함에 주의
-                if (viewStatus.IsCorrelationStatisticsVisible ||
-                    viewStatus.IsDescriptiveStatisticsVisible
-                    )
+                if (viewStatus.IsCorrelationStatisticsVisible || viewStatus.IsDescriptiveStatisticsVisible)
                 {
                     coloredColumnViewModel = firstColoredColumnViewModel = secondColoredColumnViewModel = thirdColoredColumnViewModel = null;
                 }
@@ -232,6 +230,10 @@ namespace FlexTable.View
                 {
                     firstColoredColumnViewModel = null;
                     secondColoredColumnViewModel = null;
+                }
+                else if (viewStatus.IsCNN)
+                {
+                    firstColoredColumnViewModel = secondColoredColumnViewModel = null;
                 }
 
                 for (i = 0; i < ViewModel.GroupedRowViewModels.Count; ++i)

@@ -155,8 +155,7 @@ namespace FlexTable.ViewModel
                     SetFrequencyHistogramSelection(ViewStatus.FirstCategorical, pageView.SelectedRows);
                 }
 
-                if (onSelectionChanged && !onCreate) pageView.BarChart.Update(true);
-                else pageView.BarChart.Update(reason != ReflectReason.FilterOut && reason != ReflectReason.None);
+                pageView.BarChart.Update((onSelectionChanged && !onCreate) || (reason != ReflectReason.FilterOut && reason != ReflectReason.None));
             }
             else if (ViewStatus.IsN)
             {
@@ -189,16 +188,8 @@ namespace FlexTable.ViewModel
                     SetLineChartSelection(ViewStatus.FirstCategorical, ViewStatus.FirstNumerical, pageView.SelectedRows);
                 }
 
-                if (onSelectionChanged && !onCreate)
-                {
-                    pageView.BarChart.Update(true);
-                    pageView.LineChart.Update(true);
-                }
-                else
-                {
-                    pageView.BarChart.Update(reason != ReflectReason.FilterOut && reason != ReflectReason.None);
-                    pageView.LineChart.Update(reason != ReflectReason.FilterOut && reason != ReflectReason.None);
-                }
+                pageView.BarChart.Update((onSelectionChanged && !onCreate) || (reason != ReflectReason.FilterOut && reason != ReflectReason.None));
+                pageView.LineChart.Update((onSelectionChanged && !onCreate) || (reason != ReflectReason.FilterOut && reason != ReflectReason.None));
 
                 firstChartTag = ViewStatus.FirstCategorical.CategoricalType == CategoricalType.Ordinal ? pageView.LineChart.Tag : pageView.BarChart.Tag;
             }
@@ -219,11 +210,29 @@ namespace FlexTable.ViewModel
             }
             else if (ViewStatus.IsNN)
             {
-                DrawCorrelatonStatistics(ViewStatus.FirstNumerical, ViewStatus.SecondNumerical);
-                DrawScatterplot(ViewStatus.FirstNumerical, ViewStatus.SecondNumerical);
+                if (onCreate)
+                {
+                    DrawCorrelatonStatistics(ViewStatus.FirstNumerical, ViewStatus.SecondNumerical);
+                    DrawScatterplot(ViewStatus.FirstNumerical, ViewStatus.SecondNumerical);
+                    if (ViewStatus.FirstNumerical.Unit == ViewStatus.SecondNumerical.Unit)
+                    {
+                        DrawGroupedBarChartNN(ViewStatus.FirstNumerical, ViewStatus.SecondNumerical, groupedRows);
+                    }
+                }
+
+                if(onSelectionChanged)
+                {
+                    SetScatterplotSelection(pageView.SelectedRows);
+                    if (ViewStatus.FirstNumerical.Unit == ViewStatus.SecondNumerical.Unit)
+                    {
+                        SetGroupedBarChartNNSelection(ViewStatus.FirstNumerical, ViewStatus.SecondNumerical, pageView.SelectedRows);
+                    }
+                }
+
+                pageView.Scatterplot.Update((onSelectionChanged && !onCreate) || (reason != ReflectReason.FilterOut && reason != ReflectReason.None));
                 if (ViewStatus.FirstNumerical.Unit == ViewStatus.SecondNumerical.Unit)
                 {
-                    DrawGroupedBarChartNN(ViewStatus.FirstNumerical, ViewStatus.SecondNumerical, groupedRows);
+                    pageView.GroupedBarChart.Update((onSelectionChanged && !onCreate) || (reason != ReflectReason.FilterOut && reason != ReflectReason.None));
                 }
             }
             else if (ViewStatus.IsCCC)
@@ -232,21 +241,55 @@ namespace FlexTable.ViewModel
             }
             else if (ViewStatus.IsCCN)
             {
-                DrawGroupedBarChart(ViewStatus.FirstCategorical, ViewStatus.SecondCategorical, ViewStatus.FirstNumerical, groupedRows);
-                DrawLineChart(ViewStatus.FirstCategorical, ViewStatus.SecondCategorical, ViewStatus.FirstNumerical, groupedRows);
-                DrawPivotTable();
+                // TODO
+                if (onCreate)
+                {
+                    DrawGroupedBarChart(ViewStatus.FirstCategorical, ViewStatus.SecondCategorical, ViewStatus.FirstNumerical, groupedRows);
+                    DrawLineChart(ViewStatus.FirstCategorical, ViewStatus.SecondCategorical, ViewStatus.FirstNumerical, groupedRows);
+                    DrawPivotTable();
+                }
+
+                if (onSelectionChanged)
+                {
+                    //SetGroupedBarChartSelection(ViewStatus.FirstCategorical, ViewStatus.SecondCategorical, ViewStatus.FirstNumerical, pageView.SelectedRows);
+                    //SetLineChartSelection(ViewStatus.FirstCategorical, ViewStatus.SecondCategorical, ViewStatus.FirstNumerical, pageView.SelectedRows);
+                }
+
+                pageView.GroupedBarChart.Update((onSelectionChanged && !onCreate) || (reason != ReflectReason.FilterOut && reason != ReflectReason.None));
+                pageView.LineChart.Update((onSelectionChanged && !onCreate) || (reason != ReflectReason.FilterOut && reason != ReflectReason.None));
             }
             else if (ViewStatus.IsCNN)
             {
-                DrawScatterplot(ViewStatus.FirstCategorical, ViewStatus.FirstNumerical, ViewStatus.SecondNumerical);
-
-                if (ViewStatus.FirstNumerical.Unit == ViewStatus.SecondNumerical.Unit)
+                if (onCreate)
                 {
-                    DrawGroupedBarChartCNN(ViewStatus.FirstCategorical, ViewStatus.FirstNumerical, ViewStatus.SecondNumerical, groupedRows);
-                    //둘 단위 같으면 라인 차트 가능
+                    DrawScatterplot(ViewStatus.FirstCategorical, ViewStatus.FirstNumerical, ViewStatus.SecondNumerical);
+
+                    if (ViewStatus.FirstNumerical.Unit == ViewStatus.SecondNumerical.Unit)
+                    {
+                        DrawGroupedBarChartCNN(ViewStatus.FirstCategorical, ViewStatus.FirstNumerical, ViewStatus.SecondNumerical, groupedRows);
+                        DrawLineChartCNN(ViewStatus.FirstCategorical, ViewStatus.FirstNumerical, ViewStatus.SecondNumerical, groupedRows);
+                    }
+
+                    DrawPivotTable();
                 }
 
-                DrawPivotTable();
+                if (onSelectionChanged)
+                {
+                    SetScatterplotSelection(pageView.SelectedRows);
+
+                    if (ViewStatus.FirstNumerical.Unit == ViewStatus.SecondNumerical.Unit)
+                    {
+                        SetGroupedBarChartCNNSelection(ViewStatus.FirstCategorical, ViewStatus.FirstNumerical, ViewStatus.SecondNumerical, pageView.SelectedRows);
+                        SetLineChartCNNSelection(ViewStatus.FirstCategorical, ViewStatus.FirstNumerical, ViewStatus.SecondNumerical, pageView.SelectedRows);
+                    }
+                }
+
+                pageView.Scatterplot.Update((onSelectionChanged && !onCreate) || (reason != ReflectReason.FilterOut && reason != ReflectReason.None));
+                if (ViewStatus.FirstNumerical.Unit == ViewStatus.SecondNumerical.Unit)
+                {
+                    pageView.GroupedBarChart.Update((onSelectionChanged && !onCreate) || (reason != ReflectReason.FilterOut && reason != ReflectReason.None));
+                    pageView.LineChart.Update((onSelectionChanged && !onCreate) || (reason != ReflectReason.FilterOut && reason != ReflectReason.None));
+                }
             }
             else if (ViewStatus.IsNNN)
             {
@@ -274,532 +317,8 @@ namespace FlexTable.ViewModel
             pageView.UpdateCarousel(trackPreviousParagraph, firstChartTag?.ToString());
         }
 
-        private void DrawPivotTable()
-        {
-            pageView.PivotTableTitle.Children.Clear();
-            if (ViewStatus.IsC)
-            {
-                DrawEditableTitleCxNx(pageView.PivotTableTitle,
-                        "Frequency\x00A0of\x00A0",
-                        new List<ColumnViewModel>() { ViewStatus.FirstCategorical },
-                        "",
-                        new List<ColumnViewModel>() { }
-                        );
-            }
-            else if (ViewStatus.IsN)
-            {
-                DrawEditableTitleN(pageView.PivotTableTitle, ViewStatus.FirstNumerical, "Frequency\x00A0of\x00A0");
-            }
-            else if (ViewStatus.IsCC)
-            {
-                DrawEditableTitleCxNx(pageView.PivotTableTitle,
-                        "Frequency\x00A0of\x00A0",
-                        new List<ColumnViewModel>() { ViewStatus.SecondCategorical },
-                        "\x00A0by\x00A0",
-                        new List<ColumnViewModel>() { ViewStatus.FirstCategorical }
-                        );
-            }
-            else if (ViewStatus.IsCN)
-            {
-                DrawEditableTitleCxNx(pageView.PivotTableTitle, "", ViewStatus.NumericalColumnViewModels.ToList(), "\x00A0by\x00A0", ViewStatus.CategoricalColumnViewModels.ToList());
-            }
-            else if (ViewStatus.IsNN)
-            {
-                ;
-            }
-            else if (ViewStatus.IsCCC)
-            {
-                DrawEditableTitleCxNx(pageView.PivotTableTitle,
-                        "Frequency\x00A0of\x00A0",
-                        new List<ColumnViewModel>() { ViewStatus.SelectedColumnViewModels.Last() },
-                        "\x00A0by\x00A0",
-                        ViewStatus.SelectedColumnViewModels.Where((r, i) => i < 2).ToList()
-                        );
-            }
-            else if (ViewStatus.IsCCN)
-            {
-                DrawEditableTitleCxNx(pageView.PivotTableTitle,
-                    "",
-                    ViewStatus.NumericalColumnViewModels.ToList(),
-                    "\x00A0by\x00A0",
-                    ViewStatus.CategoricalColumnViewModels.ToList()
-                    );
-            }
-            else if (ViewStatus.IsCNN)
-            {
-                DrawEditableTitleCNN(pageView.PivotTableTitle, ViewStatus.FirstCategorical, ViewStatus.FirstNumerical, ViewStatus.SecondNumerical);
-            }
-            else if (ViewStatus.IsNNN)
-            {
-            }
-            else if (ViewStatus.IsCnN0)
-            {
-                DrawEditableTitleCxNx(pageView.PivotTableTitle,
-                    "Frequency of\x00A0",
-                    new List<ColumnViewModel>() { ViewStatus.CategoricalColumnViewModels.Last() },
-                    "\x00A0by\x00A0",
-                    ViewStatus.CategoricalColumnViewModels.Where((cvm, i) => i != ViewStatus.CategoricalColumnViewModels.Count() - 1).ToList()
-                    );
-            }
-            else if (ViewStatus.IsCnN1)
-            {
-                DrawEditableTitleCxNx(pageView.PivotTableTitle,
-                    "",
-                    ViewStatus.NumericalColumnViewModels.ToList(),
-                    "\x00A0by\x00A0",
-                    ViewStatus.CategoricalColumnViewModels.ToList()
-                    );
-            }
-            else if (ViewStatus.IsCnNn)
-            {
-                DrawEditableTitleCxNx(pageView.PivotTableTitle,
-                    "",
-                    ViewStatus.NumericalColumnViewModels.ToList(),
-                    "\x00A0by\x00A0",
-                    ViewStatus.CategoricalColumnViewModels.ToList()
-                    );
-            }
-            
-            IsPivotTableVisible = true;
-            pivotTableViewModel.Preview(ViewStatus);
-        }
-
-        public String Concatenate(IEnumerable<String> words)
-        {
-            Int32 count = words.Count();
-            if (count == 1)
-            {
-                return words.First();
-            }
-            else if(count == 2)
-            {
-                return String.Join(" and ", words);
-            }
-
-            try
-            {
-                return String.Join(", ", words.Where((s, i) => i < count - 1)) + ", and " + words.Last();
-            }
-            catch
-            {
-                return "Wrong Title";
-            }
-        }
-
-        void AddText(StackPanel stackPanel, String text)
-        {
-            TextBlock textBlock = new TextBlock()
-            {
-                VerticalAlignment = VerticalAlignment.Center,
-                FontSize = 30
-            };
-            Util.HtmlToTextBlockFormatter.Format(text, textBlock);
-
-            stackPanel.Children.Add(textBlock);
-        }
-
-        void AddComboBox(StackPanel stackPanel, String selected, IEnumerable<String> candidates, SelectionChangedEventHandler selectionChanged)
-        {
-            AddComboBox(stackPanel, selected, candidates, selectionChanged, true);
-        }
-
-        void AddComboBox(StackPanel stackPanel, String selected, IEnumerable<String> candidates, SelectionChangedEventHandler selectionChanged, Boolean isColumnName)
-        {
-            if (!IsSelected)
-            {
-                AddText(stackPanel, $"<b>{selected}</b>");
-            }
-            else
-            {
-                ComboBox comboBox = new ComboBox()
-                {
-                    Style = App.Current.Resources[isColumnName ? "SeamlessComboBoxStyle" : "SeamlessComboBoxStyle2"] as Style,
-                    VerticalAlignment = VerticalAlignment.Center,
-                    FontSize = 30
-                };
-                foreach (String candidate in candidates)
-                {
-                    ComboBoxItem comboBoxItem = new ComboBoxItem()
-                    {
-                        Content = candidate,
-                        IsSelected = candidate == selected,
-                        Style = App.Current.Resources["SeamlessComboBoxItemStyle"] as Style,
-                    };
-                    comboBox.Items.Add(comboBoxItem);
-                }
-                stackPanel.Children.Add(comboBox);
-
-                comboBox.DropDownOpened += (o, e) =>
-                {
-                    comboBox.Width = comboBox.ActualWidth;
-                };
-
-                comboBox.DropDownClosed += (o, e) =>
-                {
-                    comboBox.Width = Double.NaN;
-                };
-
-                comboBox.SelectionChanged += selectionChanged;
-            }
-        }
-
-        SelectionChangedEventHandler CreateColumnChangedHandler(ColumnViewModel currentColumnViewModel)
-        {
-            if(currentColumnViewModel.Type == ColumnType.Numerical)
-            {
-                return CreateColumnChangedHandler(currentColumnViewModel, currentColumnViewModel.AggregativeFunction);                   
-            }
-            return CreateColumnChangedHandler(currentColumnViewModel, null);
-        }        
-
-        SelectionChangedEventHandler CreateColumnChangedHandler(ColumnViewModel currentColumnViewModel, AggregativeFunction.BaseAggregation defaultAggregativeFunction)
-        {
-            return new SelectionChangedEventHandler((sender, args) =>
-            {
-                ComboBox comboBox = sender as ComboBox;
-                String selectedName = (comboBox.SelectedItem as ComboBoxItem).Content.ToString();
-                ColumnViewModel selectedColumnViewModel = mainPageViewModel.SheetViewModel.ColumnViewModels.First(cvm => cvm.Name == selectedName);
-
-                // selectedColumnViewModel로 이제 바꾸면 됨. 이 과정에 대해서는 explorationViewModel의 PageViewTapped를 참고하면 좋다.
-
-                // 1. 컬럼의 상태 변경 
-                if (selectedColumnViewModel.IsSelected)
-                {
-                    Int32 index1 = ViewStatus.SelectedColumnViewModels.FindIndex(cvm => cvm == currentColumnViewModel);
-                    Int32 index2 = ViewStatus.SelectedColumnViewModels.FindIndex(cvm => cvm == selectedColumnViewModel);
-                    ViewStatus.SelectedColumnViewModels[index1] = selectedColumnViewModel;
-                    ViewStatus.SelectedColumnViewModels[index2] = currentColumnViewModel;
-                }
-                else
-                {
-                    currentColumnViewModel.IsSelected = false;
-                    selectedColumnViewModel.IsSelected = true;
-
-                    Int32 index = ViewStatus.SelectedColumnViewModels.FindIndex(cvm => cvm == currentColumnViewModel);
-                    ViewStatus.SelectedColumnViewModels[index] = selectedColumnViewModel;
-                }
-
-                if (selectedColumnViewModel.Type == ColumnType.Numerical && defaultAggregativeFunction != null)
-                {
-                    selectedColumnViewModel.AggregativeFunction = defaultAggregativeFunction;
-                }
-
-                mainPageViewModel.ReflectAll(false);
-            });
-        }
-
-        SelectionChangedEventHandler CreateAggregationChangedHandler(ColumnViewModel columnViewModel)
-        {
-            return new SelectionChangedEventHandler((sender, args) =>
-            {
-                ComboBox comboBox = sender as ComboBox;
-                String selectedName = (comboBox.SelectedItem as ComboBoxItem).Content.ToString();
-                AggregativeFunction.BaseAggregation aggregativeFunction = AggregativeFunction.FromName(selectedName);
-
-                columnViewModel.AggregativeFunction = aggregativeFunction;
-
-                mainPageViewModel.ReflectAll(false);
-            });
-        }
-
-        #region Editable Title Generator
-
-        void DrawEditableTitleN(StackPanel title, ColumnViewModel numerical, String prefix)
-        {
-            AddText(title, prefix);
-            AddComboBox(
-                title,
-                numerical.Name,
-                mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical).Select(cvm => cvm.Name),
-                CreateColumnChangedHandler(numerical)
-            );
-        }
-
-        void DrawEditableTitleCN(StackPanel title, ColumnViewModel categorical, ColumnViewModel numerical)
-        {
-            // TODO 선택 변경하면 에러남 이 부분 처리해야함
-            // 현재 aggregation function의 상태 저장이 필요함 왜냐하면 numerical을 바꿨을때 aggrfunction은 유지해야 하기 때문
-            AddComboBox(
-                   title,
-                   numerical.AggregativeFunction.Name,
-                   AggregativeFunction.Names,
-                   CreateAggregationChangedHandler(numerical),
-                   false
-               );
-            AddText(title, "(");
-            AddComboBox(
-                   title,
-                   numerical.Name,
-                   mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical).Select(cvm => cvm.Name),
-                   CreateColumnChangedHandler(numerical)
-               );
-            AddText(title, ")\x00A0by\x00A0");
-            AddComboBox(
-                title,
-                categorical.Name,
-                mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).Select(cvm => cvm.Name),
-                CreateColumnChangedHandler(categorical)
-            );
-        }
-
-        void DrawEditableTitleCCN(StackPanel title, ColumnViewModel categorical1, ColumnViewModel categorical2, ColumnViewModel numerical)
-        {
-            AddComboBox(
-                   title,
-                   numerical.AggregativeFunction.Name,
-                   AggregativeFunction.Names,
-                   CreateAggregationChangedHandler(numerical)
-               );
-            AddText(title, "(");
-            AddComboBox(
-                    title,
-                    numerical.Name,
-                    mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical).Select(cvm => cvm.Name),
-                    CreateColumnChangedHandler(numerical)
-                );
-            AddText(title, ")\x00A0by\x00A0");
-            AddComboBox(
-                title,
-                categorical1.Name,
-                mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).Select(cvm => cvm.Name),
-                CreateColumnChangedHandler(categorical1)
-            );
-            AddText(title, "\x00A0and\x00A0");
-            AddComboBox(
-               title,
-               categorical2.Name,
-               mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).Select(cvm => cvm.Name),
-               CreateColumnChangedHandler(categorical2)
-           );
-        }
-
-        void DrawEditableTitleCNvsN(StackPanel title, ColumnViewModel categorical, ColumnViewModel numerical1, ColumnViewModel numerical2)
-        {
-            AddComboBox(
-                title,
-                numerical1.Name,
-                mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical).Select(cvm => cvm.Name),
-                CreateColumnChangedHandler(numerical1)
-            );
-
-            AddText(title, "\x00A0vs.\x00A0");
-
-            AddComboBox(
-                title,
-                numerical2.Name,
-                mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical).Select(cvm => cvm.Name),
-                CreateColumnChangedHandler(numerical2)
-            );
-
-            AddText(title, "\x00A0colored by\x00A0");
-
-            AddComboBox(
-               title,
-               categorical.Name,
-               mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).Select(cvm => cvm.Name),
-               CreateColumnChangedHandler(categorical)
-           );
-        }
-
-        void DrawEditableTitleNvsN(StackPanel title, ColumnViewModel numerical1, ColumnViewModel numerical2)
-        {
-            AddComboBox(
-                title,
-                numerical1.Name,
-                mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical).Select(cvm => cvm.Name),
-                CreateColumnChangedHandler(numerical1)
-            );
-
-            AddText(title, "\x00A0vs.\x00A0");
-
-            AddComboBox(
-                title,
-                numerical2.Name,
-                mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical).Select(cvm => cvm.Name),
-                CreateColumnChangedHandler(numerical2)
-            );
-        }
-
-        void DrawEditableTitleNN(StackPanel title, ColumnViewModel numerical1, ColumnViewModel numerical2)
-        {
-            AddComboBox(
-                   title,
-                   numerical1.AggregativeFunction.Name,
-                   AggregativeFunction.Names,
-                   CreateAggregationChangedHandler(numerical1)
-               );
-            AddText(title, "(");
-            AddComboBox(
-                title,
-                numerical1.Name,
-                mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical && cvm.Unit == numerical1.Unit).Select(cvm => cvm.Name),
-                CreateColumnChangedHandler(numerical1)
-            );
-
-            AddText(title, ")\x00A0and\x00A0");
-
-            AddComboBox(
-                   title,
-                   numerical2.AggregativeFunction.Name,
-                   AggregativeFunction.Names,
-                   CreateAggregationChangedHandler(numerical2)
-               );
-            AddText(title, "(");
-            AddComboBox(
-                title,
-                numerical2.Name,
-                mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical && cvm.Unit == numerical2.Unit).Select(cvm => cvm.Name),
-                CreateColumnChangedHandler(numerical2)
-            );
-            AddText(title, ")");
-        }
-        void DrawEditableTitleCNN(StackPanel title, ColumnViewModel categorical, ColumnViewModel numerical1, ColumnViewModel numerical2)
-        {
-            AddComboBox(
-                   title,
-                   numerical1.AggregativeFunction.Name,
-                   AggregativeFunction.Names,
-                   CreateAggregationChangedHandler(numerical1)
-               );
-            AddText(title, "(");
-            AddComboBox(
-                title,
-                numerical1.Name,
-                mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical && cvm.Unit == numerical1.Unit).Select(cvm => cvm.Name),
-                CreateColumnChangedHandler(numerical1)
-            );
-
-            AddText(title, ")\x00A0and\x00A0");
-
-            AddComboBox(
-                   title,
-                   numerical2.AggregativeFunction.Name,
-                   AggregativeFunction.Names,
-                   CreateAggregationChangedHandler(numerical2)
-               );
-            AddText(title, "(");
-            AddComboBox(
-                title,
-                numerical2.Name,
-                mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical && cvm.Unit == numerical2.Unit).Select(cvm => cvm.Name),
-                CreateColumnChangedHandler(numerical2)
-            );
-
-            AddText(title, ")\x00A0by\x00A0");
-
-            AddComboBox(
-               title,
-               categorical.Name,
-               mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).Select(cvm => cvm.Name),
-               CreateColumnChangedHandler(categorical)
-           );
-        }
         
-        void DrawEditableTitleCxNx(StackPanel title, String prefix, List<ColumnViewModel> variables, String mid, List<ColumnViewModel> pivots)
-        {
-            if(prefix != null && prefix.Length > 0)
-            {
-                AddText(title, prefix);
-            }
-
-            Int32 index;
-            index = 0;
-            foreach(ColumnViewModel variable in variables)
-            {
-                if(variable.Type == ColumnType.Categorical)
-                {
-                    AddComboBox(title,
-                            variable.Name,
-                            mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).Select(cvm => cvm.Name),
-                            CreateColumnChangedHandler(variable)
-                            );
-                }
-                else
-                {
-                    AddComboBox(
-                        title,
-                        variable.AggregativeFunction.Name,
-                        AggregativeFunction.Names,
-                        CreateAggregationChangedHandler(variable)
-                    );
-                    AddText(title, "(");
-                    AddComboBox(title,
-                        variable.Name,
-                        mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical).Select(cvm => cvm.Name),
-                        CreateColumnChangedHandler(variable)
-                        );
-                    AddText(title, ")");
-                }
-
-                if (index < variables.Count - 1) {
-                    if (variables.Count == 2)
-                    {
-                        AddText(title, "\x00A0and\x00A0");
-                    }
-                    else
-                    {
-                        AddText(title, ",\x00A0");
-                        if(index == variables.Count - 2)
-                        {
-                            AddText(title, "and\x00A0");
-                        }
-                    }
-                }
-                index++;
-            }
-
-            if (mid != null && mid.Length > 0)
-            {
-                AddText(title, mid);
-            }
-
-            index = 0;
-            foreach (ColumnViewModel variable in pivots)
-            {
-                if (variable.Type == ColumnType.Categorical)
-                {
-                    AddComboBox(title,
-                        variable.Name,
-                        mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).Select(cvm => cvm.Name),
-                        CreateColumnChangedHandler(variable)
-                        );
-                }
-                else
-                {
-                    AddComboBox(
-                        title,
-                        variable.AggregativeFunction.Name,
-                        AggregativeFunction.Names,
-                        CreateAggregationChangedHandler(variable)
-                    );
-                    AddText(title, "(");
-                    AddComboBox(title,
-                        variable.Name,
-                        mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical).Select(cvm => cvm.Name),
-                        CreateColumnChangedHandler(variable)
-                        );
-                    AddText(title, ")");
-                }
-                if (index < pivots.Count - 1)
-                {
-                    if (pivots.Count == 2)
-                    {
-                        AddText(title, "\x00A0and\x00A0");
-                    }
-                    else
-                    {
-                        AddText(title, ",\x00A0");
-                        if (index == pivots.Count - 2)
-                        {
-                            AddText(title, "and\x00A0");
-                        }
-                    }
-                }
-                index++;
-            }
-        }
-        #endregion
-
+        
         #region Visualizaiton Generator
 
         void DrawFrequencyHistogram(ColumnViewModel categorical, List<GroupedRows> groupedRows)
@@ -1242,7 +761,6 @@ namespace FlexTable.ViewModel
 
             rows = rows.Take(LineChartMaximumSeriesNumber);
             pageView.LineChart.Data = rows.ToList();
-            pageView.LineChart.Update(false);
         }
 
         void DrawScatterplot(ColumnViewModel categorical, ColumnViewModel numerical1, ColumnViewModel numerical2)
@@ -1265,14 +783,16 @@ namespace FlexTable.ViewModel
             pageView.Scatterplot.AutoColor = true;
 
             var data = mainPageViewModel.SheetViewModel.FilteredRows
-                .Select(r => new ScatterplotDatum(
-                    r.Cells[categorical.Index].Content,
-                    (Double)r.Cells[numerical1.Index].Content,
-                    (Double)r.Cells[numerical2.Index].Content,
-                    r,
-                    categorical
-                    ));
-
+                .Select(r => new ScatterplotDatum()
+                {
+                    Key = r.Cells[categorical.Index].Content,
+                    Value1 = (Double)r.Cells[numerical1.Index].Content,
+                    Value2 = (Double)r.Cells[numerical2.Index].Content,
+                    Row = r,
+                    State = ScatterplotState.Default,
+                    ColumnViewModel = categorical
+                });
+                   
             if (data.Select(d => d.Key).Distinct().Count() > ScatterplotMaximumCategoryNumber) {
                 IsScatterplotWarningVisible = true;
                 var categories = data.Select(d => d.Key).Distinct().Take(ScatterplotMaximumCategoryNumber).ToList();
@@ -1280,8 +800,6 @@ namespace FlexTable.ViewModel
             }
 
             pageView.Scatterplot.Data = data.ToList();
-
-            pageView.Scatterplot.Update();
         }
 
         void DrawScatterplot(ColumnViewModel numerical1, ColumnViewModel numerical2)
@@ -1303,15 +821,34 @@ namespace FlexTable.ViewModel
             pageView.Scatterplot.VerticalAxisTitle = numerical2.Name + numerical2.UnitString;
             pageView.Scatterplot.AutoColor = false;
             pageView.Scatterplot.Data = mainPageViewModel.SheetViewModel.FilteredRows
-                .Select(r => new ScatterplotDatum(
-                    0, 
-                    (Double)r.Cells[numerical1.Index].Content, 
-                    (Double)r.Cells[numerical2.Index].Content, 
-                    r,
-                    null))
+                .Select(r => new ScatterplotDatum()
+                {
+                    Key = 0,
+                    Value1 = (Double)r.Cells[numerical1.Index].Content,
+                    Value2 = (Double)r.Cells[numerical2.Index].Content,
+                    Row = r,
+                    State = ScatterplotState.Default,
+                    ColumnViewModel = null
+                })
                 .ToList();
+        }
 
-            pageView.Scatterplot.Update();
+        void SetScatterplotSelection(IEnumerable<Row> selectedRows)
+        {
+            if (selectedRows.Count() == 0)
+            {
+                foreach (ScatterplotDatum sd in pageView.Scatterplot.Data)
+                {
+                    sd.State = ScatterplotState.Default;
+                }
+            }
+            else
+            {
+                foreach (ScatterplotDatum sd in pageView.Scatterplot.Data)
+                {
+                    sd.State = selectedRows.Contains(sd.Row) ? ScatterplotState.Selected : ScatterplotState.Unselected;
+                }
+            }
         }
 
         void DrawGroupedBarChartNN(ColumnViewModel numerical1, ColumnViewModel numerical2, List<GroupedRows> groupedRows)
@@ -1350,7 +887,9 @@ namespace FlexTable.ViewModel
                                     Key = category1,
                                     Parent = datum,
                                     Value = numerical1.AggregativeFunction.Aggregate(mainPageViewModel.SheetViewModel.FilteredRows.Select(r => (Double)r.Cells[numerical1.Index].Content)),
-                                    Rows = mainPageViewModel.SheetViewModel.FilteredRows
+                                    EnvelopeValue = numerical1.AggregativeFunction.Aggregate(mainPageViewModel.SheetViewModel.FilteredRows.Select(r => (Double)r.Cells[numerical1.Index].Content)),
+                                    EnvelopeRows = mainPageViewModel.SheetViewModel.FilteredRows,
+                                    Rows = null
                                 },
                                 new BarChartDatum()
                                 {
@@ -1358,14 +897,38 @@ namespace FlexTable.ViewModel
                                     Key = category2,
                                     Parent = datum,
                                     Value = numerical1.AggregativeFunction.Aggregate(mainPageViewModel.SheetViewModel.FilteredRows.Select(r => (Double)r.Cells[numerical2.Index].Content)),
-                                    Rows = mainPageViewModel.SheetViewModel.FilteredRows
+                                    EnvelopeValue = numerical1.AggregativeFunction.Aggregate(mainPageViewModel.SheetViewModel.FilteredRows.Select(r => (Double)r.Cells[numerical2.Index].Content)),
+                                    EnvelopeRows = mainPageViewModel.SheetViewModel.FilteredRows,
+                                    Rows = null
                                 }
                             };
 
             pageView.GroupedBarChart.Data = new List<GroupedBarChartDatum>() { datum };
-
-            pageView.GroupedBarChart.Update(true);
         }
+
+        void SetGroupedBarChartNNSelection(ColumnViewModel numerical1, ColumnViewModel numerical2, IEnumerable<Row> selectedRows)
+        {
+            foreach(GroupedBarChartDatum datum in pageView.GroupedBarChart.Data)
+            {
+                if(selectedRows.Count() == 0)
+                {
+                    datum.Children[0].Rows = null;
+                    datum.Children[0].Value = datum.Children[0].EnvelopeValue;
+
+                    datum.Children[1].Rows = null;
+                    datum.Children[1].Value = datum.Children[1].EnvelopeValue;
+                }
+                else
+                {
+                    datum.Children[0].Rows = datum.Children[0].EnvelopeRows.Intersect(selectedRows);
+                    datum.Children[0].Value = numerical1.AggregativeFunction.Aggregate(datum.Children[0].Rows?.Select(r => (Double)r.Cells[numerical1.Index].Content));
+
+                    datum.Children[1].Rows = datum.Children[1].EnvelopeRows.Intersect(selectedRows);
+                    datum.Children[1].Value = numerical2.AggregativeFunction.Aggregate(datum.Children[1].Rows?.Select(r => (Double)r.Cells[numerical2.Index].Content));
+                }
+            }
+        }
+        
 
         void DrawGroupedBarChartCNN(ColumnViewModel categorical, ColumnViewModel numerical1, ColumnViewModel numerical2, List<GroupedRows> groupedRows)
         {
@@ -1381,7 +944,7 @@ namespace FlexTable.ViewModel
                 AddText(pageView.GroupedBarChartTitle, $"<b>{numerical1.AggregatedName}</b> and <b>{numerical2.AggregatedName}</b> by <b>{categorical.Name}</b>");
             }
 
-            pageView.GroupedBarChart.YStartsFromZero = true;
+            pageView.GroupedBarChart.YStartsFromZero = false;
             pageView.GroupedBarChart.HorizontalAxisTitle = categorical.Name;
             pageView.GroupedBarChart.VerticalAxisTitle = $"{numerical1.Name} and {numerical2.Name} {numerical1.UnitString}";
 
@@ -1405,7 +968,9 @@ namespace FlexTable.ViewModel
                                     Key = category1,
                                     Parent = datum,
                                     Value = numerical1.AggregativeFunction.Aggregate(g.Rows.Select(r => (Double)r.Cells[numerical1.Index].Content)),
-                                    Rows = g.Rows
+                                    EnvelopeValue = numerical1.AggregativeFunction.Aggregate(g.Rows.Select(r => (Double)r.Cells[numerical1.Index].Content)),
+                                    Rows = null,
+                                    EnvelopeRows = g.Rows
                                 },
                                 new BarChartDatum()
                                 {
@@ -1413,7 +978,9 @@ namespace FlexTable.ViewModel
                                     Key = category2,
                                     Parent = datum,
                                     Value = numerical2.AggregativeFunction.Aggregate(g.Rows.Select(r => (Double)r.Cells[numerical2.Index].Content)),
-                                    Rows = g.Rows
+                                    EnvelopeValue = numerical2.AggregativeFunction.Aggregate(g.Rows.Select(r => (Double)r.Cells[numerical2.Index].Content)),
+                                    Rows = null,
+                                    EnvelopeRows = g.Rows
                                 }
                             };
                             return datum;
@@ -1421,8 +988,111 @@ namespace FlexTable.ViewModel
 
             if (data.Count() > GroupedBarChartMaximumRecordNumber) IsGroupedBarChartWarningVisible = true;
             pageView.GroupedBarChart.Data = data.Take(GroupedBarChartMaximumRecordNumber).ToList();
+        }
 
-            pageView.GroupedBarChart.Update(true);
+        void SetGroupedBarChartCNNSelection(ColumnViewModel categorical, ColumnViewModel numerical1, ColumnViewModel numerical2, IEnumerable<Row> selectedRows)
+        {
+            foreach(GroupedBarChartDatum datum in pageView.GroupedBarChart.Data)
+            {
+                if(selectedRows.Count() == 0)
+                {
+                    datum.Children[0].Rows = null;
+                    datum.Children[0].Value = datum.Children[0].EnvelopeValue;
+
+                    datum.Children[1].Rows = null;
+                    datum.Children[1].Value = datum.Children[1].EnvelopeValue;
+                }
+                else
+                {
+                    datum.Children[0].Rows = datum.Children[0].EnvelopeRows.Intersect(selectedRows).ToList();
+                    datum.Children[0].Value = numerical1.AggregativeFunction.Aggregate(datum.Children[0].Rows.Select(r => (Double)r.Cells[numerical1.Index].Content));
+
+                    datum.Children[1].Rows = datum.Children[1].EnvelopeRows.Intersect(selectedRows).ToList();
+                    datum.Children[1].Value = numerical2.AggregativeFunction.Aggregate(datum.Children[1].Rows.Select(r => (Double)r.Cells[numerical2.Index].Content));
+                }
+            }
+        }
+
+        void DrawLineChartCNN(ColumnViewModel categorical, ColumnViewModel numerical1, ColumnViewModel numerical2, List<GroupedRows> groupedRows)
+        {
+            IsLineChartVisible = true;
+
+            pageView.LineChartTitle.Children.Clear();
+            if (IsSelected)
+            {
+                DrawEditableTitleCNN(pageView.LineChartTitle, categorical, numerical1, numerical2);
+            }
+            else
+            {
+                AddText(pageView.LineChartTitle, $"<b>{numerical1.AggregatedName}</b> and <b>{numerical2.AggregatedName}</b> by <b>{categorical.Name}</b>");
+            }
+
+            pageView.LineChart.YStartsFromZero = false;
+            pageView.LineChart.HorizontalAxisTitle = categorical.Name;
+            pageView.LineChart.VerticalAxisTitle = $"{numerical1.Name} and {numerical2.Name} {numerical1.UnitString}";
+           
+            
+            Int32 index = 0;
+            List<LineChartDatum> data = new List<LineChartDatum>();
+
+            foreach (ColumnViewModel numerical in new List<ColumnViewModel>() { numerical1, numerical2 })
+            {
+                Category category = new Category() { Value = numerical.Name, Color = Category10.Colors[index], IsVirtual = true };
+                LineChartDatum datum = new LineChartDatum()
+                {
+                    ColumnViewModel = numerical,
+                    Key = category
+                };
+
+                datum.DataPoints = groupedRows.Select(g => new DataPoint()
+                {
+                    Item1 = g.Keys[categorical],
+                    Item2 = numerical.AggregativeFunction.Aggregate(g.Rows.Select(r => (Double)r.Cells[numerical.Index].Content)),
+                    EnvelopeItem2 = numerical.AggregativeFunction.Aggregate(g.Rows.Select(r => (Double)r.Cells[numerical.Index].Content)),
+                    Parent = datum,
+                    Rows = null,
+                    EnvelopeRows = g.Rows
+                }).ToList();
+
+                data.Add(datum);
+                index++;
+            }
+
+            if (data.Count() > LineChartMaximumSeriesNumber) IsLineChartWarningVisible = true;
+            if (data.Max(row => row.DataPoints.Count) > LineChartMaximumPointNumberInASeries) IsLineChartWarningVisible = true;
+
+            data = data.Take(LineChartMaximumSeriesNumber).ToList();
+            pageView.LineChart.Data = data;
+        }
+
+        void SetLineChartCNNSelection(ColumnViewModel categorical, ColumnViewModel numerical1, ColumnViewModel numerical2, IEnumerable<Row> selectedRows)
+        {
+            Int32 index = 0;
+
+            if (selectedRows.Count() == 0)
+            {
+                foreach (ColumnViewModel numerical in new List<ColumnViewModel>() { numerical1, numerical2 })
+                {
+                    foreach (DataPoint dp in pageView.LineChart.Data[index].DataPoints)
+                    {
+                        dp.Item2 = dp.EnvelopeItem2;
+                        dp.Rows = null;
+                    }
+                    index++;
+                }
+            }
+            else
+            {
+                foreach (ColumnViewModel numerical in new List<ColumnViewModel>() { numerical1, numerical2 })
+                {
+                    foreach (DataPoint dp in pageView.LineChart.Data[index].DataPoints)
+                    {
+                        dp.Rows = dp.EnvelopeRows.Intersect(selectedRows).ToList();
+                        dp.Item2 = numerical.AggregativeFunction.Aggregate(dp.Rows.Select(r => (Double)r.Cells[numerical.Index].Content));
+                    }
+                    index++;
+                }
+            }
         }
 
         void DrawCorrelatonStatistics(ColumnViewModel numerical1, ColumnViewModel numerical2)
@@ -1448,7 +1118,5 @@ namespace FlexTable.ViewModel
             pageView.CorrelationStatisticsView.DataContext = result;
         }
         #endregion
-
-        
     }
 }

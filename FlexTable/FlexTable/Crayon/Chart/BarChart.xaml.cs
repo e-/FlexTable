@@ -483,10 +483,10 @@ namespace FlexTable.Crayon.Chart
             if (LegendVisibility == Visibility.Visible)
             {
                 LegendRectangleElement.Data = D3Data;
-                LegendRectangleElement.Update(TransitionType.None);
+                LegendRectangleElement.Update(useTransition ? TransitionType.Opacity : TransitionType.None);
 
                 LegendTextElement.Data = D3Data;
-                LegendTextElement.Update(TransitionType.Opacity);
+                LegendTextElement.Update(useTransition ? TransitionType.Opacity : TransitionType.None);
 
                 LegendAreaWidth = Math.Max(LegendTextElement.MaxActualWidth + Const.LegendPatchWidth + Const.LegendPatchSpace + Const.PaddingRight, Const.MinimumLegendWidth);
             }

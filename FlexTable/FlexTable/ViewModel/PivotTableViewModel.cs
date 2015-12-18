@@ -56,7 +56,7 @@ namespace FlexTable.ViewModel
 
             var groupedRows = viewStatus.GroupedRows;
             var groupedRowViewModels = viewStatus.GroupedRowViewModels;
-            var selectedColumnViewModels = viewStatus.SelectedColumnViewModels;
+            var selectedColumnViewModels = viewStatus.SelectedColumnViewModels.OrderBy(cvm => cvm.Order);
 
             if (viewStatus.IsN)
             {
@@ -233,7 +233,7 @@ namespace FlexTable.ViewModel
                 // TODO Cx 의 경우 Count 컬럼 추가하고 값 넣어야함
 
                 Int32 rowN = groupedRows.Count + 1, // 테이블 전체 로우의 개수
-                      columnN = selectedColumnViewModels.Count/* + 1 + 1*/; // 테이블 전체 컬럼의 개수
+                      columnN = selectedColumnViewModels.Count()/* + 1 + 1*/; // 테이블 전체 컬럼의 개수
                 Boolean isOnlyCn = viewStatus.IsOnlyCn;
 
                 Int32 i, index, j;

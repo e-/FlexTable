@@ -72,12 +72,11 @@ namespace FlexTable.View
             GroupedBarChartElement.SelectionChanged += SelectionChanged;
             GroupedBarChartElement.FilterOut += FilterOut;
          
-            LineChartElement.SelectionChanged += SelectionChanged; ;
+            LineChartElement.SelectionChanged += SelectionChanged;
             LineChartElement.FilterOut += FilterOut;
 
-            /*ScatterplotElement.SelectionChanged += ChartElement_SelectionChanged;
-            ScatterplotElement.FilterOut += ChartElement_FilterOut;
-            */
+            ScatterplotElement.SelectionChanged += SelectionChanged;
+            ScatterplotElement.FilterOut += FilterOut;
 
             DistributionView.Histogram.SelectionChanged += SelectionChanged;
             DistributionView.Histogram.FilterOut += FilterOut;
@@ -149,11 +148,10 @@ namespace FlexTable.View
         
         private void SelectionFilterButton_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            if(SelectedRows.Count() > 0)
+            Int32 count = SelectedRows.Count();
+            if (count > 0)
             {
-                Int32 count = SelectedRows.Count();
                 FilterOut(this, $"Filtered {count} row" + (count == 1 ? String.Empty : "s"), SelectedRows.ToList());
-                SelectionChanged(this, null, SelectionChangedType.Clear, ReflectReason.FilterOut);
             }
         }
 
@@ -243,7 +241,6 @@ namespace FlexTable.View
             //first chart tag에 해당하는 차트 먼저 추가
             foreach (UIElement child in ParagraphContainerCanvasElement.Children)
             {
-                child.UpdateLayout();
                 if (child.Visibility == Visibility.Visible && (child as StackPanel).Tag?.ToString() == firstChartTag)
                 {
                     paragraphs.Add(child as StackPanel);
