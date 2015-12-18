@@ -69,8 +69,8 @@ namespace FlexTable.View
             BarChartElement.SelectionChanged += SelectionChanged;
             BarChartElement.FilterOut += FilterOut;
 
-            /*GroupedBarChartElement.SelectionChanged += ChartElement_SelectionChanged;
-            GroupedBarChartElement.FilterOut += ChartElement_FilterOut;*/
+            GroupedBarChartElement.SelectionChanged += SelectionChanged;
+            GroupedBarChartElement.FilterOut += FilterOut;
          
             LineChartElement.SelectionChanged += SelectionChanged; ;
             LineChartElement.FilterOut += FilterOut;

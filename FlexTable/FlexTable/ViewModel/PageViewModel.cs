@@ -969,14 +969,16 @@ namespace FlexTable.ViewModel
                             };
 
                             datum.Children = gs.Where(g => validLegends.Contains(g.Keys[categorical2]))
-                            .Select(g => new BarChartDatum()
-                            {
-                                Key = g.Keys[categorical2],
-                                Value = g.Rows.Count,
-                                ColumnViewModel = categorical2,
-                                Parent = datum,
-                                Rows = g.Rows
-                            }).ToList();
+                                .Select(g => new BarChartDatum()
+                                {
+                                    Key = g.Keys[categorical2],
+                                    Value = g.Rows.Count,
+                                    EnvelopeValue = g.Rows.Count,
+                                    ColumnViewModel = categorical2,
+                                    Parent = datum,
+                                    Rows = null,
+                                    EnvelopeRows = g.Rows
+                                }).ToList();
                             return datum;
                         })
                         .Where(datum => datum.Children != null && datum.Children.Count > 0)
@@ -985,17 +987,26 @@ namespace FlexTable.ViewModel
 
         void SetGroupedBarChartSelection(ColumnViewModel categorical1, ColumnViewModel categorical2, IEnumerable<Row> selectedRows)
         {
-            foreach (BarChartDatum barChartDatum in pageView.BarChart.Data)
+            if (selectedRows.Count() == 0)
             {
-                if (selectedRows.Count() == 0)
+                foreach (GroupedBarChartDatum groupedBarChartDatum in pageView.GroupedBarChart.Data)
                 {
-                    barChartDatum.Rows = null;
-                    barChartDatum.Value = barChartDatum.EnvelopeValue;
+                    foreach(BarChartDatum barChartDatum in groupedBarChartDatum.Children)
+                    {
+                        barChartDatum.Rows = null;
+                        barChartDatum.Value = barChartDatum.EnvelopeValue;
+                    }
                 }
-                else
+            }
+            else
+            {
+                foreach (GroupedBarChartDatum groupedBarChartDatum in pageView.GroupedBarChart.Data)
                 {
-                    barChartDatum.Rows = barChartDatum.EnvelopeRows.Intersect(selectedRows).ToList();
-                    barChartDatum.Value = barChartDatum.Rows.Count();
+                    foreach (BarChartDatum barChartDatum in groupedBarChartDatum.Children)
+                    {
+                        barChartDatum.Rows = barChartDatum.EnvelopeRows.Intersect(selectedRows).ToList();
+                        barChartDatum.Value = barChartDatum.Rows.Count();
+                    }
                 }
             }
         }
@@ -1057,7 +1068,7 @@ namespace FlexTable.ViewModel
                         .Where(datum => datum.Children != null && datum.Children.Count > 0)
                         .ToList();
 
-            pageView.GroupedBarChart.Update();
+            pageView.GroupedBarChart.Update(true);
         }
 
         void DrawBarChart(ColumnViewModel categorical, ColumnViewModel numerical, List<GroupedRows> groupedRows)
@@ -1353,7 +1364,7 @@ namespace FlexTable.ViewModel
 
             pageView.GroupedBarChart.Data = new List<GroupedBarChartDatum>() { datum };
 
-            pageView.GroupedBarChart.Update();
+            pageView.GroupedBarChart.Update(true);
         }
 
         void DrawGroupedBarChartCNN(ColumnViewModel categorical, ColumnViewModel numerical1, ColumnViewModel numerical2, List<GroupedRows> groupedRows)
@@ -1411,7 +1422,7 @@ namespace FlexTable.ViewModel
             if (data.Count() > GroupedBarChartMaximumRecordNumber) IsGroupedBarChartWarningVisible = true;
             pageView.GroupedBarChart.Data = data.Take(GroupedBarChartMaximumRecordNumber).ToList();
 
-            pageView.GroupedBarChart.Update();
+            pageView.GroupedBarChart.Update(true);
         }
 
         void DrawCorrelatonStatistics(ColumnViewModel numerical1, ColumnViewModel numerical2)
