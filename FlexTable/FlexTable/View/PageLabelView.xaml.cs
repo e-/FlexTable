@@ -50,6 +50,11 @@ namespace FlexTable.View
             Int32 index = 0;
             foreach (StackPanel paragraph in paragraphs)
             {
+                Border wrapper = new Border()
+                {
+                    Style = this.Resources["ParagraphLabelWrapperStyle"] as Style
+                };
+
                 Border border = new Border()
                 {
                     Style = this.Resources["ParagraphLabelBorderStyle"] as Style,
@@ -64,7 +69,7 @@ namespace FlexTable.View
                 };
 
                 Int32 copiedIndex = index;
-                border.Tapped += delegate (object sender, TappedRoutedEventArgs e)
+                wrapper.Tapped += delegate (object sender, TappedRoutedEventArgs e)
                 {
                     ActivatedParagraphIndex = copiedIndex;
 
@@ -74,14 +79,15 @@ namespace FlexTable.View
                 };
 
                 border.Child = textBlock;
+                wrapper.Child = border;
 
-                ParagraphLabelContainer.Children.Add(border);
+                ParagraphLabelContainer.Children.Add(wrapper);
                 paragraphLabels.Add(border);
                 index++;
             }
 
             paragraphLabels[ActivatedParagraphIndex].Background = new SolidColorBrush((Color)this.Resources["ActivatedLabelBackgroundColor"]);
-            (paragraphLabels[ActivatedParagraphIndex].Child as TextBlock).Foreground = new SolidColorBrush((Color)this.Resources["ActivatedLabelForegroundColor"]);
+            (paragraphLabels[ActivatedParagraphIndex].Child  as TextBlock).Foreground = new SolidColorBrush((Color)this.Resources["ActivatedLabelForegroundColor"]);
             highlightedParagraphIndex = ActivatedParagraphIndex;
         }
         private Storyboard paragraphLabelStoryboard;
@@ -109,7 +115,7 @@ namespace FlexTable.View
                     To = (Color)(index == highlightedParagraphIndex ? this.Resources["ActivatedLabelBackgroundColor"] : this.Resources["LabelBackgroundColor"])
                 };
 
-                Storyboard.SetTarget(background, child);
+                Storyboard.SetTarget(background, (child as Border).Child);
                 Storyboard.SetTargetProperty(background, "(Border.Background).(SolidColorBrush.Color)");
 
                 ColorAnimation foreground = new ColorAnimation()
@@ -119,7 +125,7 @@ namespace FlexTable.View
                     To = (Color)(index == highlightedParagraphIndex ? this.Resources["ActivatedLabelForegroundColor"] : this.Resources["LabelForegroundColor"])
                 };
 
-                Storyboard.SetTarget(foreground, (child as Border).Child);
+                Storyboard.SetTarget(foreground, ((child as Border).Child as Border).Child);
                 Storyboard.SetTargetProperty(foreground, "(TextBlock.Foreground).(SolidColorBrush.Color)");
 
                 paragraphLabelStoryboard.Children.Add(background);
