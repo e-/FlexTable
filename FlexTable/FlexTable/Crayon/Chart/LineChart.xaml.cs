@@ -337,7 +337,7 @@ namespace FlexTable.Crayon.Chart
                 index = 0;
                 foreach (TextBlock label in HorizontalAxis.TickLabels)
                 {
-                    Rect r = new Rect(Canvas.GetLeft(label), Canvas.GetTop(label) + ChartAreaEndY, label.Width, label.ActualHeight);                    
+                    Rect r = new Rect(Canvas.GetLeft(label), Canvas.GetTop(label) + ChartAreaEndY, label.ActualWidth, label.ActualHeight);                    
 
                     if (Const.IsIntersected(r, boundingRect))
                     {

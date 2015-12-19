@@ -130,8 +130,8 @@ namespace d3.Component
                     lineSecondary2 = Line.Y2Property;
                     canvasPrimary = Canvas.LeftProperty;
                     canvasSecondary = Canvas.TopProperty;
-                    //tickLabelSizeProperty = TextBlock.ActualWidthProperty;
-                    tickLabelSizeProperty = TextBlock.WidthProperty;
+                    tickLabelSizeProperty = TextBlock.ActualWidthProperty;
+                    //tickLabelSizeProperty = TextBlock.WidthProperty;
                     canvasPrimaryString = "(Canvas.Left)";
                     linePrimary1String = "X1";
                     linePrimary2String = "X2";
@@ -144,8 +144,8 @@ namespace d3.Component
                     lineSecondary2 = Line.X2Property;
                     canvasPrimary = Canvas.TopProperty;
                     canvasSecondary = Canvas.LeftProperty;
-                    //tickLabelSizeProperty = TextBlock.ActualHeightProperty;
-                    tickLabelSizeProperty = TextBlock.HeightProperty;
+                    tickLabelSizeProperty = TextBlock.ActualHeightProperty;
+                    //tickLabelSizeProperty = TextBlock.HeightProperty;
                     canvasPrimaryString = "(Canvas.Top)";
                     linePrimary1String = "Y1";
                     linePrimary2String = "Y2";
@@ -356,7 +356,9 @@ namespace d3.Component
                 }
                 else if(Orientation == Orientations.Horizontal)
                 {
-                    tickLabel.Width = Math.Abs(Scale.RangeEnd - Scale.RangeStart) / currentTicks.Count;
+                    tickLabel.MaxWidth = Math.Abs(Scale.RangeEnd - Scale.RangeStart) / currentTicks.Count;
+                    tickLabel.Measure(new Size(Double.MaxValue, Double.MaxValue));
+                    //tickLabel.Width = tickLabel.ActualWidth;
                 }
 
                 tickLabel.SetValue(canvasPrimary, previousScale.ClampedMap(tick.DomainValue) - (Double)tickLabel.GetValue(tickLabelSizeProperty) / 2);
