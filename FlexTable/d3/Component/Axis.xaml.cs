@@ -256,7 +256,7 @@ namespace d3.Component
 
             Storyboard axisStoryboard = new Storyboard()
             {
-                BeginTime = Const.AnimationDelay
+                //BeginTime = Const.AnimationDelay
             };
 
             #region remove previous ticks

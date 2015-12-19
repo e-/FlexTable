@@ -71,12 +71,12 @@ namespace FlexTable.ViewModel
         /// <summary>
         /// 현재 ExplorationViewModel의 ViewStatus를 통해 SheetViewModel, TableViewModel, PageView들을 모두 업데이트 합니다
         /// </summary>
-        public void ReflectAll(Boolean updateAllPageViews)
+        public void ReflectAll(Boolean updateAllPageViews, ReflectReason reason)
         {
-            ReflectAll(ExplorationViewModel.ViewStatus, updateAllPageViews);
+            ReflectAll(ExplorationViewModel.ViewStatus, updateAllPageViews, reason);
         }
 
-        public void ReflectAll(ViewStatus viewStatus, Boolean updateAllPageViews)
+        public void ReflectAll(ViewStatus viewStatus, Boolean updateAllPageViews, ReflectReason reason)
         {
             //viewStatus.Generate(sheetViewModel);
 
@@ -107,9 +107,9 @@ namespace FlexTable.ViewModel
                         pageView.ViewModel.ViewStatus.Generate(sheetViewModel);
 
                     if (pageView.SelectedRows.Count() > 0)
-                        pageView.ViewModel.Reflect(ReflectType.TrackPreviousParagraph | ReflectType.OnCreate | ReflectType.OnSelectionChanged, ReflectReason.None);
+                        pageView.ViewModel.Reflect(ReflectType.TrackPreviousParagraph | ReflectType.OnCreate | ReflectType.OnSelectionChanged, reason);
                     else
-                        pageView.ViewModel.Reflect(ReflectType.TrackPreviousParagraph | ReflectType.OnCreate, ReflectReason.None);
+                        pageView.ViewModel.Reflect(ReflectType.TrackPreviousParagraph | ReflectType.OnCreate, reason);
                 }
             }
             else
@@ -121,16 +121,16 @@ namespace FlexTable.ViewModel
                         pageView.ViewModel.ViewStatus.Generate(sheetViewModel);
 
                     if (pageView.SelectedRows.Count() > 0)
-                        pageView.ViewModel.Reflect(ReflectType.TrackPreviousParagraph | ReflectType.OnCreate | ReflectType.OnSelectionChanged, ReflectReason.None);
+                        pageView.ViewModel.Reflect(ReflectType.TrackPreviousParagraph | ReflectType.OnCreate | ReflectType.OnSelectionChanged, reason);
                     else
-                        pageView.ViewModel.Reflect(ReflectType.TrackPreviousParagraph | ReflectType.OnCreate, ReflectReason.None);
+                        pageView.ViewModel.Reflect(ReflectType.TrackPreviousParagraph | ReflectType.OnCreate, reason);
                 }
             }
         }
 
         public async Task Initialize()
         {
-            Sheet sheet = await Util.CsvLoader.Load("temperature.csv"); // "Population-filtered.csv");
+            Sheet sheet = await Util.CsvLoader.Load("iris.csv"); // "Population-filtered.csv");
             Initialize(sheet);
         }
 
@@ -165,8 +165,6 @@ namespace FlexTable.ViewModel
                 ExplorationViewModel.TopPageView.ViewModel.State = PageViewModel.PageViewState.Selected;
                 ExplorationViewModel.PageViewStateChanged(ExplorationViewModel.TopPageView.ViewModel, ExplorationViewModel.TopPageView);
 
-                return;
-
                 //PageView topPageView = ExplorationViewModel.SelectedPageViews.Last();
                 //topPageView.SelectionChanged(null, sheetViewModel.FilteredRows.Where((r, index) => index < 50).ToList(), SelectionChangedType.Add, ReflectReason.ChartSelection);
 
@@ -179,6 +177,9 @@ namespace FlexTable.ViewModel
 
                     ExplorationViewModel.TopPageView.ViewModel.State = PageViewModel.PageViewState.Selected;
                     ExplorationViewModel.PageViewStateChanged(ExplorationViewModel.TopPageView.ViewModel, ExplorationViewModel.TopPageView);
+
+
+                    return;
 
                     ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[1]);
 

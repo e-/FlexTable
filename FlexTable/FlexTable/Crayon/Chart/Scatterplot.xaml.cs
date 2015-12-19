@@ -243,11 +243,11 @@ namespace FlexTable.Crayon.Chart
             {
                 if (selected.Count() == selected.Where(sd => sd.State != ScatterplotState.Selected).Count())
                 {
-                    SelectionChanged(this, selected.Select(sd => sd.Row), SelectionChangedType.Add, ReflectReason.ChartSelection);
+                    SelectionChanged(this, selected.Select(sd => sd.Row), SelectionChangedType.Add, ReflectReason.SelectionChanged);
                 }
                 else
                 {
-                    SelectionChanged(this, selected.Select(sd => sd.Row), SelectionChangedType.Remove, ReflectReason.ChartSelection);
+                    SelectionChanged(this, selected.Select(sd => sd.Row), SelectionChangedType.Remove, ReflectReason.SelectionChanged);
                 }
             }
 
@@ -295,7 +295,7 @@ namespace FlexTable.Crayon.Chart
                 {
                     if (SelectionChanged != null)
                     {
-                        SelectionChanged(this, intersectedRows, SelectionChangedType.Replace, ReflectReason.ChartSelection);
+                        SelectionChanged(this, intersectedRows, SelectionChangedType.Replace, ReflectReason.SelectionChanged);
                     }
                 }
                 

@@ -367,14 +367,14 @@ namespace FlexTable.View
                             {
                                 case "MIN":
                                     selectedColumnViewModel.AggregativeFunction = new AggregativeFunction.MinAggregation();
-                                    ViewModel.MainPageViewModel.ReflectAll(false);
+                                    ViewModel.MainPageViewModel.ReflectAll(false, ReflectReason.ColumnViewModelChanged);
                                     Debug.WriteLine("Min selected");
                                     drawable.RemoveAllStrokes();
                                     timer.Stop();
                                     return;
                                 case "MAX":
                                     selectedColumnViewModel.AggregativeFunction = new AggregativeFunction.MaxAggregation();
-                                    ViewModel.MainPageViewModel.ReflectAll(false);
+                                    ViewModel.MainPageViewModel.ReflectAll(false, ReflectReason.ColumnViewModelChanged);
                                     Debug.WriteLine("Max selected");
                                     drawable.RemoveAllStrokes();
                                     timer.Stop();
@@ -382,14 +382,14 @@ namespace FlexTable.View
                                 case "AVG":
                                 case "MEAN":
                                     selectedColumnViewModel.AggregativeFunction = new AggregativeFunction.AverageAggregation();
-                                    ViewModel.MainPageViewModel.ReflectAll(false);
+                                    ViewModel.MainPageViewModel.ReflectAll(false, ReflectReason.ColumnViewModelChanged);
                                     Debug.WriteLine("Mean selected");
                                     drawable.RemoveAllStrokes();
                                     timer.Stop();
                                     return;
                                 case "SUM":
                                     selectedColumnViewModel.AggregativeFunction = new AggregativeFunction.SumAggregation();
-                                    ViewModel.MainPageViewModel.ReflectAll(false);
+                                    ViewModel.MainPageViewModel.ReflectAll(false, ReflectReason.ColumnViewModelChanged);
                                     Debug.WriteLine("Sum selected");
                                     drawable.RemoveAllStrokes();
                                     timer.Stop();
@@ -455,13 +455,13 @@ namespace FlexTable.View
                     {
                         // 오름차순 정렬
                         this.ViewModel.SheetViewModel.Sort(selectedColumnViewModel, SortOption.Ascending);
-                        this.ViewModel.MainPageViewModel.ReflectAll(false);
+                        this.ViewModel.MainPageViewModel.ReflectAll(false, ReflectReason.SelectionChanged);
                     }
                     else if (lastPoint.Position.Y < firstPoint.Position.Y + VerticalStrokeHeightDifferenceThreshold)
                     {
                         // 내림차순 정렬
                         this.ViewModel.SheetViewModel.Sort(selectedColumnViewModel, SortOption.Descending);
-                        this.ViewModel.MainPageViewModel.ReflectAll(false);
+                        this.ViewModel.MainPageViewModel.ReflectAll(false, ReflectReason.SelectionChanged);
                     }
                 }
                 else // 아니면 선택하라는 것임

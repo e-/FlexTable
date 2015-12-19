@@ -359,7 +359,7 @@ namespace FlexTable.View
         private void Unselect_Tapped(object sender, TappedRoutedEventArgs e)
         {
             ViewModel.State = PageViewModel.PageViewState.Undoing;
-            SelectionChanged(null, null, SelectionChangedType.Clear, ReflectReason.ChartSelection);
+            SelectionChanged(null, null, SelectionChangedType.Clear, ReflectReason.SelectionChanged);
             ViewModel.StateChanged(this);
         }
 
@@ -411,7 +411,7 @@ namespace FlexTable.View
             Double delta = e.Cumulative.Translation.X;
             if (delta > SelectionDismissThreshold)
             {
-                SelectionChanged(this, null, SelectionChangedType.Clear, ReflectReason.ChartSelection);
+                SelectionChanged(this, null, SelectionChangedType.Clear, ReflectReason.SelectionChanged);
             }
             else
             {

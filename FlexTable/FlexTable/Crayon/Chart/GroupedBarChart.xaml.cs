@@ -473,7 +473,7 @@ namespace FlexTable.Crayon.Chart
                 index = 0;
                 foreach (TextBlock label in HorizontalAxis.TickLabels)
                 {
-                    Rect r = new Rect(Canvas.GetLeft(label), Canvas.GetTop(label) + ChartAreaEndY, label.Width, label.ActualHeight);
+                    Rect r = new Rect(Canvas.GetLeft(label), Canvas.GetTop(label) + ChartAreaEndY, label.ActualWidth, label.ActualHeight);
 
                     if (Const.IsIntersected(r, boundingRect))
                     {
@@ -494,7 +494,7 @@ namespace FlexTable.Crayon.Chart
                 {
                     if (SelectionChanged != null)
                     {
-                        SelectionChanged(this, intersectedRows, SelectionChangedType.Add, ReflectReason.ChartSelection);
+                        SelectionChanged(this, intersectedRows, SelectionChangedType.Add, ReflectReason.SelectionChanged);
                     }
                 }
             }
@@ -513,9 +513,9 @@ namespace FlexTable.Crayon.Chart
             if (SelectionChanged != null)
             {
                 if (barChartDatum.Rows == null || barChartData.SelectMany(cd => cd.Rows).Count() < barChartData.SelectMany(cd => cd.EnvelopeRows).Count())
-                    SelectionChanged(this, barChartData.SelectMany(cd => cd.EnvelopeRows), SelectionChangedType.Add, ReflectReason.ChartSelection);
+                    SelectionChanged(this, barChartData.SelectMany(cd => cd.EnvelopeRows), SelectionChangedType.Add, ReflectReason.SelectionChanged);
                 else
-                    SelectionChanged(this, barChartData.SelectMany(cd => cd.Rows), SelectionChangedType.Remove, ReflectReason.ChartSelection);
+                    SelectionChanged(this, barChartData.SelectMany(cd => cd.Rows), SelectionChangedType.Remove, ReflectReason.SelectionChanged);
             }
 
             args.Handled = true;
@@ -527,9 +527,9 @@ namespace FlexTable.Crayon.Chart
             GroupedBarChartDatum groupedBarChartDatum = datum as GroupedBarChartDatum;
 
             if(groupedBarChartDatum.Children[0].Rows == null || groupedBarChartDatum.Rows.Count() < groupedBarChartDatum.EnvelopeRows.Count())
-                SelectionChanged(this, groupedBarChartDatum.EnvelopeRows, SelectionChangedType.Add, ReflectReason.ChartSelection);
+                SelectionChanged(this, groupedBarChartDatum.EnvelopeRows, SelectionChangedType.Add, ReflectReason.SelectionChanged);
             else
-                SelectionChanged(this, groupedBarChartDatum.Rows, SelectionChangedType.Remove, ReflectReason.ChartSelection);
+                SelectionChanged(this, groupedBarChartDatum.Rows, SelectionChangedType.Remove, ReflectReason.SelectionChanged);
 
             args.Handled = true;
         }        

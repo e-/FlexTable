@@ -141,6 +141,7 @@ namespace FlexTable.ViewModel
 
             List<GroupedRows> groupedRows = ViewStatus.GroupedRows;
             Object firstChartTag = "dummy tag wer";
+            Boolean useTransition = (onSelectionChanged && !onCreate) || (reason != ReflectReason.FilterOut && reason != ReflectReason.PreviewRequested);
 
             if (ViewStatus.IsC)
             {
@@ -155,7 +156,7 @@ namespace FlexTable.ViewModel
                     SetFrequencyHistogramSelection(ViewStatus.FirstCategorical, pageView.SelectedRows);
                 }
 
-                pageView.BarChart.Update((onSelectionChanged && !onCreate) || (reason != ReflectReason.FilterOut && reason != ReflectReason.None));
+                pageView.BarChart.Update(useTransition);
             }
             else if (ViewStatus.IsN)
             {
@@ -171,7 +172,7 @@ namespace FlexTable.ViewModel
                     SetDistributionHistogramSelection(ViewStatus.FirstNumerical, pageView.SelectedRows);
                 }
 
-                pageView.DistributionView.Histogram.Update((onSelectionChanged && !onCreate) || (reason != ReflectReason.FilterOut && reason != ReflectReason.None));
+                pageView.DistributionView.Histogram.Update(useTransition);
             }
             else if (ViewStatus.IsCN)
             {
@@ -188,8 +189,8 @@ namespace FlexTable.ViewModel
                     SetLineChartSelection(ViewStatus.FirstNumerical, pageView.SelectedRows);
                 }
 
-                pageView.BarChart.Update((onSelectionChanged && !onCreate) || (reason != ReflectReason.FilterOut && reason != ReflectReason.None));
-                pageView.LineChart.Update((onSelectionChanged && !onCreate) || (reason != ReflectReason.FilterOut && reason != ReflectReason.None));
+                pageView.BarChart.Update(useTransition);
+                pageView.LineChart.Update(useTransition);
 
                 firstChartTag = ViewStatus.FirstCategorical.CategoricalType == CategoricalType.Ordinal ? pageView.LineChart.Tag : pageView.BarChart.Tag;
             }
@@ -206,7 +207,7 @@ namespace FlexTable.ViewModel
                     SetGroupedBarChartSelection(ViewStatus.FirstCategorical, ViewStatus.SecondCategorical, pageView.SelectedRows);
                 }
 
-                pageView.GroupedBarChart.Update((onSelectionChanged && !onCreate) || (reason != ReflectReason.FilterOut && reason != ReflectReason.None));
+                pageView.GroupedBarChart.Update(useTransition);
             }
             else if (ViewStatus.IsNN)
             {
@@ -229,10 +230,10 @@ namespace FlexTable.ViewModel
                     }
                 }
 
-                pageView.Scatterplot.Update((onSelectionChanged && !onCreate) || (reason != ReflectReason.FilterOut && reason != ReflectReason.None));
+                pageView.Scatterplot.Update(useTransition);
                 if (ViewStatus.FirstNumerical.Unit == ViewStatus.SecondNumerical.Unit)
                 {
-                    pageView.GroupedBarChart.Update((onSelectionChanged && !onCreate) || (reason != ReflectReason.FilterOut && reason != ReflectReason.None));
+                    pageView.GroupedBarChart.Update(useTransition);
                 }
             }
             else if (ViewStatus.IsCCC)
@@ -254,8 +255,8 @@ namespace FlexTable.ViewModel
                     SetLineChartSelection(ViewStatus.FirstNumerical, pageView.SelectedRows);
                 }
 
-                pageView.GroupedBarChart.Update((onSelectionChanged && !onCreate) || (reason != ReflectReason.FilterOut && reason != ReflectReason.None));
-                pageView.LineChart.Update((onSelectionChanged && !onCreate) || (reason != ReflectReason.FilterOut && reason != ReflectReason.None));
+                pageView.GroupedBarChart.Update(useTransition);
+                pageView.LineChart.Update(useTransition);
             }
             else if (ViewStatus.IsCNN)
             {
@@ -283,11 +284,11 @@ namespace FlexTable.ViewModel
                     }
                 }
 
-                pageView.Scatterplot.Update((onSelectionChanged && !onCreate) || (reason != ReflectReason.FilterOut && reason != ReflectReason.None));
+                pageView.Scatterplot.Update(useTransition);
                 if (ViewStatus.FirstNumerical.Unit == ViewStatus.SecondNumerical.Unit)
                 {
-                    pageView.GroupedBarChart.Update((onSelectionChanged && !onCreate) || (reason != ReflectReason.FilterOut && reason != ReflectReason.None));
-                    pageView.LineChart.Update((onSelectionChanged && !onCreate) || (reason != ReflectReason.FilterOut && reason != ReflectReason.None));
+                    pageView.GroupedBarChart.Update(useTransition);
+                    pageView.LineChart.Update(useTransition);
                 }
             }
             else if (ViewStatus.IsNNN)

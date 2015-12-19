@@ -25,10 +25,13 @@ namespace FlexTable
 
     public enum ReflectReason
     {
-        TableSelection,
-        ChartSelection,
+        SelectionChanged,
         FilterOut,
-        None
+        ColumnViewModelChanged,
+        PreviewRequested,
+        Undo,
+        ColumnViewModelSelected,
+        ColumnViewModelUnselected
     }
 
     class Const
