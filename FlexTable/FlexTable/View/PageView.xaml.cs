@@ -339,7 +339,7 @@ namespace FlexTable.View
             ViewModel.ViewStatus.ActivatedChart = paragraphs[index].Children.Last();
 
             if(ViewModel.IsSelected)
-                ViewModel.MainPageViewModel.TableViewModel.Reflect(ViewModel.ViewStatus);
+                ViewModel.MainPageViewModel.TableViewModel.Reflect(ViewModel.ViewStatus, ReflectReason.PageScrolled);
         }
         
         private void Select_Tapped(object sender, TappedRoutedEventArgs e)

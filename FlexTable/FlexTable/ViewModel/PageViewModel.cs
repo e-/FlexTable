@@ -380,7 +380,7 @@ namespace FlexTable.ViewModel
         void DrawDescriptiveStatistics(ColumnViewModel numerical)
         {
             DescriptiveStatisticsResult result = DescriptiveStatistics.Analyze(
-                    mainPageViewModel.SheetViewModel.AllRowViewModels.Select(r => (Double)r.Cells[numerical.Index].Content)
+                    mainPageViewModel.SheetViewModel.FilteredRows.Select(r => (Double)r.Cells[numerical.Index].Content)
                     );
 
             pageView.DescriptiveStatisticsTitle.Children.Clear();

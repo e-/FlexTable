@@ -169,7 +169,7 @@ namespace FlexTable.View
                     unselected = allRowPresenters.Where(rp => sr.IndexOf(rp.RowViewModel.Row) < 0).OrderBy(rp => rp.RowViewModel.Index);
 
                 Int32 index = 0;
-                Double height = (Double)App.Current.Resources["RowHeight"];
+                Double height = Const.RowHeight;
                 List<Color> colors = new List<Color>();
 
                 foreach (RowPresenter rowPresenter in selected)
@@ -201,7 +201,7 @@ namespace FlexTable.View
                 ActivatedScrollViewer = GroupedRowScrollViewer;
 
                 Int32 index = 0;
-                Double height = (Double)App.Current.Resources["RowHeight"];
+                Double height = Const.RowHeight;
                 Int32 i = 0;
                 List<Color> colors = new List<Color>();
                 ColumnViewModel coloredColumnViewModel = viewStatus?.GetColoredColumnViewModel(),
@@ -233,7 +233,14 @@ namespace FlexTable.View
                 }
                 else if (viewStatus.IsCNN)
                 {
-                    firstColoredColumnViewModel = secondColoredColumnViewModel = null;
+                    if (viewStatus.IsPivotTableVisible)
+                    {
+                        firstColoredColumnViewModel = secondColoredColumnViewModel = null;
+                    }
+                    else
+                    {
+                        coloredColumnViewModel = null;
+                    }
                 }
 
                 for (i = 0; i < ViewModel.GroupedRowViewModels.Count; ++i)
@@ -277,7 +284,7 @@ namespace FlexTable.View
                 if (viewStatus.IsCNN && viewStatus.IsGroupedBarChartVisible) coloredColumnViewModel = null;
                 
                 Int32 index = 0;
-                Double height = (Double)App.Current.Resources["RowHeight"];
+                Double height = Const.RowHeight;
                 List<Color> colors = new List<Color>();
 
                 // selectedRow는 scatterplot과 barchart가 공유함에 주의

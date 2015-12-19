@@ -27,17 +27,25 @@ namespace FlexTable.ViewModel
                 OnPropertyChanged("IndexFromOne");
             }
         }
-        public Double Y { get { return index * (Double)App.Current.Resources["RowHeight"]; } }
+        public Double StashedY { get; set; }
+        public Double Y { get { return index * Const.RowHeight; } }
         public Row Row { get; set; }
         public IEnumerable<Row> Rows { get; set; }
 
         private List<Cell> cells = new List<Cell>();
         public List<Cell> Cells { get { return cells; } }
+        public Color StashedColor { get; set; }
         public Color Color { get; set; } = Colors.Black;
 
         public RowViewModel(MainPageViewModel mainPageViewModel)
         {
             this.mainPageViewModel = mainPageViewModel;
+        }
+
+        public void Stash()
+        {
+            StashedY = Y;
+            StashedColor = Color;
         }
     }
 }

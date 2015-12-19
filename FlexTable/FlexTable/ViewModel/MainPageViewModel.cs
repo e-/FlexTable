@@ -66,6 +66,7 @@ namespace FlexTable.ViewModel
             SheetViewModel = new SheetViewModel(this, view);
             TableViewModel = new TableViewModel(this, view);
             ExplorationViewModel = new ExplorationViewModel(this, view);
+            Const.Initialize();
         }
 
         /// <summary>
@@ -96,7 +97,7 @@ namespace FlexTable.ViewModel
             SheetViewModel.Reflect(viewStatus);
 
             // 테이블 업데이트
-            TableViewModel.Reflect(viewStatus);
+            TableViewModel.Reflect(viewStatus, reason);
 
             // 차트 업데이트
             if (updateAllPageViews)
@@ -154,6 +155,8 @@ namespace FlexTable.ViewModel
             // 메타데이터 초기화
             ExplorationViewModel.MetadataViewModel.Initialize();
 
+            return;
+
             var dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
 
             ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[0]);
@@ -167,6 +170,7 @@ namespace FlexTable.ViewModel
 
                 //PageView topPageView = ExplorationViewModel.SelectedPageViews.Last();
                 //topPageView.SelectionChanged(null, sheetViewModel.FilteredRows.Where((r, index) => index < 50).ToList(), SelectionChangedType.Add, ReflectReason.ChartSelection);
+                return;
 
                 ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[2]);
 

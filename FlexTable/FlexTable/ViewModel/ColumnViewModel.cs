@@ -31,6 +31,7 @@ namespace FlexTable.ViewModel
         private Double width;
         public Double Width { get { return width; } set { width = value; OnPropertyChanged("Width"); } }
 
+        public Double StashedX { get; set; }
         private Double x;
         public Double X { get { return x; } set { x = value; OnPropertyChanged("X"); } }
 
@@ -163,6 +164,11 @@ namespace FlexTable.ViewModel
         public void UpdateHeaderName()
         {
             OnPropertyChanged("HeaderName");
+        }
+
+        public void Stash()
+        {
+            StashedX = X;
         }
     }
 }

@@ -31,13 +31,19 @@ namespace FlexTable
         PreviewRequested,
         Undo,
         ColumnViewModelSelected,
-        ColumnViewModelUnselected
+        ColumnViewModelUnselected,
+        PageScrolled
     }
 
-    class Const
+    public class Const
     {
         public static Double PageViewToggleThreshold = 200;
+        public static Double RowHeight = 20;
 
+        public static void Initialize()
+        {
+            RowHeight = (Double)App.Current.Resources["RowHeight"];
+        }
         
     }
 }

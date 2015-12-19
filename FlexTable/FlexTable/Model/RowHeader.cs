@@ -30,7 +30,7 @@ namespace FlexTable.Model
         }
 
         public String IndexString { get { return index.ToString(); } }
-        public Double Top { get { return (index - 1) * (Double)App.Current.Resources["RowHeight"]; } }
+        public Double Top { get { return (index - 1) * Const.RowHeight; } }
         public SolidColorBrush Background { get { return (SolidColorBrush)App.Current.Resources["RowGuidelineBrush" + (index+1) % 2]; } }
         public event PropertyChangedEventHandler PropertyChanged;
         

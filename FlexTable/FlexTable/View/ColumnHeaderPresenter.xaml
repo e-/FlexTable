@@ -16,26 +16,7 @@
                       ZoomMode="Disabled"
                       Width="{Binding SheetViewWidth}"
                       >
-            <Canvas x:Name="Items" Width="{Binding PaddedSheetWidth}">
-            
-            </Canvas>
-            <!--<Grid x:Name="ScrollViewerContentWrapperElement" Width="{Binding PaddedSheetWidth}" Background="Red">
-                <Canvas x:Name="Items"> 
-                    
-                </Canvas>-->
-                <!--<ItemsControl ItemsSource="{Binding SheetViewModel.ColumnViewModels}" x:Name="Items">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <Canvas />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <local:ColumnHeaderCellPresenter></local:ColumnHeaderCellPresenter>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>-->
-            <!--</Grid>-->
+            <Canvas x:Name="Items" Width="{Binding PaddedSheetWidth}"></Canvas>
         </ScrollViewer>
     </Border>
 </UserControl>

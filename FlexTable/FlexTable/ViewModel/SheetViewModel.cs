@@ -24,7 +24,7 @@ namespace FlexTable.ViewModel
         private Double sheetHeight;
         public Double SheetHeight { get { return sheetHeight; } private set { sheetHeight = value; OnPropertyChanged("SheetHeight"); } }
 
-        public Double AllRowsSheetHeight { get { return allRowViewModels.Count * (Double)App.Current.Resources["RowHeight"]; } }
+        public Double AllRowsSheetHeight { get { return allRowViewModels.Count * Const.RowHeight; } }
 
         private List<ColumnViewModel> columnViewModels = new List<ColumnViewModel>();
         public List<ColumnViewModel> ColumnViewModels => columnViewModels;
@@ -211,7 +211,7 @@ namespace FlexTable.ViewModel
             UpdateColumnX();
 
             SheetWidth = columnViewModels.Select(c => c.Width).Sum() + (Double)App.Current.Resources["RowHeaderWidth"];
-            SheetHeight = allRowViewModels.Count * (Double)App.Current.Resources["RowHeight"];
+            SheetHeight = allRowViewModels.Count * Const.RowHeight;
         }
 
         public void MeasureColumnWidth()
@@ -293,7 +293,7 @@ namespace FlexTable.ViewModel
         {
             UpdateOrder(viewStatus);
 
-            //SheetHeight = groupedRowViewModels.Count * (Double)App.Current.Resources["RowHeight"];
+            //SheetHeight = groupedRowViewModels.Count * Const.RowHeight;
         }
 
         public void UpdateOrder(ViewStatus viewStatus)

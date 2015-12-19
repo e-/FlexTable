@@ -111,18 +111,30 @@ namespace FlexTable.ViewModel
             view.TableView.ColumnIndexer.Update();
         }
 
-        //private AnimationHint stashedAnimationHint = null;
         private ViewStatus stashedViewStatus = null;
-        //private IEnumerable<Row> stashedSelectedRows = null;
 
         public void StashViewStatus(ViewStatus viewStatus, AnimationHint.AnimationType animationType)
         {
-            AnimationHint hint = AnimationHint.Create(mainPageViewModel.SheetViewModel, this);
-            hint.Type = animationType;
             stashedViewStatus = viewStatus.Clone();
             stashedViewStatus.TableViewState = state;
             stashedViewStatus.SelectedRows = SelectedRows;
-            stashedViewStatus.AnimationHint = hint;            
+            if (stashedViewStatus.GroupedRowViewModels != null)
+            {
+                foreach (RowViewModel rvm in stashedViewStatus.GroupedRowViewModels)
+                {
+                    rvm.Stash();
+                }
+            }
+
+            foreach (RowViewModel rvm in AllRowViewModels)
+            {
+                rvm.Stash();
+            }
+
+            foreach(ColumnViewModel cvm in SheetViewModel.ColumnViewModels)
+            {
+                cvm.Stash();
+            }
         }
 
         DispatcherTimer dispatcherTimer = null;
@@ -131,7 +143,7 @@ namespace FlexTable.ViewModel
         Action tableUpdateCallback;
         Int32 callbackCount = 0, callbackLimitCount = 0;
 
-        public void Reflect(ViewStatus viewStatus)
+        public void Reflect(ViewStatus viewStatus, ReflectReason reason)
         {
             // 애니메이션 로직이 들어가야함
             if (previousAnimationScenario?.AnimationStoryboard != null)
@@ -139,7 +151,11 @@ namespace FlexTable.ViewModel
                 previousAnimationScenario?.AnimationStoryboard.SkipToFill();
             }
 
-            AnimationScenario animationScenario = CreateTableAnimation(viewStatus);
+            UpdateRows(viewStatus);
+            UpdateState(viewStatus);
+            viewStatus.TableViewState = State;
+
+            AnimationScenario animationScenario = reason == ReflectReason.PageScrolled ? AnimationScenario.None : CreateTableAnimation(viewStatus);
             previousAnimationScenario = animationScenario;
 
             if (dispatcherTimer != null && dispatcherTimer.IsEnabled) dispatcherTimer.Stop();
@@ -167,7 +183,8 @@ namespace FlexTable.ViewModel
 
                     dispatcherTimer.Stop();
 
-                    Update(viewStatus);
+                    UpdateState(viewStatus);
+
                     view.TableView.ReflectState(viewStatus);
                     view.TableView.ColumnIndexer.Update();
                 };
@@ -189,7 +206,7 @@ namespace FlexTable.ViewModel
                     else return;
 
                     dispatcherTimer.Stop();
-                    Update(viewStatus);
+                    UpdateState(viewStatus);
 
                     view.TableView.ReflectState(viewStatus);
 
@@ -228,7 +245,23 @@ namespace FlexTable.ViewModel
                 tableUpdateCallback();
         }
 
-        void Update(ViewStatus viewStatus)
+        void UpdateState(ViewStatus viewStatus)
+        {
+            if (SelectedRows != null) // 로우 선택 중
+            {
+                State = TableViewState.SelectedRow;
+            }
+            else if (viewStatus.IsAllRowViewModelVisible)
+            {
+                State = TableViewState.AllRow;
+            }
+            else
+            {
+                State = TableViewState.GroupedRow;
+            }
+        }
+
+        void UpdateRows(ViewStatus viewStatus)
         {
             Int32 index = 0;
             if(SelectedRows != null) // 로우 선택 중
@@ -336,7 +369,7 @@ namespace FlexTable.ViewModel
                 StashViewStatus(mainPageViewModel.ExplorationViewModel.ViewStatus, AnimationHint.AnimationType.SelectRows);
             }
             SelectedRows = selectedRows.ToList();
-            Reflect(mainPageViewModel.ExplorationViewModel.ViewStatus);
+            Reflect(mainPageViewModel.ExplorationViewModel.ViewStatus, ReflectReason.PreviewRequested);
         }
 
         public void CancelPreviewRows()
@@ -346,7 +379,7 @@ namespace FlexTable.ViewModel
                 StashViewStatus(mainPageViewModel.ExplorationViewModel.ViewStatus, AnimationHint.AnimationType.UnselectRows);
             }
             SelectedRows = null;
-            Reflect(mainPageViewModel.ExplorationViewModel.ViewStatus);
+            Reflect(mainPageViewModel.ExplorationViewModel.ViewStatus, ReflectReason.PreviewRequested);
         }        
 
         public void SelectRowsByRange(Double startY, Double endY)
@@ -359,7 +392,7 @@ namespace FlexTable.ViewModel
             PageView topPageView = mainPageViewModel.ExplorationViewModel.SelectedPageViews.Last();
             PageViewModel topPageViewModel = topPageView.ViewModel;
 
-            Double rowHeight = (Double)App.Current.Resources["RowHeight"];
+            Double rowHeight = Const.RowHeight;
 
             //startY = Math.Floor(startY / rowHeight) * rowHeight;
             //endY = Math.Ceiling(endY / rowHeight) * rowHeight;

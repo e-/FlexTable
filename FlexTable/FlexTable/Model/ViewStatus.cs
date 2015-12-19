@@ -34,8 +34,7 @@ namespace FlexTable.Model
 
         public Int32 SelectedCount => selectedColumnViewModels.Count;
         public Int32 NumericalCount => selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical).Count();
-        public Int32 CategoricalCount => selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).Count();
-         
+        public Int32 CategoricalCount => selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).Count();         
 
         public Boolean IsEmpty => SelectedCount == 0;
 
@@ -84,7 +83,7 @@ namespace FlexTable.Model
         public List<RowViewModel> GroupedRowViewModels { get; set; }
         public List<GroupedRows> GroupedRows { get; set; }
         public TableViewModel.TableViewState TableViewState { get; set; }
-        public AnimationHint AnimationHint { get; set; }
+        //public AnimationHint AnimationHint { get; set; }
         public IEnumerable<Row> SelectedRows { get; set; }
 
         public ViewStatus Clone()

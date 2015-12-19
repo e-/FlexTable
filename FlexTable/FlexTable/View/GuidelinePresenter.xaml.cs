@@ -37,7 +37,7 @@ namespace FlexTable.View
             Int32 maxN = n;
 
             if (maxN < 50) maxN = 50;
-            Double rowHeight = (Double)App.Current.Resources["RowHeight"];
+            Double rowHeight = Const.RowHeight;
 
             GuidelineElement.Children.Clear();
 
