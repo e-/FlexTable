@@ -42,15 +42,6 @@ namespace FlexTable.View
             foreach (UIElement ele in victim) PageViewElement.Children.Remove(ele);
 
             AddNewPage();
-
-            /*PageViewModel pageViewModel = new PageViewModel(
-                this,
-                view.ExplorationView.TopPageView
-                )
-            {
-                ViewStatus = new ViewStatus() // 초기 비어있는 뷰 상태로 초기화
-            };
-            view.ExplorationView.TopPageView.DataContext = pageViewModel;*/
         }
 
         public void AddNewPage()

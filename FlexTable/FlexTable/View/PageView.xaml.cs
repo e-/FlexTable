@@ -259,10 +259,10 @@ namespace FlexTable.View
             Int32 index = 0;
             foreach (StackPanel paragraph in paragraphs)
             {
-                Canvas.SetLeft(paragraph, (Double)App.Current.Resources["ParagraphWidth"] * index);
+                Canvas.SetLeft(paragraph, ViewModel.MainPageViewModel.ParagraphWidth * index);
                 index++;
             }
-            ParagraphContainerCanvasElement.Width = index * (Double)App.Current.Resources["ParagraphWidth"];
+            ParagraphContainerCanvasElement.Width = index * ViewModel.MainPageViewModel.ParagraphWidth;
 
             // 먼저 전에 보이던 시각화와 같은 시각화가 있는지 본다. 있으면 그걸 먼저 보여줌 (바, 산점도)에서 산점도를 보다 바가 없어지면 그대로 산점도를 보여주고 싶음
 
@@ -282,7 +282,7 @@ namespace FlexTable.View
             if (sameParagraph != null && trackPreviousParagraph)
             {
                 PageLabelViewElement.ActivatedParagraphIndex = sameIndex;
-                Carousel.ChangeView(sameIndex * (Double)App.Current.Resources["ParagraphWidth"], null, null, true);
+                Carousel.ChangeView(sameIndex * ViewModel.MainPageViewModel.ParagraphWidth, null, null, true);
             }
             else
             {

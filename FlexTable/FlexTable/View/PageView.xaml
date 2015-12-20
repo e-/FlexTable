@@ -39,17 +39,29 @@
         </Storyboard>
         
         <Storyboard x:Name="MoveToSelectedPositionStoryboard">
-            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.7"
+            <!--<DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.7"
                              Storyboard.TargetName="UserControl" Storyboard.TargetProperty="(Canvas.Top)" To="0">
-            </DoubleAnimation>
+            </DoubleAnimation>-->
             <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.7"
                              Storyboard.TargetName="ChartWrapper" Storyboard.TargetProperty="Opacity" To="1">
+            </DoubleAnimation>
+            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.7"
+                               Storyboard.TargetName="WrapperRenderTransform" Storyboard.TargetProperty="ScaleX" To="1">
+            </DoubleAnimation>
+            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.7"
+                               Storyboard.TargetName="WrapperRenderTransform" Storyboard.TargetProperty="ScaleY" To="1">
             </DoubleAnimation>
         </Storyboard>
         
         <Storyboard x:Name="MoveToDefaultPositionStoryboard">
-            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.7"
+            <!--<DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.7"
                              Storyboard.TargetName="UserControl" Storyboard.TargetProperty="(Canvas.Top)" To="{Binding MainPageViewModel.PageOffset}">
+            </DoubleAnimation>-->
+            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.7"
+                               Storyboard.TargetName="WrapperRenderTransform" Storyboard.TargetProperty="ScaleX" To="0.8">
+            </DoubleAnimation>
+            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.7"
+                               Storyboard.TargetName="WrapperRenderTransform" Storyboard.TargetProperty="ScaleY" To="0.8">
             </DoubleAnimation>
         </Storyboard>
 
@@ -166,7 +178,7 @@
             <Setter Property="Margin" Value="0 -30 0 0" />
             <Setter Property="TextAlignment" Value="Center" />
             <Setter Property="FontSize" Value="20" />
-            <Setter Property="Width" Value="{StaticResource ParagraphWidth}" />
+            <Setter Property="Width" Value="{Binding MainPageViewModel.ParagraphWidth}" />
             <Setter Property="RenderTransform">
                 <Setter.Value>
                     <TranslateTransform Y="15" />
@@ -174,11 +186,17 @@
             </Setter>
         </Style>
         <x:String x:Key="TooManyElementsWarningString">There are too many visual elements. Some elements may be hidden.</x:String>
-        
+        <x:Double x:Key="WrapperRenderTransformInitialScale">0.8</x:Double>
     </UserControl.Resources>
 
-    <StackPanel Opacity="0" x:Name="Wrapper"
-                Background="Transparent">
+    <Border Opacity="0" x:Name="Wrapper"
+            Background="Transparent"
+            BorderThickness="1"
+            BorderBrush="{StaticResource GridLineBrush}"
+            RenderTransformOrigin="0.5 0.5">
+        <Border.RenderTransform>
+            <CompositeTransform ScaleX="0.8" ScaleY="0.8" x:Name="WrapperRenderTransform"></CompositeTransform>
+        </Border.RenderTransform>
         <Grid>
             <!-- Visibility="{Binding IsPreviewVisible, Converter={StaticResource BooleanToVisibilityConverter}}" -->
             <StackPanel Height="{Binding MainPageViewModel.PageHeight}"
@@ -186,9 +204,9 @@
                 <ScrollViewer HorizontalScrollBarVisibility="Hidden" HorizontalScrollMode="Auto" 
                               VerticalScrollBarVisibility="Hidden" VerticalScrollMode="Disabled"
                               x:Name="Carousel" Background="White"
-                              Width="{StaticResource ParagraphWidth}"
+                              Width="{Binding MainPageViewModel.ParagraphWidth}"
                               ViewChanged="Carousel_ViewChanged">
-                    <Canvas x:Name="ParagraphContainerCanvasElement" Height="{StaticResource ParagraphContainerHeight}"
+                    <Canvas x:Name="ParagraphContainerCanvasElement" Height="{Binding MainPageViewModel.ParagraphContainerHeight}"
                             ManipulationMode="TranslateY,System"
                             >
                         <StackPanel Visibility="{Binding IsBarChartVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Bar Chart" Background="Transparent">
@@ -197,7 +215,7 @@
                                 <Run FontFamily="FontAwesome" Foreground="#CC0000">&#xf071;</Run>
                                 <Run Text="{StaticResource TooManyElementsWarningString}"></Run>
                             </TextBlock>
-                            <crayon:BarChart x:Name="BarChartElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}" 
+                            <crayon:BarChart x:Name="BarChartElement" Width="{Binding MainPageViewModel.ParagraphWidth}" Height="{Binding MainPageViewModel.ParagraphHeight}" 
                                              IsHitTestVisible="False" Tag="Bar Chart"/>
                         </StackPanel>
 
@@ -207,7 +225,7 @@
                                 <Run FontFamily="FontAwesome" Foreground="#CC0000">&#xf071;</Run>
                                 <Run Text="{StaticResource TooManyElementsWarningString}"></Run>
                             </TextBlock>
-                            <crayon:GroupedBarChart x:Name="GroupedBarChartElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}" 
+                            <crayon:GroupedBarChart x:Name="GroupedBarChartElement" Width="{Binding MainPageViewModel.ParagraphWidth}" Height="{Binding MainPageViewModel.ParagraphHeight}" 
                                                     IsHitTestVisible="False" Tag="Grouped Bar Chart"/>
                         </StackPanel>
 
@@ -217,20 +235,20 @@
                                 <Run FontFamily="FontAwesome" Foreground="#CC0000">&#xf071;</Run>
                                 <Run Text="{StaticResource TooManyElementsWarningString}"></Run>
                             </TextBlock>
-                            <crayon:LineChart x:Name="LineChartElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}" 
+                            <crayon:LineChart x:Name="LineChartElement" Width="{Binding MainPageViewModel.ParagraphWidth}" Height="{Binding MainPageViewModel.ParagraphHeight}" 
                                               IsHitTestVisible="False" Tag="Line Chart"/>
                         </StackPanel>
 
                         <StackPanel Visibility="{Binding IsDistributionVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Distribution" Background="Transparent">
                             <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="DistributionViewTitleElement"></StackPanel>
-                            <local:DistributionView x:Name="DistributionViewElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}"
+                            <local:DistributionView x:Name="DistributionViewElement" Width="{Binding MainPageViewModel.ParagraphWidth}" Height="{Binding MainPageViewModel.ParagraphHeight}"
                                                     IsHitTestVisible="False" Tag="Distribution"/>
                         </StackPanel>
 
                         <StackPanel Visibility="{Binding IsDescriptiveStatisticsVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Statistics" Background="Transparent">
                             <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="DescriptiveStatisticsTitleElement"></StackPanel>
-                            <local:DescriptiveStatisticsView x:Name="DescriptiveStatisticsViewElement" Width="{StaticResource ParagraphWidth}" 
-                                                             Height="{StaticResource ParagraphHeight}" Tag="Statistics"/>
+                            <local:DescriptiveStatisticsView x:Name="DescriptiveStatisticsViewElement" Width="{Binding MainPageViewModel.ParagraphWidth}" 
+                                                             Height="{Binding MainPageViewModel.ParagraphHeight}" Tag="Statistics"/>
                         </StackPanel>
 
                         <StackPanel Visibility="{Binding IsScatterplotVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Scatterplot" Background="Transparent">
@@ -239,21 +257,21 @@
                                 <Run FontFamily="FontAwesome" Foreground="#CC0000">&#xf071;</Run>
                                 <Run Text="{StaticResource TooManyElementsWarningString}"></Run>
                             </TextBlock>
-                            <crayon:Scatterplot x:Name="ScatterplotElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}" 
+                            <crayon:Scatterplot x:Name="ScatterplotElement" Width="{Binding MainPageViewModel.ParagraphWidth}" Height="{Binding MainPageViewModel.ParagraphHeight}" 
                                                 IsHitTestVisible="False" Tag="Scatterplot"/>
                         </StackPanel>
 
                         <StackPanel Visibility="{Binding IsPivotTableVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Pivot Table" Background="Transparent">
                             <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="PivotTableTitleElement"></StackPanel>
                             <local:PivotTableView x:Name="PivotTableViewElement" VerticalAlignment="Center"
-                                                  Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}"
+                                                  Width="{Binding MainPageViewModel.ParagraphWidth}" Height="{Binding MainPageViewModel.ParagraphHeight}"
                                                   Tag="Pivot Table"
                                                   ></local:PivotTableView>
                         </StackPanel>
 
                         <StackPanel Visibility="{Binding IsCorrelationStatisticsVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="CorrStatistics" Background="Transparent">
                             <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="CorrelationStatisticsTitleElement"></StackPanel>
-                            <local:CorrelationStatisticsView x:Name="CorrelationStatisticsViewElement" Width="{StaticResource ParagraphWidth}" Height="{StaticResource ParagraphHeight}"
+                            <local:CorrelationStatisticsView x:Name="CorrelationStatisticsViewElement" Width="{Binding MainPageViewModel.ParagraphWidth}" Height="{Binding MainPageViewModel.ParagraphHeight}"
                                                              Tag="CorrStatistics"/>
                         </StackPanel>
                     </Canvas>
@@ -335,6 +353,6 @@
                 </StackPanel>
             </Border>
         </Grid>
-        <Image Source="ms-appx:///Assets/horizontal-separator.png" Width="{Binding MainPageViewModel.PageWidth}" Height="8"></Image>
-    </StackPanel>
+        <!--<Image Source="ms-appx:///Assets/horizontal-separator.png" Width="{Binding MainPageViewModel.PageWidth}" Height="8"></Image>-->
+    </Border>
 </UserControl>

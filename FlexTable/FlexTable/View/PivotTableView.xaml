@@ -70,7 +70,6 @@
         </Style>
     </UserControl.Resources>
 
-    <!--<Canvas Width="{StaticResource ParagraphWidth}"> -->
     <ScrollViewer IsHorizontalRailEnabled="False" IsHorizontalScrollChainingEnabled="False"
                   HorizontalScrollBarVisibility="Hidden" HorizontalScrollMode="Disabled"
                   VerticalScrollBarVisibility="Auto" VerticalScrollMode="Auto" 
@@ -79,5 +78,4 @@
         <Grid x:Name="PivotTableElement" HorizontalAlignment="Center" VerticalAlignment="Top" MinWidth="450">
         </Grid>
     </ScrollViewer>
-    <!--</Canvas>-->
 </UserControl>

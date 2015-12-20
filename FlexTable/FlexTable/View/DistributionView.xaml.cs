@@ -38,8 +38,8 @@ namespace FlexTable.View
                        rows.Select(r => (Double)r.Cells[numerical.Index].Content)
                        );
 
-            HistogramElement.Width = (Double)App.Current.Resources["ParagraphWidth"] - 20;
-            BoxPlotElement.Width = (Double)App.Current.Resources["ParagraphWidth"] - 90;
+            HistogramElement.Width = ViewModel.MainPageViewModel.ParagraphWidth - 20; // (Double)App.Current.Resources["ParagraphWidth"] - 20;
+            BoxPlotElement.Width = ViewModel.MainPageViewModel.ParagraphWidth - 90; // (Double)App.Current.Resources["ParagraphWidth"] - 90;
             BoxPlotElement.Min = result.Min;
             BoxPlotElement.Max = result.Max;
             BoxPlotElement.FirstQuartile = result.FirstQuartile;

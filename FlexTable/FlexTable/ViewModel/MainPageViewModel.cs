@@ -54,6 +54,26 @@ namespace FlexTable.ViewModel
         private Double pageOffset;
         public Double PageOffset { get { return pageOffset; } set { pageOffset = value; OnPropertyChanged("PageOffset"); } }
 
+        private Double paragraphWidth = 794;
+        public Double ParagraphWidth { get { return paragraphWidth; }
+            set { paragraphWidth = value; OnPropertyChanged(nameof(ParagraphWidth)); }
+        }
+        
+        private Double paragraphHeight = 410;
+        public Double ParagraphHeight { get { return paragraphHeight; } set { paragraphHeight = value; OnPropertyChanged(nameof(ParagraphHeight)); } }
+
+        private Double paragraphContainerHeight = 500;
+        public Double ParagraphContainerHeight { get { return paragraphContainerHeight; } set { paragraphContainerHeight = value; OnPropertyChanged(nameof(ParagraphContainerHeight)); } }
+
+        private Double pageHeaderHeight = 50;
+        public Double PageHeaderHeight { get { return pageHeaderHeight; } set { pageHeaderHeight = value; OnPropertyChanged(nameof(PageHeaderHeight)); } }
+
+        /*
+         <x:Double x:Key="ParagraphWidth">794</x:Double> <!-- 794인데 마지막 축 레이블 튀어나가서 줄임 -->
+            <x:Double x:Key="ParagraphHeight">410</x:Double>
+            <x:Double x:Key="ParagraphContainerHeight">500</x:Double> <!-- ParagraphHeight + 90 (titleheight) -->
+            */
+
         public MainPageViewModel(IMainPage view)
         {
             this.view = view;
@@ -139,10 +159,13 @@ namespace FlexTable.ViewModel
         {
             this.Sheet = sheet;
 
-            PageHeight = Bounds.Height / 2 - 4;
+            PageHeight = Bounds.Height; // Bounds.Height / 2 - 4;
             NegativePageHeight = -PageHeight;
-            PageOffset = PageHeight + 8;
+            PageOffset = 0; // PageHeight + 8;
             PageWidth = Bounds.Width / 2;
+            ParagraphWidth = PageWidth;
+            ParagraphHeight = PageHeight - PageHeaderHeight * 2 - 200;
+            ParagraphContainerHeight = PageHeight;
 
             // rowViewModels 계산
             sheetViewModel.Initialize(sheet);
@@ -154,17 +177,18 @@ namespace FlexTable.ViewModel
 
             // 메타데이터 초기화
             ExplorationViewModel.MetadataViewModel.Initialize();
-
-            return;
-
+            
             var dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
 
-            ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[0]);
-
+            
             DispatcherTimer dispatcherTimer = new DispatcherTimer();
             dispatcherTimer.Tick += (sender, e) =>
             {
                 dispatcherTimer.Stop();
+
+                ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[4]);
+
+
                 ExplorationViewModel.TopPageView.ViewModel.State = PageViewModel.PageViewState.Selected;
                 ExplorationViewModel.PageViewStateChanged(ExplorationViewModel.TopPageView.ViewModel, ExplorationViewModel.TopPageView);
 
