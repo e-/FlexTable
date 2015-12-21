@@ -34,7 +34,7 @@ namespace FlexTable.View
 {
     public sealed partial class PageView : UserControl
     {
-        const Double SelectionDismissThreshold = 50;
+        const Double SelectionDismissThreshold = 200;
 
         public BarChart BarChart => BarChartElement;
         public LineChart LineChart => LineChartElement;
@@ -82,6 +82,30 @@ namespace FlexTable.View
             DistributionView.Histogram.FilterOut += FilterOut;
 
             PageLabelViewElement.LabelTapped += PageLabelViewElement_LabelTapped;
+        }
+
+        public void Initialize()
+        {
+            Double width = ViewModel.MainPageViewModel.ParagraphWidth, height = ViewModel.MainPageViewModel.ParagraphChartHeight;
+
+            // do not use binding
+
+            BarChartElement.Width = width;
+            BarChartElement.Height = height;
+            GroupedBarChartElement.Width = width;
+            GroupedBarChartElement.Height = height;
+            LineChartElement.Width = width;
+            LineChartElement.Height = height;
+            ScatterplotElement.Width = width;
+            ScatterplotElement.Height = height;
+            PivotTableViewElement.Width = width;
+            PivotTableViewElement.Height = height;
+            DistributionViewElement.Width = width;
+            DistributionViewElement.Height = height;
+            DescriptiveStatisticsViewElement.Width = width;
+            DescriptiveStatisticsViewElement.Height = height;
+            CorrelationStatisticsViewElement.Width = width;
+            CorrelationStatisticsViewElement.Height = height;
         }
 
         public void SelectionChanged(object sender, IEnumerable<Row> rows, SelectionChangedType selectionChangedType, ReflectReason reason)
@@ -143,34 +167,18 @@ namespace FlexTable.View
                 $"{name} in {String.Join(", ", values)}");
         }
         */        
-
-        #region Visualization Event Handlers
-        
-        private void SelectionFilterButton_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            Int32 count = SelectedRows.Count();
-            if (count > 0)
-            {
-                FilterOut(this, $"Filtered {count} row" + (count == 1 ? String.Empty : "s"), SelectedRows.ToList());
-            }
-        }
-
-        private void UserControl_Loaded(object sender, RoutedEventArgs e)
-        {
-            ShowStoryboardElement.Begin();
-        }
-        #endregion
         
         public void ReflectState()
         {
             PageViewModel.PageViewState state = ViewModel.State,
                 oldState = ViewModel.OldState;
 
+            BreadcrumbViewElement.Update();
             // 현재 뷰가 위에 있다
             if(state == PageViewModel.PageViewState.Selected)
             {
                 MoveToSelectedPositionStoryboard.Begin();
-                CancelDimmingboard.Begin();
+                SelectedStateStoryboard.Begin();
 
                 HideBottomToolBar.Pause();
                 ShowBottomToolBar.Begin();
@@ -180,7 +188,7 @@ namespace FlexTable.View
             }
             else if(state == PageViewModel.PageViewState.Undoing)
             {
-                UndoDimmingStoryboard.Begin();
+                UndoingStateStoryboard.Begin();
                 MoveToDefaultPositionStoryboard.Begin();
 
                 ShowTopToolBar.Pause();
@@ -191,7 +199,7 @@ namespace FlexTable.View
             }
             else if (state == PageViewModel.PageViewState.Empty)
             {
-                EmptyDimmingStoryboard.Begin();
+                EmptyStateStoryboard.Begin();
 
                 ShowTopToolBar.Pause();
                 HideTopToolBar.Begin();
@@ -201,7 +209,7 @@ namespace FlexTable.View
             }
             else if (state == PageViewModel.PageViewState.Previewing)
             {
-                CancelDimmingboard.Begin();
+                SelectedStateStoryboard.Begin();
 
                 HideTopToolBar.Pause();
                 ShowTopToolBar.Begin();
@@ -238,23 +246,23 @@ namespace FlexTable.View
         {
             paragraphs.Clear();
 
-            //first chart tag에 해당하는 차트 먼저 추가
-            foreach (UIElement child in ParagraphContainerCanvasElement.Children)
-            {
-                if (child.Visibility == Visibility.Visible && (child as StackPanel).Tag?.ToString() == firstChartTag)
-                {
-                    paragraphs.Add(child as StackPanel);
-                }
-            }
+            if (ViewModel.IsBarChartVisible && BarChartElement.Tag?.ToString() == firstChartTag) paragraphs.Add(BarChartWrapperElement);
+            if (ViewModel.IsGroupedBarChartVisible && GroupedBarChartElement.Tag?.ToString() == firstChartTag) paragraphs.Add(GroupedBarChartWrapperElement);
+            if (ViewModel.IsLineChartVisible && LineChartElement.Tag?.ToString() == firstChartTag) paragraphs.Add(LineChartWrapperElement);
+            if (ViewModel.IsDistributionVisible && DistributionViewElement.Tag?.ToString() == firstChartTag) paragraphs.Add(DistributionWrapperElement);
+            if (ViewModel.IsDescriptiveStatisticsVisible && DescriptiveStatisticsViewElement.Tag?.ToString() == firstChartTag) paragraphs.Add(DescriptiveStatisticsWrapperElement);
+            if (ViewModel.IsScatterplotVisible && ScatterplotElement.Tag?.ToString() == firstChartTag) paragraphs.Add(ScatterplotWrapperElement);
+            if (ViewModel.IsPivotTableVisible && PivotTableViewElement.Tag?.ToString() == firstChartTag) paragraphs.Add(PivotTableWrapperElement);
+            if (ViewModel.IsCorrelationStatisticsVisible && CorrelationStatisticsViewElement.Tag?.ToString() == firstChartTag) paragraphs.Add(CorrelationStatisticsWrapperElement);
 
-            //그 다음 나머지 보이는 차트 추가
-            foreach (UIElement child in ParagraphContainerCanvasElement.Children)
-            {
-                if (child.Visibility == Visibility.Visible && (child as StackPanel).Tag?.ToString() != firstChartTag)
-                {
-                    paragraphs.Add(child as StackPanel);
-                }
-            }
+            if (ViewModel.IsBarChartVisible && BarChartElement.Tag?.ToString() != firstChartTag) paragraphs.Add(BarChartWrapperElement);
+            if (ViewModel.IsGroupedBarChartVisible && GroupedBarChartElement.Tag?.ToString() != firstChartTag) paragraphs.Add(GroupedBarChartWrapperElement);
+            if (ViewModel.IsLineChartVisible && LineChartElement.Tag?.ToString() != firstChartTag) paragraphs.Add(LineChartWrapperElement);
+            if (ViewModel.IsDistributionVisible && DistributionViewElement.Tag?.ToString() != firstChartTag) paragraphs.Add(DistributionWrapperElement);
+            if (ViewModel.IsDescriptiveStatisticsVisible && DescriptiveStatisticsViewElement.Tag?.ToString() != firstChartTag) paragraphs.Add(DescriptiveStatisticsWrapperElement);
+            if (ViewModel.IsScatterplotVisible && ScatterplotElement.Tag?.ToString() != firstChartTag) paragraphs.Add(ScatterplotWrapperElement);
+            if (ViewModel.IsPivotTableVisible && PivotTableViewElement.Tag?.ToString() != firstChartTag) paragraphs.Add(PivotTableWrapperElement);
+            if (ViewModel.IsCorrelationStatisticsVisible && CorrelationStatisticsViewElement.Tag?.ToString() != firstChartTag) paragraphs.Add(CorrelationStatisticsWrapperElement);
 
             Int32 index = 0;
             foreach (StackPanel paragraph in paragraphs)
@@ -370,9 +378,10 @@ namespace FlexTable.View
             ViewModel.StateChanged(this);
         }
 
-
         private async void Clipboard_Tapped(object sender, TappedRoutedEventArgs e)
         {
+            FlashStoryboard.Begin();
+
             RenderTargetBitmap renderBitmap = new RenderTargetBitmap();
             uint width = (uint)Carousel.ActualWidth + 1;
             uint height = (uint)Carousel.ActualHeight;
@@ -411,7 +420,15 @@ namespace FlexTable.View
             Double delta = e.Cumulative.Translation.X;
             if (delta > SelectionDismissThreshold)
             {
-                SelectionChanged(this, null, SelectionChangedType.Clear, ReflectReason.SelectionChanged);
+                Int32 count = SelectedRows.Count();
+                if (count > 0)
+                {
+                    FilterOut(this, $"Filtered {count} row" + (count == 1 ? String.Empty : "s"), SelectedRows.ToList());
+                }
+                else
+                {
+                    ResetSelectionIndicatorPositionStoryboard.Begin();
+                }
             }
             else
             {
@@ -419,13 +436,19 @@ namespace FlexTable.View
             }
         }
 
-        private void Button_Holding(object sender, HoldingRoutedEventArgs e)
+        private void SelectionFilterButton_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            if (e.HoldingState == HoldingState.Started)
+            Int32 count = SelectedRows.Count();
+            if (count > 0)
             {
-                FlashStoryboard.Begin();
-                Clipboard_Tapped(sender, null);
+                FilterOut(this, $"Filtered {count} row" + (count == 1 ? String.Empty : "s"), SelectedRows.ToList());
             }
+        }
+
+
+        private void SelectionIndicator_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            SelectionChanged(this, null, SelectionChangedType.Clear, ReflectReason.SelectionChanged);
         }
     }
 }

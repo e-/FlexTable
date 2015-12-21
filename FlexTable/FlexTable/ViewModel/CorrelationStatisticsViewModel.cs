@@ -3,13 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using FlexTable.ViewModel;
 using Collection = System.Collections.Generic.IEnumerable<double>;
 
 namespace FlexTable.Model
 {
-    public class CorrelationStatisticsResult
+    public class CorrelationStatisticsViewModel
     {
+        private MainPageViewModel mainPageViewModel;
+        public MainPageViewModel MainPageViewModel => mainPageViewModel;
+
         public String XVariableName { get; set; }
         public String YVariableName { get; set; }
 
@@ -53,6 +56,11 @@ namespace FlexTable.Model
                 return value.ToString("#,0.##");
             }
             return value.ToString("#,0");
+        }
+
+        public CorrelationStatisticsViewModel(MainPageViewModel mainPageViewModel)
+        {
+            this.mainPageViewModel = mainPageViewModel;
         }
     }
 
@@ -144,13 +152,13 @@ namespace FlexTable.Model
             slope = sCo / ssX;
         }
 
-        public static CorrelationStatisticsResult Analyze(String xName, String yName, IEnumerable<Double> values1, IEnumerable<Double> values2)
+        public static CorrelationStatisticsViewModel Analyze(MainPageViewModel mainPageViewModel, String xName, String yName, IEnumerable<Double> values1, IEnumerable<Double> values2)
         {
             Double RSqaured, YIntercept, Slope;
 
             LinearRegression(values1, values2, out RSqaured, out YIntercept, out Slope);
 
-            return new CorrelationStatisticsResult()
+            return new CorrelationStatisticsViewModel(mainPageViewModel)
             {
                 XVariableName = xName,
                 YVariableName = yName,

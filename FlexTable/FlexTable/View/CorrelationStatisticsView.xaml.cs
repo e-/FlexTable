@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using FlexTable.ViewModel;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -22,7 +23,7 @@ namespace FlexTable.View
         public CorrelationStatisticsView()
         {
             this.InitializeComponent();
-            this.DataContext = new Model.CorrelationStatisticsResult();
+            this.DataContext = new Model.CorrelationStatisticsViewModel(this.DataContext as MainPageViewModel);
         }
     }
 }

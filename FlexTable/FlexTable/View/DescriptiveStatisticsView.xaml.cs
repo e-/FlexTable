@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using FlexTable.ViewModel;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -22,7 +23,7 @@ namespace FlexTable.View
         public DescriptiveStatisticsView()
         {
             this.InitializeComponent();
-            this.DataContext = new Model.DescriptiveStatisticsResult();
+            this.DataContext = new Model.DescriptiveStatisticsViewModel(DataContext as MainPageViewModel);
         }
     }
 }

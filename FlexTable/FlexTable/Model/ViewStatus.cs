@@ -207,7 +207,8 @@ namespace FlexTable.Model
 
                 RowViewModel rowViewModel = new RowViewModel(sheetViewModel.MainPageViewModel)
                 {
-                    Index = 0
+                    Index = 0,
+                    Rows = sheetViewModel.FilteredRows
                 };
 
                 foreach (ColumnViewModel columnViewModel in orderedColumnViewModels)

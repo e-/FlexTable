@@ -55,18 +55,29 @@ namespace FlexTable.ViewModel
         public Double PageOffset { get { return pageOffset; } set { pageOffset = value; OnPropertyChanged("PageOffset"); } }
 
         private Double paragraphWidth = 794;
-        public Double ParagraphWidth { get { return paragraphWidth; }
+        public Double ParagraphWidth
+        {
+            get { return paragraphWidth; }
             set { paragraphWidth = value; OnPropertyChanged(nameof(ParagraphWidth)); }
         }
         
         private Double paragraphHeight = 410;
         public Double ParagraphHeight { get { return paragraphHeight; } set { paragraphHeight = value; OnPropertyChanged(nameof(ParagraphHeight)); } }
 
-        private Double paragraphContainerHeight = 500;
-        public Double ParagraphContainerHeight { get { return paragraphContainerHeight; } set { paragraphContainerHeight = value; OnPropertyChanged(nameof(ParagraphContainerHeight)); } }
+        private Double paragraphTitleHeight = 90;
+        public Double ParagraphTitleHeight { get { return paragraphTitleHeight; } set { paragraphTitleHeight = value; OnPropertyChanged(nameof(ParagraphTitleHeight)); } }
 
+        private Double paragraphChartHeight = 410;
+        public Double ParagraphChartHeight { get { return paragraphChartHeight; } set { paragraphChartHeight = value; OnPropertyChanged(nameof(ParagraphChartHeight)); } }
+        
         private Double pageHeaderHeight = 50;
         public Double PageHeaderHeight { get { return pageHeaderHeight; } set { pageHeaderHeight = value; OnPropertyChanged(nameof(PageHeaderHeight)); } }
+
+        private Double pageFooterHeight = 50;
+        public Double PageFooterHeight { get { return pageFooterHeight; } set { pageFooterHeight = value; OnPropertyChanged(nameof(PageFooterHeight)); } }
+
+        private Double pageLabelCarouselHeight = 50;
+        public Double PageLabelCarouselHeight { get { return pageLabelCarouselHeight; } set { pageLabelCarouselHeight = value; OnPropertyChanged(nameof(PageLabelCarouselHeight)); } }
 
         /*
          <x:Double x:Key="ParagraphWidth">794</x:Double> <!-- 794인데 마지막 축 레이블 튀어나가서 줄임 -->
@@ -163,9 +174,17 @@ namespace FlexTable.ViewModel
             NegativePageHeight = -PageHeight;
             PageOffset = 0; // PageHeight + 8;
             PageWidth = Bounds.Width / 2;
-            ParagraphWidth = PageWidth;
-            ParagraphHeight = PageHeight - PageHeaderHeight * 2 - 200;
-            ParagraphContainerHeight = PageHeight;
+            ParagraphWidth = PageWidth - 40;
+
+            PageHeaderHeight = 110;
+
+            ParagraphTitleHeight = 90;
+            PageLabelCarouselHeight = 50;
+
+            PageFooterHeight = 110;
+
+            ParagraphHeight = PageHeight - PageHeaderHeight - PageLabelCarouselHeight - PageFooterHeight;
+            ParagraphChartHeight = ParagraphHeight - ParagraphTitleHeight;
 
             // rowViewModels 계산
             sheetViewModel.Initialize(sheet);
@@ -180,14 +199,12 @@ namespace FlexTable.ViewModel
             
             var dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
 
-            
+            ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[4]);
+
             DispatcherTimer dispatcherTimer = new DispatcherTimer();
             dispatcherTimer.Tick += (sender, e) =>
             {
                 dispatcherTimer.Stop();
-
-                ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[4]);
-
 
                 ExplorationViewModel.TopPageView.ViewModel.State = PageViewModel.PageViewState.Selected;
                 ExplorationViewModel.PageViewStateChanged(ExplorationViewModel.TopPageView.ViewModel, ExplorationViewModel.TopPageView);

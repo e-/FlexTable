@@ -34,12 +34,14 @@ namespace FlexTable.View
 
         public void Feed(IEnumerable<Row> rows, ColumnViewModel numerical)
         {
-            DescriptiveStatisticsResult result = DescriptiveStatistics.Analyze(
-                       rows.Select(r => (Double)r.Cells[numerical.Index].Content)
-                       );
+            DescriptiveStatisticsViewModel result = DescriptiveStatistics.Analyze(
+                DataContext as MainPageViewModel,
+                rows.Select(r => (Double)r.Cells[numerical.Index].Content)
+            );
 
-            HistogramElement.Width = ViewModel.MainPageViewModel.ParagraphWidth - 20; // (Double)App.Current.Resources["ParagraphWidth"] - 20;
-            BoxPlotElement.Width = ViewModel.MainPageViewModel.ParagraphWidth - 90; // (Double)App.Current.Resources["ParagraphWidth"] - 90;
+            HistogramElement.Width = this.Width - 20; // (Double)App.Current.Resources["ParagraphWidth"] - 20;
+            HistogramElement.Height = this.Height - 70;
+            BoxPlotElement.Width = this.Width - 90; // (Double)App.Current.Resources["ParagraphWidth"] - 90;
             BoxPlotElement.Min = result.Min;
             BoxPlotElement.Max = result.Max;
             BoxPlotElement.FirstQuartile = result.FirstQuartile;

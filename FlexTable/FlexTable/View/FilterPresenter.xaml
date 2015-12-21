@@ -21,32 +21,27 @@
         </Storyboard>
     </UserControl.Resources>
         
-    <Border Background="#ddd" CornerRadius="3" HorizontalAlignment="Center" VerticalAlignment="Top" Height="40" Margin="0 5 0 5"
+    <Border Background="#ddd" CornerRadius="3" HorizontalAlignment="Right" VerticalAlignment="Top" Height="40" Margin="0 5 0 5"
             ManipulationMode="TranslateX" ManipulationDelta="Border_ManipulationDelta" ManipulationCompleted="Border_ManipulationCompleted"
             x:Name="Wrapper">
         <Border.RenderTransform>
             <TranslateTransform x:Name="WrapperRenderTransform" X="0" />
         </Border.RenderTransform>
         <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="40"></ColumnDefinition>
-                <ColumnDefinition Width="180"></ColumnDefinition>
-            </Grid.ColumnDefinitions>
-            <Border Background="#eee" CornerRadius="3" Grid.Column="0" Grid.ColumnSpan="2">
+            <Border Background="#eee" CornerRadius="3">
                 <Border.RenderTransform>
                     <TranslateTransform X="0" Y="-1" />
                 </Border.RenderTransform>
             </Border>
-            <Border Grid.Column="0" Background="{StaticResource HighlightBrush1}" CornerRadius="3">
+            <!--<Border Grid.Column="0" Background="{StaticResource HighlightBrush1}" CornerRadius="3">
                 <TextBlock FontSize="24" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="FontAwesome">
-                        <!--&#xf090;-->
                                     &#xf08b;
                 </TextBlock>
-            </Border>
+            </Border>-->
 
             <TextBlock Grid.Column="1" FontSize="16" VerticalAlignment="Center" 
                        FontFamily="Roboto"
-                       Margin="10 0 0 0" Width="180" TextTrimming="WordEllipsis" Text="{x:Bind ViewModel.Name, Mode=OneWay}"></TextBlock>
+                       TextAlignment="Right" Text="{x:Bind ViewModel.Name, Mode=OneWay}" Margin="15 0 15 0"></TextBlock>
         </Grid>
     </Border>
 </UserControl>

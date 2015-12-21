@@ -47,14 +47,16 @@ namespace FlexTable.View
         public void AddNewPage()
         {
             PageView page = new PageView();
-            MainPageViewModel mainPageViewModel = (this.DataContext as ViewModel.ExplorationViewModel).MainPageViewModel;
+            MainPageViewModel mainPageViewModel = (this.DataContext as ExplorationViewModel).MainPageViewModel;
             PageViewModel pageViewModel = new PageViewModel(
                 mainPageViewModel,
                 page
                 );
             topPageView = page;
             page.DataContext = pageViewModel;
-            Canvas.SetTop(page, mainPageViewModel.PageOffset);
+
+            page.Initialize();
+
             PageViewElement.Children.Add(page);
         }
 

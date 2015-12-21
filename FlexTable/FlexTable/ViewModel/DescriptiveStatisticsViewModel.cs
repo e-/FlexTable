@@ -3,13 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using FlexTable.ViewModel;
 using Collection = System.Collections.Generic.IEnumerable<double>;
 
 namespace FlexTable.Model
 {
-    public class DescriptiveStatisticsResult
+    public class DescriptiveStatisticsViewModel
     {
+        private MainPageViewModel mainPageViewModel;
+        public MainPageViewModel MainPageViewModel => mainPageViewModel;
+
         public Double Min { get; set; }
         public String MinString { get { return Format(Min); } }
 
@@ -46,6 +49,10 @@ namespace FlexTable.Model
         public Double SampleKurtosis { get; set; }
         public String SampleKurtosisString { get { return Format(SampleKurtosis); } }
 
+        public DescriptiveStatisticsViewModel(MainPageViewModel mainPageViewModel)
+        {
+            this.mainPageViewModel = mainPageViewModel;
+        }
 
         public String Format(Double value)
         {
@@ -158,9 +165,9 @@ namespace FlexTable.Model
             return (sum1 / n) / Math.Pow(sum2 / n, 2) - 3;
         }
         
-        public static DescriptiveStatisticsResult Analyze(IEnumerable<Double> values)
+        public static DescriptiveStatisticsViewModel Analyze(MainPageViewModel mainPageViewModel, IEnumerable<Double> values)
         {
-            return new DescriptiveStatisticsResult()
+            return new DescriptiveStatisticsViewModel(mainPageViewModel)
             {
                 Min = Min(values),
                 Median = Median(values),

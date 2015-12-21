@@ -379,7 +379,8 @@ namespace FlexTable.ViewModel
 
         void DrawDescriptiveStatistics(ColumnViewModel numerical)
         {
-            DescriptiveStatisticsResult result = DescriptiveStatistics.Analyze(
+            DescriptiveStatisticsViewModel result = DescriptiveStatistics.Analyze(
+                mainPageViewModel,
                     mainPageViewModel.SheetViewModel.FilteredRows.Select(r => (Double)r.Cells[numerical.Index].Content)
                     );
 
@@ -1123,7 +1124,8 @@ namespace FlexTable.ViewModel
 
         void DrawCorrelatonStatistics(ColumnViewModel numerical1, ColumnViewModel numerical2)
         {
-            CorrelationStatisticsResult result = CorrelationStatistics.Analyze(
+            CorrelationStatisticsViewModel result = CorrelationStatistics.Analyze(
+                mainPageViewModel,
                 numerical1.Name,
                 numerical2.Name,
                 mainPageViewModel.SheetViewModel.FilteredRows.Select(r => (Double)r.Cells[numerical1.Index].Content),
