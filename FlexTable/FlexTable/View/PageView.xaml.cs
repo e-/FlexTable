@@ -44,6 +44,7 @@ namespace FlexTable.View
         public GroupedBarChart GroupedBarChart => GroupedBarChartElement;
         public Scatterplot Scatterplot => ScatterplotElement;
         public PivotTableView PivotTableView => PivotTableViewElement;
+        public BreadcrumbView BreadcrumbView => BreadcrumbViewElement;
 
         public StackPanel BarChartTitle => BarChartTitleElement;
         public StackPanel LineChartTitle => LineChartTitleElement;
@@ -53,7 +54,7 @@ namespace FlexTable.View
         public StackPanel ScatterplotTitle => ScatterplotTitleElement;
         public StackPanel PivotTableTitle => PivotTableTitleElement;
         public StackPanel CorrelationStatisticsTitle => CorrelationStatisticsTitleElement;
-
+        
         public PageViewModel ViewModel => (PageViewModel)DataContext;
 
         /// <summary>
@@ -173,12 +174,20 @@ namespace FlexTable.View
             PageViewModel.PageViewState state = ViewModel.State,
                 oldState = ViewModel.OldState;
 
-            BreadcrumbViewElement.Update();
+            ///
+            /// SelectedStateStoryboard: 차트가 보이도록 애니메이션
+            /// EmptyStateStoryboard: 차트가 사라지도록 애니메이션
+            /// EnlargeStoryboard: 차트가 꽉 차서 보이도록 애니메이션
+            /// DefaultStoryboard: 차트가 줄어들어 보이도록 애니메이션
+            /// BrightenStoryboard: 차트 바깥 쪽을 흰색으로
+            /// DarkenStoryboard: 차트 바깥쪽을 회색으로
+            
             // 현재 뷰가 위에 있다
             if(state == PageViewModel.PageViewState.Selected)
             {
-                MoveToSelectedPositionStoryboard.Begin();
-                SelectedStateStoryboard.Begin();
+                EnlargeStoryboard.Begin();
+                BrightenStoryboard.Begin();
+                ChartVisibleStateStoryboard.Begin();
 
                 HideBottomToolBar.Pause();
                 ShowBottomToolBar.Begin();
@@ -188,8 +197,9 @@ namespace FlexTable.View
             }
             else if(state == PageViewModel.PageViewState.Undoing)
             {
-                UndoingStateStoryboard.Begin();
-                MoveToDefaultPositionStoryboard.Begin();
+                EmptyStateStoryboard.Begin();
+                BrightenStoryboard.Begin();
+                DefaultStoryboard.Begin();
 
                 ShowTopToolBar.Pause();
                 HideTopToolBar.Begin();
@@ -200,6 +210,8 @@ namespace FlexTable.View
             else if (state == PageViewModel.PageViewState.Empty)
             {
                 EmptyStateStoryboard.Begin();
+                DefaultStoryboard.Begin();
+                BrightenStoryboard.Begin();
 
                 ShowTopToolBar.Pause();
                 HideTopToolBar.Begin();
@@ -209,7 +221,9 @@ namespace FlexTable.View
             }
             else if (state == PageViewModel.PageViewState.Previewing)
             {
-                SelectedStateStoryboard.Begin();
+                DefaultStoryboard.Begin();
+                ChartVisibleStateStoryboard.Begin();
+                DarkenStoryboard.Begin();
 
                 HideTopToolBar.Pause();
                 ShowTopToolBar.Begin();

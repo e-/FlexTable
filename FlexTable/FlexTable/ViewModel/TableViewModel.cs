@@ -223,10 +223,9 @@ namespace FlexTable.ViewModel
 
                 dispatcherTimer.Tick += (sender, e) =>
                 {
-                    
+                    tableUpdateCallback();
                 };
 
-                tableUpdateCallback();
 
                 dispatcherTimer.Interval = TimeSpan.FromMilliseconds(1);
             }

@@ -392,7 +392,7 @@ namespace FlexTable.Model
             if (IsEmpty)
             {
                 foreach (RowViewModel rowViewModel in allRowViewModels) rowViewModel.Color = DefaultCellForegroundColor;
-            }
+            }        
             else if (IsC)
             {
                 index = 0;

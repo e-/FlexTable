@@ -183,7 +183,7 @@ namespace FlexTable.ViewModel
 
             PageFooterHeight = 110;
 
-            ParagraphHeight = PageHeight - PageHeaderHeight - PageLabelCarouselHeight - PageFooterHeight;
+            ParagraphHeight = PageHeight - PageHeaderHeight - PageLabelCarouselHeight - PageFooterHeight - 8;
             ParagraphChartHeight = ParagraphHeight - ParagraphTitleHeight;
 
             // rowViewModels 계산
@@ -199,8 +199,10 @@ namespace FlexTable.ViewModel
             
             var dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
 
-            ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[4]);
+            return;
 
+            ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[4]);
+            
             DispatcherTimer dispatcherTimer = new DispatcherTimer();
             dispatcherTimer.Tick += (sender, e) =>
             {

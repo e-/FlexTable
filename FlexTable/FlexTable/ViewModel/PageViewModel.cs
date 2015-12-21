@@ -137,6 +137,8 @@ namespace FlexTable.ViewModel
                 IsLineChartWarningVisible = false;
                 IsGroupedBarChartWarningVisible = false;
                 IsScatterplotWarningVisible = false;
+
+                pageView.BreadcrumbView.Update();
             }
 
             List<GroupedRows> groupedRows = ViewStatus.GroupedRows;

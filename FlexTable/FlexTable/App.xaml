@@ -246,7 +246,6 @@
                     </Setter.Value>
                 </Setter>
             </Style>
-
             
             <Style x:Key="CircleIconButtonStyle" TargetType="Button">
                 <Setter Property="FontFamily" Value="FontAwesome" />
@@ -402,7 +401,6 @@
                     </Setter.Value>
                 </Setter>
             </Style>
-
             
             <Style x:Key="TopTriangleIconButtonStyle" TargetType="Button">
                 <Setter Property="FontFamily" Value="FontAwesome" />
@@ -759,10 +757,10 @@
                                              Storyboard.TargetProperty="Foreground">
                                                     <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlDisabledBaseLowBrush}" />
                                                 </ObjectAnimationUsingKeyFrames>
-                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="DropDownGlyph1"
+                                                <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="DropDownGlyph1"
                                              Storyboard.TargetProperty="Foreground">
                                                     <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlDisabledBaseLowBrush}" />
-                                                </ObjectAnimationUsingKeyFrames>
+                                                </ObjectAnimationUsingKeyFrames>-->
                                                 <ObjectAnimationUsingKeyFrames Storyboard.TargetName="DropDownGlyph2"
                                              Storyboard.TargetProperty="Foreground">
                                                     <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlDisabledBaseLowBrush}" />
@@ -789,10 +787,10 @@
                                                     Storyboard.TargetProperty="Foreground">
                                                     <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightAltBaseHighBrush}" />
                                                 </ObjectAnimationUsingKeyFrames>
-                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="DropDownGlyph1"
+                                                <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="DropDownGlyph1"
                                                     Storyboard.TargetProperty="Foreground">
                                                     <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightAltBaseMediumHighBrush}" />
-                                                </ObjectAnimationUsingKeyFrames>
+                                                </ObjectAnimationUsingKeyFrames>-->
                                                 <ObjectAnimationUsingKeyFrames Storyboard.TargetName="DropDownGlyph2"
                                                     Storyboard.TargetProperty="Foreground">
                                                     <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightAltBaseMediumHighBrush}" />
@@ -814,10 +812,10 @@
                                              Storyboard.TargetProperty="Foreground">
                                                     <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightAltBaseHighBrush}" />
                                                 </ObjectAnimationUsingKeyFrames>
-                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="DropDownGlyph1"
+                                                <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="DropDownGlyph1"
                                                     Storyboard.TargetProperty="Foreground">
                                                     <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightAltBaseMediumHighBrush}" />
-                                                </ObjectAnimationUsingKeyFrames>
+                                                </ObjectAnimationUsingKeyFrames>-->
                                                 <ObjectAnimationUsingKeyFrames Storyboard.TargetName="DropDownGlyph2"
                                                     Storyboard.TargetProperty="Foreground">
                                                     <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightAltBaseMediumHighBrush}" />
@@ -878,9 +876,6 @@
                                   BorderThickness="{TemplateBinding BorderThickness}" 
                                         Margin="-8 0 -8 0"
                                         CornerRadius="3">
-                                    <!--<Border.RenderTransform>
-                                        <TranslateTransform X="-8" />
-                                    </Border.RenderTransform>-->
                                 </Border>
                                 <Border x:Name="HighlightBackground"
                                   Grid.Row="0"
@@ -891,7 +886,6 @@
                                   BorderThickness="{TemplateBinding BorderThickness}"
                                   Opacity="0" 
                                         CornerRadius="3"/>
-                                <!--Margin="{TemplateBinding Padding}"-->
                                 <ContentPresenter x:Name="ContentPresenter"
                                       Grid.Row="1"                                      
                                       HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
@@ -903,9 +897,7 @@
                                         Foreground="{ThemeResource SystemControlPageTextBaseHighBrush}"
                                         FontWeight="{ThemeResource ComboBoxPlaceholderTextThemeFontWeight}"/>
                                 </ContentPresenter>
-                                <!-- Margin="0,10,10,10"-->
-                                <!-- Foreground="{ThemeResource SystemControlForegroundBaseMediumHighBrush}" -->
-                                <FontIcon x:Name="DropDownGlyph1"
+                                <!--<FontIcon x:Name="DropDownGlyph1"
                                   Grid.Row="0"
                                   IsHitTestVisible="False"
                                   Margin="0 0 0 0"
@@ -914,8 +906,8 @@
                                   FontSize="12"
                                   Glyph="&#xE0E4;"
                                   HorizontalAlignment="Center"
-                                  AutomationProperties.AccessibilityView="Raw" />
-                                <FontIcon x:Name="DropDownGlyph2"
+                                  AutomationProperties.AccessibilityView="Raw" />-->
+                                <!--<FontIcon x:Name="DropDownGlyph2"
                                   Grid.Row="2"
                                   IsHitTestVisible="False"
                                   Margin="0 0 0 0"
@@ -924,11 +916,21 @@
                                   FontSize="12"
                                   Glyph="&#xE0E5;"
                                   HorizontalAlignment="Center"
-                                  AutomationProperties.AccessibilityView="Raw" />
+                                  AutomationProperties.AccessibilityView="Raw" />-->
+                                <!--"<Polygon 
+                                    IsHitTestVisible="False"
+                                    Grid.Row="1" Points="0,10 10,10, 10,0" HorizontalAlignment="Right" VerticalAlignment="Bottom" StrokeThickness="0" Fill="{StaticResource HighlightBrush1}" x:Name="DropDownGlyph2"/>
+                                -->
+
+                                <Polygon 
+                                    IsHitTestVisible="False"
+                                    Grid.Row="0" Points="0,10 10,10, 10,0" Margin="0 0 0 1" HorizontalAlignment="Right" VerticalAlignment="Bottom" StrokeThickness="0" Fill="Transparent" x:Name="DropDownGlyph1"></Polygon>
+                                
+                                <Polygon 
+                                    IsHitTestVisible="False"
+                                    Grid.Row="2" Points="0,10 10,10, 10,0" Margin="0 0 0 1" HorizontalAlignment="Right" VerticalAlignment="Bottom" StrokeThickness="0" Fill="{StaticResource HighlightBrush1}" x:Name="DropDownGlyph2"/>
+                                
                                 <Popup x:Name="Popup">
-                                    <!--<Popup.RenderTransform>
-                                        <TranslateTransform X="-8" />
-                                    </Popup.RenderTransform>-->
                                     <Border x:Name="PopupBorder"
                                         Background="{ThemeResource SystemControlBackgroundChromeMediumLowBrush}"
                                         BorderBrush="{ThemeResource SystemControlForegroundBaseMediumHighBrush}"
