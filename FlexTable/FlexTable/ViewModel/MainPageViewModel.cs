@@ -170,18 +170,18 @@ namespace FlexTable.ViewModel
         {
             this.Sheet = sheet;
 
-            PageHeight = Bounds.Height; // Bounds.Height / 2 - 4;
+            PageHeight = Bounds.Height / 2 - 4;// Bounds.Height; 
             NegativePageHeight = -PageHeight;
-            PageOffset = 0; // PageHeight + 8;
+            PageOffset = PageHeight + 8;
             PageWidth = Bounds.Width / 2;
             ParagraphWidth = PageWidth - 40;
 
-            PageHeaderHeight = 110;
+            PageHeaderHeight = 0; // 110; 
 
             ParagraphTitleHeight = 90;
             PageLabelCarouselHeight = 50;
 
-            PageFooterHeight = 110;
+            PageFooterHeight = 0; // 110;
 
             ParagraphHeight = PageHeight - PageHeaderHeight - PageLabelCarouselHeight - PageFooterHeight - 8;
             ParagraphChartHeight = ParagraphHeight - ParagraphTitleHeight;

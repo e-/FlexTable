@@ -365,6 +365,7 @@ namespace FlexTable.Crayon.Chart
         {
             ManipulationCompletedRoutedEventArgs e = eo as ManipulationCompletedRoutedEventArgs;
             if (e.PointerDeviceType != PointerDeviceType.Touch) return;
+            e.Handled = true;
             Double delta = e.Cumulative.Translation.Y;
             BarChartDatum datum = datumo as BarChartDatum;
 
@@ -397,6 +398,7 @@ namespace FlexTable.Crayon.Chart
         {
             ManipulationDeltaRoutedEventArgs e = eo as ManipulationDeltaRoutedEventArgs;
             if (e.PointerDeviceType != PointerDeviceType.Touch) return;
+            e.Handled = true;
             Double delta = e.Cumulative.Translation.Y;
             BarChartDatum datum = datumo as BarChartDatum;
 

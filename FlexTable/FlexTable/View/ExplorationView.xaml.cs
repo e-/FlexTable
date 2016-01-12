@@ -54,7 +54,7 @@ namespace FlexTable.View
                 );
             topPageView = page;
             page.DataContext = pageViewModel;
-
+            Canvas.SetTop(page, mainPageViewModel.PageOffset);
             page.Initialize();
 
             PageViewElement.Children.Add(page);

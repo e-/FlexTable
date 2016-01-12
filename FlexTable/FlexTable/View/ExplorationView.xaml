@@ -50,14 +50,12 @@
                     <Border Height="{Binding MainPageViewModel.PageHeight}">
                         <local:MetedataView DataContext="{Binding MetadataViewModel}"></local:MetedataView>
                     </Border>
-                  <!--
-                  <Image Source="ms-appx:///Assets/horizontal-separator.png" Width="{Binding MainPageViewModel.PageWidth}" Height="8"></Image>
-                  -->
+                    <Image Source="ms-appx:///Assets/horizontal-separator.png" Width="{Binding MainPageViewModel.PageWidth}" Margin="-20 0 -20 0" Height="8" Opacity="0.5"></Image>
                 </StackPanel>
             </Border>
         </Canvas>
 
-        <ToggleButton HorizontalAlignment="Right" VerticalAlignment="Bottom" x:Name="FilterButtonElement"
+        <ToggleButton HorizontalAlignment="Right" VerticalAlignment="Top" x:Name="FilterButtonElement"
                 Style="{StaticResource FilterCircleIconButtonStyle}" IsEnabled="False"
                       Margin="20"
                       Checked="FilterButtonElement_Checked"
@@ -67,10 +65,10 @@
         
         <ListView    
             HorizontalAlignment="Right"
-            VerticalAlignment="Bottom"
+            VerticalAlignment="Top"
             ItemsSource="{x:Bind Path=ViewModel.MainPageViewModel.SheetViewModel.FilterViewModels, Mode=OneWay}"
             SelectionMode="None"
-            Margin="0 0 0 95"    
+            Margin="0 95 0 0"
             x:Name="FilterList"
             Visibility="Collapsed"
             Opacity="0"

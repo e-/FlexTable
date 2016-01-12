@@ -44,7 +44,7 @@ namespace FlexTable.View
         public GroupedBarChart GroupedBarChart => GroupedBarChartElement;
         public Scatterplot Scatterplot => ScatterplotElement;
         public PivotTableView PivotTableView => PivotTableViewElement;
-        public BreadcrumbView BreadcrumbView => BreadcrumbViewElement;
+        //public BreadcrumbView BreadcrumbView => BreadcrumbViewElement;
 
         public StackPanel BarChartTitle => BarChartTitleElement;
         public StackPanel LineChartTitle => LineChartTitleElement;
@@ -323,6 +323,93 @@ namespace FlexTable.View
         }
 
 
+        private void Wrapper_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            if (e.PointerDeviceType != PointerDeviceType.Touch) return;
+            if (ViewModel.IsEmpty) { }
+            else if (ViewModel.IsUndoing)
+            {
+                Double delta = e.Cumulative.Translation.Y;
+                if (delta >= 0) delta = 0;
+                if (delta < -ViewModel.MainPageViewModel.PageOffset) { delta = -ViewModel.MainPageViewModel.PageOffset; }
+                Canvas.SetTop(this, ViewModel.MainPageViewModel.PageOffset + delta);
+                ChartWrapper.Opacity = 0.2 - 0.8 * delta / ViewModel.MainPageViewModel.PageOffset;
+                ViewModel.IsPrimaryUndoMessageVisible = delta > -50;
+            }
+            else if (ViewModel.IsSelected) // 선택 된 경우 내릴수만 있음
+            {
+                Double delta = e.Cumulative.Translation.Y;
+                if (delta <= 0) delta = 0;
+                if (delta > ViewModel.MainPageViewModel.PageHeight) { delta = ViewModel.MainPageViewModel.PageHeight; }
+                Canvas.SetTop(this, delta);
+                ChartWrapper.Opacity = 0.2 + 0.8 * (1 - delta / ViewModel.MainPageViewModel.PageHeight);
+                Canvas.SetZIndex(this, 10);
+            }
+            else // 선택되지 않은 경우 올릴수만 있음
+            {
+                Double delta = e.Cumulative.Translation.Y;
+                if (delta >= 0) delta = 0;
+                if (delta < -ViewModel.MainPageViewModel.PageOffset) { delta = -ViewModel.MainPageViewModel.PageOffset; }
+                Canvas.SetTop(this, ViewModel.MainPageViewModel.PageOffset + delta);
+            }
+        }
+
+        private void Wrapper_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
+        {
+            if (e.PointerDeviceType != PointerDeviceType.Touch) return;
+            if (ViewModel.IsEmpty) { }
+            else if (ViewModel.IsUndoing)
+            {
+                Double delta = e.Cumulative.Translation.Y;
+                if (delta < -Const.PageViewToggleThreshold) // 많이 올라간 경우
+                {
+                    ViewModel.State = PageViewModel.PageViewState.Selected; // undo하는 경우는 조건 체크할 필요 없이 무조건 select해도 됨
+                    ViewModel.StateChanged(this);
+                }
+                else
+                {
+                    MoveToDefaultPositionStoryboard.Begin();
+                }
+            }
+            else if (ViewModel.IsSelected) // 선택 된 경우 내릴수만 있음
+            {
+                Double delta = e.Cumulative.Translation.Y;
+                if (delta > Const.PageViewToggleThreshold) // 많이 내려간 경우
+                {
+                    MoveToDefaultPositionStoryboard.Begin();
+                    ViewModel.State = PageViewModel.PageViewState.Undoing;
+                    SelectionChanged(null, null, SelectionChangedType.Clear, ReflectReason.SelectionChanged);
+                    ViewModel.StateChanged(this);
+                }
+                else
+                {
+                    MoveToSelectedPositionStoryboard.Begin();
+                }
+            }
+            else // 선택되지 않은 경우 올릴수만 있음
+            {
+                Double delta = e.Cumulative.Translation.Y;
+                if (delta < -Const.PageViewToggleThreshold) // 많이 올라간 경우
+                {
+                    if (this != ViewModel.MainPageViewModel.ExplorationViewModel.TopPageView) return; // 이게 맨 위에있는게 아니면 reject
+                    if (!ViewModel.IsPreviewing) return; // 아무것도 프리뷰잉하고 있지 않으면 reject
+                    if (ViewModel.MainPageViewModel.ExplorationViewModel.ViewStatus.SelectedColumnViewModels.IndexOf(
+                        ViewModel.ViewStatus.SelectedColumnViewModels.Last()
+                        ) >= 0)
+                        return; // 선택된 컬럼이 이미 선택되어잇으면
+
+                    ViewModel.State = PageViewModel.PageViewState.Selected;
+                    ViewModel.StateChanged(this);
+
+                    MoveToSelectedPositionStoryboard.Begin();
+                }
+                else
+                {
+                    MoveToDefaultPositionStoryboard.Begin();
+                }
+            }
+        }
+
         private void Carousel_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
         {
             if (!e.IsIntermediate)
@@ -375,7 +462,6 @@ namespace FlexTable.View
             
             ViewModel.State = PageViewModel.PageViewState.Selected; 
             ViewModel.StateChanged(this);
-            //SelectionChanged(null, new List<Row>());
         }
 
         private void Unselect_Tapped(object sender, TappedRoutedEventArgs e)

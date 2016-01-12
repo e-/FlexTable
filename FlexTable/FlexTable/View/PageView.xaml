@@ -12,6 +12,9 @@
     d:DesignHeight="300"
     d:DesignWidth="400"
     x:Name="UserControl"
+    ManipulationDelta="Wrapper_ManipulationDelta"
+    ManipulationCompleted="Wrapper_ManipulationCompleted"
+    Background="Transparent"
     >
 
     <UserControl.Resources>
@@ -32,92 +35,128 @@
         <util:BooleanToInvertedVisibilityConverter x:Name="BooleanToInvertedVisibilityConverter" />
 
         <Storyboard x:Name="BrightenStoryboard">
-            <ColorAnimation Storyboard.TargetName="WrapperBackground" 
+            <!--<ColorAnimation Storyboard.TargetName="WrapperBackground" 
                 Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" To="#00000000"
                             EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.2" 
-                            ></ColorAnimation>
+                            ></ColorAnimation>-->
         </Storyboard>
 
         <Storyboard x:Name="DarkenStoryboard">
-            <ColorAnimation Storyboard.TargetName="WrapperBackground" 
+            <!--<ColorAnimation Storyboard.TargetName="WrapperBackground" 
                 Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" To="#66333333"
                             EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.2" 
-                            ></ColorAnimation>
+                            ></ColorAnimation>-->
         </Storyboard>
 
         <Storyboard x:Name="EnlargeStoryboard">
-            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.5"
+        <!--    <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.5"
                                Storyboard.TargetName="WrapperRenderTransform" Storyboard.TargetProperty="ScaleX" To="1">
             </DoubleAnimation>
             <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.5"
                                Storyboard.TargetName="WrapperRenderTransform" Storyboard.TargetProperty="ScaleY" To="1">
-            </DoubleAnimation>
+            </DoubleAnimation>-->
         </Storyboard>
         
         <Storyboard x:Name="DefaultStoryboard">
-            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.5"
+            <!--<DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.5"
                                Storyboard.TargetName="WrapperRenderTransform" Storyboard.TargetProperty="ScaleX" To="0.8">
             </DoubleAnimation>
             <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.5"
                                Storyboard.TargetName="WrapperRenderTransform" Storyboard.TargetProperty="ScaleY" To="0.8">
+            </DoubleAnimation>-->
+        </Storyboard>
+
+        <Storyboard x:Name="MoveToSelectedPositionStoryboard">
+            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.5"
+                             Storyboard.TargetName="UserControl" Storyboard.TargetProperty="(Canvas.Top)" To="0">
             </DoubleAnimation>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="UserControl"
+                                           Storyboard.TargetProperty="(Canvas.ZIndex)">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.0" Value="1" />
+            </ObjectAnimationUsingKeyFrames>
+        </Storyboard>
+
+        <Storyboard x:Name="MoveToDefaultPositionStoryboard">
+            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.5"
+                             Storyboard.TargetName="UserControl" Storyboard.TargetProperty="(Canvas.Top)" To="{Binding MainPageViewModel.PageOffset}">
+            </DoubleAnimation>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="UserControl"
+                                           Storyboard.TargetProperty="(Canvas.ZIndex)">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.0" Value="0" />
+            </ObjectAnimationUsingKeyFrames>
         </Storyboard>
 
         <Storyboard x:Name="EmptyStateStoryboard">
-            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.5"
-                             Storyboard.TargetName="Wrapper" Storyboard.TargetProperty="Opacity" To="0">
+            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.4"
+                             Storyboard.TargetName="ChartWrapper" Storyboard.TargetProperty="Opacity" To="0">
             </DoubleAnimation>
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Wrapper"
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ChartWrapper"
                                            Storyboard.TargetProperty="Visibility">
-                <DiscreteObjectKeyFrame KeyTime="0:0:0.5" Value="Collapsed" />
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.4" Value="Collapsed" />
             </ObjectAnimationUsingKeyFrames>
-        </Storyboard>
 
-        <Storyboard x:Name="ChartVisibleStateStoryboard">
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Wrapper"
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="EmptyTooltip"
                                            Storyboard.TargetProperty="Visibility">
                 <DiscreteObjectKeyFrame KeyTime="0" Value="Visible" />
             </ObjectAnimationUsingKeyFrames>
-            
-            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.5" 
-                             Storyboard.TargetName="Wrapper" Storyboard.TargetProperty="Opacity" To="1">
+            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.4" 
+                             Storyboard.TargetName="EmptyTooltip" Storyboard.TargetProperty="Opacity" To="1">
             </DoubleAnimation>
+        </Storyboard>
+
+        <Storyboard x:Name="ChartVisibleStateStoryboard">
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ChartWrapper"
+                                           Storyboard.TargetProperty="Visibility">
+                <DiscreteObjectKeyFrame KeyTime="0" Value="Visible" />
+            </ObjectAnimationUsingKeyFrames>
+
+            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.4" 
+                             Storyboard.TargetName="ChartWrapper" Storyboard.TargetProperty="Opacity" To="1">
+            </DoubleAnimation>
+
+            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.4"
+                             Storyboard.TargetName="EmptyTooltip" Storyboard.TargetProperty="Opacity" To="0">
+            </DoubleAnimation>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="EmptyTooltip"
+                                           Storyboard.TargetProperty="Visibility">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.4" Value="Collapsed" />
+            </ObjectAnimationUsingKeyFrames>
         </Storyboard>
         
         <Storyboard x:Name="ShowTopToolBar">
-            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.3"
+            <!--<DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.3"
                              Storyboard.TargetName="TopToolBar" Storyboard.TargetProperty="Opacity" To="1">
             </DoubleAnimation>
             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TopToolBar" Storyboard.TargetProperty="Visibility">
                 <DiscreteObjectKeyFrame KeyTime="0" Value="Visible" />
-            </ObjectAnimationUsingKeyFrames>
+            </ObjectAnimationUsingKeyFrames>-->
         </Storyboard>
 
         <Storyboard x:Name="HideTopToolBar">
-            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.3"
+            <!--<DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.3"
                              Storyboard.TargetName="TopToolBar" Storyboard.TargetProperty="Opacity" To="0">
             </DoubleAnimation>
             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TopToolBar" Storyboard.TargetProperty="Visibility">
                 <DiscreteObjectKeyFrame KeyTime="0:0:0.3" Value="Collapsed" />
-            </ObjectAnimationUsingKeyFrames>
+            </ObjectAnimationUsingKeyFrames>-->
         </Storyboard>
 
         <Storyboard x:Name="ShowBottomToolBar">
-            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.3"
+            <!--<DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.3"
                              Storyboard.TargetName="BottomToolBar" Storyboard.TargetProperty="Opacity" To="1">
             </DoubleAnimation>
             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="BottomToolBar" Storyboard.TargetProperty="Visibility">
                 <DiscreteObjectKeyFrame KeyTime="0" Value="Visible" />
-            </ObjectAnimationUsingKeyFrames>
+            </ObjectAnimationUsingKeyFrames>-->
         </Storyboard>
 
         <Storyboard x:Name="HideBottomToolBar">
-            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.3"
+            <!--<DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.3"
                              Storyboard.TargetName="BottomToolBar" Storyboard.TargetProperty="Opacity" To="0">
             </DoubleAnimation>
             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="BottomToolBar" Storyboard.TargetProperty="Visibility">
                 <DiscreteObjectKeyFrame KeyTime="0:0:0.3" Value="Collapsed" />
-            </ObjectAnimationUsingKeyFrames>
+            </ObjectAnimationUsingKeyFrames>-->
         </Storyboard>
 
         <Storyboard x:Name="ShowSelectionIndicatorStoryboard">
@@ -177,145 +216,155 @@
             </Setter>
         </Style>
         <x:String x:Key="TooManyElementsWarningString">There are too many visual elements. Some elements may be hidden.</x:String>
-        <x:Double x:Key="WrapperRenderTransformInitialScale">0.8</x:Double>
+        <!--<x:Double x:Key="WrapperRenderTransformInitialScale">0.8</x:Double>-->
     </UserControl.Resources>
 
-    <Grid>
-        <Border x:Name="WrapperBackground" Background="#66333333"></Border>
-        <Border x:Name="Wrapper"
+    <StackPanel x:Name="Wrapper"
+                >
+        <!--<Border x:Name="WrapperBackground" Background="#66333333"></Border>-->
+        <!--<Border x:Name="Wrapper"
                     Background="White"
+                    Opacity="0"
                     BorderThickness="1"
                     BorderBrush="{StaticResource GridLineBrush}"
-                    Opacity="0"
                     RenderTransformOrigin="0.5 0.5"
-                    Visibility="Collapsed">
-            <Border.RenderTransform>
+                    Visibility="Collapsed">-->
+            <!--<Border.RenderTransform>
                 <CompositeTransform ScaleX="0.8" ScaleY="0.8" x:Name="WrapperRenderTransform"></CompositeTransform>
-            </Border.RenderTransform>
-            <Grid Background="White">
-                <!-- Visibility="{Binding IsPreviewVisible, Converter={StaticResource BooleanToVisibilityConverter}}" -->
-                <StackPanel Height="{Binding MainPageViewModel.PageHeight}" Padding="20 0 20 0" Background="Transparent">
-                    <local:BreadcrumbView Height="{Binding MainPageViewModel.PageHeaderHeight}" x:Name="BreadcrumbViewElement" />
-                    <Image Source="ms-appx:///Assets/horizontal-separator.png" Width="{Binding MainPageViewModel.PageWidth}" Margin="-20 0 -20 0" Height="8"
-                           Opacity="0.5"
-                           ></Image>
-                    <ScrollViewer HorizontalScrollBarVisibility="Hidden" HorizontalScrollMode="Auto" 
-                                    VerticalScrollBarVisibility="Hidden" VerticalScrollMode="Disabled"
-                                    x:Name="Carousel" Background="Transparent"
-                                    Width="{Binding MainPageViewModel.ParagraphWidth}"
-                                    ViewChanged="Carousel_ViewChanged">
-                        <Canvas x:Name="ParagraphContainerCanvasElement" Height="{Binding MainPageViewModel.ParagraphHeight}"
-                                ManipulationMode="TranslateY,System"
-                                >
-                            <StackPanel x:Name="BarChartWrapperElement" Visibility="{Binding IsBarChartVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Bar Chart" Background="Transparent">
-                                <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="BarChartTitleElement"></StackPanel>
-                                <TextBlock Style="{StaticResource TooManyElementsWarningStyle}" Visibility="{Binding IsBarChartWarningVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                    <Run FontFamily="FontAwesome" Foreground="#CC0000">&#xf071;</Run>
-                                    <Run Text="{StaticResource TooManyElementsWarningString}"></Run>
-                                </TextBlock>
-                                <crayon:BarChart x:Name="BarChartElement" IsHitTestVisible="False" Tag="Bar Chart"/>
-                            </StackPanel>
+            </Border.RenderTransform>-->
+        <Grid>
+            <!-- Visibility="{Binding IsPreviewVisible, Converter={StaticResource BooleanToVisibilityConverter}}" -->
+            <StackPanel Height="{Binding MainPageViewModel.PageHeight}" Padding="20 0 20 0" Background="White"
+                        x:Name="ChartWrapper" Visibility="Collapsed" Opacity="0"
+                        Width="{Binding MainPageViewModel.ParagraphWidth}"
+                        >
+                <!--<local:BreadcrumbView Height="{Binding MainPageViewModel.PageHeaderHeight}" x:Name="BreadcrumbViewElement" />-->                    
+                <ScrollViewer HorizontalScrollBarVisibility="Hidden" HorizontalScrollMode="Auto" 
+                              VerticalScrollBarVisibility="Hidden" VerticalScrollMode="Disabled"
+                              x:Name="Carousel" Background="Transparent"
+                              Width="{Binding MainPageViewModel.ParagraphWidth}"
+                              ViewChanged="Carousel_ViewChanged">
+                    <Canvas x:Name="ParagraphContainerCanvasElement" Height="{Binding MainPageViewModel.ParagraphHeight}"
+                            ManipulationMode="TranslateY,System"
+                            >
+                        <StackPanel x:Name="BarChartWrapperElement" Visibility="{Binding IsBarChartVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Bar Chart" Background="Transparent">
+                            <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="BarChartTitleElement"></StackPanel>
+                            <TextBlock Style="{StaticResource TooManyElementsWarningStyle}" Visibility="{Binding IsBarChartWarningVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <Run FontFamily="FontAwesome" Foreground="#CC0000">&#xf071;</Run>
+                                <Run Text="{StaticResource TooManyElementsWarningString}"></Run>
+                            </TextBlock>
+                            <crayon:BarChart x:Name="BarChartElement" IsHitTestVisible="False" Tag="Bar Chart"/>
+                        </StackPanel>
 
-                            <StackPanel x:Name="GroupedBarChartWrapperElement" Visibility="{Binding IsGroupedBarChartVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Grouped Bar Chart" Background="Transparent">
-                                <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="GroupedBarChartTitleElement"></StackPanel>
-                                <TextBlock Style="{StaticResource TooManyElementsWarningStyle}" Visibility="{Binding IsGroupedBarChartWarningVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                    <Run FontFamily="FontAwesome" Foreground="#CC0000">&#xf071;</Run>
-                                    <Run Text="{StaticResource TooManyElementsWarningString}"></Run>
-                                </TextBlock>
-                                <crayon:GroupedBarChart x:Name="GroupedBarChartElement" IsHitTestVisible="False" Tag="Grouped Bar Chart"/>
-                            </StackPanel>
+                        <StackPanel x:Name="GroupedBarChartWrapperElement" Visibility="{Binding IsGroupedBarChartVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Grouped Bar Chart" Background="Transparent">
+                            <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="GroupedBarChartTitleElement"></StackPanel>
+                            <TextBlock Style="{StaticResource TooManyElementsWarningStyle}" Visibility="{Binding IsGroupedBarChartWarningVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <Run FontFamily="FontAwesome" Foreground="#CC0000">&#xf071;</Run>
+                                <Run Text="{StaticResource TooManyElementsWarningString}"></Run>
+                            </TextBlock>
+                            <crayon:GroupedBarChart x:Name="GroupedBarChartElement" IsHitTestVisible="False" Tag="Grouped Bar Chart"/>
+                        </StackPanel>
 
-                            <StackPanel x:Name="LineChartWrapperElement" Visibility="{Binding IsLineChartVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Line Chart" Background="Transparent">
-                                <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="LineChartTitleElement"></StackPanel>
-                                <TextBlock Style="{StaticResource TooManyElementsWarningStyle}" Visibility="{Binding IsLineChartWarningVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                    <Run FontFamily="FontAwesome" Foreground="#CC0000">&#xf071;</Run>
-                                    <Run Text="{StaticResource TooManyElementsWarningString}"></Run>
-                                </TextBlock>
-                                <crayon:LineChart x:Name="LineChartElement" IsHitTestVisible="False" Tag="Line Chart"/>
-                            </StackPanel>
+                        <StackPanel x:Name="LineChartWrapperElement" Visibility="{Binding IsLineChartVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Line Chart" Background="Transparent">
+                            <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="LineChartTitleElement"></StackPanel>
+                            <TextBlock Style="{StaticResource TooManyElementsWarningStyle}" Visibility="{Binding IsLineChartWarningVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <Run FontFamily="FontAwesome" Foreground="#CC0000">&#xf071;</Run>
+                                <Run Text="{StaticResource TooManyElementsWarningString}"></Run>
+                            </TextBlock>
+                            <crayon:LineChart x:Name="LineChartElement" IsHitTestVisible="False" Tag="Line Chart"/>
+                        </StackPanel>
 
-                            <StackPanel x:Name="DistributionWrapperElement" Visibility="{Binding IsDistributionVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Distribution" Background="Transparent">
-                                <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="DistributionViewTitleElement"></StackPanel>
-                                <local:DistributionView x:Name="DistributionViewElement" IsHitTestVisible="False" Tag="Distribution"/>
-                            </StackPanel>
+                        <StackPanel x:Name="DistributionWrapperElement" Visibility="{Binding IsDistributionVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Distribution" Background="Transparent">
+                            <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="DistributionViewTitleElement"></StackPanel>
+                            <local:DistributionView x:Name="DistributionViewElement" IsHitTestVisible="False" Tag="Distribution"/>
+                        </StackPanel>
 
-                            <StackPanel x:Name="DescriptiveStatisticsWrapperElement" Visibility="{Binding IsDescriptiveStatisticsVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Statistics" Background="Transparent">
-                                <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="DescriptiveStatisticsTitleElement"></StackPanel>
-                                <local:DescriptiveStatisticsView x:Name="DescriptiveStatisticsViewElement" Tag="Statistics"/>
-                            </StackPanel>
+                        <StackPanel x:Name="DescriptiveStatisticsWrapperElement" Visibility="{Binding IsDescriptiveStatisticsVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Statistics" Background="Transparent">
+                            <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="DescriptiveStatisticsTitleElement"></StackPanel>
+                            <local:DescriptiveStatisticsView x:Name="DescriptiveStatisticsViewElement" Tag="Statistics"/>
+                        </StackPanel>
 
-                            <StackPanel x:Name="ScatterplotWrapperElement" Visibility="{Binding IsScatterplotVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Scatterplot" Background="Transparent">
-                                <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="ScatterplotTitleElement"></StackPanel>
-                                <TextBlock Style="{StaticResource TooManyElementsWarningStyle}" Visibility="{Binding IsScatterplotWarningVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                    <Run FontFamily="FontAwesome" Foreground="#CC0000">&#xf071;</Run>
-                                    <Run Text="{StaticResource TooManyElementsWarningString}"></Run>
-                                </TextBlock>
-                                <crayon:Scatterplot x:Name="ScatterplotElement" IsHitTestVisible="False" Tag="Scatterplot"/>
-                            </StackPanel>
+                        <StackPanel x:Name="ScatterplotWrapperElement" Visibility="{Binding IsScatterplotVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Scatterplot" Background="Transparent">
+                            <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="ScatterplotTitleElement"></StackPanel>
+                            <TextBlock Style="{StaticResource TooManyElementsWarningStyle}" Visibility="{Binding IsScatterplotWarningVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <Run FontFamily="FontAwesome" Foreground="#CC0000">&#xf071;</Run>
+                                <Run Text="{StaticResource TooManyElementsWarningString}"></Run>
+                            </TextBlock>
+                            <crayon:Scatterplot x:Name="ScatterplotElement" IsHitTestVisible="False" Tag="Scatterplot"/>
+                        </StackPanel>
 
-                            <StackPanel x:Name="PivotTableWrapperElement" Visibility="{Binding IsPivotTableVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Pivot Table" Background="Transparent">
-                                <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="PivotTableTitleElement"></StackPanel>
-                                <local:PivotTableView x:Name="PivotTableViewElement" VerticalAlignment="Center" Tag="Pivot Table"></local:PivotTableView>
-                            </StackPanel>
+                        <StackPanel x:Name="PivotTableWrapperElement" Visibility="{Binding IsPivotTableVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="Pivot Table" Background="Transparent">
+                            <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="PivotTableTitleElement"></StackPanel>
+                            <local:PivotTableView x:Name="PivotTableViewElement" VerticalAlignment="Center" Tag="Pivot Table"></local:PivotTableView>
+                        </StackPanel>
 
-                            <StackPanel x:Name="CorrelationStatisticsWrapperElement" Visibility="{Binding IsCorrelationStatisticsVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="CorrStatistics" Background="Transparent">
-                                <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="CorrelationStatisticsTitleElement"></StackPanel>
-                                <local:CorrelationStatisticsView x:Name="CorrelationStatisticsViewElement" Tag="CorrStatistics"/>
-                            </StackPanel>
-                        </Canvas>
-                    </ScrollViewer>
-                    <local:PageLabelView x:Name="PageLabelViewElement" Height="{Binding MainPageViewModel.PageLabelCarouselHeight}" />
-                    <Border Height="1" BorderThickness="2" BorderBrush="{StaticResource GridLineBrush}"/>
-                </StackPanel>
+                        <StackPanel x:Name="CorrelationStatisticsWrapperElement" Visibility="{Binding IsCorrelationStatisticsVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Tag="CorrStatistics" Background="Transparent">
+                            <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="CorrelationStatisticsTitleElement"></StackPanel>
+                            <local:CorrelationStatisticsView x:Name="CorrelationStatisticsViewElement" Tag="CorrStatistics"/>
+                        </StackPanel>
+                    </Canvas>
+                </ScrollViewer>
+                <local:PageLabelView x:Name="PageLabelViewElement" Height="{Binding MainPageViewModel.PageLabelCarouselHeight}" />
+            </StackPanel>
 
-                <Border HorizontalAlignment="Center" VerticalAlignment="Bottom"
-                        x:Name="SelectionIndicator"
-                        Background="Transparent"
-                        ManipulationMode="TranslateX" ManipulationDelta="SelectionIndicator_ManipulationDelta"
-                        Tapped="SelectionIndicator_Tapped"
-                        ManipulationCompleted="SelectionIndicator_ManipulationCompleted"
-                        Padding="15"
-                        Visibility="Collapsed" Opacity="0">
-                    <Border.RenderTransform>
-                        <TransformGroup>
-                            <TranslateTransform X="0" Y="-26"></TranslateTransform>
-                            <TranslateTransform x:Name="SelectionIndicatorTemporaryTransform"></TranslateTransform>
-                        </TransformGroup>
-                    </Border.RenderTransform>
-                    <TextBlock FontSize="24" Grid.Column="1" VerticalAlignment="Center">
-                        <Run x:Name="SelectedRowCountIndicator" FontWeight="Bold" Foreground="{StaticResource HighlightBrush1}"></Run>
-                        <Run x:Name="SelectionMessage"/>
-                    </TextBlock>
-                </Border>
+            <Border HorizontalAlignment="Center" VerticalAlignment="Bottom"
+                    x:Name="SelectionIndicator"
+                    Background="Transparent"
+                    ManipulationMode="TranslateX" ManipulationDelta="SelectionIndicator_ManipulationDelta"
+                    Tapped="SelectionIndicator_Tapped"
+                    ManipulationCompleted="SelectionIndicator_ManipulationCompleted"
+                    Padding="15"
+                    Visibility="Collapsed" Opacity="0">
+                <Border.RenderTransform>
+                    <TransformGroup>
+                        <TranslateTransform X="0" Y="-26"></TranslateTransform>
+                        <TranslateTransform x:Name="SelectionIndicatorTemporaryTransform"></TranslateTransform>
+                    </TransformGroup>
+                </Border.RenderTransform>
+                <TextBlock FontSize="24" Grid.Column="1" VerticalAlignment="Center">
+                    <Run x:Name="SelectedRowCountIndicator" FontWeight="Bold" Foreground="{StaticResource HighlightBrush1}"></Run>
+                    <Run x:Name="SelectionMessage"/>
+                </TextBlock>
+            </Border>
             
-                <Grid HorizontalAlignment="Right" VerticalAlignment="Top" x:Name="TopToolBar" Opacity="0" Visibility="Collapsed">
-                    <StackPanel Orientation="Horizontal">
-                        <Button Style="{StaticResource CircleIconButtonStyle}" Tapped="Clipboard_Tapped" Margin="0 20 0 20">&#xf02e;</Button>
-                        <Button Style="{StaticResource PrimaryCircleIconButtonStyle}" Tapped="Select_Tapped" Margin="20">&#xf00c;</Button>
-                    </StackPanel>
-                </Grid>
-
-                <Grid HorizontalAlignment="Right" VerticalAlignment="Top" x:Name="BottomToolBar" Opacity="0" Visibility="Collapsed">
-                    <StackPanel Orientation="Horizontal">
-                        <Button Style="{StaticResource CircleIconButtonStyle}" Tapped="Clipboard_Tapped" Margin="0 20 0 20">&#xf02e;</Button>
-                        <Button Style="{StaticResource CircleIconButtonStyle}" Tapped="Unselect_Tapped" Margin="20">&#xf00d;</Button>
-                    </StackPanel>
-                </Grid>
-
-                <Border Height="{Binding MainPageViewModel.PageHeight}" Opacity="0" Visibility="Collapsed" Padding="20" 
-                        Background="#33FFFFFF" Tapped="Undo_Tapped" x:Name="UndoMessage">
-                    <StackPanel VerticalAlignment="Center">
-                        <TextBlock FontSize="25" TextAlignment="Center"  Visibility="{Binding IsPrimaryUndoMessageVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
-                            <Run FontFamily="FontAwesome">&#xf0e2;</Run>
-                            <Run>Tap to undo.</Run>
-                        </TextBlock>
-                        <TextBlock FontSize="25" TextAlignment="Center"  Visibility="{Binding IsPrimaryUndoMessageVisible, Converter={StaticResource BooleanToInvertedVisibilityConverter}}">
-                            <Run FontFamily="FontAwesome">&#xf062;</Run>
-                            <Run>Swipe up to undo.</Run>
-                        </TextBlock>
-                    </StackPanel>
-                </Border>
+            <!--<Grid HorizontalAlignment="Right" VerticalAlignment="Top" x:Name="TopToolBar" Opacity="0" Visibility="Collapsed">
+                <StackPanel Orientation="Horizontal">
+                    <Button Style="{StaticResource CircleIconButtonStyle}" Tapped="Clipboard_Tapped" Margin="0 20 0 20">&#xf02e;</Button>
+                    <Button Style="{StaticResource PrimaryCircleIconButtonStyle}" Tapped="Select_Tapped" Margin="20">&#xf00c;</Button>
+                </StackPanel>
             </Grid>
-        </Border>
-    </Grid>
+
+            <Grid HorizontalAlignment="Right" VerticalAlignment="Top" x:Name="BottomToolBar" Opacity="0" Visibility="Collapsed">
+                <StackPanel Orientation="Horizontal">
+                    <Button Style="{StaticResource CircleIconButtonStyle}" Tapped="Clipboard_Tapped" Margin="0 20 0 20">&#xf02e;</Button>
+                    <Button Style="{StaticResource CircleIconButtonStyle}" Tapped="Unselect_Tapped" Margin="20">&#xf00d;</Button>
+                </StackPanel>
+            </Grid>-->
+
+            <Border Height="{Binding MainPageViewModel.PageHeight}" Width="{Binding MainPageViewModel.ParagraphWidth}" Visibility="Visible" x:Name="EmptyTooltip" Padding="20">
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock FontSize="25" TextAlignment="Center">
+                        <!--<Run FontFamily="FontAwesome">&#xf25a;</Run>-->
+                        <Run>Select a column to preview.</Run>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+            
+            <Border Height="{Binding MainPageViewModel.PageHeight}" Opacity="0" Visibility="Collapsed" Padding="20" 
+                    Background="#33FFFFFF" Tapped="Undo_Tapped" x:Name="UndoMessage">
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock FontSize="25" TextAlignment="Center" Visibility="{Binding IsPrimaryUndoMessageVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Run FontFamily="FontAwesome">&#xf0e2;</Run>
+                        <Run>Tap to undo.</Run>
+                    </TextBlock>
+                    <TextBlock FontSize="25" TextAlignment="Center" Visibility="{Binding IsPrimaryUndoMessageVisible, Converter={StaticResource BooleanToInvertedVisibilityConverter}}">
+                        <Run FontFamily="FontAwesome">&#xf062;</Run>
+                        <Run>Swipe up to undo.</Run>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+        </Grid>
+        <!--</Border>-->
+        <Image Source="ms-appx:///Assets/horizontal-separator.png" Width="{Binding MainPageViewModel.PageWidth}" Margin="-20 0 -20 0" Height="8" Opacity="0.5"></Image>
+    </StackPanel>
 </UserControl>
