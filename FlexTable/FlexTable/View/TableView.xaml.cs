@@ -254,6 +254,7 @@ namespace FlexTable.View
                     groupedRowPresenters[i].RowViewModel = ViewModel.GroupedRowViewModels[i];
                     Canvas.SetTop(groupedRowPresenters[i], index * height);
                     groupedRowPresenters[i].Visibility = Visibility.Visible;
+                    groupedRowPresenters[i].Opacity = 1;
                     groupedRowPresenters[i].Update(coloredColumnViewModel, firstColoredColumnViewModel, secondColoredColumnViewModel, thirdColoredColumnViewModel);
                     index++;
                 }
@@ -551,15 +552,18 @@ namespace FlexTable.View
             startY -= rowHeight / 2; // row의 중앙을 기준으로 테스트 하기 위함임
             endY -= rowHeight / 2;
 
-            foreach (RowPresenter rowPresenter in activatedRowPresenters)
+            if (activatedRowPresenters.Any(rowPresenter => rowPresenter.Visibility == Visibility.Visible && startY <= rowPresenter.RowViewModel.Y && rowPresenter.RowViewModel.Y <= endY))
             {
-                if (startY <= rowPresenter.RowViewModel.Y && rowPresenter.RowViewModel.Y <= endY)
+                foreach (RowPresenter rowPresenter in activatedRowPresenters)
                 {
-                    rowPresenter.Opacity = 1;
-                }
-                else
-                {
-                    rowPresenter.Opacity = 0.2;
+                    if (startY <= rowPresenter.RowViewModel.Y && rowPresenter.RowViewModel.Y <= endY)
+                    {
+                        rowPresenter.Opacity = 1;
+                    }
+                    else
+                    {
+                        rowPresenter.Opacity = 0.2;
+                    }
                 }
             }
         }
