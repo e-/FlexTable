@@ -30,6 +30,7 @@
                 <Setter Property="Height" Value="{StaticResource RowHeight}" />
                 <Setter Property="TextAlignment" Value="Center" />
                 <Setter Property="FontFamily" Value="Roboto" />
+                <Setter Property="Padding" Value="0 3 0 0" />
             </Style>
 
             <Style TargetType="TextBlock" x:Key="RowHeaderStyle">

@@ -226,7 +226,7 @@ namespace FlexTable.ViewModel
                     tableUpdateCallback();
                 };
 
-                dispatcherTimer.Interval = TimeSpan.FromMilliseconds(500);
+                dispatcherTimer.Interval = TimeSpan.FromMilliseconds(100);
             }
 
             dispatcherTimer.Start();

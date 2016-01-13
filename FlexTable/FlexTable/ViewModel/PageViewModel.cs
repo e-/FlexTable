@@ -143,7 +143,7 @@ namespace FlexTable.ViewModel
 
             List<GroupedRows> groupedRows = ViewStatus.GroupedRows;
             Object firstChartTag = "dummy tag wer";
-            Boolean useTransition = !chartTypeChanged && selectionChanged; /*(selectionChanged && !chartTypeChanged) 
+            Boolean useTransition = !chartTypeChanged && selectionChanged || reason == ReflectReason.ColumnChanged; /*(selectionChanged && !chartTypeChanged) 
                 || (reason != ReflectReason2.FilterOut && reason != ReflectReason2.PreviewRequested 
                 && reason != ReflectReason2.ColumnViewModelUnselected && reason != ReflectReason2.Undo);*/
 

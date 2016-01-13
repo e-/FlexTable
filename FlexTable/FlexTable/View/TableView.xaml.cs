@@ -19,6 +19,7 @@ using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Shapes;
 using FlexTable.Model;
 using Windows.UI;
+using Windows.UI.Input;
 
 // 사용자 정의 컨트롤 항목 템플릿에 대한 설명은 http://go.microsoft.com/fwlink/?LinkId=234236에 나와 있습니다.
 
@@ -76,6 +77,7 @@ namespace FlexTable.View
         };
         InkManager inkManager;
 
+        private List<RowPresenter> activatedRowPresenters;
         private List<RowPresenter> allRowPresenters = new List<RowPresenter>();
         private List<RowPresenter> groupedRowPresenters = new List<RowPresenter>();
         private List<RowPresenter> selectedRowPresenters = new List<RowPresenter>();
@@ -85,7 +87,8 @@ namespace FlexTable.View
             this.InitializeComponent();
             
             drawable.Attach(SheetView, StrokeGrid, NewStrokeGrid);
-            drawable.StrokeAdded += RecognizeStrokes;
+            drawable.StrokeAdding += StrokeAdding;
+            drawable.StrokeAdded += StrokeAdded;
             timer.Tick += timer_Tick;            
         }
 
@@ -144,6 +147,8 @@ namespace FlexTable.View
                 SelectedRowCanvas.Children.Add(rowPresenter);
                 selectedRowPresenters.Add(rowPresenter);
             }
+
+            activatedRowPresenters = allRowPresenters;
         }
         
 
@@ -190,6 +195,7 @@ namespace FlexTable.View
                 }
 
                 RowHeaderPresenter.SetRowNumber(colors, selected.Count(), index);
+                activatedRowPresenters = allRowPresenters;
             }
             else if (state == TableViewModel.TableViewState.GroupedRow)
             {
@@ -258,6 +264,7 @@ namespace FlexTable.View
                 }
 
                 RowHeaderPresenter.SetRowNumber(colors, ViewModel.GroupedRowViewModels.Count, ViewModel.GroupedRowViewModels.Count);
+                activatedRowPresenters = groupedRowPresenters;
             }
             else if(state == TableViewModel.TableViewState.SelectedRow)
             {
@@ -304,14 +311,13 @@ namespace FlexTable.View
                     index++;
                 }
                 RowHeaderPresenter.SetRowNumber(colors, ViewModel.SelectedRows.Count(), index);
+                activatedRowPresenters = selectedRowPresenters;
             }
             else if(state == TableViewModel.TableViewState.Animation)
             {
                 SlowlyHideAllRowViewerStoryboard.Begin();
                 HideGroupedRowViewerStoryboard.Begin();
                 HideSelectedRowViewerStoryboard.Begin();
-                /*AnimatingRowViewer.Opacity = 1;
-                AnimatingRowViewer.Visibility = Visibility.Visible;*/
                 ShowAnimatingRowViewerStoryboard.Begin();
             }
 
@@ -408,8 +414,64 @@ namespace FlexTable.View
                 drawable.RemoveAllStrokes();
             }
         }
-        
-        void RecognizeStrokes(InkManager inkManager)
+
+        Boolean isSelectionPreviewing = false;
+
+        void StrokeAdding(Rect boundingRect)
+        {
+            Double centerX = boundingRect.X + boundingRect.Width / 2 -
+                (Double)App.Current.Resources["RowHeaderWidth"] + ActivatedScrollViewer.HorizontalOffset;
+
+            Double screenHeight = this.ViewModel.MainPageViewModel.Bounds.Height;
+            Double columnHeaderHeight = (Double)App.Current.Resources["ColumnHeaderHeight"];
+
+            ColumnViewModel selectedColumnViewModel = null;
+
+            foreach (ColumnViewModel columnViewModel in ViewModel.SheetViewModel.ColumnViewModels) // 현재 그 아래에 있는 컬럼을 찾고
+            {
+                if (columnViewModel.X <= centerX && centerX < columnViewModel.X + columnViewModel.Width)
+                {
+                    selectedColumnViewModel = columnViewModel;
+                    break;
+                }
+            }
+
+            if (selectedColumnViewModel == null)
+            {
+                return;
+            }
+
+            if (
+                boundingRect.Y + boundingRect.Height < columnHeaderHeight * 1.2 ||
+                screenHeight - columnHeaderHeight * 1.2 < boundingRect.Y
+                ) // 컬럼 헤더에서 스트로크가 쓰여졌을때에는 다음 글자가 쓰여질때까지 기다린다
+            {
+            }
+            else // 아니면 테이블 프리뷰
+            {
+                if (boundingRect.Height <= VerticalStrokeMinHeight) // 세로 스트로크인지 원인지 모르겠으면 대기
+                {
+                }
+                else if (boundingRect.Width < VerticalStrokeMaxWidth && boundingRect.Height > VerticalStrokeMinHeight) // 세로 스트로크면 소팅하라는 것임 따라서 무시
+                {
+                    /*if(isSelectionPreviewing)
+                    {
+                        ReflectState(ViewModel.MainPageViewModel.ExplorationViewModel.ViewStatus);
+                        isSelectionPreviewing = false;
+                    }*/
+                }
+                else // 아니면 선택하라는 것임
+                {
+                    Double startY = boundingRect.Y + ActivatedScrollViewer.VerticalOffset - columnHeaderHeight,
+                        endY = boundingRect.Y + boundingRect.Height + ActivatedScrollViewer.VerticalOffset - columnHeaderHeight;
+
+                    PreviewSelectionByRange(startY, endY);
+                    //isSelectionPreviewing = true;
+                }
+            }
+        }
+
+        void StrokeAdded(InkManager inkManager)
         {
             IReadOnlyList<InkStroke> strokes = inkManager.GetStrokes();
             this.inkManager = inkManager;
@@ -436,8 +498,6 @@ namespace FlexTable.View
                 drawable.RemoveAllStrokes();
                 return;
             }
-
-            InkPoint firstInkPoint = strokes[0].GetInkPoints().First();
 
             if (
                 strokes[0].BoundingRect.Y + strokes[0].BoundingRect.Height < columnHeaderHeight * 1.2 ||
@@ -479,6 +539,28 @@ namespace FlexTable.View
                     ViewModel.SelectRowsByRange(startY, endY);
                 }
                 drawable.RemoveAllStrokes();
+            }
+        }
+
+        public void PreviewSelectionByRange(Double startY, Double endY)
+        {
+            if (ViewModel.MainPageViewModel.ExplorationViewModel.SelectedPageViews.Count == 0) return;
+
+            Double rowHeight = Const.RowHeight;
+
+            startY -= rowHeight / 2; // row의 중앙을 기준으로 테스트 하기 위함임
+            endY -= rowHeight / 2;
+
+            foreach (RowPresenter rowPresenter in activatedRowPresenters)
+            {
+                if (startY <= rowPresenter.RowViewModel.Y && rowPresenter.RowViewModel.Y <= endY)
+                {
+                    rowPresenter.Opacity = 1;
+                }
+                else
+                {
+                    rowPresenter.Opacity = 0.2;
+                }
             }
         }
 
@@ -536,6 +618,5 @@ namespace FlexTable.View
         {
             sv.ChangeView(0, 0, null);
         }
-
     }
 }

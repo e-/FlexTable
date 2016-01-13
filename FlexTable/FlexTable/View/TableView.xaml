@@ -204,8 +204,8 @@
           
             <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" 
                           ZoomMode="Disabled" Grid.Row="1" Grid.Column="1"
-                          ManipulationMode="All"
-                          x:Name="SelectedRowViewer">
+                          x:Name="SelectedRowViewer" ManipulationMode="All"
+                          >
                 <Canvas x:Name="SelectedRowCanvas" Width="{Binding PaddedSheetWidth}" Height="{Binding PaddedSheetHeight}">
                 </Canvas>
             </ScrollViewer>

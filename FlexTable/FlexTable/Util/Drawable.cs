@@ -19,8 +19,12 @@ namespace FlexTable.Util
 {
     class Drawable
     {
+        public delegate void StrokeAddingEventHandler(Rect boundingRect);
         public delegate void StrokeAddedEventHandler(InkManager inkManager);
+
+        public event StrokeAddingEventHandler StrokeAdding;
         public event StrokeAddedEventHandler StrokeAdded;
+        
         
         private Boolean ignoreSmallStrokes = true;
         public Boolean IgnoreSmallStrokes { get { return ignoreSmallStrokes; } set { ignoreSmallStrokes = value;  } }
@@ -85,8 +89,17 @@ namespace FlexTable.Util
                 }
                 pointerDictionary[e.Pointer.PointerId] = pointerPoint.Position;
                 e.Handled = true;
+                boundingRect = new Rect()
+                {
+                    X = pointerPoint.Position.X,
+                    Y = pointerPoint.Position.Y,
+                    Width = 0,
+                    Height = 0
+                };
             }
         }
+
+        Rect boundingRect = new Rect();
 
         private void PointerMoved(object sender, PointerRoutedEventArgs e)
         {
@@ -130,10 +143,14 @@ namespace FlexTable.Util
                                 StrokeStartLineCap = PenLineCap.Round,
                                 StrokeEndLineCap = PenLineCap.Round
                             };
+
+                            boundingRect.Union(point2);
                             NewStrokeGrid.Children.Add(line);
                             pointerDictionary[id] = point2;
                         }
                     }
+
+                    if (StrokeAdding != null) StrokeAdding(boundingRect);
                 }
                 e.Handled = true;
             }
@@ -175,7 +192,7 @@ namespace FlexTable.Util
 
                     pointerDictionary.Remove(id);
                     
-                    if(StrokeAdded != null)StrokeAdded(inkManager);
+                    if(StrokeAdded != null) StrokeAdded(inkManager);
                 }
 
                 e.Handled = true;
@@ -219,21 +236,7 @@ namespace FlexTable.Util
                     StrokeEndLineCap = PenLineCap.Round,
                     Data = pathGeometry
                 };
-                StrokeGrid.Children.Add(path);
-
-#if DEBUG
-                Ellipse el = new Ellipse()
-                {
-                    Width = 10,
-                    Height = 10,
-                    Fill = new SolidColorBrush(Color.FromArgb(200, 0, 0, 0)),
-                    IsHitTestVisible = false
-                };
-
-                Canvas.SetLeft(el, inkSegment.Position.X - 5);
-                Canvas.SetTop(el, inkSegment.Position.Y - 5);
-                //TestCanvas.Children.Add(el);
-#endif
+                StrokeGrid.Children.Add(path);                
             }
         }
 
