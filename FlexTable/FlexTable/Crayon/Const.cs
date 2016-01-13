@@ -32,7 +32,7 @@ namespace FlexTable.Crayon
 
         public const Double MinimumHandleHeight = 50;
 
-        public const Double HighlightedBarWidthRatio = 0.9;
+        public const Double HighlightedBarWidthRatio = 0.6;
 
         public static Boolean IsStrikeThrough(Rect rect)
         {
