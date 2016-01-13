@@ -100,6 +100,7 @@ namespace FlexTable.Crayon.Chart
         public Int32 MaxBarCountInAGroup { get; set; }
 
         public Func<Object, Int32, Double> WidthGetter { get { return (d, index) => BarWidth; } }
+        public Func<Object, Int32, Double> HighlightedWidthGetter { get { return (d, index) => BarWidth * (isSelectionEnabled ? Const.HighlightedBarWidthRatio : 1); } }
         public Func<Object, Int32, Double> EnvelopeHeightGetter { get { return (d, index) => ChartAreaEndY - YScale.Map((d as BarChartDatum).EnvelopeValue); } }
 
         public Func<Object, Int32, Double> HeightGetter { get {
@@ -109,7 +110,7 @@ namespace FlexTable.Crayon.Chart
                     if (barState == BarState.Unselected) return 0;
                     return ChartAreaEndY - YScale.Map((d as BarChartDatum).Value);
                 };
-        } }
+            } }
 
         public Func<Object, Int32, Double> XGetter
         {
@@ -122,6 +123,9 @@ namespace FlexTable.Crayon.Chart
                 };
             }
         }
+
+        public Func<Object, Int32, Double> HighlightedXGetter { get { return (d, index) => XGetter(d, index) + (isSelectionEnabled ? BarWidth * (1 - Const.HighlightedBarWidthRatio) / 2 : 0); } } 
+
         public Func<Object, Int32, Double> EnvelopeYGetter
         {
             get
@@ -297,6 +301,7 @@ namespace FlexTable.Crayon.Chart
         };
 
         private ColumnViewModel firstColumnViewModel, secondColumnViewModel;
+        Boolean isSelectionEnabled = false;
 
         public GroupedBarChart()
         {
@@ -318,9 +323,9 @@ namespace FlexTable.Crayon.Chart
             EnvelopeRectangleElement.OpacityGetter = EnvelopeOpacityGetter;
 
             RectangleElement.Data = D3Data;
-            RectangleElement.WidthGetter = WidthGetter;
+            RectangleElement.WidthGetter = HighlightedWidthGetter;
             RectangleElement.HeightGetter = HeightGetter;
-            RectangleElement.XGetter = XGetter;
+            RectangleElement.XGetter = HighlightedXGetter;
             RectangleElement.YGetter = YGetter;
             RectangleElement.ColorGetter = ColorGetter;
             RectangleElement.OpacityGetter = OpacityGetter;
@@ -672,7 +677,7 @@ namespace FlexTable.Crayon.Chart
             }
 
             MaxBarCountInAGroup = Data.Select(d => d.Children.Count()).Max();
-
+            isSelectionEnabled = ChartData.Any(bcd => bcd.BarState == BarState.FullySelected || bcd.BarState == BarState.PartiallySelected);
 
             // update 시 재대입 할 것들 대입
 
