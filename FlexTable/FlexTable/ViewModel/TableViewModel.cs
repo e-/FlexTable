@@ -226,8 +226,7 @@ namespace FlexTable.ViewModel
                     tableUpdateCallback();
                 };
 
-
-                dispatcherTimer.Interval = TimeSpan.FromMilliseconds(1);
+                dispatcherTimer.Interval = TimeSpan.FromMilliseconds(500);
             }
 
             dispatcherTimer.Start();
@@ -368,7 +367,7 @@ namespace FlexTable.ViewModel
                 StashViewStatus(mainPageViewModel.ExplorationViewModel.ViewStatus, AnimationHint.AnimationType.SelectRows);
             }
             SelectedRows = selectedRows.ToList();
-            Reflect(mainPageViewModel.ExplorationViewModel.ViewStatus, ReflectReason.PreviewRequested);
+            Reflect(mainPageViewModel.ExplorationViewModel.ViewStatus, ReflectReason.RowSelected); // PreviewRequested);
         }
 
         public void CancelPreviewRows()
@@ -378,7 +377,7 @@ namespace FlexTable.ViewModel
                 StashViewStatus(mainPageViewModel.ExplorationViewModel.ViewStatus, AnimationHint.AnimationType.UnselectRows);
             }
             SelectedRows = null;
-            Reflect(mainPageViewModel.ExplorationViewModel.ViewStatus, ReflectReason.PreviewRequested);
+            Reflect(mainPageViewModel.ExplorationViewModel.ViewStatus, ReflectReason.RowUnselected); // PreviewRequested);
         }        
 
         public void SelectRowsByRange(Double startY, Double endY)
@@ -403,18 +402,18 @@ namespace FlexTable.ViewModel
             {
                 IEnumerable<Row> filteredRows = SheetViewModel.FilteredRows;
                 IEnumerable<Row> selectedRows = allRowViewModels.Where(rvm => filteredRows.Contains(rvm.Row) && startY <= rvm.Y && rvm.Y < endY).Select(rvm => rvm.Row);
-                topPageView.SelectionChanged(null, selectedRows, SelectionChangedType.Replace, ReflectReason.SelectionChanged);
+                topPageView.SelectionChanged(null, selectedRows, SelectionChangedType.Replace, ReflectReason2.SelectionChanged);
             }
             else if(State == TableViewState.GroupedRow)
             {
                 IEnumerable<Row> selectedRows = groupedRowViewModels.Where(rvm => startY <= rvm.Y && rvm.Y < endY).SelectMany(rvm => rvm.Rows);
-                topPageView.SelectionChanged(null, selectedRows, SelectionChangedType.Replace, ReflectReason.SelectionChanged);
+                topPageView.SelectionChanged(null, selectedRows, SelectionChangedType.Replace, ReflectReason2.SelectionChanged);
             }
             else if(State == TableViewState.SelectedRow)
             {
                 IEnumerable<Row> filteredRows = SheetViewModel.FilteredRows;
                 IEnumerable<Row> selectedRows = allRowViewModels.Where(rvm => filteredRows.Contains(rvm.Row) && startY <= rvm.Y && rvm.Y < endY).Select(rvm => rvm.Row);
-                topPageView.SelectionChanged(null, selectedRows, SelectionChangedType.Replace, ReflectReason.SelectionChanged);
+                topPageView.SelectionChanged(null, selectedRows, SelectionChangedType.Replace, ReflectReason2.SelectionChanged);
             }
             else
             {

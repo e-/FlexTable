@@ -92,8 +92,8 @@ namespace FlexTable.ViewModel
             pageViewModel.State = PageViewModel.PageViewState.Previewing;
 
             // 이걸로 pageView를 채움
-            
-            pageViewModel.Reflect(ReflectType.TrackPreviousParagraph | ReflectType.OnCreate, ReflectReason.PreviewRequested);
+
+            pageViewModel.Reflect(ReflectReason.Preview); // ReflectType2.TrackPreviousParagraph | ReflectType2.OnCreate, ReflectReason2.PreviewRequested);
             TopPageView.ReflectState();
         }
 
@@ -103,7 +103,7 @@ namespace FlexTable.ViewModel
             if (TopPageView.ViewModel.State == PageViewModel.PageViewState.Previewing)
             {
                 TopPageView.ViewModel.State = PageViewModel.PageViewState.Empty;
-                TopPageView.ViewModel.Reflect(ReflectType.Default, ReflectReason.PreviewRequested);
+                TopPageView.ViewModel.Reflect(ReflectReason.CancelPreview); // ReflectType2.Default, ReflectReason2.PreviewRequested);
                 TopPageView.ReflectState();
             }
         }
@@ -130,7 +130,7 @@ namespace FlexTable.ViewModel
                 // 새로운 page 만들기
                 view.ExplorationView.AddNewPage();
 
-                mainPageViewModel.ReflectAll(false, ReflectReason.Undo);
+                mainPageViewModel.ReflectAll(ReflectReason.Undo);
 
                 view.TableView.ScrollToColumnViewModel(mainPageViewModel.SheetViewModel.ColumnViewModels.OrderBy(c => c.Order).First());
 
@@ -157,7 +157,7 @@ namespace FlexTable.ViewModel
                 // 새로운 page 만들기
                 view.ExplorationView.AddNewPage();
 
-                mainPageViewModel.ReflectAll(false, ReflectReason.ColumnViewModelSelected);
+                mainPageViewModel.ReflectAll(ReflectReason.ColumnSelected); // 2.ColumnViewModelSelected);
                 
                 view.TableView.ScrollToColumnViewModel(mainPageViewModel.SheetViewModel.ColumnViewModels.OrderBy(c => c.Order).First());
 
@@ -178,7 +178,8 @@ namespace FlexTable.ViewModel
                 // 기존 탑 페이지 지우고 이걸 탑 페이지로 지정
                 view.ExplorationView.RemoveTopPage(pageView);
 
-                mainPageViewModel.ReflectAll(true, ReflectReason.ColumnViewModelUnselected);
+                //mainPageViewModel.ReflectAll(true, ReflectReason.ColumnViewModelUnselected);
+                mainPageViewModel.ReflectAll(ReflectReason.ColumnUnselected); // ReflectReason2.ColumnViewModelUnselected); // performance 이슈로 위에것만 업데이트 해봄
 
                 view.TableView.ScrollToColumnViewModel(mainPageViewModel.SheetViewModel.ColumnViewModels.OrderBy(c => c.Order).First());
 
@@ -193,7 +194,7 @@ namespace FlexTable.ViewModel
             {
                 mainPageViewModel.SheetViewModel.FilterViewModels.Insert(0, filterViewModel);
 
-                mainPageViewModel.ReflectAll(ViewStatus, false, ReflectReason.FilterOut);
+                mainPageViewModel.ReflectAll(ViewStatus, ReflectReason.RowFiltered); // 2.FilterOut);
                 return true;
             }
             return false;
@@ -203,7 +204,7 @@ namespace FlexTable.ViewModel
         {
             mainPageViewModel.SheetViewModel.FilterViewModels.Remove(filterViewModel);
 
-            mainPageViewModel.ReflectAll(ViewStatus, false, ReflectReason.FilterOut);
+            mainPageViewModel.ReflectAll(ViewStatus, ReflectReason.RowFiltered); // 2.FilterOut);
         }
     }
 }

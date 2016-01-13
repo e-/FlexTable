@@ -116,13 +116,13 @@ namespace FlexTable.ViewModel
         /// 페이지뷰의 상태가 바꾸면 우선 exploration view에 보고를 한 후 거기서 reflect를 호출함. exploration view에 호출하지 않아도 될 때만 직접 reflect를 해야함
         /// </summary>
         /// <param name="trackPreviousParagraph"></param>
-        public void Reflect(ReflectType reflectType, ReflectReason reason)
+        public void Reflect(ReflectReason reason)
         {
-            Boolean trackPreviousParagraph = reflectType.HasFlag(ReflectType.TrackPreviousParagraph);
-            Boolean onCreate = reflectType.HasFlag(ReflectType.OnCreate);
-            Boolean onSelectionChanged = reflectType.HasFlag(ReflectType.OnSelectionChanged);
+            Boolean trackPreviousParagraph = reason.TrackPreviousParagraph(); // HasFlag(ReflectType2.TrackPreviousParagraph);
+            Boolean chartTypeChanged = reason.ChartTypeChanged(); // reflectType.HasFlag(ReflectType2.OnCreate);
+            Boolean selectionChanged = chartTypeChanged || reason.SelectionTypeChanged(); // reflectType.HasFlag(ReflectType2.OnSelectionChanged);
 
-            if (onCreate)
+            if (chartTypeChanged)
             {
                 IsBarChartVisible = false;
                 IsLineChartVisible = false;
@@ -143,17 +143,19 @@ namespace FlexTable.ViewModel
 
             List<GroupedRows> groupedRows = ViewStatus.GroupedRows;
             Object firstChartTag = "dummy tag wer";
-            Boolean useTransition = (onSelectionChanged && !onCreate) || (reason != ReflectReason.FilterOut && reason != ReflectReason.PreviewRequested);
+            Boolean useTransition = !chartTypeChanged && selectionChanged; /*(selectionChanged && !chartTypeChanged) 
+                || (reason != ReflectReason2.FilterOut && reason != ReflectReason2.PreviewRequested 
+                && reason != ReflectReason2.ColumnViewModelUnselected && reason != ReflectReason2.Undo);*/
 
             if (ViewStatus.IsC)
             {
-                if (onCreate)
+                if (chartTypeChanged)
                 {
                     DrawFrequencyHistogram(ViewStatus.FirstCategorical, groupedRows);
                     DrawPivotTable();
                 }
 
-                if (onSelectionChanged)
+                if (selectionChanged)
                 {
                     SetFrequencyHistogramSelection(ViewStatus.FirstCategorical, pageView.SelectedRows);
                 }
@@ -162,14 +164,14 @@ namespace FlexTable.ViewModel
             }
             else if (ViewStatus.IsN)
             {
-                if (onCreate)
+                if (chartTypeChanged)
                 {
                     DrawDistributionHistogram(ViewStatus.FirstNumerical);
                     DrawDescriptiveStatistics(ViewStatus.FirstNumerical);
                     DrawPivotTable();
                 }
 
-                if (onSelectionChanged)
+                if (selectionChanged)
                 {
                     SetDistributionHistogramSelection(ViewStatus.FirstNumerical, pageView.SelectedRows);
                 }
@@ -178,14 +180,14 @@ namespace FlexTable.ViewModel
             }
             else if (ViewStatus.IsCN)
             {
-                if (onCreate)
+                if (chartTypeChanged)
                 {
                     DrawBarChart(ViewStatus.FirstCategorical, ViewStatus.FirstNumerical, groupedRows);
                     DrawLineChart(ViewStatus.FirstCategorical, ViewStatus.FirstNumerical, groupedRows);
                     DrawPivotTable();
                 }
 
-                if (onSelectionChanged)
+                if (selectionChanged)
                 {
                     SetBarChartSelection(ViewStatus.FirstCategorical, ViewStatus.FirstNumerical, pageView.SelectedRows);
                     SetLineChartSelection(ViewStatus.FirstNumerical, pageView.SelectedRows);
@@ -198,13 +200,13 @@ namespace FlexTable.ViewModel
             }
             else if (ViewStatus.IsCC)
             {
-                if (onCreate)
+                if (chartTypeChanged)
                 {
                     DrawGroupedBarChart(ViewStatus.FirstCategorical, ViewStatus.SecondCategorical, groupedRows);
                     DrawPivotTable();
                 }
 
-                if (onSelectionChanged)
+                if (selectionChanged)
                 {
                     SetGroupedBarChartSelection(ViewStatus.FirstCategorical, ViewStatus.SecondCategorical, pageView.SelectedRows);
                 }
@@ -213,7 +215,7 @@ namespace FlexTable.ViewModel
             }
             else if (ViewStatus.IsNN)
             {
-                if (onCreate)
+                if (chartTypeChanged)
                 {
                     DrawCorrelatonStatistics(ViewStatus.FirstNumerical, ViewStatus.SecondNumerical);
                     DrawScatterplot(ViewStatus.FirstNumerical, ViewStatus.SecondNumerical);
@@ -223,7 +225,7 @@ namespace FlexTable.ViewModel
                     }
                 }
 
-                if(onSelectionChanged)
+                if(selectionChanged)
                 {
                     SetScatterplotSelection(pageView.SelectedRows);
                     if (ViewStatus.FirstNumerical.Unit == ViewStatus.SecondNumerical.Unit)
@@ -244,14 +246,14 @@ namespace FlexTable.ViewModel
             }
             else if (ViewStatus.IsCCN)
             {
-                if (onCreate)
+                if (chartTypeChanged)
                 {
                     DrawGroupedBarChart(ViewStatus.FirstCategorical, ViewStatus.SecondCategorical, ViewStatus.FirstNumerical, groupedRows);
                     DrawLineChart(ViewStatus.FirstCategorical, ViewStatus.SecondCategorical, ViewStatus.FirstNumerical, groupedRows);
                     DrawPivotTable();
                 }
 
-                if (onSelectionChanged)
+                if (selectionChanged)
                 {
                     SetGroupedBarChartSelection(ViewStatus.FirstCategorical, ViewStatus.SecondCategorical, ViewStatus.FirstNumerical, pageView.SelectedRows);
                     SetLineChartSelection(ViewStatus.FirstNumerical, pageView.SelectedRows);
@@ -262,7 +264,7 @@ namespace FlexTable.ViewModel
             }
             else if (ViewStatus.IsCNN)
             {
-                if (onCreate)
+                if (chartTypeChanged)
                 {
                     DrawScatterplot(ViewStatus.FirstCategorical, ViewStatus.FirstNumerical, ViewStatus.SecondNumerical);
 
@@ -275,7 +277,7 @@ namespace FlexTable.ViewModel
                     DrawPivotTable();
                 }
 
-                if (onSelectionChanged)
+                if (selectionChanged)
                 {
                     SetScatterplotSelection(pageView.SelectedRows);
 

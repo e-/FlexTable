@@ -239,19 +239,19 @@ namespace FlexTable.View
             {
                 case(Command.Left):
                     tvm.MainPageViewModel.SheetViewModel.BringFront(ColumnViewModel);
-                    tvm.MainPageViewModel.ReflectAll(false, ReflectReason.SelectionChanged);
+                    tvm.MainPageViewModel.ReflectAll(ReflectReason.ColumnShown);
                     UpperLeftMenuElement.Unhighlight();
                     tvm.CancelIndexing(true);
                     break;
                 case(Command.Right):
                     tvm.MainPageViewModel.SheetViewModel.SetAside(ColumnViewModel);
-                    tvm.MainPageViewModel.ReflectAll(false, ReflectReason.SelectionChanged);
+                    tvm.MainPageViewModel.ReflectAll(ReflectReason.ColumnHidden);
                     UpperRightMenuElement.Unhighlight();
                     tvm.CancelIndexing(true);
                     break;
                 case(Command.Down):
                     tvm.MainPageViewModel.SheetViewModel.Sort(ColumnViewModel, SortOption.Ascending);
-                    tvm.MainPageViewModel.ReflectAll(false, ReflectReason.SelectionChanged);
+                    tvm.MainPageViewModel.ReflectAll(ReflectReason.ColumnSorted);
                     UpperDownMenuElement.Unhighlight();
                     tvm.CancelIndexing(true);
                     break;
@@ -387,19 +387,19 @@ namespace FlexTable.View
             {
                 case (Command.Left):
                     tvm.MainPageViewModel.SheetViewModel.BringFront(ColumnViewModel);
-                    tvm.MainPageViewModel.ReflectAll(false, ReflectReason.SelectionChanged);
+                    tvm.MainPageViewModel.ReflectAll(ReflectReason.ColumnShown);// 2.SelectionChanged);
                     LowerLeftMenuElement.Unhighlight();
                     tvm.CancelIndexing(true);
                     break;
                 case (Command.Right):
                     tvm.MainPageViewModel.SheetViewModel.SetAside(ColumnViewModel);
-                    tvm.MainPageViewModel.ReflectAll(false, ReflectReason.SelectionChanged);
+                    tvm.MainPageViewModel.ReflectAll(ReflectReason.ColumnHidden);// 2.SelectionChanged);
                     LowerRightMenuElement.Unhighlight();
                     tvm.CancelIndexing(true);
                     break;
                 case (Command.Up):
                     tvm.MainPageViewModel.SheetViewModel.Sort(ColumnViewModel, SortOption.Descending);
-                    tvm.MainPageViewModel.ReflectAll(false, ReflectReason.SelectionChanged);
+                    tvm.MainPageViewModel.ReflectAll(ReflectReason.ColumnSorted); // 2.SelectionChanged);
                     LowerUpMenuElement.Unhighlight();
                     tvm.CancelIndexing(true);
                     break;

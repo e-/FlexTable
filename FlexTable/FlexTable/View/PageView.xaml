@@ -15,6 +15,7 @@
     ManipulationDelta="Wrapper_ManipulationDelta"
     ManipulationCompleted="Wrapper_ManipulationCompleted"
     Background="Transparent"
+    Opacity="0"
     >
 
     <UserControl.Resources>
@@ -29,11 +30,16 @@
             <Setter Property="TextAlignment" Value="Center"></Setter>
             <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
-        
-        
+                
         <util:BooleanToVisibilityConverter x:Name="BooleanToVisibilityConverter" />
         <util:BooleanToInvertedVisibilityConverter x:Name="BooleanToInvertedVisibilityConverter" />
 
+        <Storyboard x:Name="ShowStoryboard">
+            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="0:0:0.4"
+                             Storyboard.TargetName="UserControl" Storyboard.TargetProperty="Opacity" To="1">
+            </DoubleAnimation>
+        </Storyboard>
+        
         <Storyboard x:Name="BrightenStoryboard">
             <!--<ColorAnimation Storyboard.TargetName="WrapperBackground" 
                 Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" To="#00000000"
@@ -72,7 +78,7 @@
             </DoubleAnimation>
             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="UserControl"
                                            Storyboard.TargetProperty="(Canvas.ZIndex)">
-                <DiscreteObjectKeyFrame KeyTime="0:0:0.0" Value="1" />
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.0" Value="10" />
             </ObjectAnimationUsingKeyFrames>
         </Storyboard>
 
@@ -82,34 +88,15 @@
             </DoubleAnimation>
             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="UserControl"
                                            Storyboard.TargetProperty="(Canvas.ZIndex)">
-                <DiscreteObjectKeyFrame KeyTime="0:0:0.0" Value="0" />
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.5" Value="0" />
             </ObjectAnimationUsingKeyFrames>
         </Storyboard>
 
-        <Storyboard x:Name="EmptyStateStoryboard">
-            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.4"
-                             Storyboard.TargetName="ChartWrapper" Storyboard.TargetProperty="Opacity" To="0">
-            </DoubleAnimation>
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ChartWrapper"
-                                           Storyboard.TargetProperty="Visibility">
-                <DiscreteObjectKeyFrame KeyTime="0:0:0.4" Value="Collapsed" />
-            </ObjectAnimationUsingKeyFrames>
-
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="EmptyTooltip"
-                                           Storyboard.TargetProperty="Visibility">
-                <DiscreteObjectKeyFrame KeyTime="0" Value="Visible" />
-            </ObjectAnimationUsingKeyFrames>
-            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.4" 
-                             Storyboard.TargetName="EmptyTooltip" Storyboard.TargetProperty="Opacity" To="1">
-            </DoubleAnimation>
-        </Storyboard>
-
-        <Storyboard x:Name="ChartVisibleStateStoryboard">
+        <Storyboard x:Name="SelectedStateStoryboard">
             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ChartWrapper"
                                            Storyboard.TargetProperty="Visibility">
                 <DiscreteObjectKeyFrame KeyTime="0" Value="Visible" />
             </ObjectAnimationUsingKeyFrames>
-
             <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.4" 
                              Storyboard.TargetName="ChartWrapper" Storyboard.TargetProperty="Opacity" To="1">
             </DoubleAnimation>
@@ -118,6 +105,66 @@
                              Storyboard.TargetName="EmptyTooltip" Storyboard.TargetProperty="Opacity" To="0">
             </DoubleAnimation>
             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="EmptyTooltip"
+                                           Storyboard.TargetProperty="Visibility">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.4" Value="Collapsed" />
+            </ObjectAnimationUsingKeyFrames>
+
+            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.4"
+                             Storyboard.TargetName="UndoTooltip" Storyboard.TargetProperty="Opacity" To="0">
+            </DoubleAnimation>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="UndoTooltip"
+                                           Storyboard.TargetProperty="Visibility">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.4" Value="Collapsed" />
+            </ObjectAnimationUsingKeyFrames>
+        </Storyboard>
+
+        <Storyboard x:Name="UndoStateStoryboard">
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="UndoTooltip"
+                                           Storyboard.TargetProperty="Visibility">
+                <DiscreteObjectKeyFrame KeyTime="0" Value="Visible" />
+            </ObjectAnimationUsingKeyFrames>
+            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.4" 
+                             Storyboard.TargetName="UndoTooltip" Storyboard.TargetProperty="Opacity" To="1">
+            </DoubleAnimation>
+            
+            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.4"
+                             Storyboard.TargetName="ChartWrapper" Storyboard.TargetProperty="Opacity" To="0.2">
+            </DoubleAnimation>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ChartWrapper"
+                                           Storyboard.TargetProperty="Visibility">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0" Value="Visible" />
+            </ObjectAnimationUsingKeyFrames>
+
+            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.4" 
+                             Storyboard.TargetName="EmptyTooltip" Storyboard.TargetProperty="Opacity" To="0">
+            </DoubleAnimation>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="EmptyTooltip"
+                                           Storyboard.TargetProperty="Visibility">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.4" Value="Collapsed" />
+            </ObjectAnimationUsingKeyFrames>
+        </Storyboard>
+        
+        <Storyboard x:Name="EmptyStateStoryboard">
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="EmptyTooltip"
+                                           Storyboard.TargetProperty="Visibility">
+                <DiscreteObjectKeyFrame KeyTime="0" Value="Visible" />
+            </ObjectAnimationUsingKeyFrames>
+            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.4" 
+                             Storyboard.TargetName="EmptyTooltip" Storyboard.TargetProperty="Opacity" To="1">
+            </DoubleAnimation>
+            
+            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.4"
+                             Storyboard.TargetName="ChartWrapper" Storyboard.TargetProperty="Opacity" To="0">
+            </DoubleAnimation>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ChartWrapper"
+                                           Storyboard.TargetProperty="Visibility">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.4" Value="Collapsed" />
+            </ObjectAnimationUsingKeyFrames>
+
+            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.4"
+                             Storyboard.TargetName="UndoTooltip" Storyboard.TargetProperty="Opacity" To="0">
+            </DoubleAnimation>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="UndoTooltip"
                                            Storyboard.TargetProperty="Visibility">
                 <DiscreteObjectKeyFrame KeyTime="0:0:0.4" Value="Collapsed" />
             </ObjectAnimationUsingKeyFrames>
@@ -220,6 +267,7 @@
     </UserControl.Resources>
 
     <StackPanel x:Name="Wrapper"
+                ManipulationMode="TranslateY,System"
                 >
         <!--<Border x:Name="WrapperBackground" Background="#66333333"></Border>-->
         <!--<Border x:Name="Wrapper"
@@ -232,9 +280,9 @@
             <!--<Border.RenderTransform>
                 <CompositeTransform ScaleX="0.8" ScaleY="0.8" x:Name="WrapperRenderTransform"></CompositeTransform>
             </Border.RenderTransform>-->
-        <Grid>
+        <Grid Margin="20 0 20 0">
             <!-- Visibility="{Binding IsPreviewVisible, Converter={StaticResource BooleanToVisibilityConverter}}" -->
-            <StackPanel Height="{Binding MainPageViewModel.PageHeight}" Padding="20 0 20 0" Background="White"
+            <StackPanel Height="{Binding MainPageViewModel.PageHeight}" Background="White"
                         x:Name="ChartWrapper" Visibility="Collapsed" Opacity="0"
                         Width="{Binding MainPageViewModel.ParagraphWidth}"
                         >
@@ -341,7 +389,7 @@
                 </StackPanel>
             </Grid>-->
 
-            <Border Height="{Binding MainPageViewModel.PageHeight}" Width="{Binding MainPageViewModel.ParagraphWidth}" Visibility="Visible" x:Name="EmptyTooltip" Padding="20">
+            <Border Height="{Binding MainPageViewModel.PageHeight}" Width="{Binding MainPageViewModel.ParagraphWidth}" Visibility="Visible" x:Name="EmptyTooltip">
                 <StackPanel VerticalAlignment="Center">
                     <TextBlock FontSize="25" TextAlignment="Center">
                         <!--<Run FontFamily="FontAwesome">&#xf25a;</Run>-->
@@ -349,17 +397,20 @@
                     </TextBlock>
                 </StackPanel>
             </Border>
-            
-            <Border Height="{Binding MainPageViewModel.PageHeight}" Opacity="0" Visibility="Collapsed" Padding="20" 
-                    Background="#33FFFFFF" Tapped="Undo_Tapped" x:Name="UndoMessage">
+
+            <Border Height="{Binding MainPageViewModel.PageHeight}" Width="{Binding MainPageViewModel.ParagraphWidth}" 
+                    Visibility="Collapsed" x:Name="UndoTooltip" Background="Transparent" Opacity="0">
+                <!-- Tapped="Undo_Tapped" -->
+                <!--Opacity="0" Visibility="Collapsed" Padding="20" 
+                    Background="#33FFFFFF" Tapped="Undo_Tapped" x:Name="UndoMessage">-->
                 <StackPanel VerticalAlignment="Center">
                     <TextBlock FontSize="25" TextAlignment="Center" Visibility="{Binding IsPrimaryUndoMessageVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
-                        <Run FontFamily="FontAwesome">&#xf0e2;</Run>
-                        <Run>Tap to undo.</Run>
-                    </TextBlock>
-                    <TextBlock FontSize="25" TextAlignment="Center" Visibility="{Binding IsPrimaryUndoMessageVisible, Converter={StaticResource BooleanToInvertedVisibilityConverter}}">
                         <Run FontFamily="FontAwesome">&#xf062;</Run>
                         <Run>Swipe up to undo.</Run>
+                    </TextBlock>
+                    <TextBlock FontSize="25" TextAlignment="Center" Visibility="{Binding IsPrimaryUndoMessageVisible, Converter={StaticResource BooleanToInvertedVisibilityConverter}}">
+                        <Run FontFamily="FontAwesome">&#xf0e2;</Run>
+                        <Run>Lift the finger to undo.</Run>
                     </TextBlock>
                 </StackPanel>
             </Border>

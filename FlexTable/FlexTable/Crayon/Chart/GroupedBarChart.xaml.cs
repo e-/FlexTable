@@ -494,7 +494,7 @@ namespace FlexTable.Crayon.Chart
                 {
                     if (SelectionChanged != null)
                     {
-                        SelectionChanged(this, intersectedRows, SelectionChangedType.Add, ReflectReason.SelectionChanged);
+                        SelectionChanged(this, intersectedRows, SelectionChangedType.Add, ReflectReason2.SelectionChanged);
                     }
                 }
             }
@@ -513,9 +513,9 @@ namespace FlexTable.Crayon.Chart
             if (SelectionChanged != null)
             {
                 if (barChartDatum.Rows == null || barChartData.SelectMany(cd => cd.Rows).Count() < barChartData.SelectMany(cd => cd.EnvelopeRows).Count())
-                    SelectionChanged(this, barChartData.SelectMany(cd => cd.EnvelopeRows), SelectionChangedType.Add, ReflectReason.SelectionChanged);
+                    SelectionChanged(this, barChartData.SelectMany(cd => cd.EnvelopeRows), SelectionChangedType.Add, ReflectReason2.SelectionChanged);
                 else
-                    SelectionChanged(this, barChartData.SelectMany(cd => cd.Rows), SelectionChangedType.Remove, ReflectReason.SelectionChanged);
+                    SelectionChanged(this, barChartData.SelectMany(cd => cd.Rows), SelectionChangedType.Remove, ReflectReason2.SelectionChanged);
             }
 
             args.Handled = true;
@@ -527,9 +527,9 @@ namespace FlexTable.Crayon.Chart
             GroupedBarChartDatum groupedBarChartDatum = datum as GroupedBarChartDatum;
 
             if(groupedBarChartDatum.Children[0].Rows == null || groupedBarChartDatum.Rows.Count() < groupedBarChartDatum.EnvelopeRows.Count())
-                SelectionChanged(this, groupedBarChartDatum.EnvelopeRows, SelectionChangedType.Add, ReflectReason.SelectionChanged);
+                SelectionChanged(this, groupedBarChartDatum.EnvelopeRows, SelectionChangedType.Add, ReflectReason2.SelectionChanged);
             else
-                SelectionChanged(this, groupedBarChartDatum.Rows, SelectionChangedType.Remove, ReflectReason.SelectionChanged);
+                SelectionChanged(this, groupedBarChartDatum.Rows, SelectionChangedType.Remove, ReflectReason2.SelectionChanged);
 
             args.Handled = true;
         }        

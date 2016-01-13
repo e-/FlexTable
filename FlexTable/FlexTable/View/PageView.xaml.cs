@@ -107,9 +107,11 @@ namespace FlexTable.View
             DescriptiveStatisticsViewElement.Height = height;
             CorrelationStatisticsViewElement.Width = width;
             CorrelationStatisticsViewElement.Height = height;
+
+            ShowStoryboard.Begin();
         }
 
-        public void SelectionChanged(object sender, IEnumerable<Row> rows, SelectionChangedType selectionChangedType, ReflectReason reason)
+        public void SelectionChanged(object sender, IEnumerable<Row> rows, SelectionChangedType selectionChangedType, ReflectReason2 reason)
         {
             if (selectionChangedType == SelectionChangedType.Add)
                 SelectedRows = SelectedRows.Concat(rows).Distinct().ToList();
@@ -143,7 +145,7 @@ namespace FlexTable.View
                 ViewModel.MainPageViewModel.TableViewModel.PreviewRows(SelectedRows);
             }
 
-            ViewModel.Reflect(ReflectType.OnSelectionChanged | ReflectType.TrackPreviousParagraph, reason);
+            ViewModel.Reflect(ReflectReason.RowSelectionChanged);// 2.OnSelectionChanged | ReflectType2.TrackPreviousParagraph, reason);
         }        
 
         private void FilterOut(object sender, String name, IEnumerable<Row> filteredRows)
@@ -185,7 +187,10 @@ namespace FlexTable.View
             // 현재 뷰가 위에 있다
             if(state == PageViewModel.PageViewState.Selected)
             {
-                EnlargeStoryboard.Begin();
+                MoveToSelectedPositionStoryboard.Begin();
+                SelectedStateStoryboard.Begin();
+
+                /*EnlargeStoryboard.Begin();
                 BrightenStoryboard.Begin();
                 ChartVisibleStateStoryboard.Begin();
 
@@ -193,11 +198,14 @@ namespace FlexTable.View
                 ShowBottomToolBar.Begin();
 
                 ShowTopToolBar.Pause();
-                HideTopToolBar.Begin();
+                HideTopToolBar.Begin();*/
             }
             else if(state == PageViewModel.PageViewState.Undoing)
             {
-                EmptyStateStoryboard.Begin();
+                MoveToDefaultPositionStoryboard.Begin();
+                UndoStateStoryboard.Begin();
+                
+                /*EmptyStateStoryboard.Begin();
                 BrightenStoryboard.Begin();
                 DefaultStoryboard.Begin();
 
@@ -205,31 +213,32 @@ namespace FlexTable.View
                 HideTopToolBar.Begin();
 
                 ShowBottomToolBar.Pause();
-                HideBottomToolBar.Begin();
+                HideBottomToolBar.Begin();*/
             }
             else if (state == PageViewModel.PageViewState.Empty)
             {
+                MoveToDefaultPositionStoryboard.Begin();
                 EmptyStateStoryboard.Begin();
-                DefaultStoryboard.Begin();
-                BrightenStoryboard.Begin();
+                
+                /*BrightenStoryboard.Begin();
 
                 ShowTopToolBar.Pause();
                 HideTopToolBar.Begin();
 
                 ShowBottomToolBar.Pause();
-                HideBottomToolBar.Begin();
+                HideBottomToolBar.Begin();*/
             }
             else if (state == PageViewModel.PageViewState.Previewing)
             {
-                DefaultStoryboard.Begin();
-                ChartVisibleStateStoryboard.Begin();
-                DarkenStoryboard.Begin();
+                MoveToDefaultPositionStoryboard.Begin();
+                SelectedStateStoryboard.Begin();
+                /*DarkenStoryboard.Begin();
 
                 HideTopToolBar.Pause();
                 ShowTopToolBar.Begin();
 
                 ShowBottomToolBar.Pause();
-                HideBottomToolBar.Begin();
+                HideBottomToolBar.Begin();*/
             }
 
             switch(state)
@@ -334,7 +343,7 @@ namespace FlexTable.View
                 if (delta < -ViewModel.MainPageViewModel.PageOffset) { delta = -ViewModel.MainPageViewModel.PageOffset; }
                 Canvas.SetTop(this, ViewModel.MainPageViewModel.PageOffset + delta);
                 ChartWrapper.Opacity = 0.2 - 0.8 * delta / ViewModel.MainPageViewModel.PageOffset;
-                ViewModel.IsPrimaryUndoMessageVisible = delta > -50;
+                ViewModel.IsPrimaryUndoMessageVisible = delta >= -Const.PageViewToggleThreshold;
             }
             else if (ViewModel.IsSelected) // 선택 된 경우 내릴수만 있음
             {
@@ -343,7 +352,6 @@ namespace FlexTable.View
                 if (delta > ViewModel.MainPageViewModel.PageHeight) { delta = ViewModel.MainPageViewModel.PageHeight; }
                 Canvas.SetTop(this, delta);
                 ChartWrapper.Opacity = 0.2 + 0.8 * (1 - delta / ViewModel.MainPageViewModel.PageHeight);
-                Canvas.SetZIndex(this, 10);
             }
             else // 선택되지 않은 경우 올릴수만 있음
             {
@@ -352,6 +360,8 @@ namespace FlexTable.View
                 if (delta < -ViewModel.MainPageViewModel.PageOffset) { delta = -ViewModel.MainPageViewModel.PageOffset; }
                 Canvas.SetTop(this, ViewModel.MainPageViewModel.PageOffset + delta);
             }
+
+            Canvas.SetZIndex(this, 10);
         }
 
         private void Wrapper_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
@@ -369,6 +379,7 @@ namespace FlexTable.View
                 else
                 {
                     MoveToDefaultPositionStoryboard.Begin();
+                    ViewModel.IsPrimaryUndoMessageVisible = true;
                 }
             }
             else if (ViewModel.IsSelected) // 선택 된 경우 내릴수만 있음
@@ -376,14 +387,14 @@ namespace FlexTable.View
                 Double delta = e.Cumulative.Translation.Y;
                 if (delta > Const.PageViewToggleThreshold) // 많이 내려간 경우
                 {
-                    MoveToDefaultPositionStoryboard.Begin();
                     ViewModel.State = PageViewModel.PageViewState.Undoing;
-                    SelectionChanged(null, null, SelectionChangedType.Clear, ReflectReason.SelectionChanged);
+                    SelectionChanged(null, null, SelectionChangedType.Clear, ReflectReason2.SelectionChanged);
                     ViewModel.StateChanged(this);
                 }
                 else
                 {
                     MoveToSelectedPositionStoryboard.Begin();
+                    SelectedStateStoryboard.Begin();
                 }
             }
             else // 선택되지 않은 경우 올릴수만 있음
@@ -400,12 +411,11 @@ namespace FlexTable.View
 
                     ViewModel.State = PageViewModel.PageViewState.Selected;
                     ViewModel.StateChanged(this);
-
-                    MoveToSelectedPositionStoryboard.Begin();
                 }
                 else
                 {
                     MoveToDefaultPositionStoryboard.Begin();
+                    SelectedStateStoryboard.Begin();
                 }
             }
         }
@@ -447,8 +457,8 @@ namespace FlexTable.View
             Int32 index = PageLabelViewElement.ActivatedParagraphIndex;
             ViewModel.ViewStatus.ActivatedChart = paragraphs[index].Children.Last();
 
-            if(ViewModel.IsSelected)
-                ViewModel.MainPageViewModel.TableViewModel.Reflect(ViewModel.ViewStatus, ReflectReason.PageScrolled);
+            if (ViewModel.IsSelected)
+                ViewModel.MainPageViewModel.TableViewModel.Reflect(ViewModel.ViewStatus, ReflectReason.PageScrolled);// 2.PageScrolled);
         }
         
         private void Select_Tapped(object sender, TappedRoutedEventArgs e)
@@ -467,7 +477,7 @@ namespace FlexTable.View
         private void Unselect_Tapped(object sender, TappedRoutedEventArgs e)
         {
             ViewModel.State = PageViewModel.PageViewState.Undoing;
-            SelectionChanged(null, null, SelectionChangedType.Clear, ReflectReason.SelectionChanged);
+            SelectionChanged(null, null, SelectionChangedType.Clear, ReflectReason2.SelectionChanged);
             ViewModel.StateChanged(this);
         }
 
@@ -548,7 +558,7 @@ namespace FlexTable.View
 
         private void SelectionIndicator_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            SelectionChanged(this, null, SelectionChangedType.Clear, ReflectReason.SelectionChanged);
+            SelectionChanged(this, null, SelectionChangedType.Clear, ReflectReason2.SelectionChanged);
         }
     }
 }

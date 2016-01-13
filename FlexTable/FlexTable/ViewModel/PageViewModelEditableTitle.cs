@@ -110,7 +110,7 @@ namespace FlexTable.ViewModel
                     selectedColumnViewModel.AggregativeFunction = defaultAggregativeFunction;
                 }
 
-                mainPageViewModel.ReflectAll(false, ReflectReason.ColumnViewModelChanged);
+            mainPageViewModel.ReflectAll(ReflectReason.ColumnChanged); // 2.ColumnViewModelChanged);
             });
         }
 
@@ -124,7 +124,7 @@ namespace FlexTable.ViewModel
 
                 columnViewModel.AggregativeFunction = aggregativeFunction;
 
-                mainPageViewModel.ReflectAll(false, ReflectReason.ColumnViewModelChanged);
+                mainPageViewModel.ReflectAll(ReflectReason.ColumnChanged); //.ColumnViewModelChanged);
             });
         }
 

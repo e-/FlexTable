@@ -478,7 +478,7 @@ namespace FlexTable.Crayon.Chart
                 {
                     if (SelectionChanged != null)
                     {
-                        SelectionChanged(this, intersectedRows, SelectionChangedType.Add, ReflectReason.SelectionChanged);
+                        SelectionChanged(this, intersectedRows, SelectionChangedType.Add, ReflectReason2.SelectionChanged);
                     }
                 }
             }
@@ -495,9 +495,9 @@ namespace FlexTable.Crayon.Chart
             if (SelectionChanged != null)
             {
                 if(barChartDatum.Rows == null || barChartDatum.Rows.Count() < barChartDatum.EnvelopeRows.Count())
-                    SelectionChanged(this, barChartDatum.EnvelopeRows, SelectionChangedType.Add, ReflectReason.SelectionChanged);
+                    SelectionChanged(this, barChartDatum.EnvelopeRows, SelectionChangedType.Add, ReflectReason2.SelectionChanged);
                 else
-                    SelectionChanged(this, barChartDatum.Rows, SelectionChangedType.Remove, ReflectReason.SelectionChanged);
+                    SelectionChanged(this, barChartDatum.Rows, SelectionChangedType.Remove, ReflectReason2.SelectionChanged);
             }
 
             args.Handled = true;            
