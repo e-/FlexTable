@@ -30,6 +30,8 @@ namespace FlexTable.Crayon
         public const Double StrikeThroughMinWidth = 30;
         public const Double StrikeThroughMaxHeight = 15;
 
+        public const Double MinimumHandleHeight = 50;
+
         public static Boolean IsStrikeThrough(Rect rect)
         {
             return rect.Width >= StrikeThroughMinWidth && rect.Height <= StrikeThroughMaxHeight;

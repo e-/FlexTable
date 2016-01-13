@@ -193,7 +193,28 @@ namespace FlexTable.Crayon.Chart
             } }
         
         public Func<Object, Int32, Double> HandleWidthGetter { get { return (d, index) => XScale.RangeBand; } }
-        public Func<Object, Int32, Double> HandleHeightGetter { get { return (d, index) => ChartAreaEndY - Const.PaddingTop; } }
+        //public Func<Object, Int32, Double> HandleHeightGetter { get { return (d, index) => ChartAreaEndY - Const.PaddingTop; } }
+        public Func<Object, Int32, Double> HandleHeightGetter
+        {
+            get
+            {
+                return (d, index) =>
+                {
+                    return Math.Max(HeightGetter(d, index), Const.MinimumHandleHeight);
+                };
+            }
+        }
+        public Func<Object, Int32, Double> HandleYGetter
+        {
+            get
+            {
+                return (d, index) =>
+                {
+                    return YScale.RangeStart - HandleHeightGetter(d, index);
+                };
+            }
+        }
+
         public Func<Object, Int32, Double> HandleXGetter { get { return (d, index) => XScale.Map(d) - XScale.RangeBand / 2; } }        
 
         public Func<Object, Int32, Double> LegendPatchYGetter
@@ -279,7 +300,7 @@ namespace FlexTable.Crayon.Chart
             HandleRectangleElement.WidthGetter = HandleWidthGetter;
             HandleRectangleElement.HeightGetter = HandleHeightGetter;
             HandleRectangleElement.XGetter = HandleXGetter;
-            HandleRectangleElement.YGetter = d3.Util.CreateConstantGetter<Double>(Const.PaddingTop);
+            HandleRectangleElement.YGetter = HandleYGetter; // d3.Util.CreateConstantGetter<Double>(Const.PaddingTop);
             HandleRectangleElement.ColorGetter = d3.Util.CreateConstantGetter<Color>(Colors.Transparent);
 
             EnvelopeRectangleElement.Data = D3Data;
