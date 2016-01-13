@@ -71,7 +71,9 @@ namespace FlexTable.Crayon.Chart
                 return barState;
             }
         }
-        
+
+        public Boolean IsUnselected { get { return barState == BarState.Unselected; } }
+
         public BarChartDatum()
         {
         }

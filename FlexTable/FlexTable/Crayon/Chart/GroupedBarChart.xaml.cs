@@ -106,9 +106,8 @@ namespace FlexTable.Crayon.Chart
         public Func<Object, Int32, Double> HeightGetter { get {
                 return (d, index) => {
                     BarChartDatum datum = d as BarChartDatum;
-                    BarState barState = datum.BarState;
-                    if (barState == BarState.Unselected) return 0;
-                    return ChartAreaEndY - YScale.Map((d as BarChartDatum).Value);
+                    if (datum.IsUnselected) return 0;
+                    return ChartAreaEndY - YScale.Map(datum.Value);
                 };
             } }
 
@@ -143,13 +142,10 @@ namespace FlexTable.Crayon.Chart
             return (d, index) =>
             {
                 BarChartDatum datum = d as BarChartDatum;
+                if (datum.IsUnselected) return ChartAreaEndY;
                 BarState barState = datum.BarState;
-                if (barState == BarState.Unselected) return ChartAreaEndY;
-                else
-                {
-                    return YScale.Map(datum.Value) +
-                    ((barState == BarState.PartiallySelected || barState == BarState.FullySelected || (barState == BarState.Default && datum.Parent == DragToFilterFocusedBar)) ? DragToFilterYDelta : 0);
-                }
+                return YScale.Map(datum.Value) +
+                ((barState == BarState.PartiallySelected || barState == BarState.FullySelected || (barState == BarState.Default && datum.Parent == DragToFilterFocusedBar)) ? DragToFilterYDelta : 0);
             };
         } }
 
@@ -161,8 +157,8 @@ namespace FlexTable.Crayon.Chart
                 return (d, index) =>
                 {
                     BarChartDatum datum = d as BarChartDatum;
+                    if(datum.IsUnselected) return 0.2;
                     BarState barState = datum.BarState;
-                    if (barState == BarState.Unselected) return 0.2;
                     return (barState == BarState.PartiallySelected || barState == BarState.FullySelected || (barState == BarState.Default && datum.Parent == DragToFilterFocusedBar)) ? DragToFilterOpacity * 0.2 : 0.2;
                 };
             }
@@ -171,8 +167,8 @@ namespace FlexTable.Crayon.Chart
                 return (d, index) =>
                 {
                     BarChartDatum datum = d as BarChartDatum;
+                    if (datum.IsUnselected) return 0.2;
                     BarState barState = datum.BarState;
-                    if (barState == BarState.Unselected) return 0.2;
                     return (barState == BarState.PartiallySelected || barState == BarState.FullySelected || (barState == BarState.Default && datum.Parent == DragToFilterFocusedBar)) ? DragToFilterOpacity : 1;
                 };
         } }
@@ -183,7 +179,7 @@ namespace FlexTable.Crayon.Chart
             {
                 return (d, index, textBlock) => {
                     GroupedBarChartDatum datum = d as GroupedBarChartDatum;
-                    return (datum.Children.Any(bd => bd.BarState == BarState.FullySelected || bd.BarState == BarState.PartiallySelected) || (datum.Children[0].BarState == BarState.Default && datum == DragToFilterFocusedBar)) ? DragToFilterOpacity : 1;
+                    return (datum.IsAnyChildSelected || (datum.Children[0].BarState == BarState.Default && datum == DragToFilterFocusedBar)) ? DragToFilterOpacity : 1;
                 };
             }
         }
@@ -195,7 +191,7 @@ namespace FlexTable.Crayon.Chart
                 return (d, index, textBlock) =>
                 {
                     GroupedBarChartDatum datum = d as GroupedBarChartDatum;
-                    return (datum.Children.Any(bd => bd.BarState == BarState.FullySelected || bd.BarState == BarState.PartiallySelected) || (datum.Children[0].BarState == BarState.Default && datum == DragToFilterFocusedBar)) ? DragToFilterYDelta : 0;
+                    return (datum.IsAnyChildSelected || (datum.Children[0].BarState == BarState.Default && datum == DragToFilterFocusedBar)) ? DragToFilterYDelta : 0;
                 };
             }
         }
@@ -209,7 +205,7 @@ namespace FlexTable.Crayon.Chart
                 return (d, index) => {
                     //GroupedBarChartDatum d = d as GroupedBarChartDatum;
                     //d.Children.Select(Handle)
-                    return Math.Max(HeightGetter(d, index), Const.MinimumHandleHeight);
+                    return Math.Max(EnvelopeHeightGetter(d, index), Const.MinimumHandleHeight);
                 };
             }
         }
@@ -263,8 +259,8 @@ namespace FlexTable.Crayon.Chart
                 return (d, index) =>
                 {
                     BarChartDatum datum = d as BarChartDatum;
+                    if(datum.IsUnselected) return YScale.RangeStart - 18;
                     BarState barState = datum.BarState;
-                    if (barState == BarState.Unselected) return YScale.RangeStart - 18;
                     return YScale.Map(datum.Value) - 18 + ((barState == BarState.PartiallySelected || barState == BarState.FullySelected || (barState == BarState.Default && datum.Parent == DragToFilterFocusedBar)) ? DragToFilterYDelta : 0);
                 };
             } }
@@ -628,8 +624,19 @@ namespace FlexTable.Crayon.Chart
             VerticalAxisLabelCanvasTop = Const.PaddingTop + (ChartAreaEndY - Const.PaddingTop) / 2;
             VerticalAxisLabelHeight = ChartAreaEndY - Const.PaddingTop;
 
-            Double yMin = Math.Min(ChartData.Select(d => d.EnvelopeValue).Min(), ChartData.Select(d => d.Value).Min()),
-                   yMax = Math.Max(ChartData.Select(d => d.EnvelopeValue).Max(), ChartData.Select(d => d.Value).Max());
+            isSelectionEnabled = ChartData.Any(bcd => bcd.BarState == BarState.FullySelected || bcd.BarState == BarState.PartiallySelected);
+
+            // 최솟 최댓값 모두 envelope의 값은 고려해야함
+            // 그냥 값은 선택되어 있을때만 고려해야함
+            Double yMin = ChartData.Select(d => d.EnvelopeValue).Min(),
+                   yMax = ChartData.Select(d => d.EnvelopeValue).Max();
+
+            if(isSelectionEnabled) // 선택된게 하나라도 있으면
+            {
+                IEnumerable<Double> selected = ChartData.Where(cd => cd.BarState == BarState.FullySelected || cd.BarState == BarState.PartiallySelected).Select(cd => cd.Value);
+                yMin = Math.Min(yMin, selected.Min());
+                yMax = Math.Max(yMax, selected.Max());
+            }
 
             if (YStartsFromZero) yMin = 0;
             else if (yMin == yMax)
@@ -677,7 +684,7 @@ namespace FlexTable.Crayon.Chart
             }
 
             MaxBarCountInAGroup = Data.Select(d => d.Children.Count()).Max();
-            isSelectionEnabled = ChartData.Any(bcd => bcd.BarState == BarState.FullySelected || bcd.BarState == BarState.PartiallySelected);
+            
 
             // update 시 재대입 할 것들 대입
 

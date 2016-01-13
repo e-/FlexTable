@@ -23,6 +23,8 @@ namespace FlexTable.Crayon.Chart
         }
         public IEnumerable<Row> EnvelopeRows { get { return Children?.SelectMany(c => c.EnvelopeRows); } }
 
+        public Boolean IsAnyChildSelected { get { return Children.Any(bd => bd.BarState == BarState.FullySelected || bd.BarState == BarState.PartiallySelected); } }
+
         public override string ToString()
         {
             return Key.ToString();

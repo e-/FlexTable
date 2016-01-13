@@ -117,6 +117,10 @@ namespace FlexTable.Crayon.Chart
             }
         }
 
+        public Func<Object, Int32, Double> HighlightedXGetter { get { return (d, index) => XGetter(d, index) + (isSelectionEnabled ? BarWidth * (1 - Const.HighlightedBarWidthRatio) / 2 : 0); } }
+
+        public Func<Object, Int32, Double> HighlightedWidthGetter { get { return (d, index) => BarWidth * (isSelectionEnabled ? Const.HighlightedBarWidthRatio : 1); } }
+
         public Func<Object, Int32, Double> EnvelopeYGetter
         {
             get
@@ -200,7 +204,7 @@ namespace FlexTable.Crayon.Chart
             {
                 return (d, index) =>
                 {
-                    return Math.Max(HeightGetter(d, index), Const.MinimumHandleHeight);
+                    return Math.Max(EnvelopeHeightGetter(d, index), Const.MinimumHandleHeight);
                 };
             }
         }
@@ -283,6 +287,7 @@ namespace FlexTable.Crayon.Chart
 
         public event Event.FilterOutEventHandler FilterOut;
 
+        Boolean isSelectionEnabled = false;
         #endregion
 
         Drawable drawable = new Drawable()
@@ -313,9 +318,9 @@ namespace FlexTable.Crayon.Chart
             EnvelopeRectangleElement.TransitionPivotType = TransitionPivotType.Bottom;
 
             RectangleElement.Data = D3Data;
-            RectangleElement.WidthGetter = WidthGetter;
+            RectangleElement.WidthGetter = HighlightedWidthGetter;
             RectangleElement.HeightGetter = HeightGetter;
-            RectangleElement.XGetter = XGetter;
+            RectangleElement.XGetter = HighlightedXGetter;
             RectangleElement.YGetter = YGetter;
             RectangleElement.ColorGetter = ColorGetter;
             RectangleElement.OpacityGetter = OpacityGetter;
@@ -572,8 +577,17 @@ namespace FlexTable.Crayon.Chart
             VerticalAxisLabelCanvasTop = Const.PaddingTop + (ChartAreaEndY - Const.PaddingTop) / 2;
             VerticalAxisLabelHeight = ChartAreaEndY - Const.PaddingTop;
 
-            Double yMin = Math.Min(Data.Select(d => d.EnvelopeValue).Min(), Data.Select(d => d.Value).Min()),
-                   yMax = Math.Max(Data.Select(d => d.EnvelopeValue).Max(), Data.Select(d => d.Value).Max());
+            isSelectionEnabled = Data.Any(bcd => bcd.BarState == BarState.FullySelected || bcd.BarState == BarState.PartiallySelected);
+
+            Double yMin = Data.Select(d => d.EnvelopeValue).Min(),
+                   yMax = Data.Select(d => d.EnvelopeValue).Max();
+
+            if (isSelectionEnabled) // 선택된게 하나라도 있으면
+            {
+                IEnumerable<Double> selected = Data.Where(cd => cd.BarState == BarState.FullySelected || cd.BarState == BarState.PartiallySelected).Select(cd => cd.Value);
+                yMin = Math.Min(yMin, selected.Min());
+                yMax = Math.Max(yMax, selected.Max());
+            }
 
             if (YStartsFromZero) yMin = 0;
             else if (yMin == yMax)
