@@ -374,7 +374,7 @@ namespace FlexTable.Crayon.Chart
                 else // 아니면 무조건 셀렉션 
                 {
                     if (SelectionChanged != null)
-                        SelectionChanged(this, intersectedRows, SelectionChangedType.Add, ReflectReason2.SelectionChanged);
+                        SelectionChanged(this, intersectedRows, SelectionChangedType.Add);//, ReflectReason2.SelectionChanged);
                 }
             }
 
@@ -390,9 +390,9 @@ namespace FlexTable.Crayon.Chart
             if (SelectionChanged != null)
             {
                 if (lineChartDatum.Rows == null || lineChartDatum.Rows.Count() < lineChartDatum.EnvelopeRows.Count())
-                    SelectionChanged(this, lineChartDatum.EnvelopeRows, SelectionChangedType.Add, ReflectReason2.SelectionChanged);
+                    SelectionChanged(this, lineChartDatum.EnvelopeRows, SelectionChangedType.Add);//, ReflectReason2.SelectionChanged);
                 else
-                    SelectionChanged(this, lineChartDatum.Rows, SelectionChangedType.Remove, ReflectReason2.SelectionChanged);
+                    SelectionChanged(this, lineChartDatum.Rows, SelectionChangedType.Remove);//, ReflectReason2.SelectionChanged);
             }
             
             args.Handled = true;

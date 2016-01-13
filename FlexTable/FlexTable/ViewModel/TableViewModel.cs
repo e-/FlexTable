@@ -402,18 +402,18 @@ namespace FlexTable.ViewModel
             {
                 IEnumerable<Row> filteredRows = SheetViewModel.FilteredRows;
                 IEnumerable<Row> selectedRows = allRowViewModels.Where(rvm => filteredRows.Contains(rvm.Row) && startY <= rvm.Y && rvm.Y < endY).Select(rvm => rvm.Row);
-                topPageView.SelectionChanged(null, selectedRows, SelectionChangedType.Replace, ReflectReason2.SelectionChanged);
+                topPageView.SelectionChanged(null, selectedRows, SelectionChangedType.Replace);
             }
             else if(State == TableViewState.GroupedRow)
             {
                 IEnumerable<Row> selectedRows = groupedRowViewModels.Where(rvm => startY <= rvm.Y && rvm.Y < endY).SelectMany(rvm => rvm.Rows);
-                topPageView.SelectionChanged(null, selectedRows, SelectionChangedType.Replace, ReflectReason2.SelectionChanged);
+                topPageView.SelectionChanged(null, selectedRows, SelectionChangedType.Replace);
             }
             else if(State == TableViewState.SelectedRow)
             {
                 IEnumerable<Row> filteredRows = SheetViewModel.FilteredRows;
                 IEnumerable<Row> selectedRows = allRowViewModels.Where(rvm => filteredRows.Contains(rvm.Row) && startY <= rvm.Y && rvm.Y < endY).Select(rvm => rvm.Row);
-                topPageView.SelectionChanged(null, selectedRows, SelectionChangedType.Replace, ReflectReason2.SelectionChanged);
+                topPageView.SelectionChanged(null, selectedRows, SelectionChangedType.Replace);
             }
             else
             {

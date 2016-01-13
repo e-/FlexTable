@@ -197,8 +197,20 @@ namespace FlexTable.Crayon.Chart
         }
 
         public Func<Object, Int32, Double> HandleWidthGetter { get { return (d, index) => XScale.RangeBand; } }
-        public Func<Object, Int32, Double> HandleHeightGetter { get { return (d, index) => ChartAreaEndY - Const.PaddingTop; } }
-        public Func<Object, Int32, Double> HandleXGetter { get { return (d, index) => XScale.Map(d) - XScale.RangeBand / 2; } }        
+        //public Func<Object, Int32, Double> HandleHeightGetter { get { return (d, index) => ChartAreaEndY - Const.PaddingTop; } }
+        public Func<Object, Int32, Double> HandleHeightGetter
+        {
+            get
+            {
+                return (d, index) => {
+                    //GroupedBarChartDatum d = d as GroupedBarChartDatum;
+                    //d.Children.Select(Handle)
+                    return Math.Max(HeightGetter(d, index), Const.MinimumHandleHeight);
+                };
+            }
+        }
+        public Func<Object, Int32, Double> HandleXGetter { get { return (d, index) => XScale.Map(d) - XScale.RangeBand / 2; } }
+        public Func<Object, Int32, Double> HandleYGetter { get { return (d, index) => { return YScale.RangeStart - HandleHeightGetter(d, index); }; } }
 
         public Func<Object, Int32, Double> LegendPatchYGetter
         {
@@ -291,10 +303,10 @@ namespace FlexTable.Crayon.Chart
             this.InitializeComponent();
 
             HandleRectangleElement.Data = D3Data;
-            HandleRectangleElement.WidthGetter = HandleWidthGetter;
-            HandleRectangleElement.HeightGetter = HandleHeightGetter;
-            HandleRectangleElement.XGetter = HandleXGetter;
-            HandleRectangleElement.YGetter = d3.Util.CreateConstantGetter<Double>(Const.PaddingTop);
+            HandleRectangleElement.WidthGetter = WidthGetter; // HandleWidthGetter;
+            HandleRectangleElement.HeightGetter = HandleHeightGetter; // HandleHeightGetter;
+            HandleRectangleElement.XGetter = XGetter; // HandleXGetter;
+            HandleRectangleElement.YGetter = HandleYGetter; // HandleYGetter; // d3.Util.CreateConstantGetter<Double>(Const.PaddingTop);
             HandleRectangleElement.ColorGetter = d3.Util.CreateConstantGetter<Color>(Colors.Transparent);
 
             EnvelopeRectangleElement.Data = D3Data;
@@ -379,8 +391,9 @@ namespace FlexTable.Crayon.Chart
         {
             ManipulationDeltaRoutedEventArgs e = eo as ManipulationDeltaRoutedEventArgs;
             if (e.PointerDeviceType != PointerDeviceType.Touch) return;
+            e.Handled = true;
             Double delta = e.Cumulative.Translation.Y;
-            GroupedBarChartDatum datum = datumo as GroupedBarChartDatum;
+            GroupedBarChartDatum datum = (datumo as BarChartDatum).Parent;// GroupedBarChartDatum;
 
             if (delta < 0) delta = 0;
             if (delta > Const.DragToFilterThreshold) delta = Const.DragToFilterThreshold;
@@ -400,8 +413,9 @@ namespace FlexTable.Crayon.Chart
         {
             ManipulationCompletedRoutedEventArgs e = eo as ManipulationCompletedRoutedEventArgs;
             if (e.PointerDeviceType != PointerDeviceType.Touch) return;
+            e.Handled = true;
             Double delta = e.Cumulative.Translation.Y;
-            GroupedBarChartDatum datum = datumo as GroupedBarChartDatum;
+            GroupedBarChartDatum datum = (datumo as BarChartDatum).Parent;// GroupedBarChartDatum;
 
             DragToFilterYDelta = 0;
             DragToFilterFocusedBar = null;
@@ -447,7 +461,7 @@ namespace FlexTable.Crayon.Chart
 
                     if (Const.IsIntersected(r, boundingRect))
                     {
-                        GroupedBarChartDatum datum = Data[index];
+                        GroupedBarChartDatum datum = ChartData[index].Parent;
                         intersectedRows = intersectedRows.Concat(datum.EnvelopeRows).ToList();
                     }
                     index++;
@@ -494,7 +508,7 @@ namespace FlexTable.Crayon.Chart
                 {
                     if (SelectionChanged != null)
                     {
-                        SelectionChanged(this, intersectedRows, SelectionChangedType.Add, ReflectReason2.SelectionChanged);
+                        SelectionChanged(this, intersectedRows, SelectionChangedType.Add);//, ReflectReason2.SelectionChanged);
                     }
                 }
             }
@@ -513,9 +527,9 @@ namespace FlexTable.Crayon.Chart
             if (SelectionChanged != null)
             {
                 if (barChartDatum.Rows == null || barChartData.SelectMany(cd => cd.Rows).Count() < barChartData.SelectMany(cd => cd.EnvelopeRows).Count())
-                    SelectionChanged(this, barChartData.SelectMany(cd => cd.EnvelopeRows), SelectionChangedType.Add, ReflectReason2.SelectionChanged);
+                    SelectionChanged(this, barChartData.SelectMany(cd => cd.EnvelopeRows), SelectionChangedType.Add);//, ReflectReason2.SelectionChanged);
                 else
-                    SelectionChanged(this, barChartData.SelectMany(cd => cd.Rows), SelectionChangedType.Remove, ReflectReason2.SelectionChanged);
+                    SelectionChanged(this, barChartData.SelectMany(cd => cd.Rows), SelectionChangedType.Remove);//, ReflectReason2.SelectionChanged);
             }
 
             args.Handled = true;
@@ -524,12 +538,12 @@ namespace FlexTable.Crayon.Chart
         void HandleRectangleElement_RectangleTapped(object sender, object e, object datum, Int32 index)
         {
             TappedRoutedEventArgs args = e as TappedRoutedEventArgs;
-            GroupedBarChartDatum groupedBarChartDatum = datum as GroupedBarChartDatum;
+            GroupedBarChartDatum groupedBarChartDatum = (datum as BarChartDatum).Parent; // GroupedBarChartDatum;
 
-            if(groupedBarChartDatum.Children[0].Rows == null || groupedBarChartDatum.Rows.Count() < groupedBarChartDatum.EnvelopeRows.Count())
-                SelectionChanged(this, groupedBarChartDatum.EnvelopeRows, SelectionChangedType.Add, ReflectReason2.SelectionChanged);
+            if (groupedBarChartDatum.Children[0].Rows == null || groupedBarChartDatum.Rows.Count() < groupedBarChartDatum.EnvelopeRows.Count())
+                SelectionChanged(this, groupedBarChartDatum.EnvelopeRows, SelectionChangedType.Add);//, ReflectReason2.SelectionChanged);
             else
-                SelectionChanged(this, groupedBarChartDatum.Rows, SelectionChangedType.Remove, ReflectReason2.SelectionChanged);
+                SelectionChanged(this, groupedBarChartDatum.Rows, SelectionChangedType.Remove);//, ReflectReason2.SelectionChanged);
 
             args.Handled = true;
         }        
@@ -662,7 +676,7 @@ namespace FlexTable.Crayon.Chart
 
             // update 시 재대입 할 것들 대입
 
-            HandleRectangleElement.Data = D3Data;
+            HandleRectangleElement.Data = D3ChartData;
             EnvelopeRectangleElement.Data = D3ChartData;
             RectangleElement.Data = D3ChartData;
 

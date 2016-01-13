@@ -34,8 +34,6 @@ namespace FlexTable.View
 {
     public sealed partial class PageView : UserControl
     {
-        const Double SelectionDismissThreshold = 200;
-
         public BarChart BarChart => BarChartElement;
         public LineChart LineChart => LineChartElement;
         public DescriptiveStatisticsView DescriptiveStatisticsView => DescriptiveStatisticsViewElement;
@@ -111,7 +109,7 @@ namespace FlexTable.View
             ShowStoryboard.Begin();
         }
 
-        public void SelectionChanged(object sender, IEnumerable<Row> rows, SelectionChangedType selectionChangedType, ReflectReason2 reason)
+        public void SelectionChanged(object sender, IEnumerable<Row> rows, SelectionChangedType selectionChangedType)
         {
             if (selectionChangedType == SelectionChangedType.Add)
                 SelectedRows = SelectedRows.Concat(rows).Distinct().ToList();
@@ -388,7 +386,7 @@ namespace FlexTable.View
                 if (delta > Const.PageViewToggleThreshold) // 많이 내려간 경우
                 {
                     ViewModel.State = PageViewModel.PageViewState.Undoing;
-                    SelectionChanged(null, null, SelectionChangedType.Clear, ReflectReason2.SelectionChanged);
+                    SelectionChanged(null, null, SelectionChangedType.Clear);//, ReflectReason2.SelectionChanged);
                     ViewModel.StateChanged(this);
                 }
                 else
@@ -477,7 +475,7 @@ namespace FlexTable.View
         private void Unselect_Tapped(object sender, TappedRoutedEventArgs e)
         {
             ViewModel.State = PageViewModel.PageViewState.Undoing;
-            SelectionChanged(null, null, SelectionChangedType.Clear, ReflectReason2.SelectionChanged);
+            SelectionChanged(null, null, SelectionChangedType.Clear);//, ReflectReason2.SelectionChanged);
             ViewModel.StateChanged(this);
         }
 
@@ -520,15 +518,15 @@ namespace FlexTable.View
         {
             Double delta = e.Cumulative.Translation.X;
             if (delta < 0) delta = 0;
-            if (delta > SelectionDismissThreshold) delta = SelectionDismissThreshold;
+            if (delta > Const.SelectionDismissThreshold) delta = Const.SelectionDismissThreshold;
             SelectionIndicatorTemporaryTransform.X = delta;
-            SelectionIndicator.Opacity = (SelectionDismissThreshold - delta) / SelectionDismissThreshold;
+            SelectionIndicator.Opacity = (Const.SelectionDismissThreshold - delta) / Const.SelectionDismissThreshold;
         }
 
         private void SelectionIndicator_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
             Double delta = e.Cumulative.Translation.X;
-            if (delta > SelectionDismissThreshold)
+            if (delta > Const.SelectionDismissThreshold)
             {
                 Int32 count = SelectedRows.Count();
                 if (count > 0)
@@ -555,10 +553,9 @@ namespace FlexTable.View
             }
         }
 
-
         private void SelectionIndicator_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            SelectionChanged(this, null, SelectionChangedType.Clear, ReflectReason2.SelectionChanged);
+            SelectionChanged(this, null, SelectionChangedType.Clear);//, ReflectReason2.SelectionChanged);
         }
     }
 }

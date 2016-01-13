@@ -13,7 +13,7 @@ namespace FlexTable
         Clear,
         Replace
     }
-
+    /*
     [Flags]
     public enum ReflectType2
     {
@@ -35,7 +35,7 @@ namespace FlexTable
         PageScrolled,
         RowSelected
     }
-
+    */
     public enum ReflectReason
     {
         Preview,
@@ -152,13 +152,13 @@ namespace FlexTable
 
     public class Const
     {
-        public static Double PageViewToggleThreshold = 200;
+        public const Double PageViewToggleThreshold = 100;
+        public const Double SelectionDismissThreshold = 200;
         public static Double RowHeight = 20;
 
         public static void Initialize()
         {
             RowHeight = (Double)App.Current.Resources["RowHeight"];
-        }
-        
+        }        
     }
 }
