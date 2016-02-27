@@ -74,10 +74,15 @@ namespace FlexTable.Util
                             sheet.Columns[index].Type = ColumnType.Categorical;
                             sheet.Columns[index].CategoricalType = CategoricalType.Nominal;
                         }
-                        else if (cellValue.ToLower() == "ordinal")
+                        else if (cellValue.ToLower().StartsWith("ordinal"))
                         {
                             sheet.Columns[index].Type = ColumnType.Categorical;
                             sheet.Columns[index].CategoricalType = CategoricalType.Ordinal;
+
+                            if(cellValue.StartsWith("ordinal,"))
+                            {
+                                sheet.Columns[index].CategoircalOrder = cellValue.Split(',')[1].Split('|').ToList();
+                            }
                         }
                         else
                         {

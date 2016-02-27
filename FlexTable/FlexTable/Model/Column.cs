@@ -16,5 +16,6 @@ namespace FlexTable.Model
         public ColumnType Type { get; set; } = ColumnType.Unknown;
         public CategoricalType CategoricalType { get; set; } = CategoricalType.Unknown;
         public String Unit { get; set; } = null;
+        public List<String> CategoircalOrder { get; set; } = null;
     }
 }

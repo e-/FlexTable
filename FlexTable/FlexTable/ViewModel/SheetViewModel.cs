@@ -137,14 +137,21 @@ namespace FlexTable.ViewModel
                         }
                     }
 
-                    // uniqueValues의 순서 정해야 함.
-                    if (columnViewModel.ContainString)
+                    if (columnViewModel.Column.CategoircalOrder != null) // 이미 지정된 순서가 있으면
                     {
-                        uniqueValues = uniqueValues.OrderBy(u => u).ToList();
+                        List<String> order = columnViewModel.Column.CategoircalOrder;
+                        uniqueValues = uniqueValues.OrderBy(u => order.IndexOf(u)).ToList();
                     }
-                    else
-                    {
-                        uniqueValues = uniqueValues.OrderBy(u => Double.Parse(u)).ToList();
+                    else {
+                        // uniqueValues의 순서 정해야 함.
+                        if (columnViewModel.ContainString)
+                        {
+                            uniqueValues = uniqueValues.OrderBy(u => u).ToList();
+                        }
+                        else
+                        {
+                            uniqueValues = uniqueValues.OrderBy(u => Double.Parse(u)).ToList();
+                        }
                     }
 
                     // 카테고리 추가 후

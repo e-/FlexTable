@@ -89,6 +89,6 @@
         <TextBlock Style="{StaticResource TextBlockStyle}">
             &#x2022; <Run Text="{Binding CategoricalColumnCount}"></Run> categorical columns and <Run Text="{Binding NumericalColumnCount}"></Run> numerical columns.
         </TextBlock>
-        <Button x:Name="LoadFile" Click="LoadFile_Click">Load a CSV File</Button>
+        <Button x:Name="LoadFile" Click="LoadFile_Click" Margin="0 10 0 0">Load a CSV File</Button>
     </StackPanel>
 </UserControl>

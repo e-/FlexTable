@@ -484,199 +484,6 @@ namespace FlexTable.Model
                 // all row는 categorical 별로 색깔
                 foreach (RowViewModel rowViewModel in allRowViewModels) rowViewModel.Color = (rowViewModel.Row.Cells[categorical.Index].Content as Category).Color;
             }
-            /*else if (categoricalCount == 0 && numericalCount == 1)
-            {
-                DrawDescriptiveStatistics(numericalColumns.First(), IsSelected);
-                DrawDistributionHistogram(numericalColumns.First(), IsSelected);
-            }
-            else if (categoricalCount == 2 && numericalCount == 0)
-            {
-                DrawGroupedBarChart(categoricalColumns[0], categoricalColumns[1], groupedRows, IsSelected);
-            }
-            else if (categoricalCount == 1 && numericalCount == 1)
-            {
-                DrawBarChart(categoricalColumns.First(), numericalColumns.First(), groupedRows, IsSelected);
-                DrawLineChart(categoricalColumns.First(), numericalColumns.First(), groupedRows, IsSelected);
-
-                firstChartTag = categoricalColumns[0].CategoricalType == CategoricalType.Ordinal ? pageView.LineChart.Tag : pageView.BarChart.Tag;
-            }
-            else if (categoricalCount == 0 && numericalCount == 2)
-            {
-                DrawCorrelatonStatistics(numericalColumns[0], numericalColumns[1], IsSelected);
-                DrawScatterplot(numericalColumns[0], numericalColumns[1], IsSelected);
-            }
-            else if (categoricalCount == 3 && numericalCount == 0)
-            {
-                IsPivotTableVisible = true;
-                pageView.PivotTableTitle.Children.Clear();
-                if (IsSelected)
-                {
-                    DrawEditableTitleCxNx(pageView.PivotTableTitle,
-                        "Frequency of\x00A0",
-                        new List<ColumnViewModel>() { categoricalColumns[2] },
-                        "\x00A0by\x00A0",
-                        categoricalColumns.Where((cvm, i) => i < 2).ToList()
-                        );
-                }
-                else
-                {
-                    AddText(pageView.PivotTableTitle, $"Frequency of <b>{categoricalColumns[2].Name}</b> by <b>{categoricalColumns[0].Name}</b> and <b>{categoricalColumns[1].Name}</b>");
-                }
-                pivotTableViewModel.Preview(
-                    selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).ToList(),
-                    categoricalColumns.Last(),
-                    new List<ColumnViewModel>(),
-                    groupedRows
-                    );
-            }
-            else if (categoricalCount == 2 && numericalCount == 1)
-            {
-                // 테이블을 그린다
-                IsPivotTableVisible = true;
-                pageView.PivotTableTitle.Children.Clear();
-                if (IsSelected)
-                {
-                    DrawEditableTitleCxNx(pageView.PivotTableTitle,
-                        "",
-                        numericalColumns,
-                        "\x00A0by\x00A0",
-                        categoricalColumns
-                        );
-                }
-                else
-                {
-                    AddText(pageView.PivotTableTitle, $"<b>{numericalColumns[0].HeaderName}</b> by <b>{categoricalColumns[0].Name}</b> and <b>{categoricalColumns[1].Name}</b>");
-                }
-
-                pivotTableViewModel.Preview(
-                    new List<ColumnViewModel>() { categoricalColumns[0] },
-                    categoricalColumns[1],
-                    numericalColumns,
-                    groupedRows
-                    );
-
-                DrawGroupedBarChart(categoricalColumns[0], categoricalColumns[1], numericalColumns[0], groupedRows, IsSelected);
-                DrawLineChart(categoricalColumns[0], categoricalColumns[1], numericalColumns[0], groupedRows, IsSelected);
-                firstChartTag = categoricalColumns[0].CategoricalType == CategoricalType.Ordinal ? pageView.LineChart.Tag : pageView.BarChart.Tag;
-            }
-            else if (categoricalCount == 1 && numericalCount == 2)
-            {
-                // 스캐터플롯을 그린다.
-                DrawScatterplot(categoricalColumns.First(), numericalColumns[0], numericalColumns[1], IsSelected);
-
-                if (numericalColumns[0].Unit == numericalColumns[1].Unit) // 둘의 단위가 같으면 그룹 바 차트 가능
-                {
-                    DrawGroupedBarChartCNN(categoricalColumns[0], numericalColumns[0], numericalColumns[1], groupedRows, IsSelected);
-                }
-                // 테이블을 그린다
-
-                IsPivotTableVisible = true;
-                pageView.PivotTableTitle.Children.Clear();
-                DrawEditableTitleCNN(pageView.PivotTableTitle, categoricalColumns[0], numericalColumns[0], numericalColumns[1]);
-
-                pivotTableViewModel.Preview(
-                    categoricalColumns,
-                    null,
-                    numericalColumns,
-                    groupedRows
-                    );
-            }
-            else if (categoricalCount == 0 && numericalCount == 3)
-            {
-                IsBarChartVisible = true;
-                // 지금 필요없다.
-            }
-            else if (categoricalCount >= 1 && numericalCount == 0)
-            {
-                // 테이블을 그린다
-                IsPivotTableVisible = true;
-                pageView.PivotTableTitle.Children.Clear();
-                if (IsSelected)
-                {
-                    DrawEditableTitleCxNx(pageView.PivotTableTitle,
-                        "Frequency of\x00A0",
-                        new List<ColumnViewModel>() { categoricalColumns.Last() },
-                        "\x00A0by\x00A0",
-                        categoricalColumns.Where((cvm, i) => i != categoricalColumns.Count - 1).ToList()
-                        );
-                }
-                else
-                {
-                    AddText(pageView.PivotTableTitle, $"Frequency of <b>{categoricalColumns.Last().Name}</b> " +
-                      $"by {Concatenate(categoricalColumns.Where((c, index) => index != categoricalColumns.Count - 1).Select(s => "<b>" + s.Name + "</b>"))}");
-                }
-
-                pivotTableViewModel.Preview(
-                    categoricalColumns.Where((c, index) => index != categoricalColumns.Count - 1).ToList(),
-                    categoricalColumns.Last(),
-                    numericalColumns,
-                    groupedRows
-                    );
-            }
-            else if (categoricalCount >= 1 && numericalCount == 1)
-            {
-                // 테이블을 그린다
-                IsPivotTableVisible = true;
-                pageView.PivotTableTitle.Children.Clear();
-                if (IsSelected)
-                {
-                    DrawEditableTitleCxNx(pageView.PivotTableTitle,
-                        "",
-                        numericalColumns,
-                        "\x00A0by\x00A0",
-                        categoricalColumns
-                        );
-                }
-                else
-                {
-                    AddText(pageView.PivotTableTitle, $"<b>{numericalColumns[0].HeaderName}</b> by {Concatenate(categoricalColumns.Select(s => "<b>" + s.Name + "</b>"))}");
-                }
-
-                pivotTableViewModel.Preview(
-                    categoricalColumns.Where((c, index) => index != categoricalColumns.Count - 1).ToList(),
-                    categoricalColumns.Last(),
-                    numericalColumns,
-                    groupedRows
-                    );
-            }
-            else if (categoricalCount >= 1 && numericalCount > 1)
-            {
-                // 테이블을 그린다
-                IsPivotTableVisible = true;
-                pageView.PivotTableTitle.Children.Clear();
-                if (IsSelected)
-                {
-                    DrawEditableTitleCxNx(pageView.PivotTableTitle,
-                        "",
-                        numericalColumns,
-                        "\x00A0by\x00A0",
-                        categoricalColumns
-                        );
-                }
-                else
-                {
-                    AddText(pageView.PivotTableTitle, $"{Concatenate(numericalColumns.Select(s => "<b>" + s.HeaderName + "</b>"))} by {Concatenate(categoricalColumns.Select(s => "<b>" + s.Name + "</b>"))}");
-                }
-
-                if (numericalCount * categoricalColumns.Last().Categories.Count <= 12)
-                {
-                    pivotTableViewModel.Preview(
-                        categoricalColumns.Where((c, index) => index != categoricalColumns.Count - 1).ToList(),
-                        categoricalColumns.Last(),
-                        numericalColumns,
-                        groupedRows
-                        );
-                }
-                else
-                {
-                    pivotTableViewModel.Preview(
-                        categoricalColumns,
-                        null, // 여길 채워서 남은 카테고리컬 하나를 여기로 시각화 가능
-                        numericalColumns,
-                        groupedRows
-                        );
-                }
-            }*/
         }
     }
 
@@ -718,9 +525,49 @@ namespace FlexTable.Model
                 return 1;
             }
 
-            IEnumerable<ColumnViewModel> sortAppliedColumnViewModels = SheetViewModel.ColumnViewModels.Where(cvm => cvm.SortOption != SortOption.None).OrderByDescending(cvm => cvm.SortPriority);
+            IEnumerable<ColumnViewModel> sortedAndSelectedColumnViewModels = SheetViewModel.ColumnViewModels.Where(
+                cvm => cvm.SortOption != SortOption.None && cvm.IsSelected
+            ).OrderByDescending(cvm => cvm.SortPriority);
 
-            foreach (ColumnViewModel columnViewModel in sortAppliedColumnViewModels)
+            foreach (ColumnViewModel columnViewModel in sortedAndSelectedColumnViewModels)
+            {
+                if (columnViewModel.Type == ColumnType.Numerical)
+                {
+                    if ((Double)x.Cells[columnViewModel.Index].Content != (Double)y.Cells[columnViewModel.Index].Content)
+                    {
+                        return GetSortDirection(columnViewModel) *
+                            ((Double)x.Cells[columnViewModel.Index].Content).CompareTo((Double)y.Cells[columnViewModel.Index].Content);
+                    }
+                }
+                else
+                {
+                    if (x.Cells[columnViewModel.Index].Content != y.Cells[columnViewModel.Index].Content)
+                    {
+                        return GetSortDirection(columnViewModel) *
+                    (x.Cells[columnViewModel.Index].Content as Category).Order.CompareTo((y.Cells[columnViewModel.Index].Content as Category).Order);
+                    }
+                }
+            }
+
+            foreach (ColumnViewModel columnViewModel in ViewStatus.SelectedColumnViewModels)
+            {
+                if (columnViewModel.Type == ColumnType.Categorical)
+                {
+                    if (x.Cells[columnViewModel.Index].Content != y.Cells[columnViewModel.Index].Content)
+                    {
+                        return (x.Cells[columnViewModel.Index].Content as Category).Order.CompareTo((y.Cells[columnViewModel.Index].Content as Category).Order) * GetSortDirection(columnViewModel);
+                    }
+                }
+                else if (columnViewModel.Type == ColumnType.Numerical)
+                {
+                }
+            }
+
+            IEnumerable<ColumnViewModel> sortedColumnViewModels = SheetViewModel.ColumnViewModels.Where(
+                cvm => cvm.SortOption != SortOption.None
+            ).OrderByDescending(cvm => cvm.SortPriority);
+
+            foreach (ColumnViewModel columnViewModel in sortedColumnViewModels)
             {
                 if (columnViewModel.Type == ColumnType.Numerical)
                 {
@@ -759,7 +606,11 @@ namespace FlexTable.Model
 
         public int Compare(GroupedRows x, GroupedRows y)
         {
-            foreach (ColumnViewModel columnViewModel in SheetViewModel.ColumnViewModels.Where(cvm => cvm.SortOption != SortOption.None).OrderByDescending(scvm => scvm.SortPriority))
+            IEnumerable<ColumnViewModel> sortedAndSelectedColumnViewModels = SheetViewModel.ColumnViewModels.Where(
+                cvm => cvm.SortOption != SortOption.None && cvm.IsSelected
+            ).OrderByDescending(cvm => cvm.SortPriority);
+
+            foreach (ColumnViewModel columnViewModel in sortedAndSelectedColumnViewModels)
             {
                 if (columnViewModel.Type == ColumnType.Categorical)
                 {
@@ -816,6 +667,56 @@ namespace FlexTable.Model
                 }
                 else if (columnViewModel.Type == ColumnType.Numerical)
                 {
+                }
+            }
+
+            IEnumerable<ColumnViewModel> sortedColumnViewModels = SheetViewModel.ColumnViewModels.Where(
+                cvm => cvm.SortOption != SortOption.None
+            ).OrderByDescending(cvm => cvm.SortPriority);
+
+            foreach (ColumnViewModel columnViewModel in sortedColumnViewModels)
+            {
+                if (columnViewModel.Type == ColumnType.Categorical)
+                {
+                    if (x.Keys.ContainsKey(columnViewModel)) // 선택된거면 키에 있을 것
+                    {
+                        if (x.Keys[columnViewModel] != y.Keys[columnViewModel])
+                        {
+                            return (x.Keys[columnViewModel] as Category).Order.CompareTo((y.Keys[columnViewModel] as Category).Order) * GetSortDirection(columnViewModel);
+                        }
+                    }
+                    else // 선택되지 않은거면 distinct한 value의 개수로 
+                    {
+                        Int32 xCount = x.Rows.Select(r => r.Cells[columnViewModel.Index].Content).Distinct().Count();
+                        Int32 yCount = y.Rows.Select(r => r.Cells[columnViewModel.Index].Content).Distinct().Count();
+
+                        if (xCount != yCount)
+                        {
+                            return xCount.CompareTo(yCount) * GetSortDirection(columnViewModel);
+                        }
+                    }
+                }
+                else if (columnViewModel.Type == ColumnType.Numerical)
+                {
+                    if (ViewStatus.SelectedColumnViewModels.Count == 1 && columnViewModel == ViewStatus.SelectedColumnViewModels[0]) // 이 경우는 뉴메리컬 하나만 선택되어 비닝 된 결과가 보이는 경우이다.
+                    {
+                        ColumnViewModel numerical = ViewStatus.SelectedColumnViewModels[0];
+                        Double xMin = (x.Keys[numerical] as Bin).Min,
+                               yMin = (y.Keys[numerical] as Bin).Min;
+
+                        if (xMin != yMin)
+                            return xMin.CompareTo(yMin) * GetSortDirection(numerical);
+                    }
+                    else
+                    {
+                        Double xValue = columnViewModel.AggregativeFunction.Aggregate(x.Rows.Select(r => (Double)r.Cells[columnViewModel.Index].Content));
+                        Double yValue = columnViewModel.AggregativeFunction.Aggregate(y.Rows.Select(r => (Double)r.Cells[columnViewModel.Index].Content));
+
+                        if (xValue != yValue)
+                        {
+                            return xValue.CompareTo(yValue) * GetSortDirection(columnViewModel);
+                        }
+                    }
                 }
             }
 
