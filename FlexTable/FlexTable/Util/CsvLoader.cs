@@ -13,9 +13,14 @@ namespace FlexTable.Util
 {
     public class CsvLoader
     {
+        public static async Task<Sheet> LoadLocal(String name)
+        {
+            var file = await KnownFolders.DocumentsLibrary.GetFileAsync(name);
+            return await Load(file);
+        }
+
         public static async Task<Sheet> Load(String name)
         {
-            //String name = "Population-filtered.csv"; // "economic-condition2.csv";// "Insurance.csv"; // "Population-small.csv";
             var folder = await Windows.ApplicationModel.Package.Current.InstalledLocation.GetFolderAsync("Data");
             var file = await folder.GetFileAsync(name);
             return await Load(file);

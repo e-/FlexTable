@@ -13,6 +13,7 @@ using Windows.Foundation;
 using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
+using Windows.Storage;
 
 namespace FlexTable.ViewModel
 {
@@ -170,7 +171,27 @@ namespace FlexTable.ViewModel
 
         public async Task Initialize()
         {
-            Sheet sheet = await Util.CsvLoader.Load("iris.csv"); // "Population-filtered.csv");
+            ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
+            Sheet sheet;
+
+            if (localSettings.Values.ContainsKey("recent"))
+            {
+                String recent = (String)localSettings.Values["recent"];
+
+                try
+                {
+                    sheet = await Util.CsvLoader.LoadLocal(recent);
+                }
+                catch
+                {
+                    sheet = await Util.CsvLoader.Load("student-mat.csv");
+                }
+            }
+            else
+            {
+                sheet = await Util.CsvLoader.Load("student-mat.csv");
+            }
+
             Initialize(sheet);
         }
 
@@ -204,7 +225,9 @@ namespace FlexTable.ViewModel
 
             // 메타데이터 초기화
             ExplorationViewModel.MetadataViewModel.Initialize();
-            
+
+            return;
+
             var dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
 
             ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[4]);

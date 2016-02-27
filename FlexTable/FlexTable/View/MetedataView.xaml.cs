@@ -37,10 +37,11 @@ namespace FlexTable.View
                 return;
             Sheet sheet = await Util.CsvLoader.Load(file);
 
-            MainPageViewModel mpvm = (DataContext as ViewModel.MetadataViewModel).MainPageViewModel;
+            ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
+            localSettings.Values["recent"] = file.Name;
 
-            //mpvm.ExplorationViewModel.TopPageView.ViewModel.State = PageViewModel.PageViewState.Empty;            
-            //mpvm.ExplorationViewModel.TopPageView.CancelUndoStoryboard.Begin();
+            MainPageViewModel mpvm = (DataContext as MetadataViewModel).MainPageViewModel;
+            
             mpvm.Sheet = sheet;
             mpvm.Initialize(sheet);
         }

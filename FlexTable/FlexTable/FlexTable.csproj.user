@@ -5,6 +5,7 @@
     <RemoteDebugEnabled>true</RemoteDebugEnabled>
     <CreateCleanLayout>false</CreateCleanLayout>
     <UseAuthentication>true</UseAuthentication>
+    <AuthenticationMode>Windows</AuthenticationMode>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <RemoteDebugEnabled>false</RemoteDebugEnabled>
