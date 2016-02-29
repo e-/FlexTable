@@ -318,7 +318,7 @@ namespace FlexTable.ViewModel
                 IsBarChartVisible = true;
             }
 
-            pageView.UpdateCarousel(trackPreviousParagraph, firstChartTag?.ToString());
+            pageView.UpdateCarousel(trackPreviousParagraph, null);// firstChartTag?.ToString());
         }
 
         

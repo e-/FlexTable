@@ -416,8 +416,6 @@ namespace FlexTable.View
             }
         }
 
-        Boolean isSelectionPreviewing = false;
-
         void StrokeAdding(Rect boundingRect)
         {
             Double centerX = boundingRect.X + boundingRect.Width / 2 -

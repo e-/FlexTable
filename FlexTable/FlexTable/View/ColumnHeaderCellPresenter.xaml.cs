@@ -29,17 +29,23 @@ namespace FlexTable.View
             this.InitializeComponent();
         }
 
+        public VerticalAlignment ContentVerticalAlignment
+        {
+            set { ColumnStackPanel.VerticalAlignment = value; }
+        }
+
         public void Update(Double delayBeforeAnimation)
         {
             XAnimation.BeginTime = TimeSpan.FromMilliseconds(delayBeforeAnimation);
             XAnimation.Begin();
         }
         
-        private void Border_PointerEntered(object sender, PointerRoutedEventArgs e)
+        private void Wrapper_PointerEntered(object sender, PointerRoutedEventArgs e)
         {
+            Debug.WriteLine("Entered");
             if (e.Pointer.PointerDeviceType == PointerDeviceType.Touch)
             {
-                Debug.WriteLine("Entered");
+                CapturePointer(e.Pointer);
                 ViewModel.MainPageViewModel.View.TableView.ColumnHighlighter.ColumnViewModel = ViewModel;
                 ViewModel.MainPageViewModel.View.TableView.ColumnHighlighter.Update();
                 ViewModel.MainPageViewModel.ExplorationViewModel.PreviewColumn(ViewModel);
@@ -49,6 +55,33 @@ namespace FlexTable.View
         private void Wrapper_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             Debug.WriteLine("Pressed");
+        }
+
+        private void Wrapper_PointerCaptureLost(object sender, PointerRoutedEventArgs e)
+        {
+            Debug.WriteLine("CaptrueLost");
+            if (e.Pointer.PointerDeviceType == PointerDeviceType.Touch)
+            {
+                //ViewModel.MainPageViewModel.TableViewModel.CancelIndexing(true);
+            }
+        }
+
+        private void Wrapper_PointerReleased(object sender, PointerRoutedEventArgs e)
+        {
+            Debug.WriteLine("Released");
+            if (e.Pointer.PointerDeviceType == PointerDeviceType.Touch)
+            {
+                //ViewModel.MainPageViewModel.TableViewModel.CancelIndexing(true);
+            }
+        }
+
+        private void Wrapper_PointerExited(object sender, PointerRoutedEventArgs e)
+        {
+            Debug.WriteLine("Exited");
+            if (e.Pointer.PointerDeviceType == PointerDeviceType.Touch)
+            {
+                //ViewModel.MainPageViewModel.TableViewModel.CancelIndexing(true);
+            }
         }
     }
 }

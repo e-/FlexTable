@@ -318,12 +318,12 @@ namespace FlexTable.ViewModel
                 groupedColumnViewModel.Order = order++;
             }
 
-            foreach (ColumnViewModel remainingColumnViewModel in columnViewModels.Except(viewStatus.SelectedColumnViewModels).Where(d => !d.IsHidden).OrderBy(d => d.Order))
+            foreach (ColumnViewModel remainingColumnViewModel in columnViewModels.Except(viewStatus.SelectedColumnViewModels).Where(d => !d.IsHidden).OrderBy(d => d.Index))
             {
                 remainingColumnViewModel.Order = order++;
             }
 
-            foreach (ColumnViewModel remainingColumnViewModel in columnViewModels.Except(viewStatus.SelectedColumnViewModels).Where(d => d.IsHidden).OrderBy(d => d.Order))
+            foreach (ColumnViewModel remainingColumnViewModel in columnViewModels.Except(viewStatus.SelectedColumnViewModels).Where(d => d.IsHidden).OrderBy(d => d.Index))
             {
                 remainingColumnViewModel.Order = order++;
             }

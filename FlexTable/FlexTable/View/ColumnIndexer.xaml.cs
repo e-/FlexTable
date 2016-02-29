@@ -183,6 +183,8 @@ namespace FlexTable.View
             PointerPoint point = e.GetCurrentPoint(this);
 
             if (point.PointerDevice.PointerDeviceType != PointerDeviceType.Touch) return;
+            if (TableViewModel.MainPageViewModel.View.TableView.ColumnHighlighter.ColumnViewModel != null) return;
+
             IndexHelperWrapperElement.IsHitTestVisible = true;
             IndexHelperTransform.X = point.Position.X;
             IndexHelperTransform.Y = point.Position.Y - 20;

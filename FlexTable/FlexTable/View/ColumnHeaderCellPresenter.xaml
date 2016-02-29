@@ -25,7 +25,10 @@
     <Grid Height="{StaticResource ColumnHeaderHeight}" 
           Width="{x:Bind ViewModel.Width, Mode=OneWay}"
           x:Name="Wrapper"
-          PointerEntered="Border_PointerEntered" 
+          PointerEntered="Wrapper_PointerEntered" 
+          PointerReleased="Wrapper_PointerReleased"
+          PointerExited="Wrapper_PointerExited"
+          PointerCaptureLost="Wrapper_PointerCaptureLost"
           Background="Transparent"
           >
 
@@ -35,27 +38,28 @@
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
                     Background="Transparent" IsHitTestVisible="False"
+                    x:Name="ColumnStackPanel"
+                    Padding="0 8"
                     >
             <Grid Width="13">
                 <TextBlock FontFamily="FontAwesome" Foreground="{StaticResource HighlightBrush1}" 
-                            FontSize="10" TextAlignment="Right" VerticalAlignment="Center" 
-                            Padding="0 0 3 0" 
+                            FontSize="10" TextAlignment="Right"
+                            Padding="0 3 3 0"
                             Visibility="{x:Bind ViewModel.IsSelected, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
                     &#xf00c;
                 </TextBlock>
             </Grid>
-            <TextBlock Text="{x:Bind ViewModel.HeaderName, Mode=OneWay}" VerticalAlignment="Center" FontWeight="Bold"
-                       />
+            <TextBlock Text="{x:Bind ViewModel.HeaderName, Mode=OneWay}" VerticalAlignment="Center" FontWeight="Bold"/>
             <Grid Width="10">
                 <TextBlock FontFamily="FontAwesome"
-                           FontSize="10" TextAlignment="Left" VerticalAlignment="Center" 
+                           FontSize="10" TextAlignment="Left"
                            Padding="3 0 0 0"
                            Visibility="{x:Bind ViewModel.IsDescendingSorted, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
                     &#xf0d7;
                 </TextBlock>
                 <TextBlock FontFamily="FontAwesome"
-                           FontSize="10" TextAlignment="Left" VerticalAlignment="Center" 
-                           Padding="3 0 0 0"
+                           FontSize="10" TextAlignment="Left"
+                           Padding="3 2 0 0"
                            Visibility="{x:Bind ViewModel.IsAscendingSorted, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
                     &#xf0d8;
                 </TextBlock>

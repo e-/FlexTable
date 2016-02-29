@@ -82,26 +82,27 @@
                         >
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
                         Background="Transparent" d:IsHidden="True"
+                                 VerticalAlignment="Bottom" Padding="0 8"
                         >
                         <Grid Width="13" d:IsHidden="True">
                             <TextBlock FontFamily="FontAwesome" Foreground="{StaticResource HighlightBrush1}" 
-                                FontSize="10" TextAlignment="Right" VerticalAlignment="Center" 
+                                FontSize="10" TextAlignment="Right"
                                 Padding="0 0 3 0" 
                                 Visibility="{Binding IsSelected, Converter={StaticResource BooleanToVisibilityConverter}}" d:IsHidden="True">
                         &#xf00c;
                             </TextBlock>
                         </Grid>
-                        <TextBlock Text="{Binding HeaderName}" VerticalAlignment="Center" FontWeight="Bold" d:IsHidden="True"
+                        <TextBlock Text="{Binding HeaderName}" FontWeight="Bold" d:IsHidden="True"
                            />
                         <Grid Width="10" d:IsHidden="True">
                             <TextBlock FontFamily="FontAwesome"
-                               FontSize="10" TextAlignment="Left" VerticalAlignment="Center" 
+                               FontSize="10" TextAlignment="Left"
                                Padding="3 0 0 0"
                                Visibility="{Binding IsDescendingSorted, Converter={StaticResource BooleanToVisibilityConverter}}" d:IsHidden="True">
                         &#xf0d7;
                             </TextBlock>
                             <TextBlock FontFamily="FontAwesome"
-                               FontSize="10" TextAlignment="Left" VerticalAlignment="Center" 
+                               FontSize="10" TextAlignment="Left"
                                Padding="3 0 0 0"
                                Visibility="{Binding IsAscendingSorted, Converter={StaticResource BooleanToVisibilityConverter}}" d:IsHidden="True">
                         &#xf0d8;
@@ -135,27 +136,27 @@
                 </Border.RenderTransform>
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
-                    Background="Transparent" d:IsHidden="True"
+                    Background="Transparent" d:IsHidden="True" VerticalAlignment="Top" Padding="0 8"
                     >
                     <Grid Width="13" d:IsHidden="True">
                         <TextBlock FontFamily="FontAwesome" Foreground="{StaticResource HighlightBrush1}" 
-                            FontSize="10" TextAlignment="Right" VerticalAlignment="Center" 
+                            FontSize="10" TextAlignment="Right"
                             Padding="0 0 3 0" 
                             Visibility="{Binding IsSelected, Converter={StaticResource BooleanToVisibilityConverter}}" d:IsHidden="True">
                     &#xf00c;
                         </TextBlock>
                     </Grid>
-                    <TextBlock Text="{Binding HeaderName}" VerticalAlignment="Center" FontWeight="Bold" d:IsHidden="True"
+                    <TextBlock Text="{Binding HeaderName}" FontWeight="Bold" d:IsHidden="True"
                         />
                     <Grid Width="10" d:IsHidden="True">
                         <TextBlock FontFamily="FontAwesome"
-                            FontSize="10" TextAlignment="Left" VerticalAlignment="Center" 
+                            FontSize="10" TextAlignment="Left"
                             Padding="3 0 0 0"
                             Visibility="{Binding IsDescendingSorted, Converter={StaticResource BooleanToVisibilityConverter}}" d:IsHidden="True">
                     &#xf0d7;
                         </TextBlock>
                         <TextBlock FontFamily="FontAwesome"
-                            FontSize="10" TextAlignment="Left" VerticalAlignment="Center" 
+                            FontSize="10" TextAlignment="Left"
                             Padding="3 0 0 0"
                             Visibility="{Binding IsAscendingSorted, Converter={StaticResource BooleanToVisibilityConverter}}" d:IsHidden="True">
                     &#xf0d8;

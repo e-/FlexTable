@@ -39,6 +39,15 @@ namespace FlexTable.View
                     {
                         DataContext = cvm
                     };
+
+                    if (this.Name == "BottomColumnHeaderElement")
+                    {
+                        chcp.ContentVerticalAlignment = VerticalAlignment.Top;
+                    }
+                    else
+                    {
+                        chcp.ContentVerticalAlignment = VerticalAlignment.Bottom;
+                    }
                     Items.Children.Add(chcp);
                 }
             }

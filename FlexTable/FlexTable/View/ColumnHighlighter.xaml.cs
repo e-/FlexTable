@@ -100,7 +100,8 @@ namespace FlexTable.View
                 Canvas.SetLeft(UpperPopupElement, columnViewModel.Width / 2);
                 Canvas.SetLeft(LowerPopupElement, columnViewModel.Width / 2);
 
-                Canvas.SetTop(LowerPopupElement, columnViewModel.MainPageViewModel.Bounds.Height - (Double)App.Current.Resources["ColumnHeaderHeight"] * 2);
+                Canvas.SetTop(UpperPopupElement, (Double)App.Current.Resources["ColumnHeaderHeight"] * 0.2);
+                Canvas.SetTop(LowerPopupElement, columnViewModel.MainPageViewModel.Bounds.Height - (Double)App.Current.Resources["ColumnHeaderHeight"] * 1.7);
 
                 Wrapper.Visibility = Visibility.Visible;
 
@@ -124,6 +125,8 @@ namespace FlexTable.View
                 }
 
                 Brighten.Pause();
+                Darken.Begin();
+                
                 if (isDarkenPlaying)
                 {
                     isDarkenPlaying = false;
@@ -140,6 +143,7 @@ namespace FlexTable.View
                 TableScrollViewer.Height = tvm.SheetViewHeight;
                 Brighten.Begin();
                 Darken.Pause();
+                isDarkenPlaying = false;
             }
         }
 
@@ -226,9 +230,7 @@ namespace FlexTable.View
 
             if (!tvm.IsIndexing)
             {
-                tvm.MainPageViewModel.View.TableView.ColumnHighlighter.ColumnViewModel = null;
-                tvm.MainPageViewModel.View.TableView.ColumnHighlighter.Update();
-                tvm.MainPageViewModel.View.ExplorationView.TopPageViewModel.State = PageViewModel.PageViewState.Empty;
+                tvm.CancelIndexing(true);
             }
         }
 
@@ -374,9 +376,7 @@ namespace FlexTable.View
 
             if (!tvm.IsIndexing)
             {
-                tvm.MainPageViewModel.View.TableView.ColumnHighlighter.ColumnViewModel = null;
-                tvm.MainPageViewModel.View.TableView.ColumnHighlighter.Update();
-                tvm.MainPageViewModel.View.ExplorationView.TopPageViewModel.State = PageViewModel.PageViewState.Empty;
+                tvm.CancelIndexing(true);
             }
         }
 

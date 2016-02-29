@@ -24,10 +24,8 @@
     </UserControl.Resources>
 
     <Grid>
-        <Border Width="{StaticResource RowHeaderWidth}" 
-                x:Name="Opener" 
+        <Border x:Name="Opener" 
                 Background="Transparent"
-                HorizontalAlignment="Left"
                 PointerEntered="Opener_PointerEntered"
                 PointerReleased="Opener_PointerReleased"
                 >
