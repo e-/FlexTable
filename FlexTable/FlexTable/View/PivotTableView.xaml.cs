@@ -22,12 +22,20 @@ namespace FlexTable.View
     {
         public Grid PivotTable { get { return PivotTableElement; } }
 
+        public Boolean IsScrollable
+        {
+            set
+            {
+                ScrollViewerElement.VerticalScrollMode = value ? ScrollMode.Auto : ScrollMode.Disabled;
+            }
+        }
+
         public PivotTableView()
         {
             this.InitializeComponent();
         }
 
-        Double startY;
+        /*Double startY;
 
         private void PivotTableElement_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
@@ -37,6 +45,6 @@ namespace FlexTable.View
         private void PivotTableElement_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             Canvas.SetTop(PivotTableElement, startY + e.Cumulative.Translation.Y);
-        }
+        }*/
     }
 }

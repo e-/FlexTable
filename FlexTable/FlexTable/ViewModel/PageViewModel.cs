@@ -418,8 +418,8 @@ namespace FlexTable.ViewModel
             if (IsSelected/* && mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical).Count() > 1*/) // 선택지가 하나밖에 없으면 selectbox 보여줄 필요 없음
             {
                 DrawEditableTitleN(pageView.DistributionViewTitle, numerical,
-                    Const.Loader.GetString("DescriptiveStatisticsTitle1"),
-                    Const.Loader.GetString("DescriptiveStatisticsTitle2"));
+                    Const.Loader.GetString("DistributionTitle1"),
+                    Const.Loader.GetString("DistributionTitle2"));
                     //"Distribution of\x00A0");
             }
             else

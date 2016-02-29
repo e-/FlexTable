@@ -247,6 +247,7 @@ namespace FlexTable.View
                     DistributionViewElement.IsHitTestVisible = true;
                     GroupedBarChartElement.IsHitTestVisible = true;
                     ScatterplotElement.IsHitTestVisible = true;
+                    PivotTableView.IsScrollable = true;
                     break;
                 case PageViewModel.PageViewState.Undoing:
                 case PageViewModel.PageViewState.Previewing:
@@ -257,6 +258,7 @@ namespace FlexTable.View
                     DistributionViewElement.IsHitTestVisible = false;
                     GroupedBarChartElement.IsHitTestVisible = false;
                     ScatterplotElement.IsHitTestVisible = false;
+                    PivotTableView.IsScrollable = false;
                     break;
             }
         }

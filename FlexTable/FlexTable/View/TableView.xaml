@@ -224,7 +224,7 @@
             <view:ColumnHighlighter Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" x:Name="ColumnHighlighterElement"></view:ColumnHighlighter>
 
             <view:ColumnIndexer Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" x:Name="ColumnIndexerElement" 
-                                Width="300"
+                                Width="150"
                                 Height="300"
                                 VerticalAlignment="Bottom"
                                 HorizontalAlignment="Left"></view:ColumnIndexer>

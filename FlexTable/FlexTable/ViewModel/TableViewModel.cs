@@ -272,6 +272,7 @@ namespace FlexTable.ViewModel
                 }
 
                 State = TableViewState.SelectedRow;
+                PaddedSheetHeight = Math.Max(SheetViewModel.AllRowsSheetHeight, SheetViewHeight);
             }
             else if (viewStatus.IsAllRowViewModelVisible)
             {
@@ -283,6 +284,7 @@ namespace FlexTable.ViewModel
                 }
                 ActivatedRowViewModels = AllRowViewModels;
                 State = TableViewState.AllRow;
+                PaddedSheetHeight = Math.Max(SheetViewModel.AllRowsSheetHeight, SheetViewHeight);
             }
             else 
             {
@@ -307,6 +309,7 @@ namespace FlexTable.ViewModel
 
                 ActivatedRowViewModels = GroupedRowViewModels;
                 State = TableViewState.GroupedRow;
+                PaddedSheetHeight = Math.Max(ActivatedRowViewModels.Count() * Const.RowHeight, SheetViewHeight);
             }
 
             viewStatus.ColorRowViewModels(allRowViewModels, groupedRowViewModels, viewStatus.GroupedRows);

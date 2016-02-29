@@ -218,10 +218,10 @@
     <value>기술통계</value>
   </data>
   <data name="PageViewDistributionViewElement.Tag" xml:space="preserve">
-    <value>분포도</value>
+    <value>분포</value>
   </data>
   <data name="PageViewDistributionWrapperElement.Tag" xml:space="preserve">
-    <value>분포도</value>
+    <value>분포</value>
   </data>
   <data name="PageViewGroupedBarChartElement.Tag" xml:space="preserve">
     <value>묶은 막대형</value>

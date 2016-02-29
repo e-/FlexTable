@@ -70,12 +70,17 @@
         </Style>
     </UserControl.Resources>
 
-    <ScrollViewer IsHorizontalRailEnabled="False" IsHorizontalScrollChainingEnabled="False"
-                  HorizontalScrollBarVisibility="Hidden" HorizontalScrollMode="Disabled"
-                  VerticalScrollBarVisibility="Auto" VerticalScrollMode="Auto" 
-                  Margin="5 10 5 10"
-                  >        
-        <Grid x:Name="PivotTableElement" HorizontalAlignment="Center" VerticalAlignment="Top" MinWidth="450">
-        </Grid>
-    </ScrollViewer>
+    <Grid>
+        <ScrollViewer IsHorizontalRailEnabled="False" IsHorizontalScrollChainingEnabled="False"
+                      HorizontalScrollBarVisibility="Hidden" HorizontalScrollMode="Disabled"
+                      VerticalScrollBarVisibility="Auto" VerticalScrollMode="Disabled"
+                      x:Name="ScrollViewerElement"
+                      Margin="5 10 5 10"
+                      MinWidth="450"
+                      HorizontalAlignment="Center"
+                      >        
+            <Grid x:Name="PivotTableElement" HorizontalAlignment="Center" VerticalAlignment="Top" MinWidth="450">
+            </Grid>
+        </ScrollViewer>
+    </Grid>
 </UserControl>
