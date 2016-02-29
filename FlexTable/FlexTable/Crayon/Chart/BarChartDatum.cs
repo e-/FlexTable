@@ -24,6 +24,7 @@ namespace FlexTable.Crayon.Chart
 
         public Double EnvelopeValue { get; set; }
         public Double Value { get; set; }
+        public Int32 Order { get; set; }
 
         public GroupedBarChartDatum Parent { get; set; }
 

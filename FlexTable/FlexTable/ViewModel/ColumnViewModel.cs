@@ -162,5 +162,7 @@ namespace FlexTable.ViewModel
         {
             StashedX = X;
         }
+
+        public Int32 SortDirection => this.SortOption == SortOption.Descending ? -1 : 1;
     }
 }

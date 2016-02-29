@@ -549,17 +549,25 @@ namespace FlexTable.Model
                 }
             }
 
-            foreach (ColumnViewModel columnViewModel in ViewStatus.SelectedColumnViewModels)
+            foreach (ColumnViewModel columnViewModel in ViewStatus.SelectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical))
             {
-                if (columnViewModel.Type == ColumnType.Categorical)
+                if (x.Cells[columnViewModel.Index].Content != y.Cells[columnViewModel.Index].Content)
                 {
-                    if (x.Cells[columnViewModel.Index].Content != y.Cells[columnViewModel.Index].Content)
-                    {
-                        return (x.Cells[columnViewModel.Index].Content as Category).Order.CompareTo((y.Cells[columnViewModel.Index].Content as Category).Order) * GetSortDirection(columnViewModel);
-                    }
+                    return (x.Cells[columnViewModel.Index].Content as Category).Order.CompareTo((y.Cells[columnViewModel.Index].Content as Category).Order) * GetSortDirection(columnViewModel);
                 }
-                else if (columnViewModel.Type == ColumnType.Numerical)
+            }
+
+            if(ViewStatus.IsN)
+            {
+                Int32 index = ViewStatus.FirstNumerical.Index;
+                return (x.Cells[index].Content as Bin).Min.CompareTo((y.Cells[index].Content as Bin).Min);
+            }
+
+            foreach (ColumnViewModel columnViewModel in ViewStatus.SelectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical))
+            {
+                if (x.Cells[columnViewModel.Index].Content != y.Cells[columnViewModel.Index].Content)
                 {
+                    return ((Double)x.Cells[columnViewModel.Index].Content).CompareTo((Double)y.Cells[columnViewModel.Index].Content) * GetSortDirection(columnViewModel);
                 }
             }
 
@@ -612,61 +620,51 @@ namespace FlexTable.Model
 
             foreach (ColumnViewModel columnViewModel in sortedAndSelectedColumnViewModels)
             {
-                if (columnViewModel.Type == ColumnType.Categorical)
+                if (x.Keys.ContainsKey(columnViewModel)) // 페이지가 여러개면 제일 상위 페이지 선택 컬럼을 기준으로 소팅하므로 이전에는 그 컬럼이 선택되지 않았을 수도 있음.
                 {
-                    if (x.Keys.ContainsKey(columnViewModel)) // 선택된거면 키에 있을 것
+                    if (columnViewModel.Type == ColumnType.Categorical)
                     {
                         if (x.Keys[columnViewModel] != y.Keys[columnViewModel])
                         {
                             return (x.Keys[columnViewModel] as Category).Order.CompareTo((y.Keys[columnViewModel] as Category).Order) * GetSortDirection(columnViewModel);
                         }
                     }
-                    else // 선택되지 않은거면 distinct한 value의 개수로 
-                    {
-                        Int32 xCount = x.Rows.Select(r => r.Cells[columnViewModel.Index].Content).Distinct().Count();
-                        Int32 yCount = y.Rows.Select(r => r.Cells[columnViewModel.Index].Content).Distinct().Count();
-
-                        if (xCount != yCount)
-                        {
-                            return xCount.CompareTo(yCount) * GetSortDirection(columnViewModel);
-                        }
-                    }
                 }
                 else if (columnViewModel.Type == ColumnType.Numerical)
                 {
-                    if (ViewStatus.SelectedColumnViewModels.Count == 1 && columnViewModel == ViewStatus.SelectedColumnViewModels[0]) // 이 경우는 뉴메리컬 하나만 선택되어 비닝 된 결과가 보이는 경우이다.
-                    {
-                        ColumnViewModel numerical = ViewStatus.SelectedColumnViewModels[0];
-                        Double xMin = (x.Keys[numerical] as Bin).Min,
-                               yMin = (y.Keys[numerical] as Bin).Min;
+                    Double xValue = columnViewModel.AggregativeFunction.Aggregate(x.Rows.Select(r => (Double)r.Cells[columnViewModel.Index].Content));
+                    Double yValue = columnViewModel.AggregativeFunction.Aggregate(y.Rows.Select(r => (Double)r.Cells[columnViewModel.Index].Content));
 
-                        if (xMin != yMin)
-                            return xMin.CompareTo(yMin) * GetSortDirection(numerical);
-                    }
-                    else
+                    if (xValue != yValue)
                     {
-                        Double xValue = columnViewModel.AggregativeFunction.Aggregate(x.Rows.Select(r => (Double)r.Cells[columnViewModel.Index].Content));
-                        Double yValue = columnViewModel.AggregativeFunction.Aggregate(y.Rows.Select(r => (Double)r.Cells[columnViewModel.Index].Content));
-
-                        if (xValue != yValue)
-                        {
-                            return xValue.CompareTo(yValue) * GetSortDirection(columnViewModel);
-                        }
+                        return xValue.CompareTo(yValue) * GetSortDirection(columnViewModel);
                     }
                 }
             }
 
-            foreach (ColumnViewModel columnViewModel in ViewStatus.SelectedColumnViewModels)
+
+            foreach (ColumnViewModel columnViewModel in ViewStatus.SelectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical))
             {
-                if (columnViewModel.Type == ColumnType.Categorical)
+                if (x.Keys.ContainsKey(columnViewModel))
                 {
                     if (x.Keys[columnViewModel] != y.Keys[columnViewModel])
                     {
                         return (x.Keys[columnViewModel] as Category).Order.CompareTo((y.Keys[columnViewModel] as Category).Order) * GetSortDirection(columnViewModel);
                     }
                 }
-                else if (columnViewModel.Type == ColumnType.Numerical)
+            }
+
+
+            if (ViewStatus.IsN) // 이 경우는 뉴메리컬 하나만 선택되어 비닝 된 결과가 보이는 경우이다.
+            {
+                ColumnViewModel numerical = ViewStatus.FirstNumerical;
+                if (x.Keys.ContainsKey(numerical))
                 {
+                    Double xMin = (x.Keys[numerical] as Bin).Min,
+                        yMin = (y.Keys[numerical] as Bin).Min;
+
+                    if (xMin != yMin)
+                        return xMin.CompareTo(yMin) * GetSortDirection(numerical);
                 }
             }
 
@@ -676,16 +674,9 @@ namespace FlexTable.Model
 
             foreach (ColumnViewModel columnViewModel in sortedColumnViewModels)
             {
-                if (columnViewModel.Type == ColumnType.Categorical)
+                if (x.Keys.ContainsKey(columnViewModel))
                 {
-                    if (x.Keys.ContainsKey(columnViewModel)) // 선택된거면 키에 있을 것
-                    {
-                        if (x.Keys[columnViewModel] != y.Keys[columnViewModel])
-                        {
-                            return (x.Keys[columnViewModel] as Category).Order.CompareTo((y.Keys[columnViewModel] as Category).Order) * GetSortDirection(columnViewModel);
-                        }
-                    }
-                    else // 선택되지 않은거면 distinct한 value의 개수로 
+                    if (columnViewModel.Type == ColumnType.Categorical)
                     {
                         Int32 xCount = x.Rows.Select(r => r.Cells[columnViewModel.Index].Content).Distinct().Count();
                         Int32 yCount = y.Rows.Select(r => r.Cells[columnViewModel.Index].Content).Distinct().Count();
@@ -698,24 +689,12 @@ namespace FlexTable.Model
                 }
                 else if (columnViewModel.Type == ColumnType.Numerical)
                 {
-                    if (ViewStatus.SelectedColumnViewModels.Count == 1 && columnViewModel == ViewStatus.SelectedColumnViewModels[0]) // 이 경우는 뉴메리컬 하나만 선택되어 비닝 된 결과가 보이는 경우이다.
-                    {
-                        ColumnViewModel numerical = ViewStatus.SelectedColumnViewModels[0];
-                        Double xMin = (x.Keys[numerical] as Bin).Min,
-                               yMin = (y.Keys[numerical] as Bin).Min;
+                    Double xValue = columnViewModel.AggregativeFunction.Aggregate(x.Rows.Select(r => (Double)r.Cells[columnViewModel.Index].Content));
+                    Double yValue = columnViewModel.AggregativeFunction.Aggregate(y.Rows.Select(r => (Double)r.Cells[columnViewModel.Index].Content));
 
-                        if (xMin != yMin)
-                            return xMin.CompareTo(yMin) * GetSortDirection(numerical);
-                    }
-                    else
+                    if (xValue != yValue)
                     {
-                        Double xValue = columnViewModel.AggregativeFunction.Aggregate(x.Rows.Select(r => (Double)r.Cells[columnViewModel.Index].Content));
-                        Double yValue = columnViewModel.AggregativeFunction.Aggregate(y.Rows.Select(r => (Double)r.Cells[columnViewModel.Index].Content));
-
-                        if (xValue != yValue)
-                        {
-                            return xValue.CompareTo(yValue) * GetSortDirection(columnViewModel);
-                        }
+                        return xValue.CompareTo(yValue) * GetSortDirection(columnViewModel);
                     }
                 }
             }

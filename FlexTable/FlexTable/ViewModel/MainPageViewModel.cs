@@ -117,10 +117,10 @@ namespace FlexTable.ViewModel
             foreach (ColumnViewModel cvm in SheetViewModel.ColumnViewModels)
             {
                 cvm.IsSelected = viewStatus.SelectedColumnViewModels.IndexOf(cvm) >= 0;
-                if(isN && cvm.IsSelected && cvm.SortOption == SortOption.None)
+                /*if(isN && cvm.IsSelected && cvm.SortOption == SortOption.None)
                 {
                     SheetViewModel.Sort(cvm, SortOption.Ascending);
-                }
+                }*/
             }
 
             viewStatus.Generate(SheetViewModel);

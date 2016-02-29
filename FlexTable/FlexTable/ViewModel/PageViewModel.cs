@@ -318,7 +318,7 @@ namespace FlexTable.ViewModel
                 IsBarChartVisible = true;
             }
 
-            pageView.UpdateCarousel(trackPreviousParagraph, null);// firstChartTag?.ToString());
+            pageView.UpdateCarousel(false/*trackPreviousParagraph*/, null);// firstChartTag?.ToString());
         }
 
         
@@ -454,7 +454,8 @@ namespace FlexTable.ViewModel
                                     ColumnViewModel = categorical2,
                                     Parent = datum,
                                     Rows = null,
-                                    EnvelopeRows = g.Rows
+                                    EnvelopeRows = g.Rows,
+                                    Order = categorical2.Categories.IndexOf(g.Keys[categorical2] as Category) * categorical2.SortDirection
                                 }).ToList();
                             return datum;
                         })
@@ -533,7 +534,8 @@ namespace FlexTable.ViewModel
                                 ColumnViewModel = categorical2,
                                 Parent = datum,
                                 Rows = null,
-                                EnvelopeRows = g.Rows
+                                EnvelopeRows = g.Rows,
+                                Order = categorical2.Categories.IndexOf(g.Keys[categorical2] as Category) * categorical2.SortDirection
                             }).ToList();
                             return datum;
                         })
