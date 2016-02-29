@@ -228,6 +228,8 @@ namespace FlexTable.ViewModel
 
             var dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
 
+            return;
+
             ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[3]);
             
             DispatcherTimer dispatcherTimer = new DispatcherTimer();

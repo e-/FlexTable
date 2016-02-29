@@ -117,6 +117,35 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AggregatedColumnName" xml:space="preserve">
+    <value>{1}|의 |{0}</value>
+  </data>
+  <data name="And" xml:space="preserve">
+    <value>및</value>
+  </data>
+  <data name="ChartTitleCC" xml:space="preserve">
+    <value>{0:c}| 및 |{1:c}|별 빈도수</value>
+  </data>
+  <data name="ChartTitleCCN" xml:space="preserve">
+    <value>{0:c}| 및 |{1:c}|별 |{2:a}</value>
+  </data>
+  <data name="ChartTitleCN" xml:space="preserve">
+    <value>{0:c}|별 |{1:a}</value>
+  </data>
+  <data name="ChartTitleCNN" xml:space="preserve">
+    <value>{0:c}|에 따른 |{1:a}| 및 |{2:a}</value>
+  </data>
+  <data name="ChartTitleCNvsN" xml:space="preserve">
+    <value>{0:c}|에 따른 |{1:c}| 대 |{2:c}</value>
+    <comment>ColoredScatterplot</comment>
+  </data>
+  <data name="ChartTitleNN" xml:space="preserve">
+    <value>{0:a}| 및 |{1:a}</value>
+  </data>
+  <data name="ChartTitleNvsN" xml:space="preserve">
+    <value>{0:c}| 대 |{1:c}</value>
+    <comment>Scatterplot</comment>
+  </data>
   <data name="ColumnPopupDown.Text" xml:space="preserve">
     <value>내림차순 정렬</value>
   </data>
@@ -129,48 +158,23 @@
   <data name="ColumnPopupUp.Text" xml:space="preserve">
     <value>오름차순 정렬</value>
   </data>
+  <data name="CorrelationalStatisticsTitle" xml:space="preserve">
+    <value>{0:c}| 및 |{1:c}|의 상관통계</value>
+  </data>
   <data name="Count" xml:space="preserve">
     <value>개수</value>
   </data>
   <data name="DescriptiveStatisticsTitle" xml:space="preserve">
-    <value>&lt;b&gt;{0}&lt;/b&gt;의 기술통계</value>
-  </data>
-  <data name="DescriptiveStatisticsTitle1" xml:space="preserve">
-    <value />
-  </data>
-  <data name="DescriptiveStatisticsTitle2" xml:space="preserve">
-    <value>의 기술통계</value>
-    <comment>DescriptiveStatisticsTitle1</comment>
+    <value>{0:c}|의 기술통계</value>
   </data>
   <data name="DistributionTitle" xml:space="preserve">
-    <value>&lt;b&gt;{0}&lt;/b&gt;의 분포</value>
-  </data>
-  <data name="DistributionTitle1" xml:space="preserve">
-    <value />
-  </data>
-  <data name="DistributionTitle2" xml:space="preserve">
-    <value>의 분포</value>
+    <value>{0:c}|의 분포</value>
   </data>
   <data name="Frequency" xml:space="preserve">
     <value>빈도수</value>
   </data>
   <data name="FrequencyTitle" xml:space="preserve">
-    <value>&lt;b&gt;{0}&lt;/b&gt;의 빈도수</value>
-  </data>
-  <data name="FrequencyTitle1" xml:space="preserve">
-    <value />
-  </data>
-  <data name="FrequencyTitle2" xml:space="preserve">
-    <value>의 빈도수</value>
-  </data>
-  <data name="GroupedFrequencyTitle1" xml:space="preserve">
-    <value />
-  </data>
-  <data name="GroupedFrequencyTitle2" xml:space="preserve">
-    <value />
-  </data>
-  <data name="GroupedFrequencyTitle3" xml:space="preserve">
-    <value />
+    <value>{0:c}|별 빈도수</value>
   </data>
   <data name="Max" xml:space="preserve">
     <value>최대값</value>
@@ -261,5 +265,8 @@
   </data>
   <data name="Sum" xml:space="preserve">
     <value>합계</value>
+  </data>
+  <data name="wer" xml:space="preserve">
+    <value />
   </data>
 </root>

@@ -127,6 +127,7 @@ namespace FlexTable.ViewModel
             return FormatAggregatedName(column, Type, aggregativeFunction);
         }
 
+        String aggregatedColumnNameFormat = Const.Loader.GetString("AggregatedColumnName").Replace("|", "");
         public String FormatAggregatedName(Column column, ColumnType type, AggregativeFunction.BaseAggregation aggregativeFunction)
         {
             if (aggregativeFunction is AggregativeFunction.MinAggregation ||
@@ -134,7 +135,7 @@ namespace FlexTable.ViewModel
                 aggregativeFunction is AggregativeFunction.MeanAggregation ||
                 aggregativeFunction is AggregativeFunction.SumAggregation)
             {
-                return $"{aggregativeFunction.Name}({column.Name})";
+                return String.Format(aggregatedColumnNameFormat, aggregativeFunction.Name, column.Name);
             }
 
             return column.Name;

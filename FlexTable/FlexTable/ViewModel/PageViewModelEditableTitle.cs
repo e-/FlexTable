@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using FlexTable.Model;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using System.Text.RegularExpressions;
 
 namespace FlexTable.ViewModel
 {
@@ -16,9 +17,9 @@ namespace FlexTable.ViewModel
             TextBlock textBlock = new TextBlock()
             {
                 VerticalAlignment = VerticalAlignment.Center,
-                FontSize = 30
+                FontSize = 30,
             };
-            Util.HtmlToTextBlockFormatter.Format(text, textBlock);
+            Util.HtmlToTextBlockFormatter.Format(text.Replace(' ', (char)160), textBlock);
 
             stackPanel.Children.Add(textBlock);
         }
@@ -128,6 +129,116 @@ namespace FlexTable.ViewModel
             });
         }
 
+        void AddAggregatedColumnComboBox(StackPanel title, ColumnViewModel numerical, Boolean withSameUnit)
+        {
+            String format = Const.Loader.GetString("AggregatedColumnName");
+            foreach(String f in format.Split('|'))
+            {
+                if(f == "{0}")
+                {
+                    if(IsSelected)
+                    {
+                        AddComboBox(
+                           title,
+                           numerical.AggregativeFunction.Name,
+                           AggregativeFunction.Names,
+                           CreateAggregationChangedHandler(numerical),
+                           false
+                       );
+                    }
+                    else
+                    {
+                        AddText(title, $"<b>{numerical.AggregativeFunction.Name}</b>");
+                    }
+                }
+                else if(f == "{1}")
+                {
+                    if (IsSelected)
+                    {
+                        AddComboBox(
+                           title,
+                           numerical.Name,
+                           mainPageViewModel.SheetViewModel.ColumnViewModels.Where(
+                               cvm => cvm.Type == ColumnType.Numerical && (withSameUnit ? cvm.Unit == numerical.Unit : true)
+                           ).Select(cvm => cvm.Name),
+                           CreateColumnChangedHandler(numerical)
+                       );
+                    }
+                    else
+                    {
+                        AddText(title, $"<b>{numerical.Name}</b>");
+                    }
+                }
+                else
+                {
+                    AddText(title, f);
+                }
+            }
+        }
+
+        void AddColumnComboBox(StackPanel title, ColumnViewModel columnViewModel)
+        {
+            if (IsSelected)
+            {
+                AddComboBox(
+                    title,
+                    columnViewModel.Name,
+                    mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == columnViewModel.Type).Select(cvm => cvm.Name),
+                    CreateColumnChangedHandler(columnViewModel)
+                );
+            }
+            else
+            {
+                AddText(title, $"<b>{columnViewModel.Name}</b>");
+            }
+        }
+
+        void AddEditableTitle(StackPanel title, String format, ColumnViewModel column0)
+        {
+            AddEditableTitle(title, format, new List<ColumnViewModel>() { column0 });
+        }
+
+        void AddEditableTitle(StackPanel title, String format, ColumnViewModel column0, ColumnViewModel column1)
+        {
+            AddEditableTitle(title, format, new List<ColumnViewModel>() { column0, column1 });
+        }
+
+        void AddEditableTitle(StackPanel title, String format, ColumnViewModel column0, ColumnViewModel column1, ColumnViewModel column2)
+        {
+            AddEditableTitle(title, format, new List<ColumnViewModel>() { column0, column1, column2 });
+        }
+
+        void AddEditableTitle(StackPanel title, String format, List<ColumnViewModel> columnViewModels)
+        {
+            foreach(String f in format.Split('|'))
+            {
+                Match match = Regex.Match(f, @"{([^d]+):([c|a|u])}");
+
+                if(match.Success)
+                {
+                    String num = match.Groups[1].Value;
+                    String type = match.Groups[2].Value;
+                    ColumnViewModel columnViewModel = columnViewModels[Int32.Parse(num)];
+
+                    if(type == "a") // aggregated
+                    {
+                        AddAggregatedColumnComboBox(title, columnViewModel, false);
+                    }
+                    else if(type == "c")
+                    {
+                        AddColumnComboBox(title, columnViewModel);
+                    }
+                    else if(type == "u")
+                    {
+                        AddAggregatedColumnComboBox(title, columnViewModel, true);
+                    }
+                }
+                else
+                {
+                    AddText(title, f);
+                }
+            }
+        }
 
         #region Editable Title Generator
 
@@ -147,60 +258,9 @@ namespace FlexTable.ViewModel
 
         void DrawEditableTitleCN(StackPanel title, ColumnViewModel categorical, ColumnViewModel numerical)
         {
-            AddComboBox(
-                   title,
-                   numerical.AggregativeFunction.Name,
-                   AggregativeFunction.Names,
-                   CreateAggregationChangedHandler(numerical),
-                   false
-               );
-            AddText(title, "(");
-            AddComboBox(
-                   title,
-                   numerical.Name,
-                   mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical).Select(cvm => cvm.Name),
-                   CreateColumnChangedHandler(numerical)
-               );
-            AddText(title, ")\x00A0by\x00A0");
-            AddComboBox(
-                title,
-                categorical.Name,
-                mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).Select(cvm => cvm.Name),
-                CreateColumnChangedHandler(categorical)
-            );
+            AddEditableTitle(title, Const.Loader.GetString("ChartTitleCN"), categorical, numerical);
         }
-
-        void DrawEditableTitleCCN(StackPanel title, ColumnViewModel categorical1, ColumnViewModel categorical2, ColumnViewModel numerical)
-        {
-            AddComboBox(
-                   title,
-                   numerical.AggregativeFunction.Name,
-                   AggregativeFunction.Names,
-                   CreateAggregationChangedHandler(numerical)
-               );
-            AddText(title, "(");
-            AddComboBox(
-                    title,
-                    numerical.Name,
-                    mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical).Select(cvm => cvm.Name),
-                    CreateColumnChangedHandler(numerical)
-                );
-            AddText(title, ")\x00A0by\x00A0");
-            AddComboBox(
-                title,
-                categorical1.Name,
-                mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).Select(cvm => cvm.Name),
-                CreateColumnChangedHandler(categorical1)
-            );
-            AddText(title, "\x00A0and\x00A0");
-            AddComboBox(
-               title,
-               categorical2.Name,
-               mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).Select(cvm => cvm.Name),
-               CreateColumnChangedHandler(categorical2)
-           );
-        }
-
+        
         void DrawEditableTitleCNvsN(StackPanel title, ColumnViewModel categorical, ColumnViewModel numerical1, ColumnViewModel numerical2)
         {
             AddComboBox(
@@ -434,12 +494,7 @@ namespace FlexTable.ViewModel
             pageView.PivotTableTitle.Children.Clear();
             if (ViewStatus.IsC)
             {
-                DrawEditableTitleCxNx(pageView.PivotTableTitle,
-                        "Frequency\x00A0of\x00A0",
-                        new List<ColumnViewModel>() { ViewStatus.FirstCategorical },
-                        "",
-                        new List<ColumnViewModel>() { }
-                        );
+                AddEditableTitle(pageView.PivotTableTitle, Const.Loader.GetString("FrequencyTitle"), ViewStatus.FirstCategorical);
             }
             else if (ViewStatus.IsN)
             {

@@ -330,27 +330,8 @@ namespace FlexTable.ViewModel
             IsBarChartVisible = true;
 
             pageView.BarChartTitle.Children.Clear();
-            if (IsSelected)
-            {
-                String t1 = Const.Loader.GetString("FrequencyTitle1"),
-                       t2 = Const.Loader.GetString("FrequencyTitle2");
-
-                if (t1.Length > 0)
-                    AddText(pageView.BarChartTitle, t1);
-                AddComboBox(
-                    pageView.BarChartTitle,
-                    categorical.Name,
-                    mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).Select(cvm => cvm.Name),
-                    CreateColumnChangedHandler(categorical)
-                );
-                if (t2.Length > 0)
-                    AddText(pageView.BarChartTitle, t2);
-            }
-            else
-            {
-                AddText(pageView.BarChartTitle, String.Format(Const.Loader.GetString("FrequencyTitle"), categorical.Name));
-            }
-
+            AddEditableTitle(pageView.BarChartTitle, Const.Loader.GetString("FrequencyTitle"), categorical);
+            
             Int32 index = categorical.Index;
 
             pageView.BarChart.YStartsFromZero = true;
@@ -395,17 +376,7 @@ namespace FlexTable.ViewModel
                     );
 
             pageView.DescriptiveStatisticsTitle.Children.Clear();
-            if (IsSelected/* && mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical).Count() > 1*/) // 선택지가 하나밖에 없으면 셀렉트 박스 보여줄 필요가 없음.
-            {
-                DrawEditableTitleN(pageView.DescriptiveStatisticsTitle, numerical,
-                    Const.Loader.GetString("DescriptiveStatisticsTitle1"),
-                    Const.Loader.GetString("DescriptiveStatisticsTitle2"));// "Descriptive Statistics of\x00A0");
-            }
-            else
-            {
-                AddText(pageView.DescriptiveStatisticsTitle, String.Format(Const.Loader.GetString("DescriptiveStatisticsTitle"), numerical.Name));
-                
-            }
+            AddEditableTitle(pageView.DescriptiveStatisticsTitle, Const.Loader.GetString("DescriptiveStatisticsTitle"), numerical);
 
             IsDescriptiveStatisticsVisible = true;
             pageView.DescriptiveStatisticsView.DataContext = result;            
@@ -415,17 +386,7 @@ namespace FlexTable.ViewModel
         {
             pageView.DistributionViewTitle.Children.Clear();
 
-            if (IsSelected/* && mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical).Count() > 1*/) // 선택지가 하나밖에 없으면 selectbox 보여줄 필요 없음
-            {
-                DrawEditableTitleN(pageView.DistributionViewTitle, numerical,
-                    Const.Loader.GetString("DistributionTitle1"),
-                    Const.Loader.GetString("DistributionTitle2"));
-                    //"Distribution of\x00A0");
-            }
-            else
-            {
-                AddText(pageView.DistributionViewTitle, String.Format(Const.Loader.GetString("DistributionTitle"), numerical.Name));
-            }
+            AddEditableTitle(pageView.DistributionViewTitle, Const.Loader.GetString("DistributionTitle"), numerical);
             
             IsDistributionVisible = true;
             pageView.DistributionView.Feed(mainPageViewModel.SheetViewModel.FilteredRows, numerical);
@@ -453,31 +414,11 @@ namespace FlexTable.ViewModel
             IsGroupedBarChartVisible = true;
 
             pageView.GroupedBarChartTitle.Children.Clear();
-            if(IsSelected)
-            {
-                AddText(pageView.GroupedBarChartTitle, "Frequency of\x00A0");
-                AddComboBox(
-                    pageView.GroupedBarChartTitle,
-                    categorical2.Name,
-                    mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).Select(cvm => cvm.Name),
-                    CreateColumnChangedHandler(categorical2)
-                );
-                AddText(pageView.GroupedBarChartTitle, "\x00A0by\x00A0");
-                AddComboBox(
-                    pageView.GroupedBarChartTitle,
-                    categorical1.Name,
-                    mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).Select(cvm => cvm.Name),
-                    CreateColumnChangedHandler(categorical1)
-                );
-            }
-            else
-            {
-                AddText(pageView.GroupedBarChartTitle, $"Frequency of <b>{categorical2.Name}</b> by <b>{categorical1.Name}</b>");
-            }
+            AddEditableTitle(pageView.GroupedBarChartTitle, Const.Loader.GetString("ChartTitleCC"), categorical1, categorical2);
 
             pageView.GroupedBarChart.YStartsFromZero = true;
             pageView.GroupedBarChart.HorizontalAxisTitle = categorical1.Name;
-            pageView.GroupedBarChart.VerticalAxisTitle = $"Frequency of {categorical2.Name}";
+            pageView.GroupedBarChart.VerticalAxisTitle = Const.Loader.GetString("Frequency");
 
             if (groupedRows.Count > GroupedBarChartMaximumRecordNumber)
             {
@@ -552,14 +493,7 @@ namespace FlexTable.ViewModel
             IsGroupedBarChartVisible = true;
 
             pageView.GroupedBarChartTitle.Children.Clear();
-            if (IsSelected)
-            {
-                DrawEditableTitleCCN(pageView.GroupedBarChartTitle, categorical1, categorical2, numerical);
-            }
-            else
-            {
-                AddText(pageView.GroupedBarChartTitle, $"<b>{numerical.HeaderName}</b> by <b>{categorical1.Name}</b> and <b>{categorical2.Name}</b>");
-            }
+            AddEditableTitle(pageView.GroupedBarChartTitle, Const.Loader.GetString("ChartTitleCCN"), categorical1, categorical2, numerical);
 
             pageView.GroupedBarChart.YStartsFromZero = false;
             pageView.GroupedBarChart.HorizontalAxisTitle = categorical1.Name;
@@ -638,14 +572,7 @@ namespace FlexTable.ViewModel
             IsBarChartVisible = true;
 
             pageView.BarChartTitle.Children.Clear();
-            if(IsSelected)
-            {
-                DrawEditableTitleCN(pageView.BarChartTitle, categorical, numerical);
-            }
-            else
-            {
-                AddText(pageView.BarChartTitle, $"<b>{numerical.AggregatedName}</b> by <b>{categorical.Name}</b>");
-            }
+            AddEditableTitle(pageView.BarChartTitle, Const.Loader.GetString("ChartTitleCN"), categorical, numerical);
 
             pageView.BarChart.YStartsFromZero = false;
             pageView.BarChart.HorizontalAxisTitle = categorical.Name;
@@ -687,15 +614,9 @@ namespace FlexTable.ViewModel
             //라인 차트로 보고 싶을 때
             IsLineChartVisible = true;
 
+
             pageView.LineChartTitle.Children.Clear();
-            if (IsSelected)
-            {
-                DrawEditableTitleCN(pageView.LineChartTitle, categorical, numerical);
-            }
-            else
-            {
-                AddText(pageView.LineChartTitle, $"<b>{numerical.HeaderName}</b> by <b>{categorical.Name}</b>");
-            }
+            AddEditableTitle(pageView.LineChartTitle, Const.Loader.GetString("ChartTitleCN"), categorical, numerical);
 
             pageView.LineChart.YStartsFromZero = false;
             pageView.LineChart.HorizontalAxisTitle = categorical.Name;
@@ -726,7 +647,6 @@ namespace FlexTable.ViewModel
 
         void SetLineChartSelection(ColumnViewModel numerical, IEnumerable<Row> selectedRows)
         {
-
             if (selectedRows.Count() == 0)
             {
                 foreach (LineChartDatum lineChartDatum in pageView.LineChart.Data)
@@ -761,14 +681,7 @@ namespace FlexTable.ViewModel
             IsLineChartVisible = true;
 
             pageView.LineChartTitle.Children.Clear();
-            if (IsSelected)
-            {
-                DrawEditableTitleCCN(pageView.LineChartTitle, categorical1, categorical2, numerical);
-            }
-            else
-            {
-                AddText(pageView.LineChartTitle, $"<b>{numerical.HeaderName}</b> by <b>{categorical1.Name}</b> and <b>{categorical2.Name}</b>");
-            }
+            AddEditableTitle(pageView.LineChartTitle, Const.Loader.GetString("ChartTitleCCN"), categorical1, categorical2, numerical);
             
             pageView.LineChart.YStartsFromZero = false;
             pageView.LineChart.HorizontalAxisTitle = categorical1.Name;
@@ -806,20 +719,37 @@ namespace FlexTable.ViewModel
             pageView.LineChart.Data = rows.ToList();
         }
 
+        void DrawScatterplot(ColumnViewModel numerical1, ColumnViewModel numerical2)
+        {
+            IsScatterplotVisible = true;
+
+            pageView.ScatterplotTitle.Children.Clear();
+            AddEditableTitle(pageView.ScatterplotTitle, Const.Loader.GetString("ChartTitleNvsN"), numerical1, numerical2);
+
+            pageView.Scatterplot.LegendVisibility = Visibility.Collapsed;
+            pageView.Scatterplot.HorizontalAxisTitle = numerical1.Name + numerical1.UnitString;
+            pageView.Scatterplot.VerticalAxisTitle = numerical2.Name + numerical2.UnitString;
+            pageView.Scatterplot.AutoColor = false;
+            pageView.Scatterplot.Data = mainPageViewModel.SheetViewModel.FilteredRows
+                .Select(r => new ScatterplotDatum()
+                {
+                    Key = 0,
+                    Value1 = (Double)r.Cells[numerical1.Index].Content,
+                    Value2 = (Double)r.Cells[numerical2.Index].Content,
+                    Row = r,
+                    State = ScatterplotState.Default,
+                    ColumnViewModel = null
+                })
+                .ToList();
+        }
+
         void DrawScatterplot(ColumnViewModel categorical, ColumnViewModel numerical1, ColumnViewModel numerical2)
         {
             IsScatterplotVisible = true;
 
             pageView.ScatterplotTitle.Children.Clear();
-            if(IsSelected)
-            {
-                DrawEditableTitleCNvsN(pageView.ScatterplotTitle, categorical, numerical1, numerical2);
-            }
-            else
-            {
-                AddText(pageView.ScatterplotTitle, $"<b>{numerical1.Name}</b> vs. <b>{numerical2.Name}</b> colored by <b>{categorical.Name}</b>");
-            }
-            
+            AddEditableTitle(pageView.ScatterplotTitle, Const.Loader.GetString("ChartTitleCNvsN"), categorical, numerical1, numerical2);
+                        
             pageView.Scatterplot.LegendVisibility = Visibility.Visible;
             pageView.Scatterplot.HorizontalAxisTitle = numerical1.Name + numerical1.UnitString;
             pageView.Scatterplot.VerticalAxisTitle = numerical2.Name + numerical2.UnitString;
@@ -843,38 +773,7 @@ namespace FlexTable.ViewModel
             }
 
             pageView.Scatterplot.Data = data.ToList();
-        }
-
-        void DrawScatterplot(ColumnViewModel numerical1, ColumnViewModel numerical2)
-        {
-            IsScatterplotVisible = true;
-
-            pageView.ScatterplotTitle.Children.Clear();
-            if (IsSelected)
-            {
-                DrawEditableTitleNvsN(pageView.ScatterplotTitle, numerical1, numerical2);
-            }
-            else
-            {
-                AddText(pageView.ScatterplotTitle, $"<b>{numerical1.Name}</b> vs. <b>{numerical2.Name}</b>");
-            }
-
-            pageView.Scatterplot.LegendVisibility = Visibility.Collapsed;
-            pageView.Scatterplot.HorizontalAxisTitle = numerical1.Name + numerical1.UnitString;
-            pageView.Scatterplot.VerticalAxisTitle = numerical2.Name + numerical2.UnitString;
-            pageView.Scatterplot.AutoColor = false;
-            pageView.Scatterplot.Data = mainPageViewModel.SheetViewModel.FilteredRows
-                .Select(r => new ScatterplotDatum()
-                {
-                    Key = 0,
-                    Value1 = (Double)r.Cells[numerical1.Index].Content,
-                    Value2 = (Double)r.Cells[numerical2.Index].Content,
-                    Row = r,
-                    State = ScatterplotState.Default,
-                    ColumnViewModel = null
-                })
-                .ToList();
-        }
+        }        
 
         void SetScatterplotSelection(IEnumerable<Row> selectedRows)
         {
@@ -899,15 +798,8 @@ namespace FlexTable.ViewModel
             IsGroupedBarChartVisible = true;
 
             pageView.GroupedBarChartTitle.Children.Clear();
-            if (IsSelected)
-            {
-                DrawEditableTitleNN(pageView.GroupedBarChartTitle, numerical1, numerical2);
-            }
-            else
-            {
-                AddText(pageView.GroupedBarChartTitle, $"<b>{numerical1.AggregatedName}</b> and <b>{numerical2.AggregatedName}</b>");
-            }
-
+            AddEditableTitle(pageView.GroupedBarChartTitle, Const.Loader.GetString("ChartTitleNN"), numerical1, numerical2);
+            
             pageView.GroupedBarChart.YStartsFromZero = true;
             pageView.GroupedBarChart.HorizontalAxisTitle = "";
             pageView.GroupedBarChart.VerticalAxisTitle = $"{numerical1.UnitString}";
@@ -978,18 +870,11 @@ namespace FlexTable.ViewModel
             IsGroupedBarChartVisible = true;
 
             pageView.GroupedBarChartTitle.Children.Clear();
-            if (IsSelected)
-            {
-                DrawEditableTitleCNN(pageView.GroupedBarChartTitle, categorical, numerical1, numerical2);
-            }
-            else
-            {
-                AddText(pageView.GroupedBarChartTitle, $"<b>{numerical1.AggregatedName}</b> and <b>{numerical2.AggregatedName}</b> by <b>{categorical.Name}</b>");
-            }
+            AddEditableTitle(pageView.GroupedBarChartTitle, Const.Loader.GetString("ChartTitleCNN"), categorical, numerical1, numerical2);
 
             pageView.GroupedBarChart.YStartsFromZero = false;
             pageView.GroupedBarChart.HorizontalAxisTitle = categorical.Name;
-            pageView.GroupedBarChart.VerticalAxisTitle = $"{numerical1.Name} and {numerical2.Name} {numerical1.UnitString}";
+            pageView.GroupedBarChart.VerticalAxisTitle = $"{numerical1.Name} {Const.Loader.GetString("And")} {numerical2.Name} {numerical1.UnitString}";
 
             Category category1 = new Category() { Value = numerical1.Name, Color = Category10.Colors[0], IsVirtual = true },
                      category2 = new Category() { Value = numerical2.Name, Color = Category10.Colors[1], IsVirtual = true };
@@ -1061,18 +946,11 @@ namespace FlexTable.ViewModel
             IsLineChartVisible = true;
 
             pageView.LineChartTitle.Children.Clear();
-            if (IsSelected)
-            {
-                DrawEditableTitleCNN(pageView.LineChartTitle, categorical, numerical1, numerical2);
-            }
-            else
-            {
-                AddText(pageView.LineChartTitle, $"<b>{numerical1.AggregatedName}</b> and <b>{numerical2.AggregatedName}</b> by <b>{categorical.Name}</b>");
-            }
+            AddEditableTitle(pageView.LineChartTitle, Const.Loader.GetString("ChartTitleCNN"), categorical, numerical1, numerical2);
 
             pageView.LineChart.YStartsFromZero = false;
             pageView.LineChart.HorizontalAxisTitle = categorical.Name;
-            pageView.LineChart.VerticalAxisTitle = $"{numerical1.Name} and {numerical2.Name} {numerical1.UnitString}";
+            pageView.LineChart.VerticalAxisTitle = $"{numerical1.Name} {Const.Loader.GetString("And")} {numerical2.Name} {numerical1.UnitString}";
            
             
             Int32 index = 0;
@@ -1149,14 +1027,7 @@ namespace FlexTable.ViewModel
                 );
 
             pageView.CorrelationStatisticsTitle.Children.Clear();
-            if (IsSelected)
-            {
-                DrawEditableTitleNvsN(pageView.CorrelationStatisticsTitle, numerical1, numerical2);
-            }
-            else
-            {
-                AddText(pageView.CorrelationStatisticsTitle, $"<b>{numerical1.Name}</b> vs. <b>{numerical2.Name}</b>");
-            }
+            AddEditableTitle(pageView.CorrelationStatisticsTitle, Const.Loader.GetString("CorrelationalStatisticsTitle"), numerical1, numerical2);
 
             IsCorrelationStatisticsVisible = true;
             pageView.CorrelationStatisticsView.DataContext = result;
