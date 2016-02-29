@@ -129,27 +129,18 @@ namespace FlexTable.ViewModel
 
         public String FormatAggregatedName(Column column, ColumnType type, AggregativeFunction.BaseAggregation aggregativeFunction)
         {
-            if (aggregativeFunction is AggregativeFunction.MinAggregation)
+            if (aggregativeFunction is AggregativeFunction.MinAggregation ||
+                aggregativeFunction is AggregativeFunction.MaxAggregation ||
+                aggregativeFunction is AggregativeFunction.MeanAggregation ||
+                aggregativeFunction is AggregativeFunction.SumAggregation)
             {
-                return $"Min({column.Name})";
-            }
-            if (aggregativeFunction is AggregativeFunction.MaxAggregation)
-            {
-                return $"Max({column.Name})";
-            }
-            if (aggregativeFunction is AggregativeFunction.AverageAggregation)
-            {
-                return $"Avg({column.Name})";
-            }
-            if (aggregativeFunction is AggregativeFunction.SumAggregation)
-            {
-                return $"Sum({column.Name})";
+                return $"{aggregativeFunction.Name}({column.Name})";
             }
 
             return column.Name;
         }
 
-        private AggregativeFunction.BaseAggregation aggregativeFunction = new AggregativeFunction.AverageAggregation();
+        private AggregativeFunction.BaseAggregation aggregativeFunction = new AggregativeFunction.SumAggregation();
         public AggregativeFunction.BaseAggregation AggregativeFunction
         {
             get { return aggregativeFunction; }

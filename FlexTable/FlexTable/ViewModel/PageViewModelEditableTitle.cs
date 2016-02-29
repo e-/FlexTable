@@ -131,21 +131,22 @@ namespace FlexTable.ViewModel
 
         #region Editable Title Generator
 
-        void DrawEditableTitleN(StackPanel title, ColumnViewModel numerical, String prefix)
+        void DrawEditableTitleN(StackPanel title, ColumnViewModel numerical, String prefix, String suffix)
         {
-            AddText(title, prefix);
+            if(prefix.Length > 0)
+                AddText(title, prefix);
             AddComboBox(
                 title,
                 numerical.Name,
                 mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical).Select(cvm => cvm.Name),
                 CreateColumnChangedHandler(numerical)
             );
+            if (suffix.Length > 0)
+                AddText(title, suffix);
         }
 
         void DrawEditableTitleCN(StackPanel title, ColumnViewModel categorical, ColumnViewModel numerical)
         {
-            // TODO 선택 변경하면 에러남 이 부분 처리해야함
-            // 현재 aggregation function의 상태 저장이 필요함 왜냐하면 numerical을 바꿨을때 aggrfunction은 유지해야 하기 때문
             AddComboBox(
                    title,
                    numerical.AggregativeFunction.Name,
@@ -442,7 +443,8 @@ namespace FlexTable.ViewModel
             }
             else if (ViewStatus.IsN)
             {
-                DrawEditableTitleN(pageView.PivotTableTitle, ViewStatus.FirstNumerical, "Frequency\x00A0of\x00A0");
+                DrawEditableTitleN(pageView.PivotTableTitle, ViewStatus.FirstNumerical, 
+                    Const.Loader.GetString("FrequencyTitle1"), Const.Loader.GetString("FrequencyTitle2"));
             }
             else if (ViewStatus.IsCC)
             {

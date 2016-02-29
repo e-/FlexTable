@@ -236,7 +236,7 @@ namespace FlexTable.ViewModel
 
                 if (columnViewModel.Type == ColumnType.Numerical)
                 {
-                    view.DummyTextBlock.Text = String.Format("AVG({0})", columnViewModel.Column.Name);
+                    view.DummyTextBlock.Text = $"{Const.Loader.GetString("Max")}({columnViewModel.Column.Name})";
                     view.DummyTextBlock.Measure(new Size(Double.MaxValue, Double.MaxValue));
                     if (width < view.DummyTextBlock.ActualWidth)
                         width = view.DummyTextBlock.ActualWidth;

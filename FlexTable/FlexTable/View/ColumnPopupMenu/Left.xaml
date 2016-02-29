@@ -54,7 +54,7 @@
                     &#xf0d9;
                 </TextBlock>
                 <TextBlock VerticalAlignment="Center"
-                            FontSize="14" Foreground="White" Padding="0 0 10 0" >
+                            FontSize="14" Foreground="White" Padding="0 0 10 0"  x:Uid="ColumnPopupLeft">
                     Show
                 </TextBlock>
             </StackPanel>

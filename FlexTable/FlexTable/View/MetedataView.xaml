@@ -72,10 +72,10 @@
             </Grid.RowDefinitions>
 
             <Border Grid.Column="0" Grid.Row="0" Style="{StaticResource TeaserHeaderStyle}">
-                <TextBlock Style="{StaticResource TeaserHeaderTextStyle}">Rows</TextBlock>
+                <TextBlock Style="{StaticResource TeaserHeaderTextStyle}" x:Uid="MetadataViewRowCount">Rows</TextBlock>
             </Border>
             <Border Grid.Column="1" Grid.Row="0" Style="{StaticResource TeaserHeaderStyle}">
-                <TextBlock Style="{StaticResource TeaserHeaderTextStyle}">Columns</TextBlock>
+                <TextBlock Style="{StaticResource TeaserHeaderTextStyle}" x:Uid="MetadataViewColumnCount">Columns</TextBlock>
             </Border>
 
             <Border Grid.Column="0" Grid.Row="1" Style="{StaticResource TeaserValueStyle}">
@@ -87,8 +87,12 @@
         </Grid>
         
         <TextBlock Style="{StaticResource TextBlockStyle}">
-            &#x2022; <Run Text="{Binding CategoricalColumnCount}"></Run> categorical columns and <Run Text="{Binding NumericalColumnCount}"></Run> numerical columns.
+            &#x2022; 
+            <Run Text="{Binding CategoricalColumnCount}"></Run>
+            <Run x:Uid="MetadataViewCategoricalColumns"> categorical columns and </Run>
+            <Run Text="{Binding NumericalColumnCount}"></Run> 
+            <Run x:Uid="MetadataViewNumericalColumns"> numerical columns.</Run>
         </TextBlock>
-        <Button x:Name="LoadFile" Click="LoadFile_Click" Margin="0 10 0 0">Load a CSV File</Button>
+        <Button x:Name="LoadFile" Click="LoadFile_Click" Margin="0 10 0 0" x:Uid="MetadataViewOpen">Load a CSV File</Button>
     </StackPanel>
 </UserControl>

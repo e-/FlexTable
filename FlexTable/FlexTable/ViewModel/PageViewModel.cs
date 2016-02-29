@@ -332,24 +332,30 @@ namespace FlexTable.ViewModel
             pageView.BarChartTitle.Children.Clear();
             if (IsSelected)
             {
-                AddText(pageView.BarChartTitle, "Frequency of\x00A0");
+                String t1 = Const.Loader.GetString("FrequencyTitle1"),
+                       t2 = Const.Loader.GetString("FrequencyTitle2");
+
+                if (t1.Length > 0)
+                    AddText(pageView.BarChartTitle, t1);
                 AddComboBox(
                     pageView.BarChartTitle,
                     categorical.Name,
                     mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).Select(cvm => cvm.Name),
                     CreateColumnChangedHandler(categorical)
                 );
+                if (t2.Length > 0)
+                    AddText(pageView.BarChartTitle, t2);
             }
             else
             {
-                AddText(pageView.BarChartTitle, $"Frequency of <b>{categorical.Name}</b>");
+                AddText(pageView.BarChartTitle, String.Format(Const.Loader.GetString("FrequencyTitle"), categorical.Name));
             }
 
             Int32 index = categorical.Index;
 
             pageView.BarChart.YStartsFromZero = true;
             pageView.BarChart.HorizontalAxisTitle = categorical.Name;
-            pageView.BarChart.VerticalAxisTitle = String.Format("Frequency");
+            pageView.BarChart.VerticalAxisTitle = Const.Loader.GetString("Frequency");
             pageView.BarChart.Data = groupedRows
                 .Select(grs => new BarChartDatum()
                 {
@@ -391,11 +397,14 @@ namespace FlexTable.ViewModel
             pageView.DescriptiveStatisticsTitle.Children.Clear();
             if (IsSelected/* && mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical).Count() > 1*/) // 선택지가 하나밖에 없으면 셀렉트 박스 보여줄 필요가 없음.
             {
-                DrawEditableTitleN(pageView.DescriptiveStatisticsTitle, numerical, "Descriptive Statistics of\x00A0");
+                DrawEditableTitleN(pageView.DescriptiveStatisticsTitle, numerical,
+                    Const.Loader.GetString("DescriptiveStatisticsTitle1"),
+                    Const.Loader.GetString("DescriptiveStatisticsTitle2"));// "Descriptive Statistics of\x00A0");
             }
             else
             {
-                AddText(pageView.DescriptiveStatisticsTitle, $"Descriptive Statistics of <b>{numerical.Name}</b>");
+                AddText(pageView.DescriptiveStatisticsTitle, String.Format(Const.Loader.GetString("DescriptiveStatisticsTitle"), numerical.Name));
+                
             }
 
             IsDescriptiveStatisticsVisible = true;
@@ -408,11 +417,14 @@ namespace FlexTable.ViewModel
 
             if (IsSelected/* && mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical).Count() > 1*/) // 선택지가 하나밖에 없으면 selectbox 보여줄 필요 없음
             {
-                DrawEditableTitleN(pageView.DistributionViewTitle, numerical, "Distribution of\x00A0");
+                DrawEditableTitleN(pageView.DistributionViewTitle, numerical,
+                    Const.Loader.GetString("DescriptiveStatisticsTitle1"),
+                    Const.Loader.GetString("DescriptiveStatisticsTitle2"));
+                    //"Distribution of\x00A0");
             }
             else
             {
-                AddText(pageView.DistributionViewTitle, $"Distribution of <b>{numerical.Name}</b>");
+                AddText(pageView.DistributionViewTitle, String.Format(Const.Loader.GetString("DistributionTitle"), numerical.Name));
             }
             
             IsDistributionVisible = true;

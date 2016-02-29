@@ -10,25 +10,31 @@ namespace FlexTable
     {
         public static List<String> Names => new List<String>()
         {
-            "Min",
-            "Max",
-            "Avg",
-            "Sum"
+            Const.Loader.GetString("Min"),
+            Const.Loader.GetString("Mean"),
+            Const.Loader.GetString("Max"),
+            Const.Loader.GetString("Sum")
         };
 
         public static BaseAggregation FromName(String name)
         {
-            switch (name)
+            if (name == Const.Loader.GetString("Max"))
             {
-                case "Max":
-                    return new MaxAggregation();
-                case "Min":
-                    return new MinAggregation();
-                case "Sum":
-                    return new SumAggregation();
-                case "Avg":
-                    return new AverageAggregation();
+                return new MaxAggregation();
             }
+            else if (name == Const.Loader.GetString("Min"))
+            {
+                return new MinAggregation();
+            }
+            else if (name == Const.Loader.GetString("Sum"))
+            {
+                return new SumAggregation();
+            }
+            else if (name == Const.Loader.GetString("Mean"))
+            {
+                return new MeanAggregation();
+            }
+
             throw new Exception("Unknown aggregation name");
         }
 
@@ -43,7 +49,7 @@ namespace FlexTable
         {
             public override string Name
             {
-                get { return "Max"; }
+                get { return Const.Loader.GetString("Max"); }
             }
 
             public override Double Aggregate(IEnumerable<Double> values)
@@ -52,11 +58,11 @@ namespace FlexTable
             }
         }
 
-        public class AverageAggregation : BaseAggregation
+        public class MeanAggregation : BaseAggregation
         {
             public override string Name
             {
-                get { return "Avg"; }
+                get { return Const.Loader.GetString("Mean"); }
             }
 
             public override Double Aggregate(IEnumerable<Double> values)
@@ -69,7 +75,7 @@ namespace FlexTable
         {
             public override string Name
             {
-                get { return "Min"; }
+                get { return Const.Loader.GetString("Min"); }
             }
 
             public override Double Aggregate(IEnumerable<Double> values)
@@ -82,7 +88,7 @@ namespace FlexTable
         {
             public override string Name
             {
-                get { return "Sum"; }
+                get { return Const.Loader.GetString("Sum"); }
             }
 
             public override Double Aggregate(IEnumerable<Double> values)
@@ -95,7 +101,7 @@ namespace FlexTable
         {
             public override string Name
             {
-                get { return "None"; }
+                get { return Const.Loader.GetString("None"); }
             }
 
             public override Double Aggregate(IEnumerable<Double> values)

@@ -49,7 +49,7 @@
             </Border.Background>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                 <TextBlock VerticalAlignment="Center"
-                                FontSize="14" Foreground="White" Padding="10 0 0 0" >
+                                FontSize="14" Foreground="White" Padding="10 0 0 0" x:Uid="ColumnPopupRight">
                         Hide
                 </TextBlock>
                 <TextBlock FontFamily="FontAwesome" Foreground="White" VerticalAlignment="Center"

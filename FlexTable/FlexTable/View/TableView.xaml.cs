@@ -395,7 +395,7 @@ namespace FlexTable.View
                                     return;
                                 case "AVG":
                                 case "MEAN":
-                                    selectedColumnViewModel.AggregativeFunction = new AggregativeFunction.AverageAggregation();
+                                    selectedColumnViewModel.AggregativeFunction = new AggregativeFunction.MeanAggregation();
                                     ViewModel.MainPageViewModel.ReflectAll(ReflectReason.AggregateFunctionChanged); // 2.ColumnViewModelChanged);
                                     Debug.WriteLine("Mean selected");
                                     drawable.RemoveAllStrokes();

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Resources;
 
 namespace FlexTable
 {
@@ -155,6 +156,7 @@ namespace FlexTable
         public const Double PageViewToggleThreshold = 100;
         public const Double SelectionDismissThreshold = 200;
         public static Double RowHeight = 20;
+        public static ResourceLoader Loader = new ResourceLoader();
 
         public static void Initialize()
         {

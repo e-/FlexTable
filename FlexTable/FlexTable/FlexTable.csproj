@@ -141,6 +141,8 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="project.json" />
+    <PRIResource Include="Strings\en-US_bak\Resources.resw" />
+    <PRIResource Include="Strings\ko-KR\Resources.resw" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AggregativeFunctions\AggregativeFunction.cs" />

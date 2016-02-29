@@ -52,7 +52,7 @@
                                 FontSize="24" TextAlignment="Center">
                         &#xf0d8;
                 </TextBlock>
-                <TextBlock TextAlignment="Center" HorizontalAlignment="Center"
+                <TextBlock TextAlignment="Center" HorizontalAlignment="Center" x:Uid="ColumnPopupUp"
                                 FontSize="14" Foreground="White" Padding="0 0 0 5" >
                         Sort Descending
                 </TextBlock>

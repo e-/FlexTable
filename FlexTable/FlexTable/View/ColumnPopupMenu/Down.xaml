@@ -50,7 +50,7 @@
             </Border.Background>
             <StackPanel>
                 <TextBlock TextAlignment="Center" HorizontalAlignment="Center"
-                                FontSize="14" Foreground="White" Padding="0 5 0 0" >
+                                FontSize="14" Foreground="White" Padding="0 5 0 0" x:Uid="ColumnPopupDown">
                         Sort Ascending
                 </TextBlock>
                 <TextBlock FontFamily="FontAwesome" Foreground="White" HorizontalAlignment="Center"
