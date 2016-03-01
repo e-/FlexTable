@@ -107,7 +107,9 @@ namespace d3.Component
         {
             get
             {
-                return RectangleCanvas.Children.Select(child =>
+                return RectangleCanvas.Children
+                    .Where(child => (child as Rectangle).Visibility == Visibility.Visible)
+                    .Select(child =>
                 {
                     Rectangle rect = child as Rectangle;
 
@@ -184,8 +186,6 @@ namespace d3.Component
                         };
                     }
 
-                    //Canvas.SetLeft(rect, XGetter(datum, index));
-                    //Canvas.SetTop(rect, YGetter(datum, index));
                     (rect.RenderTransform as CompositeTransform).TranslateX = XGetter(datum, index);
                     (rect.RenderTransform as CompositeTransform).TranslateY = YGetter(datum, index);
                     (rect.RenderTransform as CompositeTransform).ScaleX = WidthGetter(datum, index);

@@ -109,7 +109,10 @@ namespace FlexTable.ViewModel
             
             if (viewStatus.IsN && viewStatus.FirstColumn == this)
             {
-                return $"Bin({column.Name})";
+                return String.Format(
+                    Const.Loader.GetString("BinnedColumnName").Replace("|", ""),
+                    column.Name
+                );
             }
 
             if (viewStatus.IsNN)
@@ -122,6 +125,22 @@ namespace FlexTable.ViewModel
             {
                 if (viewStatus.IsScatterplotVisible)
                     return column.Name;
+            }
+
+            return FormatAggregatedName(column, Type, aggregativeFunction);
+        }
+
+        public String FormatPivotTableHeaderName(ViewStatus viewStatus)
+        {
+            if (Type == ColumnType.Categorical)
+                return column.Name;
+            
+            if (viewStatus.IsN && viewStatus.FirstColumn == this)
+            {
+                return String.Format(
+                    Const.Loader.GetString("BinnedColumnName").Replace("|", ""),
+                    column.Name
+                );
             }
 
             return FormatAggregatedName(column, Type, aggregativeFunction);

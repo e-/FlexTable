@@ -276,7 +276,7 @@ namespace FlexTable.Crayon.Chart
         public Double VerticalAxisLabelCanvasLeft { get; set; }
         public Double VerticalAxisLabelHeight { get; set; }
         public Double VerticalAxisCanvasLeft { get; set; }
-
+        public String LegendTitle { get; set; }
         public Double LegendAreaWidth { get; set; } = 140;
 
         private Double DragToFilterYDelta = 0;
@@ -545,7 +545,12 @@ namespace FlexTable.Crayon.Chart
                 LegendTextElement.Data = D3Data;
                 LegendTextElement.Update(useTransition ? TransitionType.Opacity : TransitionType.None);
 
+                LegendTextElement.ForceMeasure();
                 LegendAreaWidth = Math.Max(LegendTextElement.MaxActualWidth + Const.LegendPatchWidth + Const.LegendPatchSpace + Const.PaddingRight, Const.MinimumLegendWidth);
+
+                LegendTitleElement.Width = LegendAreaWidth;
+                LegendTitleElement.Text = LegendTitle;
+                Canvas.SetTop(LegendTitleElement, LegendPatchYGetter(null, 0) - 30);
             }
 
             Canvas.SetLeft(LegendPanel, this.Width - LegendAreaWidth);

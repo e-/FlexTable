@@ -38,6 +38,7 @@
             <com:Rectangles x:Name="LegendRectangleElement" IsHitTestVisible="False" />
 
             <com:Texts x:Name="LegendTextElement" IsHitTestVisible="False" />
+            <TextBlock TextAlignment="Center" FontSize="14" FontStyle="Italic" x:Name="LegendTitleElement"></TextBlock>
         </Canvas>
 
         <com:Texts Foreground="Black" IsHitTestVisible="False" FontSize="14" x:Name="IndicatorTextElement"/>

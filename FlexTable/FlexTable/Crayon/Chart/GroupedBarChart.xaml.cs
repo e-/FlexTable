@@ -281,6 +281,7 @@ namespace FlexTable.Crayon.Chart
         public Double VerticalAxisLabelCanvasLeft { get; set; }
         public Double VerticalAxisLabelHeight { get; set; }
         public Double VerticalAxisCanvasLeft { get; set; }
+        public String LegendTitle { get; set; }
 
         public Double LegendAreaWidth { get; set; } = 140;
 
@@ -586,13 +587,19 @@ namespace FlexTable.Crayon.Chart
                     }
                 }
 
-                LegendRectangleElement.Data = new Data() { List = LegendData.OrderBy(d => d.Order).Select(d => d as Object).ToList() };
+                LegendData = LegendData.OrderBy(d => d.Order).ToList();
+
+                LegendRectangleElement.Data = new Data() { List = LegendData.Select(d => d as Object).ToList() };
                 LegendRectangleElement.Update(useTransition ? TransitionType.Opacity : TransitionType.None);
 
-                LegendTextElement.Data = new Data() { List = LegendData.OrderBy(d => d.Order).Select(d => d as Object).ToList() };
+                LegendTextElement.Data = new Data() { List = LegendData.Select(d => d as Object).ToList() };
                 LegendTextElement.Update(useTransition ? TransitionType.Opacity : TransitionType.None);
+                LegendTextElement.ForceMeasure();
 
                 LegendAreaWidth = Math.Max(LegendTextElement.MaxActualWidth + Const.LegendPatchWidth + Const.LegendPatchSpace + Const.PaddingRight, Const.MinimumLegendWidth);
+                LegendTitleElement.Width = LegendAreaWidth;
+                LegendTitleElement.Text = LegendTitle;
+                Canvas.SetTop(LegendTitleElement, LegendPatchYGetter(null, 0) - 30);
             }
 
             Canvas.SetLeft(LegendPanel, this.Width - LegendAreaWidth);

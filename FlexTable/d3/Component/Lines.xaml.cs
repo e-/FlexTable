@@ -154,21 +154,40 @@ namespace d3.Component
                     throw new Exception("No coordinate found");
                 }
 
-                PathFigure pathFigure = new PathFigure();
-
-                pathFigure.StartPoint = points.First();
-
-                foreach (Point point in points.Where((p, i) => i > 0))
-                {
-                    LineSegment lineSegment = new LineSegment();
-                    lineSegment.Point = point;
-                    pathFigure.Segments.Add(lineSegment);
-                }
 
                 PathGeometry pathGeometry = new PathGeometry();
                 pathGeometry.Figures = new PathFigureCollection();
+                PathFigure pathFigure = null;
 
-                pathGeometry.Figures.Add(pathFigure);
+                foreach (Point point in points)
+                {
+                    if (point.X < 0)
+                    {
+                        if (pathFigure != null)
+                        {
+                            pathGeometry.Figures.Add(pathFigure);
+                            pathFigure = null;
+                        }
+                    }
+                    else {
+                        if (pathFigure == null)
+                        {
+                            pathFigure = new PathFigure();
+                            pathFigure.StartPoint = point;
+                        }
+                        else
+                        {
+                            LineSegment lineSegment = new LineSegment();
+                            lineSegment.Point = point;
+                            pathFigure.Segments.Add(lineSegment);
+                        }
+                    }
+                }
+
+                if (pathFigure != null)
+                {
+                    pathGeometry.Figures.Add(pathFigure);
+                }
 
                 path.Data = pathGeometry;
 
@@ -178,6 +197,16 @@ namespace d3.Component
                 else
                 {
                     path.Opacity = OpacityGetter == null ? 1 : OpacityGetter(datum, index);
+                }
+
+                if (transitionType.HasFlag(TransitionType.Color))
+                {
+                    sb.Children.Add(Util.GenerateColorAnimation(path, "(Path.Fill).(SolidColorBrush.Color)",
+                         StrokeGetter == null ? Colors.LightGray : StrokeGetter(datum, index)));
+                }
+                else
+                {
+                    path.Stroke = StrokeGetter == null ? new SolidColorBrush(Colors.LightGray) : new SolidColorBrush(StrokeGetter(datum, index));
                 }
                 index++;
             }

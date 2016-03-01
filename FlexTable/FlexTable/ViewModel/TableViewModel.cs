@@ -262,7 +262,7 @@ namespace FlexTable.ViewModel
         void UpdateRows(ViewStatus viewStatus)
         {
             Int32 index = 0;
-            if(SelectedRows != null) // 로우 선택 중
+            if (SelectedRows != null) // 로우 선택 중
             {
                 AllRowViewModels.Sort(new RowViewModelComparer(SheetViewModel, viewStatus, SelectedRows));
                 index = 0;
@@ -285,9 +285,14 @@ namespace FlexTable.ViewModel
                 ActivatedRowViewModels = AllRowViewModels;
                 State = TableViewState.AllRow;
                 PaddedSheetHeight = Math.Max(SheetViewModel.AllRowsSheetHeight, SheetViewHeight);
+
+                //모든 로우가 보이더라도 (NvsNC)의 경우 피봇 테이블을 위해서 groupedRowViewModel 수정해줘야함
+                if (viewStatus.IsCNN)
+                {
+                    GroupedRowViewModels = new List<RowViewModel>(viewStatus.GroupedRowViewModels);
+                }
             }
-            else 
-            {
+            else {
                 Boolean isDirty = false;
                 if (GroupedRowViewModels == null) isDirty = true;
                 else if (GroupedRowViewModels.Count != viewStatus.GroupedRowViewModels.Count) isDirty = true;
@@ -304,7 +309,7 @@ namespace FlexTable.ViewModel
                     }
                 }
 
-                if(isDirty)
+                if (isDirty)
                     GroupedRowViewModels = new List<RowViewModel>(viewStatus.GroupedRowViewModels);
 
                 ActivatedRowViewModels = GroupedRowViewModels;

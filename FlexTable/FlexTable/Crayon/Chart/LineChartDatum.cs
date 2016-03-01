@@ -19,6 +19,7 @@ namespace FlexTable.Crayon.Chart
     {
         public ColumnViewModel ColumnViewModel { get; set; }
         public Object Key { get; set; }
+        public Int32 Order { get; set; }
 
         public List<DataPoint> DataPoints { get; set; }
 
@@ -34,7 +35,7 @@ namespace FlexTable.Crayon.Chart
 
         public IEnumerable<Row> EnvelopeRows
         {
-            get { return DataPoints.SelectMany(dp => dp.EnvelopeRows); }
+            get { return DataPoints.Where(dp => dp.Item2 != null).SelectMany(dp => dp.EnvelopeRows); }
         }
 
         public IEnumerable<Row> Rows
@@ -58,6 +59,7 @@ namespace FlexTable.Crayon.Chart
         public Object EnvelopeItem2 { get; set; }
 
         public LineChartDatum Parent { get; set; }
+        public Int32 Order { get; set; }
 
         public IEnumerable<Row> Rows { get; set; }
         public IEnumerable<Row> EnvelopeRows { get; set; }

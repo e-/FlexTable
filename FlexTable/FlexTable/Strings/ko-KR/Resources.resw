@@ -123,8 +123,14 @@
   <data name="And" xml:space="preserve">
     <value>및</value>
   </data>
+  <data name="BinnedColumnName" xml:space="preserve">
+    <value>{0}|의 구간</value>
+  </data>
   <data name="ChartTitleCC" xml:space="preserve">
-    <value>{0:c}| 및 |{1:c}|별 빈도수</value>
+    <value>{0:c}|별 |{1:c}|의 빈도수</value>
+  </data>
+  <data name="ChartTitleCCC" xml:space="preserve">
+    <value>{0:c}| 및 |{1:c}|별 |{2:c}|의 빈도수</value>
   </data>
   <data name="ChartTitleCCN" xml:space="preserve">
     <value>{0:c}| 및 |{1:c}|별 |{2:a}</value>
@@ -133,14 +139,14 @@
     <value>{0:c}|별 |{1:a}</value>
   </data>
   <data name="ChartTitleCNN" xml:space="preserve">
-    <value>{0:c}|에 따른 |{1:a}| 및 |{2:a}</value>
+    <value>{0:c}|에 따른 |{1:u}| 및 |{2:u}</value>
   </data>
   <data name="ChartTitleCNvsN" xml:space="preserve">
-    <value>{0:c}|에 따른 |{1:c}| 대 |{2:c}</value>
+    <value>{0:c}|별 |{1:c}| 대 |{2:c}</value>
     <comment>ColoredScatterplot</comment>
   </data>
   <data name="ChartTitleNN" xml:space="preserve">
-    <value>{0:a}| 및 |{1:a}</value>
+    <value>{0:u}| 및 |{1:u}</value>
   </data>
   <data name="ChartTitleNvsN" xml:space="preserve">
     <value>{0:c}| 대 |{1:c}</value>
@@ -164,6 +170,12 @@
   <data name="Count" xml:space="preserve">
     <value>개수</value>
   </data>
+  <data name="CountColumnName" xml:space="preserve">
+    <value>{0}|의 개수</value>
+  </data>
+  <data name="Countj" xml:space="preserve">
+    <value />
+  </data>
   <data name="DescriptiveStatisticsTitle" xml:space="preserve">
     <value>{0:c}|의 기술통계</value>
   </data>
@@ -174,7 +186,10 @@
     <value>빈도수</value>
   </data>
   <data name="FrequencyTitle" xml:space="preserve">
-    <value>{0:c}|별 빈도수</value>
+    <value>{0:c}|의 빈도수</value>
+  </data>
+  <data name="Legend" xml:space="preserve">
+    <value>범례</value>
   </data>
   <data name="Max" xml:space="preserve">
     <value>최대값</value>
@@ -239,6 +254,12 @@
   <data name="PageViewLineChartWrapperElement.Tag" xml:space="preserve">
     <value>꺾은선형</value>
   </data>
+  <data name="PageViewNoVisualization.Text" xml:space="preserve">
+    <value>현재 사용 가능한 시각화가 없습니다. 다른 컬럼들을 선택해주세요.</value>
+  </data>
+  <data name="PageViewNoVisualizationWarningElement.Tag" xml:space="preserve">
+    <value>경고</value>
+  </data>
   <data name="PageViewPivotTableViewElement.Tag" xml:space="preserve">
     <value>피벗 테이블</value>
   </data>
@@ -263,10 +284,10 @@
   <data name="PageViewUndo2.Text" xml:space="preserve">
     <value>손가락을 떼어서 되돌리기</value>
   </data>
+  <data name="PivotTableTitleCNN" xml:space="preserve">
+    <value>{0:c}|에 따른 |{1:a}| 및 |{2:a}</value>
+  </data>
   <data name="Sum" xml:space="preserve">
     <value>합계</value>
-  </data>
-  <data name="wer" xml:space="preserve">
-    <value />
   </data>
 </root>

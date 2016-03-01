@@ -53,7 +53,7 @@
             <Grid Width="10">
                 <TextBlock FontFamily="FontAwesome"
                            FontSize="10" TextAlignment="Left"
-                           Padding="3 0 0 0"
+                           Padding="3 2 0 0"
                            Visibility="{x:Bind ViewModel.IsDescendingSorted, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
                     &#xf0d7;
                 </TextBlock>

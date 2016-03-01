@@ -102,20 +102,34 @@ namespace FlexTable.Crayon.Chart
         {
             get
             {
-                return (d, index) => (d as LineChartDatum).DataPoints.Select<DataPoint, Point>(dp => new Point(
-                   XScale.Map(dp.Item1),
-                   YScale.Map(dp.EnvelopeItem2)
-                   )).ToList();
+                return (d, index) => (d as LineChartDatum).DataPoints.Select<DataPoint, Point>(dp =>
+                {
+                    if (dp.EnvelopeItem2 == null || dp.EnvelopeRows?.Count() == 0)
+                    {
+                        return new Point(-1, -1);
+                    }
+                    else
+                    {
+                        return new Point(XScale.Map(dp.Item1), YScale.Map(dp.EnvelopeItem2));
+                    }
+                }).ToList();
             }
         }
         public Func<Object, Int32, List<Point>> LineCoordinateGetter
         {
             get
             {
-                return (d, index) => (d as LineChartDatum).DataPoints.Select<DataPoint, Point>(dp => new Point(
-                   XScale.Map(dp.Item1),
-                   dp.Rows?.Count() == 0 ? YScale.RangeStart : YScale.Map(dp.Item2)
-                   )).ToList();
+                return (d, index) => (d as LineChartDatum).DataPoints.Select<DataPoint, Point>(dp =>
+                {
+                    if(dp.Item2 == null || dp.Rows?.Count() == 0)
+                    {
+                        return new Point(-1, -1);
+                    }
+                    else
+                    {
+                        return new Point(XScale.Map(dp.Item1), YScale.Map(dp.Item2));
+                    }
+                }).ToList();
             }
         }
 
@@ -137,7 +151,9 @@ namespace FlexTable.Crayon.Chart
         public Func<Object, Int32, Double> CircleOpacityGetter{ get {
                 return (d, index) =>
                 {
-                    LineChartDatum datum = (d as DataPoint).Parent as LineChartDatum;
+                    DataPoint dataPoint = (d as DataPoint);
+                    if (dataPoint.Item2 == null || dataPoint.Rows?.Count() == 0) return 0;
+                    LineChartDatum datum = dataPoint.Parent as LineChartDatum;
                     LineState lineState = datum.LineState;
                     return (lineState == LineState.Default) ? 0.8 : (lineState == LineState.Selected ? 1 : 0);
                 };
@@ -192,7 +208,9 @@ namespace FlexTable.Crayon.Chart
             {
                 return (textBlock, d, index) =>
                 {
-                    LineChartDatum datum = (d as DataPoint).Parent;
+                    DataPoint dataPoint = (d as DataPoint);
+                    if (dataPoint.Item2 == null || dataPoint.Rows?.Count() == 0) return 0;
+                    LineChartDatum datum = dataPoint.Parent;
                     LineState lineState = datum.LineState;
                     return lineState == LineState.Selected ? 1 : 0;
                 };
@@ -208,6 +226,7 @@ namespace FlexTable.Crayon.Chart
         public Double VerticalAxisCanvasLeft { get; set; }
 
         public Double LegendAreaWidth { get; set; } = 140;
+        public String LegendTitle { get; set; }
 
         public event Event.SelectionChangedEventHandler SelectionChanged;
         public event Event.FilterOutEventHandler FilterOut;
@@ -343,7 +362,9 @@ namespace FlexTable.Crayon.Chart
                     {
                         Object xScaleCategory = XScale.Domain[index];
                         intersectedRows = intersectedRows.Concat(
-                            Data.SelectMany(d => d.DataPoints).Where(dp => dp.Item1 == xScaleCategory).SelectMany(dp => dp.EnvelopeRows)
+                            Data.SelectMany(d => d.DataPoints).Where(dp => dp.Item1 == xScaleCategory)
+                                .Where(dp => dp.EnvelopeRows != null)
+                                .SelectMany(dp => dp.EnvelopeRows)
                             ).ToList();
                     }
                     index++;
@@ -352,9 +373,9 @@ namespace FlexTable.Crayon.Chart
                 index = 0;
                 foreach (LineChartDatum datum in Data)
                 {
-                    List<Point> circlePoints = LineCoordinateGetter(datum, index);
+                    List<Point> circlePoints = EnvelopeLineCoordinateGetter(datum, index);
 
-                    if(circlePoints.Exists(cp => boundingRect.Contains(cp))) // 하나라도 포함되는 포인트가 있으면 예를 선택
+                    if(circlePoints.Exists(cp => cp.X >= 0 && boundingRect.Contains(cp))) // 하나라도 포함되는 포인트가 있으면 예를 선택
                     {
                         intersectedRows = intersectedRows.Concat(datum.EnvelopeRows).ToList();
                     }
@@ -406,7 +427,7 @@ namespace FlexTable.Crayon.Chart
                 List = Data.Select(d => d as Object).ToList()
             };
 
-            CircleData = Data.SelectMany(l => l.DataPoints).ToList();
+            CircleData = Data.SelectMany(l => l.DataPoints).Where(dp => dp.Item2 != null).ToList();
             D3CircleData = new Data()
             {
                 List = CircleData.Select(d => d as Object).ToList()
@@ -419,8 +440,12 @@ namespace FlexTable.Crayon.Chart
 
                 LegendTextElement.Data = D3Data;
                 LegendTextElement.Update(useTransition ? TransitionType.Opacity : TransitionType.None);
+                LegendTextElement.ForceMeasure();
 
                 LegendAreaWidth = Math.Max(LegendTextElement.MaxActualWidth + Const.LegendPatchWidth + Const.LegendPatchSpace + Const.PaddingRight, Const.MinimumLegendWidth);
+                LegendTitleElement.Width = LegendAreaWidth;
+                LegendTitleElement.Text = LegendTitle;
+                Canvas.SetTop(LegendTitleElement, LegendPatchYGetter(null, 0) - 30);
             }
 
             Canvas.SetLeft(LegendPanel, this.Width - LegendAreaWidth);            
@@ -496,13 +521,13 @@ namespace FlexTable.Crayon.Chart
                 RangeEnd = ChartAreaEndX + Const.PaddingLeft
             };
 
-            foreach(Object item1 in CircleData.Select(cd => cd.Item1).Distinct())
+            foreach(Object item1 in CircleData.OrderBy(dp => dp.Order)
+                .Select(cd => cd.Item1).Distinct())
             {
                 XScale.Domain.Add(item1);
             }
 
             HandleLineElement.Data = D3Data;
-
             EnvelopeLineElement.Data = D3Data;
             LineElement.Data = D3Data;
 
@@ -533,12 +558,12 @@ namespace FlexTable.Crayon.Chart
             IndicatorTextElement.Data = D3CircleData;
 
             HandleLineElement.Update(useTransition ? TransitionType.Opacity : TransitionType.None);
-            LineElement.Update(useTransition ? TransitionType.Opacity : TransitionType.None);
+            LineElement.Update(useTransition ? TransitionType.Opacity & TransitionType.Color: TransitionType.None);
             EnvelopeCircleElement.Update(useTransition ? TransitionType.Opacity : TransitionType.None);
-            EnvelopeLineElement.Update(useTransition ? TransitionType.Opacity : TransitionType.None);
-            CircleElement.Update(useTransition ? TransitionType.Opacity : TransitionType.None);
+            EnvelopeLineElement.Update(useTransition ? TransitionType.Opacity & TransitionType.Color : TransitionType.None);
+            CircleElement.Update(TransitionType.None); // useTransition ? TransitionType.Opacity : TransitionType.None);
             LegendHandleRectangleElement.Update(TransitionType.None);
-            IndicatorTextElement.Update(useTransition ? TransitionType.Opacity : TransitionType.None);
+            IndicatorTextElement.Update(TransitionType.None); // useTransition ? TransitionType.Opacity : TransitionType.None);
             HorizontalAxis.Update(useTransition);
             VerticalAxis.Update(useTransition);
         }

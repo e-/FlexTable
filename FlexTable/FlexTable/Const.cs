@@ -67,8 +67,9 @@ namespace FlexTable
         {
             switch (reason)
             {
-                case (ReflectReason.ColumnUnselected):
+                //case (ReflectReason.ColumnUnselected):
                 case (ReflectReason.PageScrolled):
+                case (ReflectReason.Preview):
                     return false;
             }
             return true;

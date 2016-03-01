@@ -107,6 +107,14 @@ namespace d3.Component
             this.InitializeComponent();
         }
 
+        public void ForceMeasure()
+        {
+            foreach(TextBlock tb in textBlocks)
+            {
+                tb.Measure(new Size(200, 200));
+            }
+        }
+
         public void Update(TransitionType transitionType)
         {
             Storyboard sb = new Storyboard();
@@ -183,6 +191,7 @@ namespace d3.Component
             for (Int32 i = TextCanvas.Children.Count - 1; i >= index; --i)
             {
                 TextCanvas.Children.RemoveAt(i);
+                textBlocks.RemoveAt(i);
             }
 
             if (previousStoryboard != null) previousStoryboard.Pause();

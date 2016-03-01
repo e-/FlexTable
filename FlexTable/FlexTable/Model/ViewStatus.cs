@@ -62,7 +62,9 @@ namespace FlexTable.Model
         public ColumnViewModel FirstCategorical => selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).First();
         public ColumnViewModel SecondCategorical => selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).ElementAt(1);
         public ColumnViewModel ThirdCategorical => selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).ElementAt(2);
-        public ColumnViewModel LastCategorical => selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).Last();
+        public ColumnViewModel LastCategorical =>
+            CategoricalCount > 0 ?
+            selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).Last() : null;
 
         public ColumnViewModel FirstNumerical => selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical).First();
         public ColumnViewModel SecondNumerical => selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical).ElementAt(1);
@@ -525,57 +527,54 @@ namespace FlexTable.Model
                 return 1;
             }
 
-            IEnumerable<ColumnViewModel> sortedAndSelectedColumnViewModels = SheetViewModel.ColumnViewModels.Where(
-                cvm => cvm.SortOption != SortOption.None && cvm.IsSelected
-            ).OrderByDescending(cvm => cvm.SortPriority);
-
-            foreach (ColumnViewModel columnViewModel in sortedAndSelectedColumnViewModels)
+            if (ViewStatus.SelectedCount == 0)
             {
-                if (columnViewModel.Type == ColumnType.Numerical)
+                IEnumerable<ColumnViewModel> sortedColumnViewModels = SheetViewModel.ColumnViewModels.Where(
+                    cvm => cvm.SortOption != SortOption.None
+                ).OrderByDescending(cvm => cvm.SortPriority);
+
+                foreach (ColumnViewModel columnViewModel in sortedColumnViewModels)
                 {
-                    if ((Double)x.Cells[columnViewModel.Index].Content != (Double)y.Cells[columnViewModel.Index].Content)
+                    if (columnViewModel.Type == ColumnType.Numerical)
                     {
-                        return GetSortDirection(columnViewModel) *
-                            ((Double)x.Cells[columnViewModel.Index].Content).CompareTo((Double)y.Cells[columnViewModel.Index].Content);
+                        if ((Double)x.Cells[columnViewModel.Index].Content != (Double)y.Cells[columnViewModel.Index].Content)
+                        {
+                            return GetSortDirection(columnViewModel) *
+                                ((Double)x.Cells[columnViewModel.Index].Content).CompareTo((Double)y.Cells[columnViewModel.Index].Content);
+                        }
+                    }
+                    else
+                    {
+                        if (x.Cells[columnViewModel.Index].Content != y.Cells[columnViewModel.Index].Content)
+                        {
+                            return GetSortDirection(columnViewModel) *
+                        (x.Cells[columnViewModel.Index].Content as Category).Order.CompareTo((y.Cells[columnViewModel.Index].Content as Category).Order);
+                        }
                     }
                 }
-                else
-                {
-                    if (x.Cells[columnViewModel.Index].Content != y.Cells[columnViewModel.Index].Content)
-                    {
-                        return GetSortDirection(columnViewModel) *
-                    (x.Cells[columnViewModel.Index].Content as Category).Order.CompareTo((y.Cells[columnViewModel.Index].Content as Category).Order);
-                    }
-                }
+
+                return x.Row.Index - y.Row.Index;
             }
 
-            foreach (ColumnViewModel columnViewModel in ViewStatus.SelectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical))
-            {
-                if (x.Cells[columnViewModel.Index].Content != y.Cells[columnViewModel.Index].Content)
-                {
-                    return (x.Cells[columnViewModel.Index].Content as Category).Order.CompareTo((y.Cells[columnViewModel.Index].Content as Category).Order) * GetSortDirection(columnViewModel);
-                }
-            }
+            // 하나라도 선택된 컬럼이 있다.
 
-            if(ViewStatus.IsN)
+            if (ViewStatus.IsN)
             {
                 Int32 index = ViewStatus.FirstNumerical.Index;
                 return (x.Cells[index].Content as Bin).Min.CompareTo((y.Cells[index].Content as Bin).Min);
             }
 
-            foreach (ColumnViewModel columnViewModel in ViewStatus.SelectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical))
-            {
-                if (x.Cells[columnViewModel.Index].Content != y.Cells[columnViewModel.Index].Content)
-                {
-                    return ((Double)x.Cells[columnViewModel.Index].Content).CompareTo((Double)y.Cells[columnViewModel.Index].Content) * GetSortDirection(columnViewModel);
-                }
-            }
+            IEnumerable<ColumnViewModel> nonTailCategoricalColumnViewModels = ViewStatus.SelectedColumnViewModels.Where(
+                cvm => cvm.Type == ColumnType.Categorical && cvm != ViewStatus.LastCategorical
+            );
 
-            IEnumerable<ColumnViewModel> sortedColumnViewModels = SheetViewModel.ColumnViewModels.Where(
-                cvm => cvm.SortOption != SortOption.None
+            IEnumerable<ColumnViewModel> tailCategoricalOrNumericalColumnViewModels = ViewStatus.SelectedColumnViewModels.Where(
+                cvm => cvm.Type == ColumnType.Numerical || cvm == ViewStatus.LastCategorical
             ).OrderByDescending(cvm => cvm.SortPriority);
 
-            foreach (ColumnViewModel columnViewModel in sortedColumnViewModels)
+            IEnumerable<ColumnViewModel> sortOrder = nonTailCategoricalColumnViewModels.Concat(tailCategoricalOrNumericalColumnViewModels);
+
+            foreach (ColumnViewModel columnViewModel in sortOrder)
             {
                 if (columnViewModel.Type == ColumnType.Numerical)
                 {
@@ -614,50 +613,17 @@ namespace FlexTable.Model
 
         public int Compare(GroupedRows x, GroupedRows y)
         {
-            IEnumerable<ColumnViewModel> sortedAndSelectedColumnViewModels = SheetViewModel.ColumnViewModels.Where(
-                cvm => cvm.SortOption != SortOption.None && cvm.IsSelected
-            ).OrderByDescending(cvm => cvm.SortPriority);
-
-            foreach (ColumnViewModel columnViewModel in sortedAndSelectedColumnViewModels)
+            if (ViewStatus.SelectedCount == 0)
             {
-                if (x.Keys.ContainsKey(columnViewModel)) // 페이지가 여러개면 제일 상위 페이지 선택 컬럼을 기준으로 소팅하므로 이전에는 그 컬럼이 선택되지 않았을 수도 있음.
-                {
-                    if (columnViewModel.Type == ColumnType.Categorical)
-                    {
-                        if (x.Keys[columnViewModel] != y.Keys[columnViewModel])
-                        {
-                            return (x.Keys[columnViewModel] as Category).Order.CompareTo((y.Keys[columnViewModel] as Category).Order) * GetSortDirection(columnViewModel);
-                        }
-                    }
-                }
-                else if (columnViewModel.Type == ColumnType.Numerical)
-                {
-                    Double xValue = columnViewModel.AggregativeFunction.Aggregate(x.Rows.Select(r => (Double)r.Cells[columnViewModel.Index].Content));
-                    Double yValue = columnViewModel.AggregativeFunction.Aggregate(y.Rows.Select(r => (Double)r.Cells[columnViewModel.Index].Content));
-
-                    if (xValue != yValue)
-                    {
-                        return xValue.CompareTo(yValue) * GetSortDirection(columnViewModel);
-                    }
-                }
+                throw new Exception("No column selected, but sort applied to grouped rows");
             }
 
+            // 하나라도 선택된 컬럼이 있다.
 
-            foreach (ColumnViewModel columnViewModel in ViewStatus.SelectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical))
-            {
-                if (x.Keys.ContainsKey(columnViewModel))
-                {
-                    if (x.Keys[columnViewModel] != y.Keys[columnViewModel])
-                    {
-                        return (x.Keys[columnViewModel] as Category).Order.CompareTo((y.Keys[columnViewModel] as Category).Order) * GetSortDirection(columnViewModel);
-                    }
-                }
-            }
-
-
-            if (ViewStatus.IsN) // 이 경우는 뉴메리컬 하나만 선택되어 비닝 된 결과가 보이는 경우이다.
+            if (ViewStatus.IsN)
             {
                 ColumnViewModel numerical = ViewStatus.FirstNumerical;
+
                 if (x.Keys.ContainsKey(numerical))
                 {
                     Double xMin = (x.Keys[numerical] as Bin).Min,
@@ -668,22 +634,25 @@ namespace FlexTable.Model
                 }
             }
 
-            IEnumerable<ColumnViewModel> sortedColumnViewModels = SheetViewModel.ColumnViewModels.Where(
-                cvm => cvm.SortOption != SortOption.None
+            IEnumerable<ColumnViewModel> nonTailCategoricalColumnViewModels = ViewStatus.SelectedColumnViewModels.Where(
+                cvm => cvm.Type == ColumnType.Categorical && cvm != ViewStatus.LastCategorical
+            );
+
+            IEnumerable<ColumnViewModel> tailCategoricalOrNumericalColumnViewModels = ViewStatus.SelectedColumnViewModels.Where(
+                cvm => cvm.Type == ColumnType.Numerical || cvm == ViewStatus.LastCategorical
             ).OrderByDescending(cvm => cvm.SortPriority);
 
-            foreach (ColumnViewModel columnViewModel in sortedColumnViewModels)
+            IEnumerable<ColumnViewModel> sortOrder = nonTailCategoricalColumnViewModels.Concat(tailCategoricalOrNumericalColumnViewModels);
+
+            foreach (ColumnViewModel columnViewModel in sortOrder)
             {
-                if (x.Keys.ContainsKey(columnViewModel))
+                if (x.Keys.ContainsKey(columnViewModel)) // 페이지가 여러개면 제일 상위 페이지 선택 컬럼을 기준으로 소팅하므로 이전에는 그 컬럼이 선택되지 않았을 수도 있음.
                 {
                     if (columnViewModel.Type == ColumnType.Categorical)
                     {
-                        Int32 xCount = x.Rows.Select(r => r.Cells[columnViewModel.Index].Content).Distinct().Count();
-                        Int32 yCount = y.Rows.Select(r => r.Cells[columnViewModel.Index].Content).Distinct().Count();
-
-                        if (xCount != yCount)
+                        if (x.Keys[columnViewModel] != y.Keys[columnViewModel])
                         {
-                            return xCount.CompareTo(yCount) * GetSortDirection(columnViewModel);
+                            return (x.Keys[columnViewModel] as Category).Order.CompareTo((y.Keys[columnViewModel] as Category).Order) * GetSortDirection(columnViewModel);
                         }
                     }
                 }

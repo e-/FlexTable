@@ -56,7 +56,7 @@ namespace FlexTable.ViewModel
 
             var groupedRows = viewStatus.GroupedRows;
             var groupedRowViewModels = viewStatus.GroupedRowViewModels;
-            var selectedColumnViewModels = viewStatus.SelectedColumnViewModels.OrderBy(cvm => cvm.Order);
+            var selectedColumnViewModels = viewStatus.SelectedColumnViewModels.OrderBy(cvm => (cvm.Type == ColumnType.Categorical ? -1000 : 0) + cvm.Order);
 
             if (viewStatus.IsN)
             {
@@ -90,7 +90,7 @@ namespace FlexTable.ViewModel
                     };
                     TextBlock textBlock = new TextBlock()
                     {
-                        Text = columnViewModel.FormatHeaderName(viewStatus),
+                        Text = columnViewModel.FormatPivotTableHeaderName(viewStatus),
                         Style = pivotTableView.Resources["ColumnHeaderValueTextStyle"] as Style
                     };
                     border.Child = textBlock;
@@ -107,7 +107,10 @@ namespace FlexTable.ViewModel
                     };
                     TextBlock textBlock = new TextBlock()
                     {
-                        Text = $"Count({selectedColumnViewModels.First().Name})",
+                        Text = String.Format(
+                            Const.Loader.GetString("CountColumnName").Replace("|", ""),
+                            selectedColumnViewModels.First().Name
+                        ),
                         Style = pivotTableView.Resources["ColumnHeaderValueTextStyle"] as Style
                     };
                     border.Child = textBlock;
@@ -145,89 +148,6 @@ namespace FlexTable.ViewModel
                     i++;
                 }
             }
-            /*else if (viewStatus.IsC)
-            {
-                Int32 rowN = groupedRows.Count + 1, // 테이블 전체 로우의 개수
-                      columnN = 2;
-
-                Int32 i, index, j;
-
-                // 개수만큼 추가 컬럼 및 로우 정의 추가. 이중선 말고는 별 특별한 점 없음.
-                for (i = 0; i < rowN; ++i)
-                {
-                    RowDefinition rowDefinition = new RowDefinition();
-                    rowDefinition.Height = GridLength.Auto;
-                    pivotTableView.PivotTable.RowDefinitions.Add(rowDefinition);
-                }
-
-                for (i = 0; i < columnN; ++i)
-                {
-                    ColumnDefinition columnDefinition = new ColumnDefinition();
-                    pivotTableView.PivotTable.ColumnDefinitions.Add(columnDefinition);
-                }
-
-                // 가로 이름 넣기 (인덱스 열 포함)
-
-                index = 0;
-                foreach (ColumnViewModel columnViewModel in selectedColumnViewModels)
-                {
-                    Border border = new Border()
-                    {
-                        Style = pivotTableView.Resources["ColumnHeaderBorderStyle"] as Style
-                    };
-                    TextBlock textBlock = new TextBlock()
-                    {
-                        Text = columnViewModel.FormatHeaderName(viewStatus),
-                        Style = pivotTableView.Resources["ColumnHeaderValueTextStyle"] as Style
-                    };
-                    border.Child = textBlock;
-
-                    children.Add(border);
-                    Grid.SetRow(border, 0);
-                    Grid.SetColumn(border, index++);
-                }
-
-                {
-                    Border border = new Border()
-                    {
-                        Style = pivotTableView.Resources["ColumnHeaderBorderStyle"] as Style
-                    };
-                    TextBlock textBlock = new TextBlock()
-                    {
-                        Text = $"Count({selectedColumnViewModels.First().Name})",
-                        Style = pivotTableView.Resources["ColumnHeaderValueTextStyle"] as Style
-                    };
-                    border.Child = textBlock;
-
-                    children.Add(border);
-                    Grid.SetRow(border, 0);
-                    Grid.SetColumn(border, index++);
-                }
-
-                // 데이터 넣기
-                i = 0;
-                foreach (RowViewModel rowViewModel in groupedRowViewModels.Take(MaximumRowNumber))
-                {
-                    j = 0;
-                    foreach (ColumnViewModel columnViewModel in selectedColumnViewModels)
-                    {
-                        Border border = GetNewBorder(rowViewModel.Cells[columnViewModel.Index].Content);
-
-                        children.Add(border);
-                        (border.Child as TextBlock).Foreground = new SolidColorBrush(rowViewModel.Color);
-                        Grid.SetRow(border, 1 + i);
-                        Grid.SetColumn(border, j++);
-                    }
-                    {
-                        Border border = GetNewBorder(groupedRows[i].Rows.Count);
-
-                        children.Add(border);
-                        Grid.SetRow(border, 1 + i);
-                        Grid.SetColumn(border, j++);
-                    }
-                    i++;
-                }
-            }*/
             else
             {
                 // TODO Cx 의 경우 Count 컬럼 추가하고 값 넣어야함
@@ -264,7 +184,7 @@ namespace FlexTable.ViewModel
                     };
                     TextBlock textBlock = new TextBlock()
                     {
-                        Text = columnViewModel.FormatHeaderName(viewStatus),
+                        Text = columnViewModel.FormatPivotTableHeaderName(viewStatus),
                         Style = pivotTableView.Resources["ColumnHeaderValueTextStyle"] as Style
                     };
                     border.Child = textBlock;
@@ -282,7 +202,7 @@ namespace FlexTable.ViewModel
                     };
                     TextBlock textBlock = new TextBlock()
                     {
-                        Text = "Count",
+                        Text = Const.Loader.GetString("Count"),
                         Style = pivotTableView.Resources["ColumnHeaderValueTextStyle"] as Style
                     };
                     border.Child = textBlock;

@@ -286,6 +286,7 @@ namespace FlexTable.View
             if (ViewModel.IsScatterplotVisible && ScatterplotElement.Tag?.ToString() != firstChartTag) paragraphs.Add(ScatterplotWrapperElement);
             if (ViewModel.IsPivotTableVisible && PivotTableViewElement.Tag?.ToString() != firstChartTag) paragraphs.Add(PivotTableWrapperElement);
             if (ViewModel.IsCorrelationStatisticsVisible && CorrelationStatisticsViewElement.Tag?.ToString() != firstChartTag) paragraphs.Add(CorrelationStatisticsWrapperElement);
+            if (ViewModel.IsNoPossibleVisualizationWarningVisible) paragraphs.Add(NoVisualizationWarningWrapperElement);
 
             Int32 index = 0;
             foreach (StackPanel paragraph in paragraphs)
@@ -336,6 +337,7 @@ namespace FlexTable.View
         {
             if (e.PointerDeviceType != PointerDeviceType.Touch) return;
             if (ViewModel.IsEmpty) { }
+            else if (ViewModel.IsNoPossibleVisualizationWarningVisible) { }
             else if (ViewModel.IsUndoing)
             {
                 Double delta = e.Cumulative.Translation.Y;
@@ -368,6 +370,7 @@ namespace FlexTable.View
         {
             if (e.PointerDeviceType != PointerDeviceType.Touch) return;
             if (ViewModel.IsEmpty) { }
+            else if (ViewModel.IsNoPossibleVisualizationWarningVisible) { }
             else if (ViewModel.IsUndoing)
             {
                 Double delta = e.Cumulative.Translation.Y;

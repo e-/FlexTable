@@ -160,6 +160,7 @@ namespace FlexTable.Crayon.Chart
         public Double VerticalAxisCanvasLeft { get; set; }
 
         public Double LegendAreaWidth { get; set; } = 140;
+        public String LegendTitle { get; set; }
 
         public event Event.SelectionChangedEventHandler SelectionChanged;
         private ColumnViewModel categoricalColumnViewModel;
@@ -330,8 +331,12 @@ namespace FlexTable.Crayon.Chart
 
                 LegendTextElement.Data = D3LegendData;
                 LegendTextElement.Update(useTransition ? TransitionType.Opacity : TransitionType.None);
+                LegendTextElement.ForceMeasure();
 
                 LegendAreaWidth = LegendTextElement.MaxActualWidth + Const.LegendPatchWidth + Const.LegendPatchSpace + Const.PaddingRight;
+                LegendTitleElement.Width = LegendAreaWidth;
+                LegendTitleElement.Text = LegendTitle;
+                Canvas.SetTop(LegendTitleElement, LegendPatchYGetter(null, 0) - 30);
             }
 
             Canvas.SetLeft(LegendPanel, this.Width - LegendAreaWidth);

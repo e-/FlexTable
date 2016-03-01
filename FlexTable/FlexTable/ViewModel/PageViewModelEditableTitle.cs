@@ -242,6 +242,7 @@ namespace FlexTable.ViewModel
 
         #region Editable Title Generator
 
+        /*
         void DrawEditableTitleN(StackPanel title, ColumnViewModel numerical, String prefix, String suffix)
         {
             if(prefix.Length > 0)
@@ -255,12 +256,10 @@ namespace FlexTable.ViewModel
             if (suffix.Length > 0)
                 AddText(title, suffix);
         }
-
         void DrawEditableTitleCN(StackPanel title, ColumnViewModel categorical, ColumnViewModel numerical)
         {
             AddEditableTitle(title, Const.Loader.GetString("ChartTitleCN"), categorical, numerical);
-        }
-        
+        }        
         void DrawEditableTitleCNvsN(StackPanel title, ColumnViewModel categorical, ColumnViewModel numerical1, ColumnViewModel numerical2)
         {
             AddComboBox(
@@ -288,7 +287,6 @@ namespace FlexTable.ViewModel
                CreateColumnChangedHandler(categorical)
            );
         }
-
         void DrawEditableTitleNvsN(StackPanel title, ColumnViewModel numerical1, ColumnViewModel numerical2)
         {
             AddComboBox(
@@ -307,7 +305,6 @@ namespace FlexTable.ViewModel
                 CreateColumnChangedHandler(numerical2)
             );
         }
-
         void DrawEditableTitleNN(StackPanel title, ColumnViewModel numerical1, ColumnViewModel numerical2)
         {
             AddComboBox(
@@ -382,6 +379,7 @@ namespace FlexTable.ViewModel
                CreateColumnChangedHandler(categorical)
            );
         }
+        */
 
         void DrawEditableTitleCxNx(StackPanel title, String prefix, List<ColumnViewModel> variables, String mid, List<ColumnViewModel> pivots)
         {
@@ -498,50 +496,35 @@ namespace FlexTable.ViewModel
             }
             else if (ViewStatus.IsN)
             {
-                DrawEditableTitleN(pageView.PivotTableTitle, ViewStatus.FirstNumerical, 
-                    Const.Loader.GetString("FrequencyTitle1"), Const.Loader.GetString("FrequencyTitle2"));
+                AddEditableTitle(pageView.PivotTableTitle, Const.Loader.GetString("DistributionTitle"), ViewStatus.FirstNumerical);
             }
             else if (ViewStatus.IsCC)
             {
-                DrawEditableTitleCxNx(pageView.PivotTableTitle,
-                        "Frequency\x00A0of\x00A0",
-                        new List<ColumnViewModel>() { ViewStatus.SecondCategorical },
-                        "\x00A0by\x00A0",
-                        new List<ColumnViewModel>() { ViewStatus.FirstCategorical }
-                        );
+                AddEditableTitle(pageView.PivotTableTitle, Const.Loader.GetString("ChartTitleCC"), ViewStatus.FirstCategorical, ViewStatus.SecondCategorical);
             }
             else if (ViewStatus.IsCN)
             {
-                DrawEditableTitleCxNx(pageView.PivotTableTitle, "", ViewStatus.NumericalColumnViewModels.ToList(), "\x00A0by\x00A0", ViewStatus.CategoricalColumnViewModels.ToList());
+                AddEditableTitle(pageView.PivotTableTitle, Const.Loader.GetString("ChartTitleCN"), ViewStatus.FirstCategorical, ViewStatus.FirstNumerical);
             }
             else if (ViewStatus.IsNN)
             {
-                ;
+                // no pivot table
             }
             else if (ViewStatus.IsCCC)
             {
-                DrawEditableTitleCxNx(pageView.PivotTableTitle,
-                        "Frequency\x00A0of\x00A0",
-                        new List<ColumnViewModel>() { ViewStatus.SelectedColumnViewModels.Last() },
-                        "\x00A0by\x00A0",
-                        ViewStatus.SelectedColumnViewModels.Where((r, i) => i < 2).ToList()
-                        );
+                AddEditableTitle(pageView.PivotTableTitle, Const.Loader.GetString("ChartTitleCCC"), ViewStatus.FirstCategorical, ViewStatus.SecondCategorical, ViewStatus.ThirdCategorical);
             }
             else if (ViewStatus.IsCCN)
             {
-                DrawEditableTitleCxNx(pageView.PivotTableTitle,
-                    "",
-                    ViewStatus.NumericalColumnViewModels.ToList(),
-                    "\x00A0by\x00A0",
-                    ViewStatus.CategoricalColumnViewModels.ToList()
-                    );
+                AddEditableTitle(pageView.PivotTableTitle, Const.Loader.GetString("ChartTitleCCN"), ViewStatus.FirstCategorical, ViewStatus.SecondCategorical, ViewStatus.FirstNumerical);
             }
             else if (ViewStatus.IsCNN)
             {
-                DrawEditableTitleCNN(pageView.PivotTableTitle, ViewStatus.FirstCategorical, ViewStatus.FirstNumerical, ViewStatus.SecondNumerical);
+                AddEditableTitle(pageView.PivotTableTitle, Const.Loader.GetString("PivotTableTitleCNN"), ViewStatus.FirstCategorical, ViewStatus.FirstNumerical, ViewStatus.SecondNumerical);
             }
             else if (ViewStatus.IsNNN)
             {
+                // no pivot table
             }
             else if (ViewStatus.IsCnN0)
             {

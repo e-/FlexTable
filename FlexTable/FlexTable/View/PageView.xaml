@@ -350,7 +350,7 @@
 
                         <StackPanel x:Name="PivotTableWrapperElement" Visibility="{Binding IsPivotTableVisible, Converter={StaticResource BooleanToVisibilityConverter}}" 
                                     x:Uid="PageViewPivotTableWrapperElement" Background="Transparent">
-                            <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="PivotTableTitleElement"></StackPanel>
+                            <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="PivotTableTitleElement" MaxWidth="{Binding MainPageViewModel.ParagraphWidth}"></StackPanel>
                             <local:PivotTableView x:Name="PivotTableViewElement" VerticalAlignment="Center" x:Uid="PageViewPivotTableViewElement"></local:PivotTableView>
                         </StackPanel>
 
@@ -358,6 +358,16 @@
                                     x:Uid="PageViewCorrelationStatisticsWrapperElement" Background="Transparent">
                             <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="CorrelationStatisticsTitleElement"></StackPanel>
                             <local:CorrelationStatisticsView x:Name="CorrelationStatisticsViewElement" x:Uid="PageViewCorrelationStatisticsViewElement"/>
+                        </StackPanel>
+
+                        <StackPanel Visibility="{Binding IsNoPossibleVisualizationWarningVisible, Converter={StaticResource BooleanToVisibilityConverter}}" 
+                                    x:Name="NoVisualizationWarningWrapperElement"
+                                    x:Uid="PageViewNoVisualizationWarningElement" Background="Transparent">
+                            <TextBlock Style="{StaticResource TooManyElementsWarningStyle}" TextAlignment="Center" Margin="0 250 0 0"
+                                       Width="{Binding MainPageViewModel.ParagraphWidth}">
+                                <Run FontFamily="FontAwesome" Foreground="#CC0000">&#xf071;</Run>
+                                <Run x:Uid="PageViewNoVisualization"></Run>
+                            </TextBlock>
                         </StackPanel>
                     </Canvas>
                 </ScrollViewer>

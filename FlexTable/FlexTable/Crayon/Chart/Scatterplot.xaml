@@ -30,6 +30,7 @@
             <com:Rectangles x:Name="LegendRectangleElement" IsHitTestVisible="False" />
 
             <com:Texts x:Name="LegendTextElement" IsHitTestVisible="False" />
+            <TextBlock TextAlignment="Center" FontSize="14" FontStyle="Italic" x:Name="LegendTitleElement"></TextBlock>
         </Canvas>
 
         <Grid x:Name="StrokeGrid" IsHitTestVisible="False"></Grid>
