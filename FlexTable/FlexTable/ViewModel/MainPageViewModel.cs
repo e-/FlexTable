@@ -149,6 +149,15 @@ namespace FlexTable.ViewModel
                     else
                         pageView.ViewModel.Reflect(reason); // ReflectType2.TrackPreviousParagraph | ReflectType2.OnCreate, reason);*/
                 }
+
+                {
+                    PageView topPageView = ExplorationViewModel.TopPageView;
+                    if (topPageView.ViewModel.ViewStatus != null)
+                    {
+                        topPageView.ViewModel.ViewStatus.Generate(sheetViewModel);
+                        topPageView.ViewModel.Reflect(reason);
+                    }
+                }
             }
             else if (updateLastPageView)
             {
@@ -229,6 +238,8 @@ namespace FlexTable.ViewModel
             //return;
             var dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
 
+            return;
+
             ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[2]);
             
             DispatcherTimer dispatcherTimer = new DispatcherTimer();
@@ -242,7 +253,7 @@ namespace FlexTable.ViewModel
                 //PageView topPageView = ExplorationViewModel.SelectedPageViews.Last();
                 //topPageView.SelectionChanged(null, sheetViewModel.FilteredRows.Where((r, index) => index < 50).ToList(), SelectionChangedType.Add, ReflectReason.ChartSelection);
 
-                ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[3]);
+                ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[10]);
 
                 DispatcherTimer dispatcherTimer2 = new DispatcherTimer();
                 dispatcherTimer2.Tick += (sender2, e2) =>

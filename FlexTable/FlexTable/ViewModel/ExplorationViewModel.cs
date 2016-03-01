@@ -137,7 +137,7 @@ namespace FlexTable.ViewModel
                 // Preview 풀기
                 mainPageViewModel.TableViewModel.CancelIndexing(false);
 
-                // Page View 아래로 보내기                    
+                // Page View 위로 보내기                    
                 pageView.ReflectState();
             }
             else if (state == PageViewModel.PageViewState.Selected) // 현재 선택하는 경우

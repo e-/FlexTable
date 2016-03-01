@@ -22,6 +22,7 @@ using Windows.Devices.Input;
 using Windows.UI.Xaml.Shapes;
 using FlexTable.Model;
 using d3.Component;
+using FlexTable.ViewModel;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -405,11 +406,13 @@ namespace FlexTable.Crayon.Chart
                 {
                     if (datum.BarState == BarState.Default) // 이거 하나만
                     {
-                        FilterOut(sender, $"Filtered by {Data[0].ColumnViewModel.Name}", datum.EnvelopeRows);
+                        FilterOut(sender, $"{Data[0].ColumnViewModel.Name} = {datum.Key as Category}", datum.EnvelopeRows);
                     }
                     else //선택된 것 모두
                     {
-                        FilterOut(sender, $"Filtered by {Data[0].ColumnViewModel.Name}", Data.Where(d => d.Rows?.Count() > 0).SelectMany(d => d.EnvelopeRows));
+                        IEnumerable<Category> categories = Data.Where(d => d.Rows?.Count() > 0).Select(d => d.Key as Category).OrderBy(cate => cate.Order);
+                        IEnumerable<Row> filteredRows = Data.Where(d => d.Rows?.Count() > 0).SelectMany(d => d.EnvelopeRows);
+                        FilterOut(sender, $"{Data[0].ColumnViewModel.Name} = {String.Join(", ", categories)}", filteredRows);
                     }
                 }
             }
@@ -495,9 +498,14 @@ namespace FlexTable.Crayon.Chart
 
                 if(Const.IsStrikeThrough(boundingRect)) // strikethrough 및 무조건 필터아웃 
                 {
-                    if(FilterOut != null)
+                    if(FilterOut != null && intersectedRows.Count > 0)
                     {
-                        FilterOut(this, $"Filtered by {Data[0].ColumnViewModel.Name}", intersectedRows.ToList());
+                        ColumnViewModel columnViewModel = Data[0].ColumnViewModel;
+                        IEnumerable<Category> categories = intersectedRows.Select(row => row.Cells[columnViewModel.Index].Content as Category)
+                            .OrderBy(cate => cate.Order)
+                            .Distinct();
+
+                        FilterOut(this, $"{columnViewModel.Name} = {String.Join(", ", categories)}", intersectedRows.ToList());
                     }
                 }
                 else // 아니면 무조건 셀렉션 

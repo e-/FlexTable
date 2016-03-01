@@ -287,9 +287,14 @@ namespace FlexTable.Crayon.Chart
 
                 if (Const.IsStrikeThrough(boundingRect))
                 {
-                    if (FilterOut != null)
+                    if (FilterOut != null && intersectedRows.Count() > 0)
                     {
-                        FilterOut(this, $"Filtered by {Data[0].ColumnViewModel.Name}", intersectedRows.ToList());
+                        ColumnViewModel columnViewModel = Data[0].ColumnViewModel;
+                        IEnumerable<Category> categories = intersectedRows.Select(row => row.Cells[columnViewModel.Index].Content as Category)
+                            .OrderBy(cate => cate.Order)
+                            .Distinct();
+                            
+                        FilterOut(this, $"{columnViewModel.Name} = {String.Join(", ", categories)}", intersectedRows.ToList());
                     }
                 } 
                 else

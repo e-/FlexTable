@@ -431,11 +431,37 @@ namespace FlexTable.Crayon.Chart
                 {
                     if (datum.Children[0].BarState == BarState.Default) // 이거 하나만
                     {
-                        FilterOut(sender, $"Filtered by {Data[0].ColumnViewModel.Name}", datum.EnvelopeRows);
+                        FilterOut(sender, $"{Data[0].ColumnViewModel.Name} = {datum.Key as Category}", datum.EnvelopeRows);
                     }
                     else
                     {
-                        FilterOut(sender, $"Filtered by {Data[0].ColumnViewModel.Name}", ChartData.Where(d => d.Rows?.Count() > 0).SelectMany(d => d.EnvelopeRows));
+                        IEnumerable<BarChartDatum> filterOut = ChartData.Where(d => d.Rows?.Count() > 0);
+                        IEnumerable<BarChartDatum> remaining = ChartData.Except(filterOut);
+                        IEnumerable<Row> filteredRows = ChartData.Where(d => d.Rows?.Count() > 0).SelectMany(d => d.EnvelopeRows);
+                        var categorical1 = Data[0].ColumnViewModel;
+                        var categorical2 = ChartData[0].ColumnViewModel;
+
+                        // categorical1 으로 필터 된건지 확인
+                        var filteredCategories1 = filterOut.Select(fo => fo.Parent.Key).Distinct();
+                        if(!remaining.ToList().Exists(bcd => filteredCategories1.Contains(bcd.Parent.Key)))
+                        {
+                            // 남은 컬럼들 중에서 categorical1의 카테고리를 가지고 있는게 하나도 없으면 이걸로 이름을 준다.
+                            FilterOut(sender, $"{categorical1.Name} = {String.Join(", ", filteredCategories1)}", filteredRows);
+                        }
+                        else
+                        {
+                            var filteredCategories2 = filterOut.Select(fo => fo.Key).Distinct();
+
+                            if (categorical2 != null && !remaining.ToList().Exists(bcd => filteredCategories2.Contains(bcd.Key)))
+                            { // CNN이 아니면
+                                FilterOut(sender, $"{categorical2.Name} = {String.Join(", ", filteredCategories2)}", filteredRows);
+                            }
+                            else
+                            {
+                                FilterOut(sender, String.Format(FlexTable.Const.Loader.GetString("FilterOutMessage"),
+                                    filteredRows.Count()), filteredRows);
+                            }
+                        }
                     }
                 }
             }
@@ -455,6 +481,7 @@ namespace FlexTable.Crayon.Chart
 
                 Int32 index = 0;
                 List<Row> intersectedRows = new List<Row>();
+                Boolean horizontalAxisStroke = false, legendStroke = false;
 
                 index = 0;
                 foreach (D3Rectangle rect in HandleRectangleElement.ChildRectangles)
@@ -481,6 +508,7 @@ namespace FlexTable.Crayon.Chart
                             BarChartDatum datum = LegendData[index];
                             IEnumerable<Row> rows = ChartData.Where(cd => cd.Key == datum.Key).SelectMany(cd => cd.EnvelopeRows);
                             intersectedRows = intersectedRows.Concat(rows).ToList();
+                            legendStroke = true;
                         }
                         index++;
                     }
@@ -495,15 +523,37 @@ namespace FlexTable.Crayon.Chart
                     {
                         GroupedBarChartDatum datum = Data[index];
                         intersectedRows = intersectedRows.Concat(datum.EnvelopeRows).ToList();
+                        horizontalAxisStroke = true;
                     }
                     index++;
                 }
 
                 if (Const.IsStrikeThrough(boundingRect)) // strikethrough 및 무조건 필터아웃 
                 {
-                    if (FilterOut != null)
+                    if (FilterOut != null && intersectedRows.Count > 0)
                     {
-                        FilterOut(this, $"Filtered by Strikethrough", intersectedRows);
+                        if (horizontalAxisStroke && !legendStroke)
+                        {
+                            IEnumerable<Category> categories = intersectedRows
+                                .Select(row => row.Cells[firstColumnViewModel.Index].Content as Category)
+                                .Distinct()
+                                .OrderBy(cate => cate.Order);
+
+                            FilterOut(this, $"{firstColumnViewModel.Name} = {String.Join(", ", categories)}", intersectedRows);
+                        }
+                        else if (legendStroke && !horizontalAxisStroke)
+                        {
+                            IEnumerable<Category> categories = intersectedRows
+                                .Select(row => row.Cells[secondColumnViewModel.Index].Content as Category)
+                                .Distinct()
+                                .OrderBy(cate => cate.Order);
+
+                            FilterOut(this, $"{secondColumnViewModel.Name} = {String.Join(", ", categories)}", intersectedRows);
+                        }
+                        else
+                        { 
+                            FilterOut(this, String.Format(FlexTable.Const.Loader.GetString("FilterOutMessage"), intersectedRows.Count()), intersectedRows);
+                        }
                     }
                 }
                 else // 하나라도 선택 안된게 있으면 선택

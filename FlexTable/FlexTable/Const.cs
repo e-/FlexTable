@@ -146,6 +146,7 @@ namespace FlexTable
                 case (ReflectReason.RowSelected):
                 case (ReflectReason.RowUnselected):
                 case (ReflectReason.RowSelectionChanged):
+                case (ReflectReason.Undo):
                     return true;
             }
             return false;

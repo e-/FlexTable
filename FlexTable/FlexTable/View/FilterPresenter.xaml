@@ -39,9 +39,18 @@
                 </TextBlock>
             </Border>-->
 
-            <TextBlock Grid.Column="1" FontSize="16" VerticalAlignment="Center" 
-                       FontFamily="Roboto"
-                       TextAlignment="Right" Text="{x:Bind ViewModel.Name, Mode=OneWay}" Margin="15 0 15 0"></TextBlock>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="FontAwesome"
+                           Foreground="{StaticResource HighlightBrush1}" Margin="10 0 0 0"
+                           >
+                        &#xf0b0;
+                </TextBlock>
+                <TextBlock FontSize="16" VerticalAlignment="Center" 
+                           FontFamily="Roboto"
+                           TextAlignment="Right" Margin="10 0 10 0"
+                           Text="{x:Bind ViewModel.Name, Mode=OneWay}">
+                </TextBlock>
+            </StackPanel>
         </Grid>
     </Border>
 </UserControl>

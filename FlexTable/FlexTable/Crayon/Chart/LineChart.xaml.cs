@@ -22,6 +22,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Shapes;
+using FlexTable.ViewModel;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -227,6 +228,8 @@ namespace FlexTable.Crayon.Chart
 
         public Double LegendAreaWidth { get; set; } = 140;
         public String LegendTitle { get; set; }
+        public ColumnViewModel FirstColumnViewModel { get; set; }
+        public ColumnViewModel SecondColumnViewModel { get; set; }
 
         public event Event.SelectionChangedEventHandler SelectionChanged;
         public event Event.FilterOutEventHandler FilterOut;
@@ -336,9 +339,9 @@ namespace FlexTable.Crayon.Chart
             {
                 List<Point> points = inkManager.GetStrokes()[0].GetInkPoints().Select(ip => ip.Position).ToList();
                 Rect boundingRect = inkManager.GetStrokes()[0].BoundingRect;
-
                 List<Row> intersectedRows = new List<Row>();
                 Int32 index = 0;
+                Boolean horizontalAxisStroke = false, legendStroke = false;
 
                 index = 0;
                 foreach (D3Rectangle rect in LegendHandleRectangleElement.ChildRectangles)
@@ -349,6 +352,7 @@ namespace FlexTable.Crayon.Chart
                     {
                         LineChartDatum datum = Data[index];
                         intersectedRows = intersectedRows.Concat(datum.EnvelopeRows).ToList();
+                        legendStroke = true;
                     }
                     index++;
                 }
@@ -366,6 +370,7 @@ namespace FlexTable.Crayon.Chart
                                 .Where(dp => dp.EnvelopeRows != null)
                                 .SelectMany(dp => dp.EnvelopeRows)
                             ).ToList();
+                        horizontalAxisStroke = true;
                     }
                     index++;
                 }
@@ -387,9 +392,30 @@ namespace FlexTable.Crayon.Chart
 
                 if (Const.IsStrikeThrough(boundingRect)) // strikethrough 및 무조건 필터아웃 
                 {
-                    if (FilterOut != null)
+                    if (FilterOut != null && intersectedRows.Count > 0)
                     {
-                        FilterOut(this, $"Filtered by {Data[0].ColumnViewModel.Name}", intersectedRows.ToList());
+                        if (horizontalAxisStroke && !legendStroke)
+                        {
+                            IEnumerable<Category> categories = intersectedRows
+                                .Select(row => row.Cells[SecondColumnViewModel.Index].Content as Category)
+                                .Distinct()
+                                .OrderBy(cate => cate.Order);
+
+                            FilterOut(this, $"{SecondColumnViewModel.Name} = {String.Join(", ", categories)}", intersectedRows);
+                        }
+                        else if (legendStroke && !horizontalAxisStroke && FirstColumnViewModel.Type == ColumnType.Categorical)
+                        {
+                            IEnumerable<Category> categories = intersectedRows
+                                .Select(row => row.Cells[FirstColumnViewModel.Index].Content as Category)
+                                .Distinct()
+                                .OrderBy(cate => cate.Order);
+
+                            FilterOut(this, $"{FirstColumnViewModel.Name} = {String.Join(", ", categories)}", intersectedRows);
+                        }
+                        else
+                        {
+                            FilterOut(this, String.Format(FlexTable.Const.Loader.GetString("FilterOutMessage"), intersectedRows.Count()), intersectedRows);
+                        }
                     }
                 }
                 else // 아니면 무조건 셀렉션 

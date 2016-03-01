@@ -160,14 +160,6 @@ namespace FlexTable.View
             ViewModel.MainPageViewModel.TableViewModel.SelectedRows = null;
             ViewModel.MainPageViewModel.ExplorationViewModel.FilterOut(fvm);
         }
-
-        /*private void FilterOut(IEnumerable<Row> filteredRows, String name, IEnumerable<String> values)
-        {
-            FilterOut(filteredRows, (values.Count() == 1) ?
-                $"{name} = {values.First()}" :
-                $"{name} in {String.Join(", ", values)}");
-        }
-        */        
         
         public void ReflectState()
         {

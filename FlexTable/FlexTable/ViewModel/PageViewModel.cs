@@ -653,6 +653,8 @@ namespace FlexTable.ViewModel
                 .Take(LineChartMaximumPointNumberInASeries)
                 .ToList();
 
+            pageView.LineChart.FirstColumnViewModel = numerical;
+            pageView.LineChart.SecondColumnViewModel = categorical;
             pageView.LineChart.Data = new List<LineChartDatum>() { datum };
             if (groupedRows.Count > LineChartMaximumPointNumberInASeries) IsLineChartWarningVisible = true;
         }
@@ -766,6 +768,9 @@ namespace FlexTable.ViewModel
 
             if (rows.Count() > LineChartMaximumSeriesNumber) IsLineChartWarningVisible = true;
             if (rows.Max(row => row.DataPoints.Count) > LineChartMaximumPointNumberInASeries) IsLineChartWarningVisible = true;
+
+            pageView.LineChart.FirstColumnViewModel = categorical2;
+            pageView.LineChart.SecondColumnViewModel = categorical1;
 
             rows = rows.Take(LineChartMaximumSeriesNumber).ToList();
             pageView.LineChart.Data = rows.ToList();
@@ -1037,6 +1042,9 @@ namespace FlexTable.ViewModel
 
             if (data.Count() > LineChartMaximumSeriesNumber) IsLineChartWarningVisible = true;
             if (data.Max(row => row.DataPoints.Count) > LineChartMaximumPointNumberInASeries) IsLineChartWarningVisible = true;
+
+            pageView.LineChart.FirstColumnViewModel = numerical1;
+            pageView.LineChart.SecondColumnViewModel = categorical;
 
             data = data.Take(LineChartMaximumSeriesNumber).ToList();
             pageView.LineChart.Data = data;

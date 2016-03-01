@@ -182,6 +182,9 @@
   <data name="DistributionTitle" xml:space="preserve">
     <value>{0:c}|의 분포</value>
   </data>
+  <data name="FilterOutMessage" xml:space="preserve">
+    <value>{0}개의 행을 제외</value>
+  </data>
   <data name="Frequency" xml:space="preserve">
     <value>빈도수</value>
   </data>
