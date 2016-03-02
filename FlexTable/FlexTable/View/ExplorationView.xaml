@@ -43,6 +43,7 @@
             </DoubleAnimation>
         </Storyboard>
     </UserControl.Resources>
+    
     <Grid x:Name="Wrapper">
         <Canvas x:Name="PageViewElement">
             <Border Canvas.Top="0" Width="{Binding MainPageViewModel.PageWidth}">
@@ -78,7 +79,7 @@
             </ListView.RenderTransform>
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <StackPanel Padding="0 0 50 50" />
+                    <StackPanel Padding="0 0 25 50" />
                 </ItemsPanelTemplate>
             </ListView.ItemsPanel>
             <ListView.ItemContainerStyle>

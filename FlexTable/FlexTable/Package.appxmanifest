@@ -26,6 +26,7 @@
             <uap:DisplayName>FlexTable</uap:DisplayName>
             <uap:SupportedFileTypes>
               <uap:FileType>.csv</uap:FileType>
+              <uap:FileType>.txt</uap:FileType>
             </uap:SupportedFileTypes>
           </uap:FileTypeAssociation>
         </uap:Extension>

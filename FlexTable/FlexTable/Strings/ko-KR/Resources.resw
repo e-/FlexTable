@@ -290,6 +290,12 @@
   <data name="PivotTableTitleCNN" xml:space="preserve">
     <value>{0:c}|에 따른 |{1:a}| 및 |{2:a}</value>
   </data>
+  <data name="SelectionMessage1" xml:space="preserve">
+    <value>개의 행이 선택됨</value>
+  </data>
+  <data name="SelectionMessage2" xml:space="preserve">
+    <value>개의 행이 선택됨</value>
+  </data>
   <data name="Sum" xml:space="preserve">
     <value>합계</value>
   </data>

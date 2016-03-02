@@ -41,8 +41,9 @@ namespace FlexTable.ViewModel
         /// <summary>
         /// 여기도 소팅해야하나? 어차피 이 집합에 속하는지 안하는지만 테스트하고 차트 그릴때는 통계를 쓰는거라 렌더링하는 rowviewmodel이 아니면 소팅 필요없지않나
         /// </summary>
-        public IEnumerable<Row> FilteredRows { get { return FilterViewModel.ApplyFilters(FilterViewModels, sheet.Rows); } }
-
+        private IEnumerable<Row> filteredRows = null;
+        public IEnumerable<Row> FilteredRows { get { return filteredRows; } }
+        
         IMainPage view;
 
         public SheetViewModel(MainPageViewModel mainPageViewModel, IMainPage view)
@@ -99,6 +100,7 @@ namespace FlexTable.ViewModel
         {
             Sheet = sheet;
             FilterViewModels.Clear();
+            filteredRows = Sheet.Rows;
 
             Int32 index;
 
@@ -345,6 +347,18 @@ namespace FlexTable.ViewModel
                 columnViewModel.X = total;
                 total += columnViewModel.Width;
             }
+        }
+
+        public void PrependFilter(FilterViewModel filterViewModel)
+        {
+            FilterViewModels.Insert(0, filterViewModel);
+            filteredRows = FilterViewModel.ApplyFilters(FilterViewModels, sheet.Rows);
+        }
+        
+        public void RemoveFilter(FilterViewModel filterViewModel)
+        {
+            FilterViewModels.Remove(filterViewModel);
+            filteredRows = FilterViewModel.ApplyFilters(FilterViewModels, sheet.Rows);
         }
     }    
 }

@@ -156,7 +156,7 @@ namespace FlexTable
     public class Const
     {
         public const Double PageViewToggleThreshold = 100;
-        public const Double SelectionDismissThreshold = 200;
+        public const Double SelectionDismissThreshold = 100;
         public static Double RowHeight = 20;
         public static ResourceLoader Loader = new ResourceLoader();
 

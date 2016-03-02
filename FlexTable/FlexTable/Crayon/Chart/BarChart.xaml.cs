@@ -406,13 +406,29 @@ namespace FlexTable.Crayon.Chart
                 {
                     if (datum.BarState == BarState.Default) // 이거 하나만
                     {
-                        FilterOut(sender, $"{Data[0].ColumnViewModel.Name} = {datum.Key as Category}", datum.EnvelopeRows);
+                        if (Data[0].Key is Category)
+                        {
+                            FilterOut(sender, $"{Data[0].ColumnViewModel.Name} = {datum.Key as Category}", datum.EnvelopeRows);
+                        }
+                        else
+                        {
+                            FilterOut(sender, String.Format(FlexTable.Const.Loader.GetString("FilterOutMessage"),
+                                    datum.EnvelopeRows.Count()), datum.EnvelopeRows);
+                        }
                     }
                     else //선택된 것 모두
                     {
-                        IEnumerable<Category> categories = Data.Where(d => d.Rows?.Count() > 0).Select(d => d.Key as Category).OrderBy(cate => cate.Order);
                         IEnumerable<Row> filteredRows = Data.Where(d => d.Rows?.Count() > 0).SelectMany(d => d.EnvelopeRows);
-                        FilterOut(sender, $"{Data[0].ColumnViewModel.Name} = {String.Join(", ", categories)}", filteredRows);
+                        if (Data[0].Key is Category)
+                        {
+                            IEnumerable<Category> categories = Data.Where(d => d.Rows?.Count() > 0).Select(d => d.Key as Category).OrderBy(cate => cate.Order);
+                            FilterOut(sender, $"{Data[0].ColumnViewModel.Name} = {String.Join(", ", categories)}", filteredRows);
+                        }
+                        else
+                        {
+                            FilterOut(sender, String.Format(FlexTable.Const.Loader.GetString("FilterOutMessage"),
+                                    filteredRows.Count()), filteredRows);
+                        }
                     }
                 }
             }

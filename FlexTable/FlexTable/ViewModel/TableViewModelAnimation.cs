@@ -450,7 +450,7 @@ namespace FlexTable.ViewModel
 
                 List<RowViewModel> positionUpdatedRowViewModels = new List<RowViewModel>(AllRowViewModels.Where(rvm => SelectedRows.Contains(rvm.Row)));
 
-                positionUpdatedRowViewModels.Sort(new RowViewModelComparer(SheetViewModel, viewStatus));
+                positionUpdatedRowViewModels.Sort(new RowViewModelComparer(SheetViewModel, viewStatus, null));
 
                 RowViewModel beforeRowViewModel = stashedViewStatus.GroupedRowViewModels.First(rvm => rvm.Cells[categorical.Index].Content == category);
                 IEnumerable<RowViewModel> targetRowViewModels =
@@ -513,7 +513,7 @@ namespace FlexTable.ViewModel
                     .First();
 
                 List<RowViewModel> positionUpdatedRowViewModels = new List<RowViewModel>(AllRowViewModels.Where(rvm => stashedViewStatus.SelectedRows.Contains(rvm.Row)));
-                positionUpdatedRowViewModels.Sort(new RowViewModelComparer(SheetViewModel, viewStatus));
+                positionUpdatedRowViewModels.Sort(new RowViewModelComparer(SheetViewModel, viewStatus, null));
 
                 IEnumerable<RowViewModel> targetRowViewModels =
                     SheetViewModel.AllRowViewModels
@@ -640,8 +640,6 @@ namespace FlexTable.ViewModel
             }
             else // grouped row visible
             {
-
-
                 // root
                 {
                     AnimatingRowViewModel arvm = new AnimatingRowViewModel()

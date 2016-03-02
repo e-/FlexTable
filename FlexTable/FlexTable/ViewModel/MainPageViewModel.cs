@@ -14,6 +14,7 @@ using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.Storage;
+using FlexTable.Util;
 
 namespace FlexTable.ViewModel
 {
@@ -25,8 +26,8 @@ namespace FlexTable.ViewModel
         private Size bounds;
         public Size Bounds { get { return bounds; } }
 
-        private Model.Sheet sheet;
-        public Model.Sheet Sheet {
+        private Sheet sheet;
+        public Sheet Sheet {
             get { return sheet; }
             set { 
                 sheet = value;
@@ -189,17 +190,20 @@ namespace FlexTable.ViewModel
 
                 try
                 {
-                    sheet = await Util.CsvLoader.LoadLocal(recent);
+                    sheet = await CsvLoader.LoadLocal(recent);
                 }
                 catch
                 {
-                    sheet = await Util.CsvLoader.Load("student-mat.csv");
+                    sheet = await CsvLoader.Load("student-mat.csv");
                 }
             }
             else
             {
-                sheet = await Util.CsvLoader.Load("student-mat.csv");
+                sheet = await CsvLoader.Load("student-mat.csv");
             }
+
+            await Logger.Initialize();
+            Logger.Log("Logging has been started.");
 
             Initialize(sheet);
         }
@@ -238,7 +242,6 @@ namespace FlexTable.ViewModel
             //return;
             var dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
 
-            return;
 
             ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[2]);
             
@@ -249,9 +252,11 @@ namespace FlexTable.ViewModel
 
                 ExplorationViewModel.TopPageView.ViewModel.State = PageViewModel.PageViewState.Selected;
                 ExplorationViewModel.PageViewStateChanged(ExplorationViewModel.TopPageView.ViewModel, ExplorationViewModel.TopPageView);
-                
+
                 //PageView topPageView = ExplorationViewModel.SelectedPageViews.Last();
                 //topPageView.SelectionChanged(null, sheetViewModel.FilteredRows.Where((r, index) => index < 50).ToList(), SelectionChangedType.Add, ReflectReason.ChartSelection);
+
+                return;
 
                 ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[10]);
 

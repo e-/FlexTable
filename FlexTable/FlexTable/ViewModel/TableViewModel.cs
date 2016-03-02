@@ -276,7 +276,7 @@ namespace FlexTable.ViewModel
             }
             else if (viewStatus.IsAllRowViewModelVisible)
             {
-                AllRowViewModels.Sort(new RowViewModelComparer(SheetViewModel, viewStatus));
+                AllRowViewModels.Sort(new RowViewModelComparer(SheetViewModel, viewStatus, null));
                 index = 0;
                 foreach (RowViewModel rowViewModel in AllRowViewModels)
                 {

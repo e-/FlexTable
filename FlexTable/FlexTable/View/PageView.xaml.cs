@@ -139,7 +139,7 @@ namespace FlexTable.View
                 HideSelectionIndicatorStoryboard.Pause();
                 ShowSelectionIndicatorStoryboard.Begin();
                 SelectedRowCountIndicator.Text = count.ToString();
-                SelectionMessage.Text = count == 1 ? "row selected" : "rows selected";
+                SelectionMessage.Text = count == 1 ? Const.Loader.GetString("SelectionMessage1") : Const.Loader.GetString("SelectionMessage2");
                 ViewModel.MainPageViewModel.TableViewModel.PreviewRows(SelectedRows);
             }
 
@@ -525,15 +525,7 @@ namespace FlexTable.View
             Double delta = e.Cumulative.Translation.X;
             if (delta > Const.SelectionDismissThreshold)
             {
-                Int32 count = SelectedRows.Count();
-                if (count > 0)
-                {
-                    FilterOut(this, $"Filtered {count} row" + (count == 1 ? String.Empty : "s"), SelectedRows.ToList());
-                }
-                else
-                {
-                    ResetSelectionIndicatorPositionStoryboard.Begin();
-                }
+                SelectionChanged(this, null, SelectionChangedType.Clear);
             }
             else
             {
@@ -546,13 +538,18 @@ namespace FlexTable.View
             Int32 count = SelectedRows.Count();
             if (count > 0)
             {
-                FilterOut(this, $"Filtered {count} row" + (count == 1 ? String.Empty : "s"), SelectedRows.ToList());
+                FilterOut(this,
+                    String.Format(
+                        Const.Loader.GetString("FilterOutMessage"),
+                        count
+                    ), SelectedRows.ToList());
+                FilterSelectionIndicatorStoryboard.Begin();
             }
         }
 
         private void SelectionIndicator_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            SelectionChanged(this, null, SelectionChangedType.Clear);//, ReflectReason2.SelectionChanged);
+            //SelectionChanged(this, null, SelectionChangedType.Clear);//, ReflectReason2.SelectionChanged);
         }
     }
 }

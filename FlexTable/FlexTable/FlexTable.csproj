@@ -179,6 +179,7 @@
     <Compile Include="Model\Column.cs" />
     <Compile Include="Model\CategoricalType.cs" />
     <Compile Include="Model\ColumnType.cs" />
+    <Compile Include="Util\Logger.cs" />
     <Compile Include="ViewModel\CorrelationStatisticsViewModel.cs" />
     <Compile Include="ViewModel\DescriptiveStatisticsViewModel.cs" />
     <Compile Include="Model\GroupedRows.cs" />

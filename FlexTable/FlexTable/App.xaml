@@ -199,6 +199,7 @@
                                                 <ColorAnimation Storyboard.TargetName="ContentPresenter"
                                                                 Storyboard.TargetProperty="(ContentPresenter.Foreground).(SolidColorBrush.Color)"
                                                                 Duration="0:0:0.3"
+                                                                BeginTime="0:0:0.3"
                                                                 EasingFunction="{StaticResource QuarticEaseInOut}"
                                                                 To="{StaticResource HighlightColor1}">
                                                 </ColorAnimation>
@@ -207,8 +208,7 @@
                                         <VisualState x:Name="Checked">
                                             <Storyboard>
                                                 <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter"
-                                                                Storyboard.TargetProperty="(ContentPresenter.Foreground).(SolidColorBrush.Color)"
-                                                                               >
+                                                                Storyboard.TargetProperty="(ContentPresenter.Foreground).(SolidColorBrush.Color)">
                                                     <DiscreteObjectKeyFrame
                                                         KeyTime="0"
                                                         Value="{StaticResource DarkerGridLineColor}" />

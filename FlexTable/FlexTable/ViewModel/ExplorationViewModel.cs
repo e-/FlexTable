@@ -192,7 +192,7 @@ namespace FlexTable.ViewModel
         {
             if (filterViewModel.Filter(mainPageViewModel.SheetViewModel.FilteredRows).Count() > 0)
             {
-                mainPageViewModel.SheetViewModel.FilterViewModels.Insert(0, filterViewModel);
+                mainPageViewModel.SheetViewModel.PrependFilter(filterViewModel);
 
                 mainPageViewModel.ReflectAll(ViewStatus, ReflectReason.RowFiltered); // 2.FilterOut);
                 return true;
@@ -202,7 +202,7 @@ namespace FlexTable.ViewModel
 
         public void CancelFilter(FilterViewModel filterViewModel)
         {
-            mainPageViewModel.SheetViewModel.FilterViewModels.Remove(filterViewModel);
+            mainPageViewModel.SheetViewModel.RemoveFilter(filterViewModel);
 
             mainPageViewModel.ReflectAll(ViewStatus, ReflectReason.RowFiltered); // 2.FilterOut);
         }
