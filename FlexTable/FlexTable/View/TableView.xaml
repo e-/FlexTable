@@ -225,8 +225,7 @@
 
             <view:ColumnIndexer Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" x:Name="ColumnIndexerElement" 
                                 Width="150"
-                                Height="300"
-                                VerticalAlignment="Bottom"
+                                VerticalAlignment="Stretch"
                                 HorizontalAlignment="Left"></view:ColumnIndexer>
         </Grid>
 

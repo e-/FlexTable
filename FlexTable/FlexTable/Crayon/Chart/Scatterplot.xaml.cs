@@ -242,6 +242,7 @@ namespace FlexTable.Crayon.Chart
 
             if (SelectionChanged != null)
             {
+                Logger.Log($"selection,scatterplot,touch");
                 if (selected.Count() == selected.Where(sd => sd.State != ScatterplotState.Selected).Count())
                 {
                     SelectionChanged(this, selected.Select(sd => sd.Row), SelectionChangedType.Add);//, ReflectReason2.SelectionChanged);
@@ -289,6 +290,7 @@ namespace FlexTable.Crayon.Chart
                 {
                     if (FilterOut != null && intersectedRows.Count() > 0)
                     {
+                        Logger.Log($"filter out,scatterplot,pen");
                         ColumnViewModel columnViewModel = Data[0].ColumnViewModel;
                         IEnumerable<Category> categories = intersectedRows.Select(row => row.Cells[columnViewModel.Index].Content as Category)
                             .OrderBy(cate => cate.Order)
@@ -301,6 +303,7 @@ namespace FlexTable.Crayon.Chart
                 {
                     if (SelectionChanged != null)
                     {
+                        Logger.Log($"selection,scatterplot,pen");
                         SelectionChanged(this, intersectedRows, SelectionChangedType.Replace);//, ReflectReason2.SelectionChanged);
                     }
                 }

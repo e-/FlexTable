@@ -151,7 +151,11 @@ namespace FlexTable.ViewModel
                 || (reason != ReflectReason2.FilterOut && reason != ReflectReason2.PreviewRequested 
                 && reason != ReflectReason2.ColumnViewModelUnselected && reason != ReflectReason2.Undo);*/
 
-            if (ViewStatus.IsC)
+            if(ViewStatus.IsEmpty)
+            {
+
+            }
+            else  if (ViewStatus.IsC)
             {
                 if (chartTypeChanged)
                 {
@@ -322,7 +326,7 @@ namespace FlexTable.ViewModel
                 IsNoPossibleVisualizationWarningVisible = true;
             }
 
-            pageView.UpdateCarousel(trackPreviousParagraph, null);// firstChartTag?.ToString());
+            if(!ViewStatus.IsEmpty) pageView.UpdateCarousel(trackPreviousParagraph, null);// firstChartTag?.ToString());
         }
 
         

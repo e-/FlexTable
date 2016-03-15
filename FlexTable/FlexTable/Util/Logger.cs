@@ -25,12 +25,20 @@ namespace FlexTable.Util
                 logDirectory = await documentLibrary.GetFolderAsync("FlexTableLogs");
             }
 
-            logFile = await logDirectory.CreateFileAsync(DateTime.Now.ToString("MMM월 d일 H시 mm분 ss초") + ".txt");    
+            logFile = await logDirectory.CreateFileAsync(DateTime.Now.ToString("MMM월 d일 H시 mm분 ss초") + ".txt");
+
         }
 
         public static async void Log(String log)
         {
-            await FileIO.WriteTextAsync(logFile, log);
+            try { 
+                String withTime = $"{DateTime.Now.ToString("MMM월 d일 H시 mm분 ss초")},{log}\r\n";
+                await FileIO.AppendTextAsync(logFile, withTime);
+            }
+            catch
+            {
+
+            }
         }
     }
 }

@@ -29,12 +29,18 @@ namespace FlexTable.Model
 
         private List<ColumnViewModel> selectedColumnViewModels = new List<ColumnViewModel>();
         public List<ColumnViewModel> SelectedColumnViewModels => selectedColumnViewModels;
-        public IEnumerable<ColumnViewModel> NumericalColumnViewModels => selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical);
-        public IEnumerable<ColumnViewModel> CategoricalColumnViewModels => selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical);
 
-        public Int32 SelectedCount => selectedColumnViewModels.Count;
-        public Int32 NumericalCount => selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical).Count();
-        public Int32 CategoricalCount => selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).Count();         
+        private IEnumerable<ColumnViewModel> numericalColumnViewModels;
+        public IEnumerable<ColumnViewModel> NumericalColumnViewModels => numericalColumnViewModels;
+        private IEnumerable<ColumnViewModel> categoricalColumnViewModels;
+        public IEnumerable<ColumnViewModel> CategoricalColumnViewModels => categoricalColumnViewModels;
+
+        private Int32 selectedCount;
+        public Int32 SelectedCount => selectedCount;
+        private Int32 numericalCount;
+        public Int32 NumericalCount => numericalCount;
+        private Int32 categoricalCount;
+        public Int32 CategoricalCount => categoricalCount;
 
         public Boolean IsEmpty => SelectedCount == 0;
 
@@ -57,18 +63,18 @@ namespace FlexTable.Model
         public Boolean IsCn => CategoricalCount >= 1;
         public Boolean IsOnlyCn => CategoricalCount >= 1 && NumericalCount == 0;
 
-        public ColumnViewModel FirstColumn => selectedColumnViewModels.First();
-        public ColumnViewModel LastColumn => selectedColumnViewModels.Last();
-        public ColumnViewModel FirstCategorical => selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).First();
-        public ColumnViewModel SecondCategorical => selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).ElementAt(1);
-        public ColumnViewModel ThirdCategorical => selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).ElementAt(2);
-        public ColumnViewModel LastCategorical =>
-            CategoricalCount > 0 ?
-            selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).Last() : null;
+        private ColumnViewModel firstColumn, lastColumn, firstCategorical, secondCategorical, thirdCategorical, lastCategorical;
+        private ColumnViewModel firstNumerical, secondNumerical, thirdNumerical;
 
-        public ColumnViewModel FirstNumerical => NumericalCount > 0 ? selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical).First() : null;
-        public ColumnViewModel SecondNumerical => selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical).ElementAt(1);
-        public ColumnViewModel ThirdNumerical => selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical).ElementAt(2);
+        public ColumnViewModel FirstColumn => firstColumn;
+        public ColumnViewModel LastColumn => lastCategorical;
+        public ColumnViewModel FirstCategorical => firstCategorical;
+        public ColumnViewModel SecondCategorical => secondCategorical;
+        public ColumnViewModel ThirdCategorical => thirdCategorical;
+        public ColumnViewModel LastCategorical => lastCategorical;
+        public ColumnViewModel FirstNumerical => firstNumerical;
+        public ColumnViewModel SecondNumerical => secondNumerical;
+        public ColumnViewModel ThirdNumerical => thirdNumerical;
 
         public UIElement ActivatedChart { get; set; }
         public Boolean IsScatterplotVisible => ActivatedChart is Crayon.Chart.Scatterplot;
@@ -88,6 +94,31 @@ namespace FlexTable.Model
         //public AnimationHint AnimationHint { get; set; }
         public IEnumerable<Row> SelectedRows { get; set; }
 
+        public ViewStatus()
+        {
+            Refresh();
+        }
+
+        public void Refresh()
+        {
+            numericalColumnViewModels = selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical);
+            categoricalColumnViewModels = selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical);
+            selectedCount = selectedColumnViewModels.Count();
+            numericalCount = numericalColumnViewModels.Count();
+            categoricalCount = categoricalColumnViewModels.Count();
+
+            firstColumn = selectedCount > 0 ? selectedColumnViewModels.First() : null;
+            lastColumn = selectedCount > 0 ? selectedColumnViewModels.Last() : null;
+            firstCategorical = categoricalCount > 0 ? selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).First() : null;
+            secondCategorical = categoricalCount > 1 ? selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).ElementAt(1) : null;
+            thirdCategorical = categoricalCount > 2 ? selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).ElementAt(2) : null;
+            lastCategorical = CategoricalCount > 0 ? selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).Last() : null;
+
+            firstNumerical = NumericalCount > 0 ? selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical).First() : null;
+            secondNumerical = NumericalCount > 1 ? selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical).ElementAt(1) : null;
+            thirdNumerical = NumericalCount > 2 ? selectedColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical).ElementAt(2) : null;
+        }
+
         public ViewStatus Clone()
         {
             ViewStatus cloned = new ViewStatus()
@@ -101,6 +132,7 @@ namespace FlexTable.Model
             {
                 cloned.SelectedColumnViewModels.Add(cvm);
             }
+            cloned.Refresh();
             return cloned;
         }
 
@@ -242,7 +274,7 @@ namespace FlexTable.Model
             {
                 GroupedRows = GroupRecursive(
                     sheetViewModel.FilteredRows.ToList(), 
-                    SelectedColumnViewModels.Where(s => s.Type == ColumnType.Categorical).ToList(), 
+                    CategoricalColumnViewModels.ToList(), 
                     0);
 
                 GroupedRows.Sort(new GroupedRowComparer(sheetViewModel, this));
@@ -405,7 +437,8 @@ namespace FlexTable.Model
                     {
                         dictionary[row] = (row.Cells[categorical.Index].Content as Category).Color;
                     }
-                    groupedRowViewModels[index].Color = (grs.Keys[categorical] as Category).Color;
+                    if(index < groupedRowViewModels.Count)
+                        groupedRowViewModels[index].Color = (grs.Keys[categorical] as Category).Color;
                     index++;
                 }
 
@@ -426,7 +459,8 @@ namespace FlexTable.Model
                     {
                         dictionary[row] = (row.Cells[categorical.Index].Content as Category).Color;
                     }
-                    groupedRowViewModels[index].Color = (grs.Keys[categorical] as Category).Color;
+                    if (index < groupedRowViewModels.Count)
+                        groupedRowViewModels[index].Color = (grs.Keys[categorical] as Category).Color;
                     index++;
                 }
 
@@ -449,7 +483,8 @@ namespace FlexTable.Model
                         {
                             dictionary[row] = (row.Cells[categorical.Index].Content as Category).Color;
                         }
-                        groupedRowViewModels[index].Color = (grs.Keys[categorical] as Category).Color;
+                        if (index < groupedRowViewModels.Count)
+                            groupedRowViewModels[index].Color = (grs.Keys[categorical] as Category).Color;
                         index++;
                     }
 
@@ -471,7 +506,8 @@ namespace FlexTable.Model
                     {
                         dictionary[row] = (row.Cells[categorical.Index].Content as Category).Color;
                     }
-                    groupedRowViewModels[index].Color = (grs.Keys[categorical] as Category).Color;
+                    if (index < groupedRowViewModels.Count)
+                        groupedRowViewModels[index].Color = (grs.Keys[categorical] as Category).Color;
                     index++;
                 }
 
@@ -523,7 +559,9 @@ namespace FlexTable.Model
 
             IEnumerable<ColumnViewModel> tailCategoricalOrNumericalColumnViewModels = ViewStatus.SelectedColumnViewModels.Where(
                 cvm => cvm.Type == ColumnType.Numerical || cvm == ViewStatus.LastCategorical
-            ).OrderByDescending(cvm => cvm.SortPriority);
+            ).OrderByDescending(cvm =>
+                cvm.SortOption != SortOption.None ? cvm.SortPriority : (cvm.Type == ColumnType.Categorical ? 0 : -1)
+            );
 
             sortOrder = nonTailCategoricalColumnViewModels.Concat(tailCategoricalOrNumericalColumnViewModels);
             isN = viewStatus.IsN;
@@ -649,7 +687,9 @@ namespace FlexTable.Model
 
             IEnumerable<ColumnViewModel> tailCategoricalOrNumericalColumnViewModels = ViewStatus.SelectedColumnViewModels.Where(
                 cvm => cvm.Type == ColumnType.Numerical || cvm == ViewStatus.LastCategorical
-            ).OrderByDescending(cvm => cvm.SortPriority);
+            ).OrderByDescending(cvm =>
+                cvm.SortOption != SortOption.None ? cvm.SortPriority : (cvm.Type == ColumnType.Categorical ? 0 : -1)
+            );
 
             IEnumerable<ColumnViewModel> sortOrder = nonTailCategoricalColumnViewModels.Concat(tailCategoricalOrNumericalColumnViewModels);
 

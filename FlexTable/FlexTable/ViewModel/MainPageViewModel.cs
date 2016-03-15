@@ -112,8 +112,6 @@ namespace FlexTable.ViewModel
 
         public void ReflectAll(ViewStatus viewStatus, ReflectReason reason)
         {
-            //viewStatus.Generate(sheetViewModel);
-
             Boolean isN = viewStatus.IsN;
             foreach (ColumnViewModel cvm in SheetViewModel.ColumnViewModels)
             {
@@ -123,6 +121,18 @@ namespace FlexTable.ViewModel
                     SheetViewModel.Sort(cvm, SortOption.Ascending);
                 }*/
             }
+
+            if(reason == ReflectReason.RowFiltered)
+            {
+                foreach (PageView view in ExplorationViewModel.SelectedPageViews)
+                {
+                    view.SelectedRows = new List<Row>();
+                    view.HideSelectionIndicator();
+                }
+                tableViewModel.SelectedRows = null;
+            }
+            
+            Logger.Log($"{reason}");
 
             viewStatus.Generate(SheetViewModel);
 
@@ -239,11 +249,9 @@ namespace FlexTable.ViewModel
             // 메타데이터 초기화
             ExplorationViewModel.MetadataViewModel.Initialize();
 
-            //return;
             var dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
 
-
-            ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[2]);
+            ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[0]);
             
             DispatcherTimer dispatcherTimer = new DispatcherTimer();
             dispatcherTimer.Tick += (sender, e) =>

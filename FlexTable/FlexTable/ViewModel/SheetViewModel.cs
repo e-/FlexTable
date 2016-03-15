@@ -315,12 +315,12 @@ namespace FlexTable.ViewModel
             Int32 order = 0;
 
             // 우선으로 그룹된 컬럼에 순서 할당
-            foreach (ColumnViewModel groupedColumnViewModel in viewStatus.SelectedColumnViewModels.Where(s => s.Type == ColumnType.Categorical))
+            foreach (ColumnViewModel groupedColumnViewModel in viewStatus.CategoricalColumnViewModels)
             {
                 groupedColumnViewModel.Order = order++;
             }
 
-            foreach (ColumnViewModel groupedColumnViewModel in viewStatus.SelectedColumnViewModels.Where(s => s.Type == ColumnType.Numerical))
+            foreach (ColumnViewModel groupedColumnViewModel in viewStatus.NumericalColumnViewModels)
             {
                 groupedColumnViewModel.Order = order++;
             }

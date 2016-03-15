@@ -429,6 +429,7 @@ namespace FlexTable.Crayon.Chart
 
                 if (FilterOut != null)
                 {
+                    Logger.Log($"filter out,groupedbarchart,touch");
                     if (datum.Children[0].BarState == BarState.Default) // 이거 하나만
                     {
                         FilterOut(sender, $"{Data[0].ColumnViewModel.Name} = {datum.Key as Category}", datum.EnvelopeRows);
@@ -532,6 +533,7 @@ namespace FlexTable.Crayon.Chart
                 {
                     if (FilterOut != null && intersectedRows.Count > 0)
                     {
+                        Logger.Log($"filter out,groupedbarchart,pen");
                         if (horizontalAxisStroke && !legendStroke)
                         {
                             IEnumerable<Category> categories = intersectedRows
@@ -560,6 +562,7 @@ namespace FlexTable.Crayon.Chart
                 {
                     if (SelectionChanged != null)
                     {
+                        Logger.Log($"selection,groupedbarchart,pen");
                         SelectionChanged(this, intersectedRows, SelectionChangedType.Add);//, ReflectReason2.SelectionChanged);
                     }
                 }
@@ -578,6 +581,7 @@ namespace FlexTable.Crayon.Chart
 
             if (SelectionChanged != null)
             {
+                Logger.Log($"selection,groupedbarchart,touch");
                 if (barChartDatum.Rows == null || barChartData.SelectMany(cd => cd.Rows).Count() < barChartData.SelectMany(cd => cd.EnvelopeRows).Count())
                     SelectionChanged(this, barChartData.SelectMany(cd => cd.EnvelopeRows), SelectionChangedType.Add);//, ReflectReason2.SelectionChanged);
                 else
@@ -591,6 +595,7 @@ namespace FlexTable.Crayon.Chart
         {
             TappedRoutedEventArgs args = e as TappedRoutedEventArgs;
             GroupedBarChartDatum groupedBarChartDatum = (datum as BarChartDatum).Parent; // GroupedBarChartDatum;
+            Logger.Log($"selection,groupedbarchart,touch");
 
             if (groupedBarChartDatum.Children[0].Rows == null || groupedBarChartDatum.Rows.Count() < groupedBarChartDatum.EnvelopeRows.Count())
                 SelectionChanged(this, groupedBarChartDatum.EnvelopeRows, SelectionChangedType.Add);//, ReflectReason2.SelectionChanged);

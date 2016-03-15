@@ -404,6 +404,7 @@ namespace FlexTable.Crayon.Chart
             {
                 if (FilterOut != null)
                 {
+                    Logger.Log($"filter out,barchart,touch");
                     if (datum.BarState == BarState.Default) // 이거 하나만
                     {
                         if (Data[0].Key is Category)
@@ -514,7 +515,8 @@ namespace FlexTable.Crayon.Chart
 
                 if(Const.IsStrikeThrough(boundingRect)) // strikethrough 및 무조건 필터아웃 
                 {
-                    if(FilterOut != null && intersectedRows.Count > 0)
+                    Logger.Log($"filter out,barchart,pen");
+                    if (FilterOut != null && intersectedRows.Count > 0)
                     {
                         ColumnViewModel columnViewModel = Data[0].ColumnViewModel;
                         IEnumerable<Category> categories = intersectedRows.Select(row => row.Cells[columnViewModel.Index].Content as Category)
@@ -526,6 +528,7 @@ namespace FlexTable.Crayon.Chart
                 }
                 else // 아니면 무조건 셀렉션 
                 {
+                    Logger.Log($"selection,barchart,pen");
                     if (SelectionChanged != null)
                     {
                         SelectionChanged(this, intersectedRows, SelectionChangedType.Add);//, ReflectReason2.SelectionChanged);
@@ -544,6 +547,7 @@ namespace FlexTable.Crayon.Chart
 
             if (SelectionChanged != null)
             {
+                Logger.Log($"selection,barchart,touch");
                 if (barChartDatum.Rows == null || barChartDatum.Rows.Count() < barChartDatum.EnvelopeRows.Count())
                     SelectionChanged(this, barChartDatum.EnvelopeRows, SelectionChangedType.Add);//, ReflectReason2.SelectionChanged);
                 else

@@ -218,9 +218,6 @@
     <Compile Include="ViewModel\SheetViewModel.cs" />
     <Compile Include="ViewModel\TableViewModel.cs" />
     <Compile Include="ViewModel\TableViewModelAnimation.cs" />
-    <Compile Include="View\BreadcrumbView.xaml.cs">
-      <DependentUpon>BreadcrumbView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="View\ColumnHeaderCellPresenter.xaml.cs">
       <DependentUpon>ColumnHeaderCellPresenter.xaml</DependentUpon>
     </Compile>
@@ -326,10 +323,6 @@
     <Page Include="MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="View\BreadcrumbView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\ColumnHeaderCellPresenter.xaml">
       <Generator>MSBuild:Compile</Generator>

@@ -14,29 +14,7 @@ namespace FlexTable
         Clear,
         Replace
     }
-    /*
-    [Flags]
-    public enum ReflectType2
-    {
-        Default = 0,
-        TrackPreviousParagraph = 1 << 0,
-        OnCreate = 1 << 1,
-        OnSelectionChanged = 1 << 2
-    }
-
-    public enum ReflectReason2
-    {
-        SelectionChanged,
-        FilterOut,
-        ColumnViewModelChanged,
-        PreviewRequested,
-        Undo,
-        ColumnViewModelSelected,
-        ColumnViewModelUnselected,
-        PageScrolled,
-        RowSelected
-    }
-    */
+    
     public enum ReflectReason
     {
         Preview,

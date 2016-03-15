@@ -127,22 +127,22 @@
     <value>{0}|의 구간</value>
   </data>
   <data name="ChartTitleCC" xml:space="preserve">
-    <value>{0:c}|별 |{1:c}|의 빈도수</value>
+    <value>빈도수 by |{0:c}| and |{1:c}</value>
   </data>
   <data name="ChartTitleCCC" xml:space="preserve">
-    <value>{0:c}| 및 |{1:c}|별 |{2:c}|의 빈도수</value>
+    <value>빈도수 by |{0:c}|, |{1:c}|, and |{2:c}|</value>
   </data>
   <data name="ChartTitleCCN" xml:space="preserve">
-    <value>{0:c}| 및 |{1:c}|별 |{2:a}</value>
+    <value>{2:a}| by |{0:c}| and |{1:c}</value>
   </data>
   <data name="ChartTitleCN" xml:space="preserve">
-    <value>{0:c}|별 |{1:a}</value>
+    <value>{1:a}| by |{0:c}</value>
   </data>
   <data name="ChartTitleCNN" xml:space="preserve">
-    <value>{0:c}|에 따른 |{1:u}| 및 |{2:u}</value>
+    <value>{1:u}| 및 |{2:u}| by |{0:c}</value>
   </data>
   <data name="ChartTitleCNvsN" xml:space="preserve">
-    <value>{0:c}|별 |{1:c}| 대 |{2:c}</value>
+    <value>{1:c}| 대 |{2:c}| by |{0:c}</value>
     <comment>ColoredScatterplot</comment>
   </data>
   <data name="ChartTitleNN" xml:space="preserve">
@@ -189,7 +189,7 @@
     <value>빈도수</value>
   </data>
   <data name="FrequencyTitle" xml:space="preserve">
-    <value>{0:c}|의 빈도수</value>
+    <value>빈도수 by |{0:c}</value>
   </data>
   <data name="Legend" xml:space="preserve">
     <value>범례</value>

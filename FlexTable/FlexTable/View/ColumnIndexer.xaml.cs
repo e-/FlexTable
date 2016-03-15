@@ -115,7 +115,6 @@ namespace FlexTable.View
                 path.PointerEntered += (o, e) =>
                 {
                     TableViewModel.IndexColumn(e.GetCurrentPoint(this).PointerId, indexCopied);
-                    Debug.WriteLine(indexCopied);
                 };
 
                 Canvas.SetTop(path, (Double)App.Current.Resources["ColumnIndexerHeight"]);
@@ -126,56 +125,7 @@ namespace FlexTable.View
                 path.StrokeThickness = 2;
                 path.Fill = new SolidColorBrush(Color.FromArgb(255, 230, 230, 230));
                 index++;
-            }
-
-            /*foreach (ColumnViewModel cvm in sorted)
-            {
-                Path path = null;
-                //TextBlock textBlock = null;
-
-                if (IndexHelperWrapperElement.Children.Count > index)
-                {
-                    path = IndexHelperWrapperElement.Children[index] as Path;
-                    //textBlock = border.Child as TextBlock;
-                }
-                else
-                {
-                    if(index == 0)
-                    {
-                        path = DrawArc((Double)App.Current.Resources["ColumnIndexerHeight"], -Math.PI / 18, anglePerMenu * (index + 1));
-                    }
-                    else if (index < sorted.Count - 1)
-                    {
-                        path = DrawArc((Double)App.Current.Resources["ColumnIndexerHeight"], anglePerMenu * index, anglePerMenu * (index + 1));
-                    }
-                    else // 5개 이하일때 마지막은 모두 포함하도록
-                    {
-                        path = DrawArc((Double)App.Current.Resources["ColumnIndexerHeight"], anglePerMenu * index, Math.PI / 2);
-                    }
-
-                    Int32 indexCopied = index;
-                    path.PointerEntered += (o, e) =>
-                    {
-                        TableViewModel.IndexColumn(e.GetCurrentPoint(this).PointerId, indexCopied);
-                        Debug.WriteLine(indexCopied);
-                    };
-                    
-                    Canvas.SetTop(path, (Double)App.Current.Resources["ColumnIndexerHeight"]);
-
-                    IndexHelperWrapperElement.Children.Add(path);
-                }
-
-                path.Stroke = new SolidColorBrush(Color.FromArgb(255, 150, 150, 150));
-                path.StrokeThickness = 2;
-                path.Fill = new SolidColorBrush(Color.FromArgb(255, 230, 230, 230));              
-                index++;
-            }
-
-            for (Int32 j = IndexHelperWrapperElement.Children.Count - 1; j >= index; --j)
-            {
-                IndexHelperWrapperElement.Children.RemoveAt(j);
-            }
-            */
+            }            
         }
 
         private void Opener_PointerEntered(object sender, PointerRoutedEventArgs e)

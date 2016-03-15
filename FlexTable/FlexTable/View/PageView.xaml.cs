@@ -58,7 +58,7 @@ namespace FlexTable.View
         /// <summary>
         /// cannot be null
         /// </summary>
-        public IEnumerable<Row> SelectedRows { get; private set; } = new List<Row>();
+        public IEnumerable<Row> SelectedRows { get; set; } = new List<Row>();
 
         
         public PageView()
@@ -130,8 +130,7 @@ namespace FlexTable.View
 
             if (count == 0)
             {
-                ShowSelectionIndicatorStoryboard.Pause();
-                HideSelectionIndicatorStoryboard.Begin();
+                HideSelectionIndicator();
                 ViewModel.MainPageViewModel.TableViewModel.CancelPreviewRows();
             }
             else
@@ -154,11 +153,16 @@ namespace FlexTable.View
                 Predicate = r => !filteredRows.Any(rr => rr == r)
             };
 
-            SelectedRows = new List<Row>();
+            /*SelectedRows = new List<Row>();
+            HideSelectionIndicator();
+            ViewModel.MainPageViewModel.TableViewModel.SelectedRows = null;*/
+            ViewModel.MainPageViewModel.ExplorationViewModel.FilterOut(fvm);
+        }
+
+        public void HideSelectionIndicator()
+        {
             ShowSelectionIndicatorStoryboard.Pause();
             HideSelectionIndicatorStoryboard.Begin();
-            ViewModel.MainPageViewModel.TableViewModel.SelectedRows = null;
-            ViewModel.MainPageViewModel.ExplorationViewModel.FilterOut(fvm);
         }
         
         public void ReflectState()

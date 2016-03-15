@@ -20,6 +20,7 @@ using System.Threading;
 using Windows.UI.Core;
 using System.Collections.ObjectModel;
 using FlexTable.Crayon;
+using FlexTable.Util;
 
 namespace FlexTable.ViewModel
 {
@@ -325,7 +326,6 @@ namespace FlexTable.ViewModel
 
         public void IndexColumn(uint id, Int32 index) //Double y)
         {
-            if (state == TableViewState.SelectedRow) return;
             if (ignoredPointerId == id) return;
 
             Double totalHeight = SheetViewHeight;
@@ -342,6 +342,7 @@ namespace FlexTable.ViewModel
                 view.TableView.ColumnHighlighter.ColumnViewModel = columnViewModel;
                 view.TableView.ColumnHighlighter.Update();
 
+                Logger.Log($"{columnViewModel.Column.Name} has been indexed");
                 IsIndexing = true;
 
                 mainPageViewModel.ExplorationViewModel.PreviewColumn(columnViewModel);
@@ -427,6 +428,46 @@ namespace FlexTable.ViewModel
             {
                 return;
             }
+        }
+
+        public void FilterRowsByValueAtPosition(Double x, Double y)
+        {
+            ColumnViewModel columnViewModel = SheetViewModel.ColumnViewModels.First(cvm => cvm.X <= x && x < cvm.X + cvm.Width);
+            if (columnViewModel == null) return;
+            RowViewModel rowViewModel = null;
+
+            if (mainPageViewModel.ExplorationViewModel.ViewStatus.IsN) return;
+            if (mainPageViewModel.ExplorationViewModel.ViewStatus.CategoricalCount > 0)
+            {
+                if (columnViewModel.Type == ColumnType.Numerical) return;
+                if (mainPageViewModel.ExplorationViewModel.ViewStatus.SelectedColumnViewModels.IndexOf(columnViewModel) < 0) return;
+            }
+
+            if (State == TableViewState.AllRow || State == TableViewState.SelectedRow)
+            {
+                rowViewModel = allRowViewModels.First(rvm => rvm.Y <= y && y < rvm.Y + Const.RowHeight);
+            }
+            else if (State == TableViewState.GroupedRow)
+            {
+                rowViewModel = groupedRowViewModels.First(rvm => rvm.Y <= y && y < rvm.Y + Const.RowHeight);
+            }
+
+            if (rowViewModel == null) return;
+            Object value = rowViewModel.Cells[columnViewModel.Index].Content;
+
+            FilterViewModel fvm = new FilterViewModel(mainPageViewModel)
+            {
+                Name = $"{columnViewModel.Column.Name} = {value}",
+                Predicate = r => r.Cells[columnViewModel.Index].Content != value
+            };
+
+            /*SelectedRows = null;
+            foreach(PageView view in mainPageViewModel.ExplorationViewModel.SelectedPageViews)
+            {
+                view.SelectedRows = new List<Row>();
+                view.HideSelectionIndicator();
+            }*/
+            mainPageViewModel.ExplorationViewModel.FilterOut(fvm);
         }
     }
 }

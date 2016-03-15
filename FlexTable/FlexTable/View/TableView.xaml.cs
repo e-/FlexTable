@@ -328,7 +328,10 @@ namespace FlexTable.View
         const Double VerticalStrokeMaxWidth = 30;
         const Double VerticalStrokeMinHeight = 50;
         const Double VerticalStrokeHeightDifferenceThreshold = 20;
-        
+
+        const Double HorizontalStrokeMinWidth = 30;
+        const Double HorizontalStrokeMaxHeight = 20;
+
         async void timer_Tick(object sender, object e)
         {
             timer.Stop();
@@ -522,13 +525,24 @@ namespace FlexTable.View
                         // 오름차순 정렬
                         this.ViewModel.SheetViewModel.Sort(selectedColumnViewModel, SortOption.Ascending);
                         this.ViewModel.MainPageViewModel.ReflectAll(ReflectReason.ColumnSorted);// 2.SelectionChanged);
+                        Logger.Log("sort,tableview,pen,asc");
                     }
                     else if (lastPoint.Position.Y < firstPoint.Position.Y + VerticalStrokeHeightDifferenceThreshold)
                     {
                         // 내림차순 정렬
                         this.ViewModel.SheetViewModel.Sort(selectedColumnViewModel, SortOption.Descending);
                         this.ViewModel.MainPageViewModel.ReflectAll(ReflectReason.ColumnSorted); // 2.SelectionChanged);
+                        Logger.Log("sort,tableview,pen,desc");
                     }
+                }
+                else if (strokes[0].BoundingRect.Width > HorizontalStrokeMinWidth && strokes[0].BoundingRect.Height < HorizontalStrokeMaxHeight)
+                {
+                    // filterout
+
+                    Double centerY = ActivatedScrollViewer.VerticalOffset - columnHeaderHeight + strokes[0].BoundingRect.Top + strokes[0].BoundingRect.Height / 2;
+                    ViewModel.FilterRowsByValueAtPosition(centerX, centerY);
+
+                    Logger.Log("filter out,tableview,pen");
                 }
                 else // 아니면 선택하라는 것임
                 {
@@ -536,6 +550,7 @@ namespace FlexTable.View
                         endY = strokes[0].BoundingRect.Y + strokes[0].BoundingRect.Height + ActivatedScrollViewer.VerticalOffset - columnHeaderHeight;
 
                     ViewModel.SelectRowsByRange(startY, endY);
+                    Logger.Log("selection,tableview,pen");
                 }
                 drawable.RemoveAllStrokes();
             }

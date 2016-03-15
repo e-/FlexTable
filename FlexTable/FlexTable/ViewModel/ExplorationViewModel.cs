@@ -79,6 +79,7 @@ namespace FlexTable.ViewModel
             
             // 새 컬럼 추가
             selectedViewStatus.SelectedColumnViewModels.Add(columnViewModel);
+            selectedViewStatus.Refresh();
 
             // 현재 추가된 컬럼으로 groupedRows와 GroupedRowViewModels를 만듦. 
             selectedViewStatus.Generate(mainPageViewModel.SheetViewModel);
@@ -88,11 +89,13 @@ namespace FlexTable.ViewModel
 
             // 복제한 view status를 추가 한 다음 
             pageViewModel.ViewStatus = selectedViewStatus;
-
             pageViewModel.State = PageViewModel.PageViewState.Previewing;
 
-            // 이걸로 pageView를 채움
+            // 셀렉션 유지
+            if (SelectedPageViews.Count > 0)
+                TopPageView.SelectedRows = new List<Row>(SelectedPageViews.Last().SelectedRows);
 
+            // 이걸로 pageView를 채움
             pageViewModel.Reflect(ReflectReason.Preview); // ReflectType2.TrackPreviousParagraph | ReflectType2.OnCreate, ReflectReason2.PreviewRequested);
             TopPageView.ReflectState();
         }
