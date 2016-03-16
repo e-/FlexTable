@@ -28,6 +28,8 @@ namespace FlexTable
         ColumnHidden,
         ColumnShown,
         ColumnSorted,
+        ColumnRemoved, 
+
         AggregateFunctionChanged,
 
         RowSelected,
@@ -121,6 +123,7 @@ namespace FlexTable
                 case (ReflectReason.CancelPreview):
                 case (ReflectReason.ColumnSelected):
                 case (ReflectReason.ColumnChanged):
+                case (ReflectReason.ColumnRemoved):
                 case (ReflectReason.RowSelected):
                 case (ReflectReason.RowUnselected):
                 case (ReflectReason.RowSelectionChanged):

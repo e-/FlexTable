@@ -291,6 +291,7 @@ namespace FlexTable.Crayon.Chart
 
         public event Event.SelectionChangedEventHandler SelectionChanged;
         public event Event.FilterOutEventHandler FilterOut;
+        public event Event.FilterOutEventHandler RemoveColumnViewModel;
 
         Drawable drawable = new Drawable()
         {
@@ -497,22 +498,29 @@ namespace FlexTable.Crayon.Chart
                     index++;
                 }
 
-                if (secondColumnViewModel != null)
+                
+                index = 0;
+                foreach (D3Rectangle rect in LegendHandleRectangleElement.ChildRectangles)
                 {
-                    index = 0;
-                    foreach (D3Rectangle rect in LegendHandleRectangleElement.ChildRectangles)
-                    {
-                        Rect r = new Rect(rect.X + ChartAreaEndX, rect.Y, rect.Width, rect.Height);
+                    Rect r = new Rect(rect.X + ChartAreaEndX, rect.Y, rect.Width, rect.Height);
 
-                        if (Const.IsIntersected(r, boundingRect))
+                    if (Const.IsIntersected(r, boundingRect))
+                    {
+                        if (secondColumnViewModel != null)
                         {
                             BarChartDatum datum = LegendData[index];
                             IEnumerable<Row> rows = ChartData.Where(cd => cd.Key == datum.Key).SelectMany(cd => cd.EnvelopeRows);
                             intersectedRows = intersectedRows.Concat(rows).ToList();
                             legendStroke = true;
                         }
-                        index++;
+                        else
+                        {
+                            RemoveColumnViewModel(this, LegendData[index].Key.ToString(), null);
+                            drawable.RemoveAllStrokes();
+                            return;
+                        }
                     }
+                    index++;
                 }
 
                 index = 0;

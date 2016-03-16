@@ -230,9 +230,11 @@ namespace FlexTable.Crayon.Chart
         public String LegendTitle { get; set; }
         public ColumnViewModel FirstColumnViewModel { get; set; }
         public ColumnViewModel SecondColumnViewModel { get; set; }
+        public Boolean IsCNN = false;
 
         public event Event.SelectionChangedEventHandler SelectionChanged;
         public event Event.FilterOutEventHandler FilterOut;
+        public event Event.FilterOutEventHandler RemoveColumnViewModel;
 
         Drawable drawable = new Drawable()
         {
@@ -350,9 +352,16 @@ namespace FlexTable.Crayon.Chart
 
                     if (Const.IsIntersected(r, boundingRect))
                     {
-                        LineChartDatum datum = Data[index];
-                        intersectedRows = intersectedRows.Concat(datum.EnvelopeRows).ToList();
-                        legendStroke = true;
+                        if (IsCNN)
+                        {
+                            RemoveColumnViewModel(this, Data[index].Key.ToString(), null);
+                            drawable.RemoveAllStrokes();
+                        }
+                        else {
+                            LineChartDatum datum = Data[index];
+                            intersectedRows = intersectedRows.Concat(datum.EnvelopeRows).ToList();
+                            legendStroke = true;
+                        }
                     }
                     index++;
                 }

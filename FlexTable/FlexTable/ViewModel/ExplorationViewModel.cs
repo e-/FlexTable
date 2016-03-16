@@ -169,7 +169,7 @@ namespace FlexTable.ViewModel
 
                 pageView.ReflectState();
             }
-            else if(state == PageViewModel.PageViewState.Undoing) // 선택해제하는 경우
+            else if(state == PageViewModel.PageViewState.Undoing || state == PageViewModel.PageViewState.Empty) // 선택해제하는 경우 혹은 스트로크로 바로 컬럼 지우는 경우
             {
                 mainPageViewModel.TableViewModel.StashViewStatus(ViewStatus, AnimationHint.AnimationType.DependOnViewStatus);
 

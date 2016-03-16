@@ -32,8 +32,8 @@ namespace FlexTable.Util
         public static async void Log(String log)
         {
             try { 
-                String withTime = $"{DateTime.Now.ToString("MMM월 d일 H시 mm분 ss초")},{log}\r\n";
-                await FileIO.AppendTextAsync(logFile, withTime);
+               String withTime = $"{DateTime.Now.ToString("MMM월 d일 H시 mm분 ss초")},{log}\r\n";
+               await FileIO.AppendTextAsync(logFile, withTime);
             }
             catch
             {

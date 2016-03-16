@@ -44,14 +44,14 @@ namespace FlexTable.View
         public PivotTableView PivotTableView => PivotTableViewElement;
         //public BreadcrumbView BreadcrumbView => BreadcrumbViewElement;
 
-        public StackPanel BarChartTitle => BarChartTitleElement;
-        public StackPanel LineChartTitle => LineChartTitleElement;
-        public StackPanel DistributionViewTitle => DistributionViewTitleElement;
-        public StackPanel DescriptiveStatisticsTitle => DescriptiveStatisticsTitleElement;
-        public StackPanel GroupedBarChartTitle => GroupedBarChartTitleElement;
-        public StackPanel ScatterplotTitle => ScatterplotTitleElement;
-        public StackPanel PivotTableTitle => PivotTableTitleElement;
-        public StackPanel CorrelationStatisticsTitle => CorrelationStatisticsTitleElement;
+        public EditableTitle BarChartTitle => BarChartTitleElement;
+        public EditableTitle LineChartTitle => LineChartTitleElement;
+        public EditableTitle DistributionViewTitle => DistributionViewTitleElement;
+        public EditableTitle DescriptiveStatisticsTitle => DescriptiveStatisticsTitleElement;
+        public EditableTitle GroupedBarChartTitle => GroupedBarChartTitleElement;
+        public EditableTitle ScatterplotTitle => ScatterplotTitleElement;
+        public EditableTitle PivotTableTitle => PivotTableTitleElement;
+        public EditableTitle CorrelationStatisticsTitle => CorrelationStatisticsTitleElement;
         
         public PageViewModel ViewModel => (PageViewModel)DataContext;
 
@@ -60,7 +60,7 @@ namespace FlexTable.View
         /// </summary>
         public IEnumerable<Row> SelectedRows { get; set; } = new List<Row>();
 
-        
+
         public PageView()
         {
             this.InitializeComponent();
@@ -70,9 +70,11 @@ namespace FlexTable.View
 
             GroupedBarChartElement.SelectionChanged += SelectionChanged;
             GroupedBarChartElement.FilterOut += FilterOut;
+            GroupedBarChartElement.RemoveColumnViewModel += RemoveColumnViewModel;
          
             LineChartElement.SelectionChanged += SelectionChanged;
             LineChartElement.FilterOut += FilterOut;
+            LineChartElement.RemoveColumnViewModel += RemoveColumnViewModel;
 
             ScatterplotElement.SelectionChanged += SelectionChanged;
             ScatterplotElement.FilterOut += FilterOut;
@@ -83,6 +85,7 @@ namespace FlexTable.View
             PageLabelViewElement.LabelTapped += PageLabelViewElement_LabelTapped;
         }
 
+        
         public void Initialize()
         {
             Double width = ViewModel.MainPageViewModel.ParagraphWidth, height = ViewModel.MainPageViewModel.ParagraphChartHeight;
@@ -164,7 +167,17 @@ namespace FlexTable.View
             ShowSelectionIndicatorStoryboard.Pause();
             HideSelectionIndicatorStoryboard.Begin();
         }
-        
+
+        private void RemoveColumnViewModel(object sender, string title, IEnumerable<Row> rows)
+        {
+            ColumnViewModel columnViewModel = ViewModel.MainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Column.Name == title).FirstOrDefault();
+
+            if(columnViewModel != null)
+            {
+                ViewModel.RemoveColumnViewModel(columnViewModel);
+            }
+        }
+
         public void ReflectState()
         {
             PageViewModel.PageViewState state = ViewModel.State,
@@ -244,6 +257,15 @@ namespace FlexTable.View
                     GroupedBarChartElement.IsHitTestVisible = true;
                     ScatterplotElement.IsHitTestVisible = true;
                     PivotTableView.IsScrollable = true;
+
+                    BarChartTitleElement.IsHitTestVisible = true;
+                    GroupedBarChartTitleElement.IsHitTestVisible = true;
+                    LineChartTitleElement.IsHitTestVisible = true;
+                    DistributionViewTitleElement.IsHitTestVisible = true;
+                    DescriptiveStatisticsTitleElement.IsHitTestVisible = true;
+                    ScatterplotTitleElement.IsHitTestVisible = true;
+                    PivotTableTitleElement.IsHitTestVisible = true;
+                    CorrelationStatisticsTitleElement.IsHitTestVisible = true;
                     break;
                 case PageViewModel.PageViewState.Undoing:
                 case PageViewModel.PageViewState.Previewing:
@@ -255,6 +277,15 @@ namespace FlexTable.View
                     GroupedBarChartElement.IsHitTestVisible = false;
                     ScatterplotElement.IsHitTestVisible = false;
                     PivotTableView.IsScrollable = false;
+
+                    BarChartTitleElement.IsHitTestVisible = false;
+                    GroupedBarChartTitleElement.IsHitTestVisible = false;
+                    LineChartTitleElement.IsHitTestVisible = false;
+                    DistributionViewTitleElement.IsHitTestVisible = false;
+                    DescriptiveStatisticsTitleElement.IsHitTestVisible = false;
+                    ScatterplotTitleElement.IsHitTestVisible = false;
+                    PivotTableTitleElement.IsHitTestVisible = false;
+                    CorrelationStatisticsTitleElement.IsHitTestVisible = false;
                     break;
             }
         }

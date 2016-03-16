@@ -337,7 +337,7 @@ namespace FlexTable.ViewModel
         {
             IsBarChartVisible = true;
 
-            pageView.BarChartTitle.Children.Clear();
+            pageView.BarChartTitle.Clear();
             AddEditableTitle(pageView.BarChartTitle, Const.Loader.GetString("FrequencyTitle"), categorical);
             
             Int32 index = categorical.Index;
@@ -385,7 +385,7 @@ namespace FlexTable.ViewModel
                     mainPageViewModel.SheetViewModel.FilteredRows.Select(r => (Double)r.Cells[numerical.Index].Content)
                     );
 
-            pageView.DescriptiveStatisticsTitle.Children.Clear();
+            pageView.DescriptiveStatisticsTitle.Clear();
             AddEditableTitle(pageView.DescriptiveStatisticsTitle, Const.Loader.GetString("DescriptiveStatisticsTitle"), numerical);
 
             IsDescriptiveStatisticsVisible = true;
@@ -394,7 +394,7 @@ namespace FlexTable.ViewModel
 
         void DrawDistributionHistogram(ColumnViewModel numerical)
         {
-            pageView.DistributionViewTitle.Children.Clear();
+            pageView.DistributionViewTitle.Clear();
 
             AddEditableTitle(pageView.DistributionViewTitle, Const.Loader.GetString("DistributionTitle"), numerical);
             
@@ -423,7 +423,7 @@ namespace FlexTable.ViewModel
         {
             IsGroupedBarChartVisible = true;
 
-            pageView.GroupedBarChartTitle.Children.Clear();
+            pageView.GroupedBarChartTitle.Clear();
             AddEditableTitle(pageView.GroupedBarChartTitle, Const.Loader.GetString("ChartTitleCC"), categorical1, categorical2);
 
             pageView.GroupedBarChart.YStartsFromZero = true;
@@ -504,7 +504,7 @@ namespace FlexTable.ViewModel
         {
             IsGroupedBarChartVisible = true;
 
-            pageView.GroupedBarChartTitle.Children.Clear();
+            pageView.GroupedBarChartTitle.Clear();
             AddEditableTitle(pageView.GroupedBarChartTitle, Const.Loader.GetString("ChartTitleCCN"), categorical1, categorical2, numerical);
 
             pageView.GroupedBarChart.YStartsFromZero = false;
@@ -585,7 +585,7 @@ namespace FlexTable.ViewModel
         {
             IsBarChartVisible = true;
 
-            pageView.BarChartTitle.Children.Clear();
+            pageView.BarChartTitle.Clear();
             AddEditableTitle(pageView.BarChartTitle, Const.Loader.GetString("ChartTitleCN"), categorical, numerical);
 
             pageView.BarChart.YStartsFromZero = false;
@@ -630,7 +630,7 @@ namespace FlexTable.ViewModel
             //라인 차트로 보고 싶을 때
             IsLineChartVisible = true;
 
-            pageView.LineChartTitle.Children.Clear();
+            pageView.LineChartTitle.Clear();
             AddEditableTitle(pageView.LineChartTitle, Const.Loader.GetString("ChartTitleCN"), categorical, numerical);
 
             pageView.LineChart.YStartsFromZero = false;
@@ -659,6 +659,7 @@ namespace FlexTable.ViewModel
 
             pageView.LineChart.FirstColumnViewModel = numerical;
             pageView.LineChart.SecondColumnViewModel = categorical;
+            pageView.LineChart.IsCNN = false;
             pageView.LineChart.Data = new List<LineChartDatum>() { datum };
             if (groupedRows.Count > LineChartMaximumPointNumberInASeries) IsLineChartWarningVisible = true;
         }
@@ -701,7 +702,7 @@ namespace FlexTable.ViewModel
             // 그룹 라인 차트를 그린다.
             IsLineChartVisible = true;
 
-            pageView.LineChartTitle.Children.Clear();
+            pageView.LineChartTitle.Clear();
             AddEditableTitle(pageView.LineChartTitle, Const.Loader.GetString("ChartTitleCCN"), categorical1, categorical2, numerical);
             
             pageView.LineChart.YStartsFromZero = false;
@@ -775,6 +776,7 @@ namespace FlexTable.ViewModel
 
             pageView.LineChart.FirstColumnViewModel = categorical2;
             pageView.LineChart.SecondColumnViewModel = categorical1;
+            pageView.LineChart.IsCNN = false;
 
             rows = rows.Take(LineChartMaximumSeriesNumber).ToList();
             pageView.LineChart.Data = rows.ToList();
@@ -784,7 +786,7 @@ namespace FlexTable.ViewModel
         {
             IsScatterplotVisible = true;
 
-            pageView.ScatterplotTitle.Children.Clear();
+            pageView.ScatterplotTitle.Clear();
             AddEditableTitle(pageView.ScatterplotTitle, Const.Loader.GetString("ChartTitleNvsN"), numerical1, numerical2);
 
             pageView.Scatterplot.LegendVisibility = Visibility.Collapsed;
@@ -809,7 +811,7 @@ namespace FlexTable.ViewModel
         {
             IsScatterplotVisible = true;
 
-            pageView.ScatterplotTitle.Children.Clear();
+            pageView.ScatterplotTitle.Clear();
             AddEditableTitle(pageView.ScatterplotTitle, Const.Loader.GetString("ChartTitleCNvsN"), categorical, numerical1, numerical2);
                         
             pageView.Scatterplot.LegendVisibility = Visibility.Visible;
@@ -860,7 +862,7 @@ namespace FlexTable.ViewModel
         {
             IsGroupedBarChartVisible = true;
 
-            pageView.GroupedBarChartTitle.Children.Clear();
+            pageView.GroupedBarChartTitle.Clear();
             AddEditableTitle(pageView.GroupedBarChartTitle, Const.Loader.GetString("ChartTitleNN"), numerical1, numerical2);
             
             pageView.GroupedBarChart.YStartsFromZero = true;
@@ -933,13 +935,13 @@ namespace FlexTable.ViewModel
         {
             IsGroupedBarChartVisible = true;
 
-            pageView.GroupedBarChartTitle.Children.Clear();
+            pageView.GroupedBarChartTitle.Clear();
             AddEditableTitle(pageView.GroupedBarChartTitle, Const.Loader.GetString("ChartTitleCNN"), categorical, numerical1, numerical2);
 
             pageView.GroupedBarChart.YStartsFromZero = false;
             pageView.GroupedBarChart.HorizontalAxisTitle = categorical.Name;
             pageView.GroupedBarChart.VerticalAxisTitle = $"{numerical1.Name} {Const.Loader.GetString("And")} {numerical2.Name} {numerical1.UnitString}";
-            pageView.GroupedBarChart.LegendTitle = categorical.Name;
+            pageView.GroupedBarChart.LegendTitle = Const.Loader.GetString("Legend");
 
             Category category1 = new Category() { Value = numerical1.Name, Color = Category10.Colors[0], IsVirtual = true },
                      category2 = new Category() { Value = numerical2.Name, Color = Category10.Colors[1], IsVirtual = true };
@@ -1010,7 +1012,7 @@ namespace FlexTable.ViewModel
         {
             IsLineChartVisible = true;
 
-            pageView.LineChartTitle.Children.Clear();
+            pageView.LineChartTitle.Clear();
             AddEditableTitle(pageView.LineChartTitle, Const.Loader.GetString("ChartTitleCNN"), categorical, numerical1, numerical2);
 
             pageView.LineChart.YStartsFromZero = false;
@@ -1049,6 +1051,7 @@ namespace FlexTable.ViewModel
 
             pageView.LineChart.FirstColumnViewModel = numerical1;
             pageView.LineChart.SecondColumnViewModel = categorical;
+            pageView.LineChart.IsCNN = true;
 
             data = data.Take(LineChartMaximumSeriesNumber).ToList();
             pageView.LineChart.Data = data;
@@ -1094,12 +1097,31 @@ namespace FlexTable.ViewModel
                 mainPageViewModel.SheetViewModel.FilteredRows.Select(r => (Double)r.Cells[numerical2.Index].Content)
                 );
 
-            pageView.CorrelationStatisticsTitle.Children.Clear();
+            pageView.CorrelationStatisticsTitle.Clear();
             AddEditableTitle(pageView.CorrelationStatisticsTitle, Const.Loader.GetString("CorrelationalStatisticsTitle"), numerical1, numerical2);
 
             IsCorrelationStatisticsVisible = true;
             pageView.CorrelationStatisticsView.DataContext = result;
         }
         #endregion
+
+        public void RemoveColumnViewModel(ColumnViewModel columnViewModel)
+        {
+            //일단 지움
+
+            ViewStatus.SelectedColumnViewModels.Remove(columnViewModel);
+            ViewStatus.Refresh();
+
+            if(ViewStatus.SelectedCount == 0)
+            {
+                State = PageViewModel.PageViewState.Empty;
+                pageView.SelectionChanged(null, null, SelectionChangedType.Clear);
+                StateChanged(pageView);
+            }
+            else
+            {
+                mainPageViewModel.ReflectAll(ReflectReason.ColumnRemoved);
+            }
+        }
     }
 }

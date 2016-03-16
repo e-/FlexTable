@@ -246,6 +246,9 @@
     <Compile Include="View\DistributionView.xaml.cs">
       <DependentUpon>DistributionView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\EditableTitle.xaml.cs">
+      <DependentUpon>EditableTitle.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\ExplorationView.xaml.cs">
       <DependentUpon>ExplorationView.xaml</DependentUpon>
     </Compile>
@@ -371,6 +374,10 @@
     <Page Include="View\DistributionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\EditableTitle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\ExplorationView.xaml">
       <Generator>MSBuild:Compile</Generator>

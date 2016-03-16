@@ -18,13 +18,7 @@
     Opacity="0"
     >
 
-    <UserControl.Resources>
-        <Style TargetType="StackPanel" x:Key="TitleWrapperStyle">
-            <Setter Property="Height" Value="90" />
-            <Setter Property="Orientation" Value="Horizontal" />
-            <Setter Property="HorizontalAlignment" Value="Center" />
-        </Style>
-
+    <UserControl.Resources>       
         <Style TargetType="TextBlock" x:Key="TitleStyle">
             <Setter Property="FontSize" Value="42" />
             <Setter Property="TextAlignment" Value="Center"></Setter>
@@ -220,24 +214,11 @@
                 ManipulationMode="TranslateY,System"
                 IsHoldingEnabled="False"
                 >
-        <!--<Border x:Name="WrapperBackground" Background="#66333333"></Border>-->
-        <!--<Border x:Name="Wrapper"
-                    Background="White"
-                    Opacity="0"
-                    BorderThickness="1"
-                    BorderBrush="{StaticResource GridLineBrush}"
-                    RenderTransformOrigin="0.5 0.5"
-                    Visibility="Collapsed">-->
-            <!--<Border.RenderTransform>
-                <CompositeTransform ScaleX="0.8" ScaleY="0.8" x:Name="WrapperRenderTransform"></CompositeTransform>
-            </Border.RenderTransform>-->
         <Grid Margin="20 0 20 0">
-            <!-- Visibility="{Binding IsPreviewVisible, Converter={StaticResource BooleanToVisibilityConverter}}" -->
             <StackPanel Height="{Binding MainPageViewModel.PageHeight}" Background="White"
                         x:Name="ChartWrapper" Visibility="Collapsed" Opacity="0"
                         Width="{Binding MainPageViewModel.ParagraphWidth}"
                         >
-                <!--<local:BreadcrumbView Height="{Binding MainPageViewModel.PageHeaderHeight}" x:Name="BreadcrumbViewElement" />-->                    
                 <ScrollViewer HorizontalScrollBarVisibility="Hidden" HorizontalScrollMode="Auto" 
                               VerticalScrollBarVisibility="Hidden" VerticalScrollMode="Disabled"
                               x:Name="Carousel" Background="Transparent"
@@ -248,7 +229,7 @@
                             >
                         <StackPanel x:Name="BarChartWrapperElement" Visibility="{Binding IsBarChartVisible, Converter={StaticResource BooleanToVisibilityConverter}}" 
                                     x:Uid="PageViewBarChartWrapperElement" Background="Transparent">
-                            <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="BarChartTitleElement"></StackPanel>
+                            <local:EditableTitle x:Name="BarChartTitleElement" IsHitTestVisible="False"></local:EditableTitle>
                             <TextBlock Style="{StaticResource TooManyElementsWarningStyle}" Visibility="{Binding IsBarChartWarningVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
                                 <Run FontFamily="FontAwesome" Foreground="#CC0000">&#xf071;</Run>
                                 <Run x:Uid="PageViewTooManyElements"></Run>
@@ -258,7 +239,7 @@
 
                         <StackPanel x:Name="GroupedBarChartWrapperElement" Visibility="{Binding IsGroupedBarChartVisible, Converter={StaticResource BooleanToVisibilityConverter}}" 
                                     x:Uid="PageViewGroupedBarChartWrapperElement" Background="Transparent">
-                            <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="GroupedBarChartTitleElement"></StackPanel>
+                            <local:EditableTitle x:Name="GroupedBarChartTitleElement" IsHitTestVisible="False"></local:EditableTitle>
                             <TextBlock Style="{StaticResource TooManyElementsWarningStyle}" Visibility="{Binding IsGroupedBarChartWarningVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
                                 <Run FontFamily="FontAwesome" Foreground="#CC0000">&#xf071;</Run>
                                 <Run x:Uid="PageViewTooManyElements"></Run>
@@ -268,7 +249,7 @@
 
                         <StackPanel x:Name="LineChartWrapperElement" Visibility="{Binding IsLineChartVisible, Converter={StaticResource BooleanToVisibilityConverter}}" 
                                     x:Uid="PageViewLineChartWrapperElement" Background="Transparent">
-                            <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="LineChartTitleElement"></StackPanel>
+                            <local:EditableTitle x:Name="LineChartTitleElement" IsHitTestVisible="False"></local:EditableTitle>
                             <TextBlock Style="{StaticResource TooManyElementsWarningStyle}" Visibility="{Binding IsLineChartWarningVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
                                 <Run FontFamily="FontAwesome" Foreground="#CC0000">&#xf071;</Run>
                                 <Run x:Uid="PageViewTooManyElements"></Run>
@@ -278,19 +259,19 @@
 
                         <StackPanel x:Name="DistributionWrapperElement" Visibility="{Binding IsDistributionVisible, Converter={StaticResource BooleanToVisibilityConverter}}" 
                                     x:Uid="PageViewDistributionWrapperElement" Background="Transparent">
-                            <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="DistributionViewTitleElement"></StackPanel>
+                            <local:EditableTitle x:Name="DistributionViewTitleElement" IsHitTestVisible="False"></local:EditableTitle>
                             <local:DistributionView x:Name="DistributionViewElement" IsHitTestVisible="False" x:Uid="PageViewDistributionViewElement" />
                         </StackPanel>
 
                         <StackPanel x:Name="DescriptiveStatisticsWrapperElement" Visibility="{Binding IsDescriptiveStatisticsVisible, Converter={StaticResource BooleanToVisibilityConverter}}" 
                                     x:Uid="PageViewDescriptiveStatisticsWrapperElement" Background="Transparent">
-                            <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="DescriptiveStatisticsTitleElement"></StackPanel>
+                            <local:EditableTitle x:Name="DescriptiveStatisticsTitleElement" IsHitTestVisible="False"></local:EditableTitle>
                             <local:DescriptiveStatisticsView x:Name="DescriptiveStatisticsViewElement" x:Uid="PageViewDescriptiveStatisticsViewElement"/>
                         </StackPanel>
 
                         <StackPanel x:Name="ScatterplotWrapperElement" Visibility="{Binding IsScatterplotVisible, Converter={StaticResource BooleanToVisibilityConverter}}" 
                                     x:Uid="PageViewScatterplotWrapperElement" Background="Transparent">
-                            <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="ScatterplotTitleElement"></StackPanel>
+                            <local:EditableTitle x:Name="ScatterplotTitleElement" IsHitTestVisible="False"></local:EditableTitle>
                             <TextBlock Style="{StaticResource TooManyElementsWarningStyle}" Visibility="{Binding IsScatterplotWarningVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
                                 <Run FontFamily="FontAwesome" Foreground="#CC0000">&#xf071;</Run>
                                 <Run x:Uid="PageViewTooManyElements"></Run>
@@ -300,13 +281,13 @@
 
                         <StackPanel x:Name="PivotTableWrapperElement" Visibility="{Binding IsPivotTableVisible, Converter={StaticResource BooleanToVisibilityConverter}}" 
                                     x:Uid="PageViewPivotTableWrapperElement" Background="Transparent">
-                            <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="PivotTableTitleElement" MaxWidth="{Binding MainPageViewModel.ParagraphWidth}"></StackPanel>
+                            <local:EditableTitle x:Name="PivotTableTitleElement" MaxWidth="{Binding MainPageViewModel.ParagraphWidth}" IsHitTestVisible="False"></local:EditableTitle>
                             <local:PivotTableView x:Name="PivotTableViewElement" VerticalAlignment="Center" x:Uid="PageViewPivotTableViewElement"></local:PivotTableView>
                         </StackPanel>
 
                         <StackPanel x:Name="CorrelationStatisticsWrapperElement" Visibility="{Binding IsCorrelationStatisticsVisible, Converter={StaticResource BooleanToVisibilityConverter}}" 
                                     x:Uid="PageViewCorrelationStatisticsWrapperElement" Background="Transparent">
-                            <StackPanel Style="{StaticResource TitleWrapperStyle}" x:Name="CorrelationStatisticsTitleElement"></StackPanel>
+                            <local:EditableTitle x:Name="CorrelationStatisticsTitleElement" IsHitTestVisible="False"></local:EditableTitle>
                             <local:CorrelationStatisticsView x:Name="CorrelationStatisticsViewElement" x:Uid="PageViewCorrelationStatisticsViewElement"/>
                         </StackPanel>
 

@@ -7,12 +7,14 @@ using FlexTable.Model;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using System.Text.RegularExpressions;
+using FlexTable.View;
+using Windows.Devices.Input;
 
 namespace FlexTable.ViewModel
 {
     public partial class PageViewModel : NotifyViewModel
     {
-        void AddText(StackPanel stackPanel, String text)
+        void AddText(EditableTitle stackPanel, String text)
         {
             TextBlock textBlock = new TextBlock()
             {
@@ -21,16 +23,11 @@ namespace FlexTable.ViewModel
             };
             Util.HtmlToTextBlockFormatter.Format(text.Replace(' ', (char)160), textBlock);
 
-            stackPanel.Children.Add(textBlock);
+            stackPanel.Add(textBlock);
         }
 
 
-        void AddComboBox(StackPanel stackPanel, String selected, IEnumerable<String> candidates, SelectionChangedEventHandler selectionChanged)
-        {
-            AddComboBox(stackPanel, selected, candidates, selectionChanged, true);
-        }
-
-        void AddComboBox(StackPanel stackPanel, String selected, IEnumerable<String> candidates, SelectionChangedEventHandler selectionChanged, Boolean isColumnName)
+        void AddComboBox(EditableTitle stackPanel, String selected, IEnumerable<String> candidates, SelectionChangedEventHandler selectionChanged, String columnName)
         {
             if (!IsSelected)
             {
@@ -40,8 +37,9 @@ namespace FlexTable.ViewModel
             {
                 ComboBox comboBox = new ComboBox()
                 {
-                    Style = App.Current.Resources[isColumnName ? "SeamlessComboBoxStyle" : "SeamlessComboBoxStyle2"] as Style,
+                    Style = App.Current.Resources[columnName.Length > 0 ? "SeamlessComboBoxStyle" : "SeamlessComboBoxStyle2"] as Style,
                     VerticalAlignment = VerticalAlignment.Center,
+                    Tag = columnName,
                     FontSize = 30
                 };
                 foreach (String candidate in candidates)
@@ -54,8 +52,17 @@ namespace FlexTable.ViewModel
                     };
                     comboBox.Items.Add(comboBoxItem);
                 }
-                stackPanel.Children.Add(comboBox);
+                stackPanel.Add(comboBox);
 
+                /*comboBox.PointerEntered += (o, e) =>
+                {
+                    if (e.Pointer.PointerDeviceType == PointerDeviceType.Pen)
+                    {
+                        e.Handled = true;
+                        return;
+                    }
+                };
+                */
                 comboBox.DropDownOpened += (o, e) =>
                 {
                     comboBox.Width = comboBox.ActualWidth;
@@ -96,6 +103,7 @@ namespace FlexTable.ViewModel
                     Int32 index2 = ViewStatus.SelectedColumnViewModels.FindIndex(cvm => cvm == selectedColumnViewModel);
                     ViewStatus.SelectedColumnViewModels[index1] = selectedColumnViewModel;
                     ViewStatus.SelectedColumnViewModels[index2] = currentColumnViewModel;
+                    ViewStatus.Refresh();
                 }
                 else
                 {
@@ -104,6 +112,7 @@ namespace FlexTable.ViewModel
 
                     Int32 index = ViewStatus.SelectedColumnViewModels.FindIndex(cvm => cvm == currentColumnViewModel);
                     ViewStatus.SelectedColumnViewModels[index] = selectedColumnViewModel;
+                    ViewStatus.Refresh();
                 }
 
                 if (selectedColumnViewModel.Type == ColumnType.Numerical && defaultAggregativeFunction != null)
@@ -129,7 +138,7 @@ namespace FlexTable.ViewModel
             });
         }
 
-        void AddAggregatedColumnComboBox(StackPanel title, ColumnViewModel numerical, Boolean withSameUnit)
+        void AddAggregatedColumnComboBox(EditableTitle title, ColumnViewModel numerical, Boolean withSameUnit)
         {
             String format = Const.Loader.GetString("AggregatedColumnName");
             foreach(String f in format.Split('|'))
@@ -143,7 +152,7 @@ namespace FlexTable.ViewModel
                            numerical.AggregativeFunction.Name,
                            AggregativeFunction.Names,
                            CreateAggregationChangedHandler(numerical),
-                           false
+                           String.Empty
                        );
                     }
                     else
@@ -161,7 +170,8 @@ namespace FlexTable.ViewModel
                            mainPageViewModel.SheetViewModel.ColumnViewModels.Where(
                                cvm => cvm.Type == ColumnType.Numerical && (withSameUnit ? cvm.Unit == numerical.Unit : true)
                            ).Select(cvm => cvm.Name),
-                           CreateColumnChangedHandler(numerical)
+                           CreateColumnChangedHandler(numerical),
+                           numerical.Column.Name
                        );
                     }
                     else
@@ -176,7 +186,7 @@ namespace FlexTable.ViewModel
             }
         }
 
-        void AddColumnComboBox(StackPanel title, ColumnViewModel columnViewModel)
+        void AddColumnComboBox(EditableTitle title, ColumnViewModel columnViewModel)
         {
             if (IsSelected)
             {
@@ -184,7 +194,8 @@ namespace FlexTable.ViewModel
                     title,
                     columnViewModel.Name,
                     mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == columnViewModel.Type).Select(cvm => cvm.Name),
-                    CreateColumnChangedHandler(columnViewModel)
+                    CreateColumnChangedHandler(columnViewModel),
+                    columnViewModel.Column.Name
                 );
             }
             else
@@ -193,22 +204,22 @@ namespace FlexTable.ViewModel
             }
         }
 
-        void AddEditableTitle(StackPanel title, String format, ColumnViewModel column0)
+        void AddEditableTitle(EditableTitle title, String format, ColumnViewModel column0)
         {
             AddEditableTitle(title, format, new List<ColumnViewModel>() { column0 });
         }
 
-        void AddEditableTitle(StackPanel title, String format, ColumnViewModel column0, ColumnViewModel column1)
+        void AddEditableTitle(EditableTitle title, String format, ColumnViewModel column0, ColumnViewModel column1)
         {
             AddEditableTitle(title, format, new List<ColumnViewModel>() { column0, column1 });
         }
 
-        void AddEditableTitle(StackPanel title, String format, ColumnViewModel column0, ColumnViewModel column1, ColumnViewModel column2)
+        void AddEditableTitle(EditableTitle title, String format, ColumnViewModel column0, ColumnViewModel column1, ColumnViewModel column2)
         {
             AddEditableTitle(title, format, new List<ColumnViewModel>() { column0, column1, column2 });
         }
 
-        void AddEditableTitle(StackPanel title, String format, List<ColumnViewModel> columnViewModels)
+        void AddEditableTitle(EditableTitle title, String format, List<ColumnViewModel> columnViewModels)
         {
             foreach(String f in format.Split('|'))
             {
@@ -381,7 +392,7 @@ namespace FlexTable.ViewModel
         }
         */
 
-        void DrawEditableTitleCxNx(StackPanel title, String prefix, List<ColumnViewModel> variables, String mid, List<ColumnViewModel> pivots)
+        void DrawEditableTitleCxNx(EditableTitle title, String prefix, List<ColumnViewModel> variables, String mid, List<ColumnViewModel> pivots)
         {
             if (prefix != null && prefix.Length > 0)
             {
@@ -397,7 +408,8 @@ namespace FlexTable.ViewModel
                     AddComboBox(title,
                             variable.Name,
                             mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).Select(cvm => cvm.Name),
-                            CreateColumnChangedHandler(variable)
+                            CreateColumnChangedHandler(variable),
+                            variable.Column.Name
                             );
                 }
                 else
@@ -406,13 +418,15 @@ namespace FlexTable.ViewModel
                         title,
                         variable.AggregativeFunction.Name,
                         AggregativeFunction.Names,
-                        CreateAggregationChangedHandler(variable)
+                        CreateAggregationChangedHandler(variable),
+                        String.Empty
                     );
                     AddText(title, "(");
                     AddComboBox(title,
                         variable.Name,
                         mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical).Select(cvm => cvm.Name),
-                        CreateColumnChangedHandler(variable)
+                        CreateColumnChangedHandler(variable),
+                        variable.Column.Name
                         );
                     AddText(title, ")");
                 }
@@ -448,7 +462,8 @@ namespace FlexTable.ViewModel
                     AddComboBox(title,
                         variable.Name,
                         mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical).Select(cvm => cvm.Name),
-                        CreateColumnChangedHandler(variable)
+                        CreateColumnChangedHandler(variable),
+                        variable.Column.Name
                         );
                 }
                 else
@@ -457,13 +472,15 @@ namespace FlexTable.ViewModel
                         title,
                         variable.AggregativeFunction.Name,
                         AggregativeFunction.Names,
-                        CreateAggregationChangedHandler(variable)
+                        CreateAggregationChangedHandler(variable),
+                        string.Empty
                     );
                     AddText(title, "(");
                     AddComboBox(title,
                         variable.Name,
                         mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Numerical).Select(cvm => cvm.Name),
-                        CreateColumnChangedHandler(variable)
+                        CreateColumnChangedHandler(variable),
+                        variable.Column.Name
                         );
                     AddText(title, ")");
                 }
@@ -489,7 +506,7 @@ namespace FlexTable.ViewModel
 
         private void DrawPivotTable()
         {
-            pageView.PivotTableTitle.Children.Clear();
+            pageView.PivotTableTitle.Clear();
             if (ViewStatus.IsC)
             {
                 AddEditableTitle(pageView.PivotTableTitle, Const.Loader.GetString("FrequencyTitle"), ViewStatus.FirstCategorical);
