@@ -64,7 +64,7 @@ namespace FlexTable
             switch (reason)
             {
                 // 차트 타입 및 데이터를 바꾸지 않는 인터랙션 리스트
-                case (ReflectReason.Undo):
+                //case (ReflectReason.Undo): // undo의 경우 타이틀이 바뀌어야 하므로
                 case (ReflectReason.ColumnHidden):
                 case (ReflectReason.ColumnShown):
                 case (ReflectReason.RowSelected):
@@ -123,6 +123,7 @@ namespace FlexTable
                 case (ReflectReason.CancelPreview):
                 case (ReflectReason.ColumnSelected):
                 case (ReflectReason.ColumnChanged):
+                case (ReflectReason.ColumnUnselected):
                 case (ReflectReason.ColumnRemoved):
                 case (ReflectReason.RowSelected):
                 case (ReflectReason.RowUnselected):

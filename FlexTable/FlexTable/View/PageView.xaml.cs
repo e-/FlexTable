@@ -271,6 +271,7 @@ namespace FlexTable.View
                 case PageViewModel.PageViewState.Previewing:
                 case PageViewModel.PageViewState.Empty:
                     ViewModel.IsPrimaryUndoMessageVisible = true;
+
                     BarChartElement.IsHitTestVisible = false;
                     LineChartElement.IsHitTestVisible = false;
                     DistributionViewElement.IsHitTestVisible = false;
