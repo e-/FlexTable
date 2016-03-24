@@ -113,6 +113,7 @@ namespace FlexTable.ViewModel
         public void ReflectAll(ViewStatus viewStatus, ReflectReason reason)
         {
             Boolean isN = viewStatus.IsN;
+
             foreach (ColumnViewModel cvm in SheetViewModel.ColumnViewModels)
             {
                 cvm.IsSelected = viewStatus.SelectedColumnViewModels.IndexOf(cvm) >= 0;
@@ -252,7 +253,7 @@ namespace FlexTable.ViewModel
             return;
             var dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
 
-            ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[0]);
+            ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[9]);
             
             DispatcherTimer dispatcherTimer = new DispatcherTimer();
             dispatcherTimer.Tick += (sender, e) =>
@@ -265,6 +266,7 @@ namespace FlexTable.ViewModel
                 //PageView topPageView = ExplorationViewModel.SelectedPageViews.Last();
                 //topPageView.SelectionChanged(null, sheetViewModel.FilteredRows.Where((r, index) => index < 50).ToList(), SelectionChangedType.Add, ReflectReason.ChartSelection);
 
+                return;
                 ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[2]);
 
                 DispatcherTimer dispatcherTimer2 = new DispatcherTimer();

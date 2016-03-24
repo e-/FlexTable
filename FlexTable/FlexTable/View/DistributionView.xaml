@@ -14,7 +14,7 @@
     <StackPanel>
         <crayon:BarChart x:Name="HistogramElement" LegendVisibility="Collapsed"
                          YStartsFromZero="True"
-                         Height="340" AutoColor="False" VerticalAxisTitle="Frequency"
+                         Height="340" AutoColor="False"
                          HorizontalAlignment="Left"></crayon:BarChart> <!-- width는 코드 비하인드에서 설정 -->
         <d3view:BoxPlot Margin="60 0 0 0" x:Name="BoxPlotElement" HorizontalAlignment="Left"
                         ></d3view:BoxPlot>

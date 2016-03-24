@@ -39,6 +39,7 @@ namespace FlexTable.View
                 rows.Select(r => (Double)r.Cells[numerical.Index].Content)
             );
 
+            HistogramElement.VerticalAxisTitle = Const.Loader.GetString("Frequency");
             HistogramElement.Width = this.Width - 20; // (Double)App.Current.Resources["ParagraphWidth"] - 20;
             HistogramElement.Height = this.Height - 70;
             BoxPlotElement.Width = this.Width - 90; // (Double)App.Current.Resources["ParagraphWidth"] - 90;

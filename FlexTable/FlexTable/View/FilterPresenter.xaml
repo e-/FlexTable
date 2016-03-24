@@ -50,7 +50,9 @@
                 <TextBlock FontSize="16" VerticalAlignment="Center" 
                            FontFamily="Roboto"
                            TextAlignment="Right" Margin="10 0 10 0"
-                           Text="{x:Bind ViewModel.Name, Mode=OneWay}">
+                           >
+                    <Run Text="{x:Bind ViewModel.Name, Mode=OneWay}"></Run>
+                    <Run x:Uid="FilterPresenterFilteredMessage"></Run>
                 </TextBlock>
             </StackPanel>
         </Grid>

@@ -276,7 +276,7 @@
                                 <Run FontFamily="FontAwesome" Foreground="#CC0000">&#xf071;</Run>
                                 <Run x:Uid="PageViewTooManyElements"></Run>
                             </TextBlock>
-                            <crayon:Scatterplot x:Name="ScatterplotElement" IsHitTestVisible="False" x:Uid="PageViewScatterplotElement"/>
+                            <crayon:Scatterplot x:Name="ScatterplotElement" IsHitTestVisible="False"/>
                         </StackPanel>
 
                         <StackPanel x:Name="PivotTableWrapperElement" Visibility="{Binding IsPivotTableVisible, Converter={StaticResource BooleanToVisibilityConverter}}" 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -84,7 +85,9 @@ namespace d3.Component
         {
             get { return (Boolean)GetValue(ReusePreviousElementProperty); }
             set { SetValue(ReusePreviousElementProperty, value); }
-        } */      
+        } */
+
+        public Canvas Canvas => CircleCanvas;
 
         public Circles()
         {
@@ -116,20 +119,9 @@ namespace d3.Component
                     ellipse.Fill = ColorGetter == null ? new SolidColorBrush(Colors.LightGray) : new SolidColorBrush(ColorGetter(datum, index));
 
                     Double newRadius = RadiusGetter(datum, index);
-                    /*if (transitionType.HasFlag(TransitionType.Size))
-                    {
-                        if (ellipse.Height != newRadius)
-                        {
-                            storyboard.Children.Add(Util.GenerateDoubleAnimation(ellipse, "Height", newRadius, true));
-                            storyboard.Children.Add(Util.GenerateDoubleAnimation(ellipse, "Width", newRadius, true));
-                        }
-                    }
-                    else
-                    {*/
-                        ellipse.Height = newRadius;
-                        ellipse.Width = newRadius;
-                    //}
-
+                    
+                    ellipse.Height = newRadius;
+                    ellipse.Width = newRadius;
 
                     if (transitionType.HasFlag(TransitionType.Position))
                     {
@@ -166,7 +158,8 @@ namespace d3.Component
                         RenderTransform = new TranslateTransform(),
                         Width = RadiusGetter(datum, index),
                         Height = RadiusGetter(datum, index),
-                        Opacity = 0
+                        Opacity = 0,
+                        Fill = ColorGetter == null ? new SolidColorBrush(Colors.LightGray) : new SolidColorBrush(ColorGetter(datum, index))
                     };
                     //처음 추가는 opacity만 빼고 바로 설정
 

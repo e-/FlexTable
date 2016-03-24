@@ -161,6 +161,7 @@ namespace FlexTable.Crayon.Chart
 
         public Double LegendAreaWidth { get; set; } = 140;
         public String LegendTitle { get; set; }
+        public Canvas CircleCanvas => CircleElement.Canvas;
 
         public event Event.SelectionChangedEventHandler SelectionChanged;
         private ColumnViewModel categoricalColumnViewModel;
@@ -439,6 +440,7 @@ namespace FlexTable.Crayon.Chart
 
             LegendHandleRectangleElement.Update(TransitionType.None);
             CircleElement.Update(useTransition ? TransitionType.All : TransitionType.None);
+            //CircleElement.UpdateLayout();
             HorizontalAxis.Update(useTransition);
             VerticalAxis.Update(useTransition);
         }
