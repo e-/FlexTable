@@ -2,7 +2,7 @@
 <Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <RemoteDebugMachine>hcil-surface</RemoteDebugMachine>
-    <RemoteDebugEnabled>true</RemoteDebugEnabled>
+    <RemoteDebugEnabled>false</RemoteDebugEnabled>
     <CreateCleanLayout>false</CreateCleanLayout>
     <UseAuthentication>true</UseAuthentication>
     <AuthenticationMode>Windows</AuthenticationMode>
@@ -13,7 +13,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <RemoteDebugMachine>hcil-surface</RemoteDebugMachine>
-    <RemoteDebugEnabled>false</RemoteDebugEnabled>
+    <RemoteDebugEnabled>true</RemoteDebugEnabled>
     <AuthenticationMode>Windows</AuthenticationMode>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
