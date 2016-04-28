@@ -1,4 +1,5 @@
 ﻿using FlexTable.Model;
+using FlexTable.Util;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -9,7 +10,7 @@ using Windows.UI;
 
 namespace FlexTable.ViewModel
 {
-    public class RowViewModel : NotifyViewModel
+    public class RowViewModel : Notifiable
     {
         MainPageViewModel mainPageViewModel;
         public MainPageViewModel MainPageViewModel { get { return mainPageViewModel; } }

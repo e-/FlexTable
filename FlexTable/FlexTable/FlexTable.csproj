@@ -184,7 +184,7 @@
     <Compile Include="ViewModel\DescriptiveStatisticsViewModel.cs" />
     <Compile Include="Model\GroupedRows.cs" />
     <Compile Include="Model\MetadataStatistics.cs" />
-    <Compile Include="Model\NotifyModel.cs" />
+    <Compile Include="Util\Notifiable.cs" />
     <Compile Include="Model\Row.cs" />
     <Compile Include="Model\RowHeader.cs" />
     <Compile Include="Model\Sheet.cs" />
@@ -193,9 +193,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util\Animator.cs" />
     <Compile Include="Util\BooleanConverter.cs" />
-    <Compile Include="Util\BooleanToInvertedOpacityConverter.cs" />
     <Compile Include="Util\BooleanToInvertedVisibilityConverter.cs" />
-    <Compile Include="Util\BooleanToOpacityConverter.cs" />
     <Compile Include="Util\BooleanToVisibilityConverter.cs" />
     <Compile Include="Util\CsvLoader.cs" />
     <Compile Include="Util\Drawable.cs" />
@@ -210,7 +208,6 @@
     <Compile Include="ViewModel\FilterViewModel.cs" />
     <Compile Include="ViewModel\MainPageViewModel.cs" />
     <Compile Include="ViewModel\MetadataViewModel.cs" />
-    <Compile Include="ViewModel\NotifyViewModel.cs" />
     <Compile Include="ViewModel\PageViewModel.cs" />
     <Compile Include="ViewModel\PageViewModelEditableTitle.cs" />
     <Compile Include="ViewModel\PivotTableViewModel.cs" />
@@ -433,9 +430,6 @@
       <Project>{f8449c91-ab4d-468d-a961-18af9d12c565}</Project>
       <Name>d3</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

@@ -24,7 +24,7 @@ using FlexTable.Util;
 
 namespace FlexTable.ViewModel
 {
-    public partial class TableViewModel : NotifyViewModel
+    public partial class TableViewModel : Notifiable
     {
         public enum TableViewState { AllRow, GroupedRow, SelectedRow, Animation };
 

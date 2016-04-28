@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FlexTable.Util;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,7 +8,7 @@ using Windows.UI;
 
 namespace FlexTable.Model
 {
-    public class Category : NotifyModel
+    public class Category : Notifiable
     {
         private String value;
         public String Value { get { return value; } set { this.value = value; OnPropertyChanged("Value"); } }

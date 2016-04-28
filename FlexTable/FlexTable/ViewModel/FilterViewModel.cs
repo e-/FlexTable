@@ -1,4 +1,5 @@
 ﻿using FlexTable.Model;
+using FlexTable.Util;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -10,7 +11,7 @@ using Windows.Foundation;
 
 namespace FlexTable.ViewModel
 {
-    public class FilterViewModel : NotifyViewModel
+    public class FilterViewModel : Notifiable
     {
         private String name;
         public String Name { get { return name; } set { name = value; OnPropertyChanged(nameof(Name)); } }

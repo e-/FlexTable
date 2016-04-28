@@ -13,7 +13,7 @@ using FlexTable.Util;
 
 namespace FlexTable.ViewModel
 {
-    public partial class PageViewModel : NotifyViewModel
+    public partial class PageViewModel : Notifiable
     {
         void AddText(EditableTitle stackPanel, String text)
         {

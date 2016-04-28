@@ -129,7 +129,7 @@
     <Compile Include="Event.cs" />
     <Compile Include="Format\IntegerBalanced.cs" />
     <Compile Include="Format\SIPrefix.cs" />
-    <Compile Include="Notifiable.cs" />
+    <Compile Include="ViewModel\Notifiable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scale\Linear.cs" />
     <Compile Include="Scale\Ordinal.cs" />
@@ -174,9 +174,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

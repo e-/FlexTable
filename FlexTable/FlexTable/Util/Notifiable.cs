@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FlexTable.ViewModel
+namespace FlexTable.Util
 {
-    public class NotifyViewModel : INotifyPropertyChanged
+    public class Notifiable : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 

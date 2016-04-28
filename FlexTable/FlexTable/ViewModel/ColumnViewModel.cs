@@ -4,11 +4,13 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using d3;
+using FlexTable.Util;
 using FlexTable.Model;
 
 namespace FlexTable.ViewModel
 {
-    public class ColumnViewModel : NotifyViewModel
+    public class ColumnViewModel : Notifiable
     {     
         private MainPageViewModel mainPageViewModel;
         public MainPageViewModel MainPageViewModel { get { return mainPageViewModel; } }

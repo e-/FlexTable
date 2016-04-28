@@ -11,11 +11,12 @@ using Windows.UI.Text;
 using System.Diagnostics;
 using FlexTable.Crayon.Chart;
 using d3.ColorScheme;
+using FlexTable.Util;
 
 namespace FlexTable.ViewModel
 {
 
-    public partial class PageViewModel : NotifyViewModel
+    public partial class PageViewModel : Notifiable
     {
         public const Int32 BarChartMaximumRecordNumber = 12;
         public const Int32 GroupedBarChartMaximumRecordNumber = 48;

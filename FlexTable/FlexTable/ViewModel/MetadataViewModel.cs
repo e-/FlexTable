@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FlexTable.Util;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace FlexTable.ViewModel
 {
-    public class MetadataViewModel : NotifyViewModel
+    public class MetadataViewModel : Notifiable
     {
         MainPageViewModel mainPageViewModel;
         public MainPageViewModel MainPageViewModel { get { return mainPageViewModel; } }

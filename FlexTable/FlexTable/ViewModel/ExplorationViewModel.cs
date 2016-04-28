@@ -18,7 +18,7 @@ using FlexTable.Util;
 
 namespace FlexTable.ViewModel
 {
-    public class ExplorationViewModel : NotifyViewModel
+    public class ExplorationViewModel : Util.Notifiable
     {
         MainPageViewModel mainPageViewModel;
         public MainPageViewModel MainPageViewModel

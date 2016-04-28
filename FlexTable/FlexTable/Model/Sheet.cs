@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FlexTable.Util;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -10,7 +11,7 @@ using Windows.UI.Xaml.Controls;
 
 namespace FlexTable.Model
 {
-    public class Sheet : NotifyModel
+    public class Sheet : Notifiable
     {
         private String name;
         public String Name { get { return name; } set { name = value; OnPropertyChanged("Name"); } }

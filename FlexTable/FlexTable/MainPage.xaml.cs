@@ -44,7 +44,7 @@ namespace FlexTable
             var view = ApplicationView.GetForCurrentView();
             view.TryEnterFullScreenMode();
 
-            mainPageViewModel.Initialize();
+            await mainPageViewModel.Initialize();
         }
     }
 }

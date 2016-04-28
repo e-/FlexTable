@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FlexTable.Util;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace FlexTable.Model
 {
-    public class Column : NotifyModel
+    public class Column : Notifiable
     {
         private String name;
         public String Name { get { return name; } set { name = value; } }

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace d3
+namespace d3.ViewModel
 {
     public class Notifiable : INotifyPropertyChanged
     {

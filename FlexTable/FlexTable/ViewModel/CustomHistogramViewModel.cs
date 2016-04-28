@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FlexTable.View;
+using FlexTable.Util;
 
 namespace FlexTable.ViewModel
 {
-    public class CustomHistogramViewModel : NotifyViewModel
+    public class CustomHistogramViewModel : Notifiable
     {
         MainPageViewModel mainPageViewModel;
         CustomHistogramView customHistogramView;

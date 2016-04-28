@@ -13,7 +13,7 @@ using d3.ColorScheme;
 
 namespace FlexTable.ViewModel
 {
-    public class SheetViewModel : NotifyViewModel
+    public class SheetViewModel : Notifiable
     {
         private Sheet sheet;
         public Sheet Sheet { get { return sheet; } set { sheet = value; OnPropertyChanged("Sheet"); } }
