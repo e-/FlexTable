@@ -97,7 +97,7 @@ namespace FlexTable.ViewModel
 
                 // selectedColumnViewModel로 이제 바꾸면 됨. 이 과정에 대해서는 explorationViewModel의 PageViewTapped를 참고하면 좋다.
 
-                Logger.Log($"column changed,{currentColumnViewModel.Column.Name},{selectedColumnViewModel.Column.Name}");
+                Logger.Instance.Log($"column changed,{currentColumnViewModel.Column.Name},{selectedColumnViewModel.Column.Name}");
 
                 // 1. 컬럼의 상태 변경 
                 if (selectedColumnViewModel.IsSelected)
@@ -135,7 +135,7 @@ namespace FlexTable.ViewModel
                 String selectedName = (comboBox.SelectedItem as ComboBoxItem).Content.ToString();
                 AggregativeFunction.BaseAggregation aggregativeFunction = AggregativeFunction.FromName(selectedName);
 
-                Logger.Log($"aggregation changed,{columnViewModel.Column.Name},{columnViewModel.AggregativeFunction.Name},{aggregativeFunction.Name}");
+                Logger.Instance.Log($"aggregation changed,{columnViewModel.Column.Name},{columnViewModel.AggregativeFunction.Name},{aggregativeFunction.Name}");
 
                 columnViewModel.AggregativeFunction = aggregativeFunction;
 

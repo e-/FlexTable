@@ -7,43 +7,40 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     d:DesignHeight="300"
-    d:DesignWidth="400">
+    d:DesignWidth="400"
+    PointerCaptureLost="UserControl_PointerCaptureLost"
+    PointerMoved="UserControl_PointerMoved"
+    PointerCanceled="UserControl_PointerCanceled">
     
     <UserControl.Resources>
         <Storyboard x:Name="ShowHelperStoryboard">
-            <DoubleAnimation Duration="0:0:0.2" Storyboard.TargetName="IndexHelperWrapperElement"
+            <DoubleAnimation Duration="0:0:0.4" Storyboard.TargetName="IndexHelperElement"
                              Storyboard.TargetProperty="Opacity" To="0.5" EasingFunction="{StaticResource QuarticEaseInOut}">
             </DoubleAnimation>
         </Storyboard>
 
         <Storyboard x:Name="HideHelperStoryboard">
-            <DoubleAnimation Duration="0:0:0.2" Storyboard.TargetName="IndexHelperWrapperElement"
+            <DoubleAnimation Duration="0:0:0.4" Storyboard.TargetName="IndexHelperElement"
                              Storyboard.TargetProperty="Opacity" To="0" EasingFunction="{StaticResource QuarticEaseInOut}">
             </DoubleAnimation>
         </Storyboard>
     </UserControl.Resources>
 
     <Grid>
-        <Border x:Name="Opener" 
-                Background="Transparent"
-                PointerEntered="Opener_PointerEntered"
-                PointerReleased="Opener_PointerReleased"
-                >
-        </Border>
         <Canvas x:Name="IndexHelperWrapperElement" 
                 Width="{StaticResource ColumnIndexerWidth}" 
                 Height="{StaticResource ColumnIndexerHeight}"                 
-                IsHitTestVisible="False"
-                PointerExited="IndexHelperWrapperElement_PointerExited"
+                VerticalAlignment="Bottom"
+                >
+        </Canvas>
+        
+        <Canvas x:Name="IndexHelperElement" 
+                Width="{StaticResource ColumnIndexerWidth}" 
+                Height="{StaticResource ColumnIndexerHeight}"
+                PointerPressed="IndexHelperElement_PointerPressed"
                 VerticalAlignment="Top"
                 Opacity="0"
                 >
-            <Canvas.RenderTransform>
-                <TranslateTransform x:Name="IndexHelperTransform" />
-            </Canvas.RenderTransform>
-            <!--<Canvas.RenderTransform>
-                <ScaleTransform ScaleX="0.5" />
-            </Canvas.RenderTransform>-->
         </Canvas>
     </Grid>
 </UserControl>

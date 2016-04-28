@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FlexTable.Util;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -37,6 +38,14 @@ namespace FlexTable
             this.InitializeComponent();
             
             CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = true;
+            Window.Current.VisibilityChanged += Current_VisibilityChanged;
+        }
+
+        private async void Current_VisibilityChanged(object sender, Windows.UI.Core.VisibilityChangedEventArgs e)
+        {
+            if (e.Visible) return;
+            Logger.Instance.Log("Visibility Changed");
+            await Logger.Instance.Flush();
         }
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)

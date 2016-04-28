@@ -403,7 +403,7 @@ namespace FlexTable.Crayon.Chart
                 {
                     if (FilterOut != null && intersectedRows.Count > 0)
                     {
-                        Logger.Log($"filter out,linechart,pen");
+                        Logger.Instance.Log($"filter out,linechart,pen");
                         if (horizontalAxisStroke && !legendStroke)
                         {
                             IEnumerable<Category> categories = intersectedRows
@@ -430,7 +430,7 @@ namespace FlexTable.Crayon.Chart
                 }
                 else // 아니면 무조건 셀렉션 
                 {
-                    Logger.Log($"selection,linechart,pen");
+                    Logger.Instance.Log($"selection,linechart,pen");
                     if (SelectionChanged != null)
                         SelectionChanged(this, intersectedRows, SelectionChangedType.Add);//, ReflectReason2.SelectionChanged);
                 }
@@ -447,7 +447,7 @@ namespace FlexTable.Crayon.Chart
 
             if (SelectionChanged != null)
             {
-                Logger.Log($"selection,linechart,touch");
+                Logger.Instance.Log($"selection,linechart,touch");
                 if (lineChartDatum.Rows == null || lineChartDatum.Rows.Count() < lineChartDatum.EnvelopeRows.Count())
                     SelectionChanged(this, lineChartDatum.EnvelopeRows, SelectionChangedType.Add);//, ReflectReason2.SelectionChanged);
                 else

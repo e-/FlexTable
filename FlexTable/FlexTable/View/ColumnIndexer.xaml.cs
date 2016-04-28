@@ -26,7 +26,7 @@ namespace FlexTable.View
             this.InitializeComponent();
         }
         
-        public static Point CalculateCartesianCoordinate(Double angle, Double radius)
+        public Point CalculateCartesianCoordinate(Double angle, Double radius)
         {
             return new Point(radius * Math.Sin(angle), -radius * Math.Cos(angle));
         }
@@ -70,7 +70,6 @@ namespace FlexTable.View
             PathGeometry pathGeometry = new PathGeometry();
             pathGeometry.Figures.Add(pathFigure);
 
-
             Path path = new Path();
             pathFigure.IsFilled = true;
             pathFigure.IsClosed = true;
@@ -82,7 +81,8 @@ namespace FlexTable.View
             return path;
         }
 
-        const Double AngleSpan = Math.PI / 2 / 9 * 6;
+        const Double AngleSpan = Math.PI / 2 / 9 * 7;
+        readonly Color WrapperFillColor = Color.FromArgb(50, 200, 200, 200);
 
         public void Update() // 처음에 초기화하거나 컬럼의 순서가 바뀌면 이게 호출되어야함
         {
@@ -90,8 +90,17 @@ namespace FlexTable.View
             List<ColumnViewModel> sorted = tvm.SheetViewModel.ColumnViewModels.Where(cvm => !cvm.IsSelected).OrderBy(cvm => cvm.Order).ToList();
             Int32 index = 0;
             Double anglePerMenu = AngleSpan / sorted.Count;
+            Double height = (Double)App.Current.Resources["ColumnIndexerHeight"];
 
             IndexHelperWrapperElement.Children.Clear();
+            IndexHelperElement.Children.Clear();
+
+            {
+                Path path = DrawArc(height, 0, Math.PI / 2);
+                IndexHelperWrapperElement.Children.Add(path);
+                Canvas.SetTop(path, height);
+                path.Fill = new SolidColorBrush(WrapperFillColor);
+            }
 
             foreach (ColumnViewModel cvm in sorted)
             {
@@ -100,67 +109,122 @@ namespace FlexTable.View
 
                 if (index == 0)
                 {
-                    path = DrawArc((Double)App.Current.Resources["ColumnIndexerHeight"], -Math.PI / 18, anglePerMenu * (index + 1));
+                    path = DrawArc(height, 0, anglePerMenu * (index + 1));
                 }
                 else if (index < sorted.Count - 1)
                 {
-                    path = DrawArc((Double)App.Current.Resources["ColumnIndexerHeight"], anglePerMenu * index, anglePerMenu * (index + 1));
+                    path = DrawArc(height, anglePerMenu * index, anglePerMenu * (index + 1));
                 }
                 else // 5개 이하일때 마지막은 모두 포함하도록
                 {
-                    path = DrawArc((Double)App.Current.Resources["ColumnIndexerHeight"], anglePerMenu * index, Math.PI / 2);
+                    path = DrawArc(height, anglePerMenu * index, Math.PI / 2);
                 }
 
-                Int32 indexCopied = index;
+                /*Int32 indexCopied = index;
                 path.PointerEntered += (o, e) =>
                 {
                     TableViewModel.IndexColumn(e.GetCurrentPoint(this).PointerId, indexCopied);
-                };
+                };*/
 
-                Canvas.SetTop(path, (Double)App.Current.Resources["ColumnIndexerHeight"]);
+                Canvas.SetTop(path, height);
 
-                IndexHelperWrapperElement.Children.Add(path);
+                IndexHelperElement.Children.Add(path);
 
                 path.Stroke = new SolidColorBrush(Color.FromArgb(255, 150, 150, 150));
-                path.StrokeThickness = 2;
+                path.StrokeThickness = 1;
                 path.Fill = new SolidColorBrush(Color.FromArgb(255, 230, 230, 230));
                 index++;
             }            
         }
 
-        private void Opener_PointerEntered(object sender, PointerRoutedEventArgs e)
+        public void Reset()
         {
-            PointerPoint point = e.GetCurrentPoint(this);
+            IndexHelperWrapperElement.Children.Clear();
+        }
 
-            if (point.PointerDevice.PointerDeviceType != PointerDeviceType.Touch) return;
+        Int32 GetActivatedIndex(Point position)
+        {
+            TableViewModel tvm = this.DataContext as TableViewModel;
+            List<ColumnViewModel> sorted = tvm.SheetViewModel.ColumnViewModels.Where(cvm => !cvm.IsSelected).OrderBy(cvm => cvm.Order).ToList();
+            Int32 index = 0;
+            Double anglePerMenu = AngleSpan / sorted.Count;
+            Double height = (Double)App.Current.Resources["ColumnIndexerHeight"];
+            Double x = position.X;
+            Double y = height - position.Y;
+
+            if (x < 0 || x * x + y * y < 50 * 50) return 0;
+            if (y < 0) return sorted.Count - 1;
+
+            Double angle = Math.PI / 2 - Math.Atan2(y, x);
+
+            foreach (ColumnViewModel cvm in sorted)
+            {
+                if (index == 0)
+                {
+                    if (0 <= angle && angle < anglePerMenu) break;
+                }
+                else if (index < sorted.Count - 1)
+                {
+                    if (anglePerMenu * index <= angle && angle < anglePerMenu * (index + 1)) break;
+                }
+                else // 5개 이하일때 마지막은 모두 포함하도록
+                {
+                    if (anglePerMenu * index <= angle && angle <= Math.PI / 2) break;
+                }
+                index++;
+            }
+
+            return index;
+        }
+
+        private void IndexHelperElement_PointerPressed(object sender, PointerRoutedEventArgs e)
+        {
             if (TableViewModel.MainPageViewModel.View.TableView.ColumnHighlighter.ColumnViewModel != null) return;
+            CapturePointer(e.Pointer);
 
-            IndexHelperWrapperElement.IsHitTestVisible = true;
-            IndexHelperTransform.X = point.Position.X;
-            IndexHelperTransform.Y = point.Position.Y - 20;
             HideHelperStoryboard.Pause();
             ShowHelperStoryboard.Begin();
         }
 
-        private void Opener_PointerReleased(object sender, PointerRoutedEventArgs e)
+        private void UserControl_PointerCaptureLost(object sender, PointerRoutedEventArgs e)
         {
-            if (e.GetCurrentPoint(this).PointerDevice.PointerDeviceType != PointerDeviceType.Touch) return;
-            IndexHelperWrapperElement.IsHitTestVisible = false;
             ShowHelperStoryboard.Pause();
             HideHelperStoryboard.Begin();
+
+            Point position = e.GetCurrentPoint(this).Position;
+            TableViewModel tvm = this.DataContext as TableViewModel;
+
+            var viewModel = tvm.MainPageViewModel.ExplorationViewModel.TopPageView.ViewModel;
+
+            if (viewModel.IsEmpty)
+            {
+                TableViewModel.CancelIndexing(true);
+                return;
+            }
+
+            if (viewModel.IsNoPossibleVisualizationWarningVisible)
+            {
+                TableViewModel.CancelIndexing(true);
+                return;
+            }
+
+            viewModel.State = PageViewModel.PageViewState.Selected;
+            viewModel.StateChanged(tvm.MainPageViewModel.ExplorationViewModel.TopPageView);
+            TableViewModel.CancelIndexing(true);
         }
 
-        private void IndexHelperWrapperElement_PointerExited(object sender, PointerRoutedEventArgs e)
+        private void UserControl_PointerCanceled(object sender, PointerRoutedEventArgs e)
         {
             TableViewModel.CancelIndexing(true);
-            IndexHelperWrapperElement.IsHitTestVisible = false;
             ShowHelperStoryboard.Pause();
             HideHelperStoryboard.Begin();
         }
 
-        public void Reset()
+        private void UserControl_PointerMoved(object sender, PointerRoutedEventArgs e)
         {
-            IndexHelperWrapperElement.Children.Clear();
+            Point position = e.GetCurrentPoint(this).Position;
+
+            TableViewModel.IndexColumn(e.GetCurrentPoint(this).PointerId, GetActivatedIndex(position));
         }
     }
 }

@@ -342,7 +342,7 @@ namespace FlexTable.ViewModel
                 view.TableView.ColumnHighlighter.ColumnViewModel = columnViewModel;
                 view.TableView.ColumnHighlighter.Update();
 
-                Logger.Log($"indexed,{columnViewModel.Column.Name}");
+                Logger.Instance.Log($"indexed,{columnViewModel.Column.Name}");
                 IsIndexing = true;
 
                 mainPageViewModel.ExplorationViewModel.PreviewColumn(columnViewModel);

@@ -167,7 +167,7 @@
             </ListView>
         </DataTemplate>
     </UserControl.Resources>
-    
+
     <Grid Margin="0 0 0 0">
         <Grid Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" x:Name="SheetView">
             <Grid.ColumnDefinitions>
@@ -181,7 +181,7 @@
             </Grid.RowDefinitions>
             <Border Grid.Row="0" Grid.Column="0" Background="LightGray"></Border>
 
-            <view:ColumnHeaderPresenter Grid.Row="0" Grid.Column="1" x:Name="TopColumnHeaderElement"></view:ColumnHeaderPresenter>            
+            <view:ColumnHeaderPresenter Grid.Row="0" Grid.Column="1" x:Name="TopColumnHeaderElement"></view:ColumnHeaderPresenter>
 
             <view:GuidelinePresenter Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" x:Name="GuidlineElement"/>
             <view:RowHeaderPresenter Grid.Row="1" Grid.Column="0" x:Name="RowHeaderPresenterElement"></view:RowHeaderPresenter>
@@ -201,7 +201,7 @@
                 <Canvas x:Name="GroupedRowCanvas" Width="{Binding PaddedSheetWidth}" Height="{Binding PaddedSheetHeight}">
                 </Canvas>
             </ScrollViewer>
-          
+
             <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" 
                           ZoomMode="Disabled" Grid.Row="1" Grid.Column="1"
                           x:Name="SelectedRowViewer" ManipulationMode="All"
@@ -214,24 +214,21 @@
                         ZoomMode="Disabled" Grid.Row="1" Grid.Column="1"
                         ManipulationMode="All"
                         x:Name="AnimatingRowViewer">
-            <Canvas x:Name="AnimatingRowCanvasElement" Width="{Binding PaddedSheetWidth}" Height="{Binding PaddedSheetHeight}">
-                 </Canvas>
-            </ScrollViewer>        
-            
+                <Canvas x:Name="AnimatingRowCanvasElement" Width="{Binding PaddedSheetWidth}" Height="{Binding PaddedSheetHeight}">
+                </Canvas>
+            </ScrollViewer>
+
             <Border Grid.Row="2" Grid.Column="0" Background="LightGray"></Border>
             <view:ColumnHeaderPresenter Grid.Row="2" Grid.Column="1" x:Name="BottomColumnHeaderElement" VerticalContentAlignment="Top"></view:ColumnHeaderPresenter>
 
             <view:ColumnHighlighter Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" x:Name="ColumnHighlighterElement"></view:ColumnHighlighter>
 
-            <view:ColumnIndexer Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" x:Name="ColumnIndexerElement" 
-                                Width="150"
-                                VerticalAlignment="Stretch"
+            <view:ColumnIndexer Grid.Row="1" Grid.Column="1" x:Name="ColumnIndexerElement" 
+                                VerticalAlignment="Bottom"
                                 HorizontalAlignment="Left"></view:ColumnIndexer>
         </Grid>
 
         <Grid x:Name="StrokeGrid" Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" IsHitTestVisible="False"></Grid>
         <Grid x:Name="NewStrokeGrid" Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" IsHitTestVisible="False"></Grid>
-
     </Grid>
-
 </UserControl>

@@ -161,7 +161,7 @@ namespace FlexTable.ViewModel
                 // 새로운 page 만들기
                 view.ExplorationView.AddNewPage();
 
-                Logger.Log($"column selected,{String.Join(",", ViewStatus.SelectedColumnViewModels.Select(cvm => cvm.Column.Name))}");
+                Logger.Instance.Log($"column selected,{String.Join(",", ViewStatus.SelectedColumnViewModels.Select(cvm => cvm.Column.Name))}");
                 mainPageViewModel.ReflectAll(ReflectReason.ColumnSelected);
                 
                 view.TableView.ScrollToColumnViewModel(mainPageViewModel.SheetViewModel.ColumnViewModels.OrderBy(c => c.Order).First());
@@ -185,7 +185,7 @@ namespace FlexTable.ViewModel
 
                 //mainPageViewModel.ReflectAll(true, ReflectReason.ColumnViewModelUnselected);
                 mainPageViewModel.ReflectAll(ReflectReason.ColumnUnselected); // ReflectReason2.ColumnViewModelUnselected); // performance 이슈로 위에것만 업데이트 해봄
-                Logger.Log($"column unselected,{String.Join(",", ViewStatus.SelectedColumnViewModels.Select(cvm => cvm.Column.Name))}");
+                Logger.Instance.Log($"column unselected,{String.Join(",", ViewStatus.SelectedColumnViewModels.Select(cvm => cvm.Column.Name))}");
 
                 view.TableView.ScrollToColumnViewModel(mainPageViewModel.SheetViewModel.ColumnViewModels.OrderBy(c => c.Order).First());
 

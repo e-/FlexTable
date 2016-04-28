@@ -110,7 +110,7 @@ namespace FlexTable.ViewModel
             ReflectAll(ExplorationViewModel.ViewStatus, reason);
         }
 
-        public void ReflectAll(ViewStatus viewStatus, ReflectReason reason)
+        public async void ReflectAll(ViewStatus viewStatus, ReflectReason reason)
         {
             Boolean isN = viewStatus.IsN;
 
@@ -133,7 +133,7 @@ namespace FlexTable.ViewModel
                 tableViewModel.SelectedRows = null;
             }
             
-            Logger.Log($"{reason}");
+            Logger.Instance.Log($"{reason}");
 
             viewStatus.Generate(SheetViewModel);
 
@@ -213,8 +213,8 @@ namespace FlexTable.ViewModel
                 sheet = await CsvLoader.Load("student-mat.csv");
             }
 
-            await Logger.Initialize();
-            Logger.Log("Logging has been started.");
+            await Logger.Instance.Initialize();
+            Logger.Instance.Log("Logging has been started.");
 
             Initialize(sheet);
         }

@@ -4,14 +4,33 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Storage;
+using Windows.Storage.Streams;
 
 namespace FlexTable.Util
 {
-    public static class Logger
+    public class Logger
     {
-        static StorageFile logFile;
+        private static Logger instance;
 
-        public static async Task Initialize()
+        public static Logger Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    instance = new Logger();
+                }
+                return instance;
+            }
+        }
+
+        StorageFile logFile;
+        String buffer = "";
+        Int32 bufferCount = 0;
+
+        private Logger() { }
+        
+        public async Task Initialize()
         {
             StorageFolder documentLibrary = KnownFolders.DocumentsLibrary;
             StorageFolder logDirectory = null;
@@ -26,18 +45,43 @@ namespace FlexTable.Util
             }
 
             logFile = await logDirectory.CreateFileAsync(DateTime.Now.ToString("MMM월 d일 H시 mm분 ss초") + ".txt");
-
         }
 
-        public static async void Log(String log)
+        public async void Log(String log)
         {
-            try { 
-               String withTime = $"{DateTime.Now.ToString("MMM월 d일 H시 mm분 ss초")},{log}\r\n";
-               await FileIO.AppendTextAsync(logFile, withTime);
-            }
-            catch
-            {
+            String withTime = $"{DateTime.Now.ToString("MMM월 d일 H시 mm분 ss초")},{log}\r\n";
+            buffer += withTime;
+            bufferCount++;
 
+            if(bufferCount > 10)
+            {
+                try
+                {
+                    await FileIO.AppendTextAsync(logFile, buffer);
+                }
+                catch (Exception e)
+                {
+
+                }
+                bufferCount = 0;
+                buffer = "";
+            }
+        }
+
+        public async Task Flush()
+        {
+            if (bufferCount > 0)
+            {
+                try
+                {
+                    await FileIO.AppendTextAsync(logFile, buffer);
+                }
+                catch (Exception e)
+                {
+
+                }
+                buffer = "";
+                bufferCount = 0;
             }
         }
     }
