@@ -7,6 +7,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel.Core;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -41,7 +42,7 @@ namespace FlexTable
             Window.Current.VisibilityChanged += Current_VisibilityChanged;
         }
 
-        private async void Current_VisibilityChanged(object sender, Windows.UI.Core.VisibilityChangedEventArgs e)
+        private async void Current_VisibilityChanged(object sender, VisibilityChangedEventArgs e)
         {
             if (e.Visible) return;
             Logger.Instance.Log("Visibility Changed");

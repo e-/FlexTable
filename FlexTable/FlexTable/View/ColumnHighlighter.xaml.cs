@@ -108,7 +108,6 @@ namespace FlexTable.View
                 TableScrollViewer.Height = tvm.SheetViewHeight;
                 TableScrollViewer.ChangeView(null, tvm.ScrollTop, null, true);
 
-
                 if (columnViewModel.IsHidden)
                 {
                     UpperRightMenuElement.Visibility = Visibility.Collapsed;
@@ -125,32 +124,20 @@ namespace FlexTable.View
                 }
 
                 Brighten.Pause();
-                Darken.Begin();
-                
-                if (isDarkenPlaying)
-                {
-                    isDarkenPlaying = false;
-                    Darken.SkipToFill();
-                }
-                else
-                {
-                    isDarkenPlaying = true;
+                if(Darken.GetCurrentState() != ClockState.Active)
                     Darken.Begin();
-                }
             }
             else
             {
                 TableScrollViewer.Height = tvm.SheetViewHeight;
-                Brighten.Begin();
+                if (Brighten.GetCurrentState() != ClockState.Active)
+                    Brighten.Begin();
                 Darken.Pause();
-                isDarkenPlaying = false;
             }
         }
-
-        Boolean isDarkenPlaying = false;
+        
         private void Darken_Completed(object sender, object e)
         {
-            isDarkenPlaying = false;
             TableViewModel tvm = (this.DataContext as TableViewModel);
             TableScrollViewer.Height = tvm.SheetViewHeight / (Double)this.Resources["ZoomScale"] - (Double)App.Current.Resources["ColumnHeaderHeight"] / 2 / (Double)this.Resources["ZoomScale"];
         }

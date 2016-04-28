@@ -195,57 +195,24 @@ namespace FlexTable.View
             if(state == PageViewModel.PageViewState.Selected)
             {
                 MoveToSelectedPositionStoryboard.Begin();
-                SelectedStateStoryboard.Begin();
-
-                /*EnlargeStoryboard.Begin();
-                BrightenStoryboard.Begin();
-                ChartVisibleStateStoryboard.Begin();
-
-                HideBottomToolBar.Pause();
-                ShowBottomToolBar.Begin();
-
-                ShowTopToolBar.Pause();
-                HideTopToolBar.Begin();*/
+                if(SelectedStateStoryboard.GetCurrentState() != ClockState.Active)
+                    SelectedStateStoryboard.Begin();
             }
             else if(state == PageViewModel.PageViewState.Undoing)
             {
                 MoveToDefaultPositionStoryboard.Begin();
                 UndoStateStoryboard.Begin();
-                
-                /*EmptyStateStoryboard.Begin();
-                BrightenStoryboard.Begin();
-                DefaultStoryboard.Begin();
-
-                ShowTopToolBar.Pause();
-                HideTopToolBar.Begin();
-
-                ShowBottomToolBar.Pause();
-                HideBottomToolBar.Begin();*/
             }
             else if (state == PageViewModel.PageViewState.Empty)
             {
                 MoveToDefaultPositionStoryboard.Begin();
                 EmptyStateStoryboard.Begin();
-                
-                /*BrightenStoryboard.Begin();
-
-                ShowTopToolBar.Pause();
-                HideTopToolBar.Begin();
-
-                ShowBottomToolBar.Pause();
-                HideBottomToolBar.Begin();*/
             }
             else if (state == PageViewModel.PageViewState.Previewing)
             {
                 MoveToDefaultPositionStoryboard.Begin();
-                SelectedStateStoryboard.Begin();
-                /*DarkenStoryboard.Begin();
-
-                HideTopToolBar.Pause();
-                ShowTopToolBar.Begin();
-
-                ShowBottomToolBar.Pause();
-                HideBottomToolBar.Begin();*/
+                if (SelectedStateStoryboard.GetCurrentState() != ClockState.Active)
+                    SelectedStateStoryboard.Begin();
             }
 
             switch(state)

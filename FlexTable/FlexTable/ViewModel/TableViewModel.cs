@@ -72,7 +72,7 @@ namespace FlexTable.ViewModel
         public TableViewState State { get { return state; } set { oldState = state; state = value; } }
 
         private Boolean isIndexing;
-        public Boolean IsIndexing { get { return isIndexing; } set { isIndexing = value; OnPropertyChanged("IsIndexing"); } }
+        public Boolean IsIndexing { get { return isIndexing; } set { isIndexing = value; OnPropertyChanged(nameof(IsIndexing)); } }
 
         public IEnumerable<Row> SelectedRows { get; set; } = null;
 
@@ -81,10 +81,10 @@ namespace FlexTable.ViewModel
             this.mainPageViewModel = mainPageViewModel;
             this.view = view;
 
-            OnPropertyChanged("Width");
-            OnPropertyChanged("Height");
-            OnPropertyChanged("SheetViewWidth");
-            OnPropertyChanged("SheetViewHeight");
+            OnPropertyChanged(nameof(Width));
+            OnPropertyChanged(nameof(Height));
+            OnPropertyChanged(nameof(SheetViewWidth));
+            OnPropertyChanged(nameof(SheetViewHeight));
         }
 
         public void Initialize()
@@ -240,8 +240,7 @@ namespace FlexTable.ViewModel
                 previousAnimationScenario?.AnimationStoryboard.SkipToFill();
             }
 
-            if (tableUpdateCallback != null)
-                tableUpdateCallback();
+            tableUpdateCallback?.Invoke();
         }
 
         void UpdateState(ViewStatus viewStatus)
