@@ -382,9 +382,9 @@ namespace FlexTable.Crayon.Chart
             IndicatorTextElement.OpacityGetter = IndicatorTextOpacityGetter;
             
             HandleRectangleElement.RectangleTapped += HandleRectangleElement_RectangleTapped;
-            LegendHandleRectangleElement.RectangleTapped += LegendHandleRectangleElement_RectangleTapped; ;
-            HandleRectangleElement.RectangleManipulationDelta += HandleRectangleElement_RectangleManipulationDelta;
-            HandleRectangleElement.RectangleManipulationCompleted += HandleRectangleElement_RectangleManipulationCompleted;
+            LegendHandleRectangleElement.RectangleTapped += LegendHandleRectangleElement_RectangleTapped;
+            //HandleRectangleElement.RectangleManipulationDelta += HandleRectangleElement_RectangleManipulationDelta;
+            //HandleRectangleElement.RectangleManipulationCompleted += HandleRectangleElement_RectangleManipulationCompleted;
 
             drawable.Attach(RootCanvas, StrokeGrid, NewStrokeGrid);
             drawable.StrokeAdded += Drawable_StrokeAdded;
@@ -392,6 +392,8 @@ namespace FlexTable.Crayon.Chart
 
         private void HandleRectangleElement_RectangleManipulationDelta(object sender, object eo, object datumo, int index)
         {
+            return;
+
             ManipulationDeltaRoutedEventArgs e = eo as ManipulationDeltaRoutedEventArgs;
             if (e.PointerDeviceType != PointerDeviceType.Touch) return;
             e.Handled = true;
@@ -414,6 +416,8 @@ namespace FlexTable.Crayon.Chart
 
         private void HandleRectangleElement_RectangleManipulationCompleted(object sender, object eo, object datumo, int index)
         {
+            return;
+
             ManipulationCompletedRoutedEventArgs e = eo as ManipulationCompletedRoutedEventArgs;
             if (e.PointerDeviceType != PointerDeviceType.Touch) return;
             e.Handled = true;

@@ -383,14 +383,39 @@ namespace FlexTable.Crayon.Chart
 
             HandleRectangleElement.RectangleTapped += RectangleElement_RectangleTapped;
             LegendHandleRectangleElement.RectangleTapped += RectangleElement_RectangleTapped;
-            HandleRectangleElement.RectangleManipulationDelta += HandleRectangleElement_RectangleManipulationDelta;
-            HandleRectangleElement.RectangleManipulationCompleted += HandleRectangleElement_RectangleManipulationCompleted;
+            //HandleRectangleElement.RectangleManipulationDelta += HandleRectangleElement_RectangleManipulationDelta;
+            //HandleRectangleElement.RectangleManipulationCompleted += HandleRectangleElement_RectangleManipulationCompleted;
             drawable.Attach(RootCanvas, StrokeGrid, NewStrokeGrid);
             drawable.StrokeAdded += Drawable_StrokeAdded;
         }
 
+        private void HandleRectangleElement_RectangleManipulationDelta(object sender, object eo, object datumo, int index)
+        {
+            return;
+
+            ManipulationDeltaRoutedEventArgs e = eo as ManipulationDeltaRoutedEventArgs;
+            if (e.PointerDeviceType != PointerDeviceType.Touch) return;
+            e.Handled = true;
+            Double delta = e.Cumulative.Translation.Y;
+            BarChartDatum datum = datumo as BarChartDatum;
+
+            if (delta < 0) delta = 0;
+            if (delta > Const.DragToFilterThreshold) delta = Const.DragToFilterThreshold;
+
+            DragToFilterYDelta = delta;
+            DragToFilterFocusedBar = datum;
+            DragToFilterOpacity = 1 - delta / Const.DragToFilterThreshold;
+
+            EnvelopeRectangleElement.Update(TransitionType.None);
+            RectangleElement.Update(TransitionType.None);
+            HorizontalAxis.Update(false);
+            IndicatorTextElement.Update(TransitionType.None);
+        }
+
         private void HandleRectangleElement_RectangleManipulationCompleted(object sender, object eo, object datumo, int index)
         {
+            return;
+
             ManipulationCompletedRoutedEventArgs e = eo as ManipulationCompletedRoutedEventArgs;
             if (e.PointerDeviceType != PointerDeviceType.Touch) return;
             e.Handled = true;
@@ -439,27 +464,6 @@ namespace FlexTable.Crayon.Chart
             RectangleElement.Update(TransitionType.All);
             HorizontalAxis.Update(true);
             IndicatorTextElement.Update(TransitionType.Opacity | TransitionType.Position);
-        }
-        
-        private void HandleRectangleElement_RectangleManipulationDelta(object sender, object eo, object datumo, int index)
-        {
-            ManipulationDeltaRoutedEventArgs e = eo as ManipulationDeltaRoutedEventArgs;
-            if (e.PointerDeviceType != PointerDeviceType.Touch) return;
-            e.Handled = true;
-            Double delta = e.Cumulative.Translation.Y;
-            BarChartDatum datum = datumo as BarChartDatum;
-
-            if (delta < 0) delta = 0;
-            if (delta > Const.DragToFilterThreshold) delta = Const.DragToFilterThreshold;
-
-            DragToFilterYDelta = delta;
-            DragToFilterFocusedBar = datum;
-            DragToFilterOpacity = 1 - delta / Const.DragToFilterThreshold;
-
-            EnvelopeRectangleElement.Update(TransitionType.None);
-            RectangleElement.Update(TransitionType.None);
-            HorizontalAxis.Update(false);
-            IndicatorTextElement.Update(TransitionType.None);
         }
        
         private void Drawable_StrokeAdded(InkManager inkManager)
