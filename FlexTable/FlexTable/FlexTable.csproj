@@ -205,6 +205,7 @@
     <Compile Include="ViewModel\ColumnViewModel.cs" />
     <Compile Include="ViewModel\CustomHistogramViewModel.cs" />
     <Compile Include="ViewModel\ExplorationViewModel.cs" />
+    <Compile Include="ViewModel\FilterListViewModel.cs" />
     <Compile Include="ViewModel\FilterViewModel.cs" />
     <Compile Include="ViewModel\MainPageViewModel.cs" />
     <Compile Include="ViewModel\MetadataViewModel.cs" />
@@ -252,6 +253,9 @@
     <Compile Include="View\FilterPresenter.xaml.cs">
       <DependentUpon>FilterPresenter.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\FilterView.xaml.cs">
+      <DependentUpon>FilterView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\GuidelinePresenter.xaml.cs">
       <DependentUpon>GuidelinePresenter.xaml</DependentUpon>
     </Compile>
@@ -275,9 +279,6 @@
     </Compile>
     <Compile Include="View\RowPresenter.xaml.cs">
       <DependentUpon>RowPresenter.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\StatusView.xaml.cs">
-      <DependentUpon>StatusView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\TableView.xaml.cs">
       <DependentUpon>TableView.xaml</DependentUpon>
@@ -384,6 +385,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\FilterView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\GuidelinePresenter.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -415,10 +420,6 @@
     <Page Include="View\RowPresenter.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\StatusView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="View\TableView.xaml">
       <Generator>MSBuild:Compile</Generator>

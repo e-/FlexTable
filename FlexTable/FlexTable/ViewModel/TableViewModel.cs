@@ -40,7 +40,7 @@ namespace FlexTable.ViewModel
         public Double Width => mainPageViewModel.Bounds.Width;
         public Double Height => mainPageViewModel.Bounds.Height;
 
-        public Double SheetViewWidth => mainPageViewModel.Bounds.Width / 2 - (Double)App.Current.Resources["RowHeaderWidth"];
+        public Double SheetViewWidth => mainPageViewModel.TableWidth - (Double)App.Current.Resources["RowHeaderWidth"];
         public Double SheetViewHeight => mainPageViewModel.Bounds.Height - (Double)App.Current.Resources["ColumnHeaderHeight"] * 2;
 
         private Double paddedSheetWidth;
@@ -454,7 +454,7 @@ namespace FlexTable.ViewModel
             if (rowViewModel == null) return;
             Object value = rowViewModel.Cells[columnViewModel.Index].Content;
 
-            FilterViewModel fvm = new FilterViewModel(mainPageViewModel)
+            FilterListViewModel fvm = new FilterListViewModel(mainPageViewModel)
             {
                 Name = $"{columnViewModel.Column.Name} = {value}",
                 Predicate = r => r.Cells[columnViewModel.Index].Content != value

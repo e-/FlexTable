@@ -25,9 +25,8 @@
     <Grid Height="{StaticResource ColumnHeaderHeight}" 
           Width="{x:Bind ViewModel.Width, Mode=OneWay}"
           x:Name="Wrapper"
-          PointerEntered="Wrapper_PointerEntered" 
+          PointerPressed="Wrapper_PointerPressed"
           PointerReleased="Wrapper_PointerReleased"
-          PointerExited="Wrapper_PointerExited"
           PointerCaptureLost="Wrapper_PointerCaptureLost"
           Background="Transparent"
           >

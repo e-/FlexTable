@@ -150,7 +150,7 @@ namespace FlexTable.View
 
         private void FilterOut(object sender, String name, IEnumerable<Row> filteredRows)
         {
-            FilterViewModel fvm = new FilterViewModel(ViewModel.MainPageViewModel)
+            FilterListViewModel fvm = new FilterListViewModel(ViewModel.MainPageViewModel)
             {
                 Name = name,
                 Predicate = r => !filteredRows.Any(rr => rr == r)

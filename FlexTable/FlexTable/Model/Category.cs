@@ -11,7 +11,7 @@ namespace FlexTable.Model
     public class Category : Notifiable
     {
         private String value;
-        public String Value { get { return value; } set { this.value = value; OnPropertyChanged("Value"); } }
+        public String Value { get { return value; } set { this.value = value; OnPropertyChanged(nameof(Value)); } }
 
         public Int32 Order { get; set; }
         public Color Color { get; set; }

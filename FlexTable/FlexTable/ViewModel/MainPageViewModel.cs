@@ -44,11 +44,17 @@ namespace FlexTable.ViewModel
         private ExplorationViewModel explorationViewModel;
         public ExplorationViewModel ExplorationViewModel { get { return explorationViewModel; } set { explorationViewModel = value; OnPropertyChanged("ExplorationViewModel"); } }
 
+        private FilterViewModel filterViewModel;
+        public FilterViewModel FilterViewModel { get { return filterViewModel; } set { filterViewModel = value; OnPropertyChanged(nameof(FilterViewModel)); } }
+
         private Double pageHeight;
         public Double PageHeight { get { return pageHeight; } set { pageHeight = value; OnPropertyChanged("PageHeight"); } }
 
         private Double negativePageHeight;
         public Double NegativePageHeight { get { return negativePageHeight; } set { negativePageHeight = value; OnPropertyChanged("NegativePageHeight"); } }
+
+        private Double tableWidth;
+        public Double TableWidth { get { return tableWidth; } set { tableWidth = value; OnPropertyChanged(nameof(TableWidth)); } }
 
         private Double pageWidth;
         public Double PageWidth { get { return pageWidth; } set { pageWidth = value; OnPropertyChanged("PageWidth"); } }
@@ -80,13 +86,7 @@ namespace FlexTable.ViewModel
 
         private Double pageLabelCarouselHeight = 50;
         public Double PageLabelCarouselHeight { get { return pageLabelCarouselHeight; } set { pageLabelCarouselHeight = value; OnPropertyChanged(nameof(PageLabelCarouselHeight)); } }
-
-        /*
-         <x:Double x:Key="ParagraphWidth">794</x:Double> <!-- 794인데 마지막 축 레이블 튀어나가서 줄임 -->
-            <x:Double x:Key="ParagraphHeight">410</x:Double>
-            <x:Double x:Key="ParagraphContainerHeight">500</x:Double> <!-- ParagraphHeight + 90 (titleheight) -->
-            */
-
+        
         public MainPageViewModel(IMainPage view)
         {
             this.view = view;
@@ -99,6 +99,7 @@ namespace FlexTable.ViewModel
             SheetViewModel = new SheetViewModel(this, view);
             TableViewModel = new TableViewModel(this, view);
             ExplorationViewModel = new ExplorationViewModel(this, view);
+            FilterViewModel = new FilterViewModel(this, view);
             Const.Initialize();
         }
 
@@ -226,6 +227,7 @@ namespace FlexTable.ViewModel
             PageHeight = Bounds.Height / 2 - 4;// Bounds.Height; 
             NegativePageHeight = -PageHeight;
             PageOffset = PageHeight + 8;
+            TableWidth = Bounds.Width * 4 / 10;
             PageWidth = Bounds.Width / 2;
             ParagraphWidth = PageWidth - 40;
 
@@ -240,12 +242,15 @@ namespace FlexTable.ViewModel
             ParagraphChartHeight = ParagraphHeight - ParagraphTitleHeight;
 
             // rowViewModels 계산
+
             sheetViewModel.Initialize(sheet);
 
             // 가이드라인 및 헤더 컬럼 추가
             tableViewModel.Initialize();
 
             explorationViewModel.Initialize();
+
+            filterViewModel.Initialize();
 
             // 메타데이터 초기화
             ExplorationViewModel.MetadataViewModel.Initialize();

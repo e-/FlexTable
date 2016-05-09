@@ -6,6 +6,8 @@
     xmlns:view="using:FlexTable.View"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DesignWidth="1200"
+    d:DesignHeight="400"
     mc:Ignorable="d"
     Loaded="Page_Loaded"
     FontFamily="Roboto"
@@ -13,13 +15,16 @@
 
     <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}" >
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"></ColumnDefinition>
-            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="4*"></ColumnDefinition>
+            <ColumnDefinition Width="1*"></ColumnDefinition>
+            <ColumnDefinition Width="5*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
 
         <TextBlock Grid.Column="0" Grid.Row="0" Name="DummyCell" Style="{StaticResource CellStyle}" Foreground="Blue" IsHitTestVisible="False"></TextBlock>
 
-        <view:ExplorationView Grid.Row="0" Grid.Column="1" x:Name="ExplorationViewElement" DataContext="{Binding ExplorationViewModel}"></view:ExplorationView>
-        <view:TableView Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" x:Name="TableViewElement" DataContext="{Binding TableViewModel}"></view:TableView>
+
+        <view:TableView Grid.Column="0" x:Name="TableViewElement" DataContext="{x:Bind ViewModel.TableViewModel}"></view:TableView>
+        <view:FilterView Grid.Column="1" x:Name="FilterViewElement" DataContext="{x:Bind ViewModel.FilterViewModel}"></view:FilterView>
+        <view:ExplorationView Grid.Column="2" x:Name="ExplorationViewElement" DataContext="{x:Bind ViewModel.ExplorationViewModel}"></view:ExplorationView>
     </Grid>
 </Page>

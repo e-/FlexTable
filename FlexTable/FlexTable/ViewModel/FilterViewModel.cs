@@ -3,43 +3,31 @@ using FlexTable.Util;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Windows.Foundation;
 
 namespace FlexTable.ViewModel
 {
     public class FilterViewModel : Notifiable
     {
-        private String name;
-        public String Name { get { return name; } set { name = value; OnPropertyChanged(nameof(Name)); } }
-
-        public Func<Row, Boolean> Predicate { get; set; }
         private MainPageViewModel mainPageViewModel;
         public MainPageViewModel MainPageViewModel => mainPageViewModel;
 
-        public FilterViewModel(MainPageViewModel mainPageViewModel)
+        IMainPage view;
+
+        private ObservableCollection<ColumnViewModel> filterColumnViewModels = new ObservableCollection<ColumnViewModel>();
+        public ObservableCollection<ColumnViewModel> FilterColumnViewModels { get { return filterColumnViewModels; } set { filterColumnViewModels = value; OnPropertyChanged(nameof(FilterColumnViewModels)); } }
+
+        public FilterViewModel(MainPageViewModel mainPageViewModel, IMainPage view)
         {
             this.mainPageViewModel = mainPageViewModel;
+            this.view = view;
         }
 
-        public IEnumerable<Row> Filter(IEnumerable<Row> rows)
+        public void Initialize()
         {
-            if (Predicate == null)
-                throw new Exception("Predicate was not provided");
-
-            return rows.Where(d => Predicate(d));
-        }
-
-        public static IEnumerable<Row> ApplyFilters(IEnumerable<FilterViewModel> filters, IEnumerable<Row> rows)
-        {
-            foreach(FilterViewModel filter in filters)
-            {
-                rows = filter.Filter(rows);
-            }
-            return rows;
+            FilterColumnViewModels = new ObservableCollection<ColumnViewModel>(mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical));
         }
     }
 }

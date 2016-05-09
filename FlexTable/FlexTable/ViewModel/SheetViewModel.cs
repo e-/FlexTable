@@ -33,7 +33,7 @@ namespace FlexTable.ViewModel
         private List<RowViewModel> allRowViewModels = new List<RowViewModel>();
         public List<RowViewModel> AllRowViewModels => allRowViewModels;
 
-        public ObservableCollection<FilterViewModel> FilterViewModels { get; private set; } = new ObservableCollection<FilterViewModel>();
+        public ObservableCollection<FilterListViewModel> FilterViewModels { get; private set; } = new ObservableCollection<FilterListViewModel>();
 
         MainPageViewModel mainPageViewModel;
         public MainPageViewModel MainPageViewModel => mainPageViewModel;
@@ -349,16 +349,16 @@ namespace FlexTable.ViewModel
             }
         }
 
-        public void PrependFilter(FilterViewModel filterViewModel)
+        public void PrependFilter(FilterListViewModel filterViewModel)
         {
             FilterViewModels.Insert(0, filterViewModel);
-            filteredRows = FilterViewModel.ApplyFilters(FilterViewModels, sheet.Rows);
+            filteredRows = FilterListViewModel.ApplyFilters(FilterViewModels, sheet.Rows);
         }
         
-        public void RemoveFilter(FilterViewModel filterViewModel)
+        public void RemoveFilter(FilterListViewModel filterViewModel)
         {
             FilterViewModels.Remove(filterViewModel);
-            filteredRows = FilterViewModel.ApplyFilters(FilterViewModels, sheet.Rows);
+            filteredRows = FilterListViewModel.ApplyFilters(FilterViewModels, sheet.Rows);
         }
     }    
 }

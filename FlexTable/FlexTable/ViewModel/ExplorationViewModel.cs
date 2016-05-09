@@ -194,7 +194,7 @@ namespace FlexTable.ViewModel
             }            
         }        
 
-        public Boolean FilterOut(FilterViewModel filterViewModel)
+        public Boolean FilterOut(FilterListViewModel filterViewModel)
         {
             if (filterViewModel.Filter(mainPageViewModel.SheetViewModel.FilteredRows).Count() > 0)
             {
@@ -206,7 +206,7 @@ namespace FlexTable.ViewModel
             return false;
         }
 
-        public void CancelFilter(FilterViewModel filterViewModel)
+        public void CancelFilter(FilterListViewModel filterViewModel)
         {
             mainPageViewModel.SheetViewModel.RemoveFilter(filterViewModel);
 

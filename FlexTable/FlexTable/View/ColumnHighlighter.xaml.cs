@@ -123,7 +123,7 @@ namespace FlexTable.View
                     LowerLeftMenuElement.Visibility = Visibility.Collapsed;
                 }
 
-                Brighten.Pause();
+                Brighten.Stop();
                 if(Darken.GetCurrentState() != ClockState.Active)
                     Darken.Begin();
             }
@@ -132,7 +132,7 @@ namespace FlexTable.View
                 TableScrollViewer.Height = tvm.SheetViewHeight;
                 if (Brighten.GetCurrentState() != ClockState.Active)
                     Brighten.Begin();
-                Darken.Pause();
+                Darken.Stop();
             }
         }
         

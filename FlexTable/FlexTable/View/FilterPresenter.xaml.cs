@@ -22,7 +22,7 @@ namespace FlexTable.View
 {
     public sealed partial class FilterPresenter : UserControl, INotifyPropertyChanged
     {
-        public FilterViewModel ViewModel { get { return (FilterViewModel)DataContext; } }
+        public FilterListViewModel ViewModel { get { return (FilterListViewModel)DataContext; } }
 
         public event PropertyChangedEventHandler PropertyChanged;
 

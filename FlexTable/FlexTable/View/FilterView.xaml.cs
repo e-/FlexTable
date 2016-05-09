@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FlexTable.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -13,13 +14,15 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
-// 사용자 정의 컨트롤 항목 템플릿에 대한 설명은 http://go.microsoft.com/fwlink/?LinkId=234236에 나와 있습니다.
+// The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
 namespace FlexTable.View
 {
-    public sealed partial class StatusView : UserControl
+    public sealed partial class FilterView : UserControl
     {
-        public StatusView()
+        public FilterViewModel ViewModel { get { return (FilterViewModel)DataContext; } }
+        
+        public FilterView()
         {
             this.InitializeComponent();
         }
