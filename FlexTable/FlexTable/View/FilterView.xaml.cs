@@ -60,7 +60,37 @@ namespace FlexTable.View
             Category c = cb.DataContext as Category;
 
             if (c != null)
-                c.IsKept = false;
+            {
+                ColumnViewModel cvm = c.ColumnViewModel;
+
+                if (cvm.Categories.Count(sb => sb.IsKept) > 1)
+                {
+                    c.IsKept = false;
+                    cb.IsChecked = false;
+                }
+                else
+                {
+                    c.IsKept = true;
+                    cb.IsChecked = true;
+                }                
+            }
+        }
+
+        private void CheckBox_Click(object sender, RoutedEventArgs e)
+        {
+            // 무조건 checked -> checked 나 partial chcked -> checked 임
+            CheckBox cb = sender as CheckBox;
+            ColumnViewModel cvm = cb.DataContext as ColumnViewModel;
+
+            cb.IsChecked = true;
+
+            if (cvm != null)
+            {
+                foreach(Category c in cvm.Categories)
+                {
+                    c.IsKept = true;
+                }
+            }
         }
     }
 }
