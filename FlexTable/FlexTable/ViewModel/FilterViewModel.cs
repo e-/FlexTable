@@ -19,6 +19,12 @@ namespace FlexTable.ViewModel
         private ObservableCollection<ColumnViewModel> filterColumnViewModels = new ObservableCollection<ColumnViewModel>();
         public ObservableCollection<ColumnViewModel> FilterColumnViewModels { get { return filterColumnViewModels; } set { filterColumnViewModels = value; OnPropertyChanged(nameof(FilterColumnViewModels)); } }
 
+        private Int32 totalRowCount = 0;
+        public Int32 TotalRowCount { get { return totalRowCount; } set { totalRowCount = value; OnPropertyChanged(nameof(TotalRowCount)); } }
+
+        private Int32 filteredRowCount = 0;
+        public Int32 FilteredRowCount { get { return filteredRowCount; } set { filteredRowCount = value; OnPropertyChanged(nameof(FilteredRowCount)); } }
+
         public FilterViewModel(MainPageViewModel mainPageViewModel, IMainPage view)
         {
             this.mainPageViewModel = mainPageViewModel;
@@ -28,6 +34,8 @@ namespace FlexTable.ViewModel
         public void Initialize()
         {
             FilterColumnViewModels = new ObservableCollection<ColumnViewModel>(mainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical));
+
+            TotalRowCount = FilteredRowCount = mainPageViewModel.SheetViewModel.Sheet.Rows.Count;
         }
     }
 }

@@ -369,6 +369,9 @@ namespace FlexTable.ViewModel
                     filteredRows.Add(row);
                 }
             }
+
+            mainPageViewModel.FilterViewModel.TotalRowCount = sheet.Rows.Count;
+            mainPageViewModel.FilterViewModel.FilteredRowCount = filteredRows.Count;
         }
     }    
 }

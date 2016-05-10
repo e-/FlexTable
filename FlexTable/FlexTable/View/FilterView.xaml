@@ -319,9 +319,9 @@
                                 Padding="0 0 3 2">
                         &#xf0b0;
                     </TextBlock>
-                    <TextBlock FontSize="16"
-                           VerticalAlignment="Bottom"
-                           >Filters (5/14)</TextBlock>
+                    <TextBlock FontSize="16" VerticalAlignment="Bottom">
+                        <Run>Filters (</Run><Run Text="{x:Bind ViewModel.FilteredRowCount, Mode=OneWay}" /><Run>/</Run><Run Text="{x:Bind ViewModel.TotalRowCount, Mode=OneWay}" /><Run>)</Run>
+                    </TextBlock>
                 </StackPanel>
             </Border>
             <ListView    
