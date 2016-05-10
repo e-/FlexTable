@@ -302,8 +302,8 @@
         <util:NullableBooleanToBooleanConverter x:Key="NullableBooleanToBooleanConverter"/>
     </UserControl.Resources>
 
-    <Border BorderBrush="#f4f4f4" BorderThickness="1" 
-            Background="White" Margin="0 -1 0 0">
+    <Border BorderBrush="{StaticResource DarkerGridLineBrush}" BorderThickness="1" 
+            Background="#f6f6f6" Margin="0 -1 0 0">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="{StaticResource ColumnHeaderHeightInGridLength}"></RowDefinition>
@@ -312,7 +312,7 @@
             <Border Grid.Row="0"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
-                Background="#f4f4f4" Padding="0 8">
+                Background="{StaticResource DarkerGridLineBrush}" Padding="0 8">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                     <TextBlock FontFamily="FontAwesome" Foreground="{StaticResource HighlightBrush1}" 
                                 FontSize="15" TextAlignment="Right" VerticalAlignment="Bottom"

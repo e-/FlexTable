@@ -67,26 +67,6 @@ namespace FlexTable.View
             topPageView = nextTopPageView;
 
             PageViewElement.Children.Remove(currentTopPageView);
-        }
-
-        public void SetFilterEnabled(Boolean value)
-        {
-            FilterList.UpdateLayout();
-            FilterButtonElement.IsEnabled = value;
-            if (!value)
-                FilterButtonElement.IsChecked = false;
-        }
-
-        private void FilterButtonElement_Checked(object sender, RoutedEventArgs e)
-        {
-            HideFilterListStoryboard.Pause();
-            ShowFilterListStoryboard.Begin();
-        }
-
-        private void FilterButtonElement_Unchecked(object sender, RoutedEventArgs e)
-        {
-            ShowFilterListStoryboard.Pause();
-            HideFilterListStoryboard.Begin();
-        }
+        }        
     }
 }
