@@ -186,25 +186,6 @@ namespace FlexTable.ViewModel
                 // Page View 위로 올리기
                 pageView.ReflectState();
             }            
-        }        
-
-        public Boolean FilterOut(FilterListViewModel filterViewModel)
-        {
-            if (filterViewModel.Filter(mainPageViewModel.SheetViewModel.FilteredRows).Count() > 0)
-            {
-                mainPageViewModel.SheetViewModel.PrependFilter(filterViewModel);
-
-                mainPageViewModel.ReflectAll(ViewStatus, ReflectReason.RowFiltered); // 2.FilterOut);
-                return true;
-            }
-            return false;
-        }
-
-        public void CancelFilter(FilterListViewModel filterViewModel)
-        {
-            mainPageViewModel.SheetViewModel.RemoveFilter(filterViewModel);
-
-            mainPageViewModel.ReflectAll(ViewStatus, ReflectReason.RowFiltered); // 2.FilterOut);
-        }
+        }                
     }
 }

@@ -452,21 +452,13 @@ namespace FlexTable.ViewModel
             }
 
             if (rowViewModel == null) return;
-            Object value = rowViewModel.Cells[columnViewModel.Index].Content;
-
-            FilterListViewModel fvm = new FilterListViewModel(mainPageViewModel)
+            if(columnViewModel.Type == ColumnType.Categorical)
             {
-                Name = $"{columnViewModel.Column.Name} = {value}",
-                Predicate = r => r.Cells[columnViewModel.Index].Content != value
-            };
-
-            /*SelectedRows = null;
-            foreach(PageView view in mainPageViewModel.ExplorationViewModel.SelectedPageViews)
-            {
-                view.SelectedRows = new List<Row>();
-                view.HideSelectionIndicator();
-            }*/
-            mainPageViewModel.ExplorationViewModel.FilterOut(fvm);
+                Category category = rowViewModel.Cells[columnViewModel.Index].Content as Category;
+                category.IsKept = false;
+                mainPageViewModel.SheetViewModel.UpdateFilter();
+                mainPageViewModel.ReflectAll(ReflectReason.RowFiltered);
+            }            
         }
     }
 }

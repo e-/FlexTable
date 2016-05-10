@@ -296,8 +296,8 @@ namespace FlexTable.Crayon.Chart
                         IEnumerable<Category> categories = intersectedRows.Select(row => row.Cells[columnViewModel.Index].Content as Category)
                             .OrderBy(cate => cate.Order)
                             .Distinct();
-                            
-                        FilterOut(this, $"{columnViewModel.Name} = {String.Join(", ", categories)}", intersectedRows.ToList());
+
+                        FilterOut(this, categories);
                     }
                 } 
                 else

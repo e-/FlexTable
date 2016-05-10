@@ -1,4 +1,5 @@
 ﻿using FlexTable.Model;
+using FlexTable.Util;
 using FlexTable.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -43,6 +44,11 @@ namespace FlexTable.View
             if (cvm.Categories.All(c => c.IsKept)) cvm.IsKept = true;
             else if (cvm.Categories.All(c => !c.IsKept)) cvm.IsKept = false;
             else cvm.IsKept = null;
+
+            Logger.Instance.Log($"filter out,filterview,touch");            
+
+            ViewModel.MainPageViewModel.SheetViewModel.UpdateFilter();
+            ViewModel.MainPageViewModel.ReflectAll(ReflectReason.RowFiltered);
         }
 
         private void CategoryCheckBox_Checked(object sender, RoutedEventArgs e)
@@ -91,6 +97,11 @@ namespace FlexTable.View
                     c.IsKept = true;
                 }
             }
+
+            Logger.Instance.Log($"filter out,filterview,touch");
+
+            ViewModel.MainPageViewModel.SheetViewModel.UpdateFilter();
+            ViewModel.MainPageViewModel.ReflectAll(ReflectReason.RowFiltered);
         }
     }
 }

@@ -32,17 +32,15 @@ namespace FlexTable.ViewModel
         // 모든 로우에 대한 정보 가지고 있음 속도 위함
         private List<RowViewModel> allRowViewModels = new List<RowViewModel>();
         public List<RowViewModel> AllRowViewModels => allRowViewModels;
-
-        public ObservableCollection<FilterListViewModel> FilterViewModels { get; private set; } = new ObservableCollection<FilterListViewModel>();
-
+        
         MainPageViewModel mainPageViewModel;
         public MainPageViewModel MainPageViewModel => mainPageViewModel;
 
         /// <summary>
         /// 여기도 소팅해야하나? 어차피 이 집합에 속하는지 안하는지만 테스트하고 차트 그릴때는 통계를 쓰는거라 렌더링하는 rowviewmodel이 아니면 소팅 필요없지않나
         /// </summary>
-        private IEnumerable<Row> filteredRows = null;
-        public IEnumerable<Row> FilteredRows { get { return filteredRows; } }
+        private List<Row> filteredRows = null;
+        public List<Row> FilteredRows { get { return filteredRows; } }
         
         IMainPage view;
 
@@ -99,7 +97,6 @@ namespace FlexTable.ViewModel
         public void Initialize(Sheet sheet)
         {
             Sheet = sheet;
-            FilterViewModels.Clear();
             filteredRows = Sheet.Rows;
 
             Int32 index;
@@ -349,16 +346,29 @@ namespace FlexTable.ViewModel
             }
         }
 
-        public void PrependFilter(FilterListViewModel filterViewModel)
+        public void UpdateFilter()
         {
-            FilterViewModels.Insert(0, filterViewModel);
-            filteredRows = FilterListViewModel.ApplyFilters(FilterViewModels, sheet.Rows);
-        }
-        
-        public void RemoveFilter(FilterListViewModel filterViewModel)
-        {
-            FilterViewModels.Remove(filterViewModel);
-            filteredRows = FilterListViewModel.ApplyFilters(FilterViewModels, sheet.Rows);
+            IEnumerable<ColumnViewModel> categorical = columnViewModels.Where(cvm => cvm.Type == ColumnType.Categorical);
+
+            filteredRows = new List<Row>();
+
+            foreach(Row row in sheet.Rows)
+            {
+                Boolean alive = true;
+                foreach (ColumnViewModel cvm in categorical)
+                {
+                    if (!(row.Cells[cvm.Index].Content as Category).IsKept)
+                    {
+                        alive = false;
+                        break;
+                    }
+                }
+
+                if(alive)
+                {
+                    filteredRows.Add(row);
+                }
+            }
         }
     }    
 }

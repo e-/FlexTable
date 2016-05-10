@@ -291,7 +291,7 @@ namespace FlexTable.Crayon.Chart
 
         public event Event.SelectionChangedEventHandler SelectionChanged;
         public event Event.FilterOutEventHandler FilterOut;
-        public event Event.FilterOutEventHandler RemoveColumnViewModel;
+        public event Event.RemoveColumnViewModelEventHandler RemoveColumnViewModel;
 
         Drawable drawable = new Drawable()
         {
@@ -388,95 +388,7 @@ namespace FlexTable.Crayon.Chart
 
             drawable.Attach(RootCanvas, StrokeGrid, NewStrokeGrid);
             drawable.StrokeAdded += Drawable_StrokeAdded;
-        }
-
-        private void HandleRectangleElement_RectangleManipulationDelta(object sender, object eo, object datumo, int index)
-        {
-            return;
-
-            ManipulationDeltaRoutedEventArgs e = eo as ManipulationDeltaRoutedEventArgs;
-            if (e.PointerDeviceType != PointerDeviceType.Touch) return;
-            e.Handled = true;
-            Double delta = e.Cumulative.Translation.Y;
-            GroupedBarChartDatum datum = (datumo as BarChartDatum).Parent;// GroupedBarChartDatum;
-
-            if (delta < 0) delta = 0;
-            if (delta > Const.DragToFilterThreshold) delta = Const.DragToFilterThreshold;
-
-            DragToFilterYDelta = delta;
-            DragToFilterFocusedBar = datum;
-            DragToFilterOpacity = 1 - delta / Const.DragToFilterThreshold;
-
-            EnvelopeRectangleElement.Update(TransitionType.None);
-            RectangleElement.Update(TransitionType.None);
-            HorizontalAxis.Update(false);
-            IndicatorTextElement.Update(TransitionType.None);
-        }
-
-
-        private void HandleRectangleElement_RectangleManipulationCompleted(object sender, object eo, object datumo, int index)
-        {
-            return;
-
-            ManipulationCompletedRoutedEventArgs e = eo as ManipulationCompletedRoutedEventArgs;
-            if (e.PointerDeviceType != PointerDeviceType.Touch) return;
-            e.Handled = true;
-            Double delta = e.Cumulative.Translation.Y;
-            GroupedBarChartDatum datum = (datumo as BarChartDatum).Parent;// GroupedBarChartDatum;
-
-            DragToFilterYDelta = 0;
-            DragToFilterFocusedBar = null;
-            DragToFilterOpacity = 1;
-
-            if (delta > Const.DragToFilterThreshold)
-            {
-                // filter out
-
-                if (FilterOut != null)
-                {
-                    Logger.Instance.Log($"filter out,groupedbarchart,touch");
-                    if (datum.Children[0].BarState == BarState.Default) // 이거 하나만
-                    {
-                        FilterOut(sender, $"{Data[0].ColumnViewModel.Name} = {datum.Key as Category}", datum.EnvelopeRows);
-                    }
-                    else
-                    {
-                        IEnumerable<BarChartDatum> filterOut = ChartData.Where(d => d.Rows?.Count() > 0);
-                        IEnumerable<BarChartDatum> remaining = ChartData.Except(filterOut);
-                        IEnumerable<Row> filteredRows = ChartData.Where(d => d.Rows?.Count() > 0).SelectMany(d => d.EnvelopeRows);
-                        var categorical1 = Data[0].ColumnViewModel;
-                        var categorical2 = ChartData[0].ColumnViewModel;
-
-                        // categorical1 으로 필터 된건지 확인
-                        var filteredCategories1 = filterOut.Select(fo => fo.Parent.Key).Distinct();
-                        if(!remaining.ToList().Exists(bcd => filteredCategories1.Contains(bcd.Parent.Key)))
-                        {
-                            // 남은 컬럼들 중에서 categorical1의 카테고리를 가지고 있는게 하나도 없으면 이걸로 이름을 준다.
-                            FilterOut(sender, $"{categorical1.Name} = {String.Join(", ", filteredCategories1)}", filteredRows);
-                        }
-                        else
-                        {
-                            var filteredCategories2 = filterOut.Select(fo => fo.Key).Distinct();
-
-                            if (categorical2 != null && !remaining.ToList().Exists(bcd => filteredCategories2.Contains(bcd.Key)))
-                            { // CNN이 아니면
-                                FilterOut(sender, $"{categorical2.Name} = {String.Join(", ", filteredCategories2)}", filteredRows);
-                            }
-                            else
-                            {
-                                FilterOut(sender, String.Format(FlexTable.Const.Loader.GetString("FilterOutMessage"),
-                                    filteredRows.Count()), filteredRows);
-                            }
-                        }
-                    }
-                }
-            }
-
-            EnvelopeRectangleElement.Update(TransitionType.All);
-            RectangleElement.Update(TransitionType.All);
-            HorizontalAxis.Update(true);
-            IndicatorTextElement.Update(TransitionType.Opacity | TransitionType.Position);
-        }
+        }     
 
         private void Drawable_StrokeAdded(InkManager inkManager)
         {
@@ -519,7 +431,7 @@ namespace FlexTable.Crayon.Chart
                         }
                         else
                         {
-                            RemoveColumnViewModel(this, LegendData[index].Key.ToString(), null);
+                            RemoveColumnViewModel(this, LegendData[index].Key.ToString());
                             drawable.RemoveAllStrokes();
                             return;
                         }
@@ -553,7 +465,7 @@ namespace FlexTable.Crayon.Chart
                                 .Distinct()
                                 .OrderBy(cate => cate.Order);
 
-                            FilterOut(this, $"{firstColumnViewModel.Name} = {String.Join(", ", categories)}", intersectedRows);
+                            FilterOut(this, categories);
                         }
                         else if (legendStroke && !horizontalAxisStroke)
                         {
@@ -562,11 +474,12 @@ namespace FlexTable.Crayon.Chart
                                 .Distinct()
                                 .OrderBy(cate => cate.Order);
 
-                            FilterOut(this, $"{secondColumnViewModel.Name} = {String.Join(", ", categories)}", intersectedRows);
+                            FilterOut(this, categories);
                         }
                         else
-                        { 
-                            FilterOut(this, String.Format(FlexTable.Const.Loader.GetString("FilterOutMessage"), intersectedRows.Count()), intersectedRows);
+                        {
+                            //throw new Exception("ojioij");
+                            //FilterOut(this, String.Format(FlexTable.Const.Loader.GetString("FilterOutMessage"), intersectedRows.Count()), intersectedRows);
                         }
                     }
                 }

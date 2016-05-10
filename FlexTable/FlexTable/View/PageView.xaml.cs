@@ -146,20 +146,26 @@ namespace FlexTable.View
             }
 
             ViewModel.Reflect(ReflectReason.RowSelectionChanged);// 2.OnSelectionChanged | ReflectType2.TrackPreviousParagraph, reason);
-        }        
+        }
 
-        private void FilterOut(object sender, String name, IEnumerable<Row> filteredRows)
+        private void FilterOut(object sender, IEnumerable<Category> categories)
         {
-            FilterListViewModel fvm = new FilterListViewModel(ViewModel.MainPageViewModel)
+            foreach(Category category in categories)
             {
-                Name = name,
-                Predicate = r => !filteredRows.Any(rr => rr == r)
-            };
+                category.IsKept = false;
+            }
 
-            /*SelectedRows = new List<Row>();
-            HideSelectionIndicator();
-            ViewModel.MainPageViewModel.TableViewModel.SelectedRows = null;*/
-            ViewModel.MainPageViewModel.ExplorationViewModel.FilterOut(fvm);
+            foreach(Category category in categories)
+            {
+                ColumnViewModel cvm = category.ColumnViewModel;
+
+                if (cvm.Categories.All(c => c.IsKept)) cvm.IsKept = true;
+                else if (cvm.Categories.All(c => !c.IsKept)) cvm.IsKept = false;
+                else cvm.IsKept = null;
+            }
+
+            ViewModel.MainPageViewModel.SheetViewModel.UpdateFilter();
+            ViewModel.MainPageViewModel.ReflectAll(ReflectReason.RowFiltered);            
         }
 
         public void HideSelectionIndicator()
@@ -168,7 +174,7 @@ namespace FlexTable.View
             HideSelectionIndicatorStoryboard.Begin();
         }
 
-        private void RemoveColumnViewModel(object sender, string title, IEnumerable<Row> rows)
+        private void RemoveColumnViewModel(object sender, string title)
         {
             ColumnViewModel columnViewModel = ViewModel.MainPageViewModel.SheetViewModel.ColumnViewModels.Where(cvm => cvm.Column.Name == title).FirstOrDefault();
 
@@ -538,7 +544,8 @@ namespace FlexTable.View
 
         private void SelectionFilterButton_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            Int32 count = SelectedRows.Count();
+            throw new Exception("wer");
+            /*Int32 count = SelectedRows.Count();
             if (count > 0)
             {
                 FilterOut(this,
@@ -547,7 +554,7 @@ namespace FlexTable.View
                         count
                     ), SelectedRows.ToList());
                 FilterSelectionIndicatorStoryboard.Begin();
-            }
+            }*/
         }
 
         private void SelectionIndicator_Tapped(object sender, TappedRoutedEventArgs e)

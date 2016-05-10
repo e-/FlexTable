@@ -234,7 +234,7 @@ namespace FlexTable.Crayon.Chart
 
         public event Event.SelectionChangedEventHandler SelectionChanged;
         public event Event.FilterOutEventHandler FilterOut;
-        public event Event.FilterOutEventHandler RemoveColumnViewModel;
+        public event Event.RemoveColumnViewModelEventHandler RemoveColumnViewModel;
 
         Drawable drawable = new Drawable()
         {
@@ -354,7 +354,7 @@ namespace FlexTable.Crayon.Chart
                     {
                         if (IsCNN)
                         {
-                            RemoveColumnViewModel(this, Data[index].Key.ToString(), null);
+                            RemoveColumnViewModel(this, Data[index].Key.ToString());
                             drawable.RemoveAllStrokes();
                         }
                         else {
@@ -411,7 +411,7 @@ namespace FlexTable.Crayon.Chart
                                 .Distinct()
                                 .OrderBy(cate => cate.Order);
 
-                            FilterOut(this, $"{SecondColumnViewModel.Name} = {String.Join(", ", categories)}", intersectedRows);
+                            FilterOut(this, categories);
                         }
                         else if (legendStroke && !horizontalAxisStroke && FirstColumnViewModel.Type == ColumnType.Categorical)
                         {
@@ -420,11 +420,7 @@ namespace FlexTable.Crayon.Chart
                                 .Distinct()
                                 .OrderBy(cate => cate.Order);
 
-                            FilterOut(this, $"{FirstColumnViewModel.Name} = {String.Join(", ", categories)}", intersectedRows);
-                        }
-                        else
-                        {
-                            FilterOut(this, String.Format(FlexTable.Const.Loader.GetString("FilterOutMessage"), intersectedRows.Count()), intersectedRows);
+                            FilterOut(this, categories);
                         }
                     }
                 }
