@@ -541,25 +541,10 @@ namespace FlexTable.View
                 ResetSelectionIndicatorPositionStoryboard.Begin();
             }
         }
-
-        private void SelectionFilterButton_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            throw new Exception("wer");
-            /*Int32 count = SelectedRows.Count();
-            if (count > 0)
-            {
-                FilterOut(this,
-                    String.Format(
-                        Const.Loader.GetString("FilterOutMessage"),
-                        count
-                    ), SelectedRows.ToList());
-                FilterSelectionIndicatorStoryboard.Begin();
-            }*/
-        }
-
+        
         private void SelectionIndicator_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            //SelectionChanged(this, null, SelectionChangedType.Clear);//, ReflectReason2.SelectionChanged);
+            SelectionChanged(this, null, SelectionChangedType.Clear);
         }
     }
 }

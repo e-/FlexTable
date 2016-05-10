@@ -329,34 +329,15 @@
                     <Border Background="#eee" CornerRadius="3" Grid.Column="0" Grid.ColumnSpan="2"></Border>
                     <Border Grid.Column="0" Background="{StaticResource HighlightBrush1}" CornerRadius="3">
                         <Button Style="{StaticResource FlatIconButtonStyle}" x:Name="SelectionFilterButton"
-                                FontSize="22" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="FontAwesome"
-                                Tapped="SelectionFilterButton_Tapped">
-                            &#xf0b0;
+                                FontSize="22" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="FontAwesome">
+                            &#xf25a;
                         </Button>
                     </Border>
                     <TextBlock FontSize="16" Grid.Column="1" VerticalAlignment="Center" Margin="10 0 0 0" Width="180">
                         <Run x:Name="SelectedRowCountIndicator" FontWeight="Bold" Foreground="{StaticResource HighlightBrush1}"></Run><Run x:Name="SelectionMessage"/>
                     </TextBlock>
                 </Grid>
-                <!--<TextBlock FontSize="24" Grid.Column="1" VerticalAlignment="Center">
-                    <Run x:Name="SelectedRowCountIndicator" FontWeight="Bold" Foreground="{StaticResource HighlightBrush1}"></Run>
-                    <Run x:Name="SelectionMessage"/>
-                </TextBlock>-->
             </Border>
-            
-            <!--<Grid HorizontalAlignment="Right" VerticalAlignment="Top" x:Name="TopToolBar" Opacity="0" Visibility="Collapsed">
-                <StackPanel Orientation="Horizontal">
-                    <Button Style="{StaticResource CircleIconButtonStyle}" Tapped="Clipboard_Tapped" Margin="0 20 0 20">&#xf02e;</Button>
-                    <Button Style="{StaticResource PrimaryCircleIconButtonStyle}" Tapped="Select_Tapped" Margin="20">&#xf00c;</Button>
-                </StackPanel>
-            </Grid>
-
-            <Grid HorizontalAlignment="Right" VerticalAlignment="Top" x:Name="BottomToolBar" Opacity="0" Visibility="Collapsed">
-                <StackPanel Orientation="Horizontal">
-                    <Button Style="{StaticResource CircleIconButtonStyle}" Tapped="Clipboard_Tapped" Margin="0 20 0 20">&#xf02e;</Button>
-                    <Button Style="{StaticResource CircleIconButtonStyle}" Tapped="Unselect_Tapped" Margin="20">&#xf00d;</Button>
-                </StackPanel>
-            </Grid>-->
 
             <Border Height="{Binding MainPageViewModel.PageHeight}" Width="{Binding MainPageViewModel.ParagraphWidth}" Visibility="Visible" x:Name="EmptyTooltip">
                 <StackPanel VerticalAlignment="Center">
