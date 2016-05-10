@@ -447,11 +447,14 @@ namespace FlexTable.Crayon.Chart
                     if (FilterOut != null && intersectedRows.Count > 0)
                     {
                         ColumnViewModel columnViewModel = Data[0].ColumnViewModel;
-                        IEnumerable<Category> categories = intersectedRows.Select(row => row.Cells[columnViewModel.Index].Content as Category)
-                            .OrderBy(cate => cate.Order)
-                            .Distinct();
+                        if (columnViewModel.Type == ColumnType.Categorical)
+                        {
+                            IEnumerable<Category> categories = intersectedRows.Select(row => row.Cells[columnViewModel.Index].Content as Category)
+                                .OrderBy(cate => cate.Order)
+                                .Distinct();
 
-                        FilterOut(this, categories);
+                            FilterOut(this, categories);
+                        }
                     }
                 }
                 else // 아니면 무조건 셀렉션 
