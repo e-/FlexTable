@@ -1,4 +1,5 @@
-﻿using FlexTable.ViewModel;
+﻿using FlexTable.Model;
+using FlexTable.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -25,6 +26,41 @@ namespace FlexTable.View
         public FilterView()
         {
             this.InitializeComponent();
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            ColumnViewModel cvm = (sender as Button).DataContext as ColumnViewModel;
+
+            cvm.IsCategoryVisible = !cvm.IsCategoryVisible;
+        }
+        
+        private void CategoryCheckBox_Click(object sender, RoutedEventArgs e)
+        {
+            Category category = (sender as CheckBox).DataContext as Category;
+            ColumnViewModel cvm = category.ColumnViewModel;
+
+            if (cvm.Categories.All(c => c.IsKept)) cvm.IsKept = true;
+            else if (cvm.Categories.All(c => !c.IsKept)) cvm.IsKept = false;
+            else cvm.IsKept = null;
+        }
+
+        private void CategoryCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            CheckBox cb = sender as CheckBox;
+            Category c = cb.DataContext as Category;
+
+            if (c != null)
+                c.IsKept = true;
+        }
+
+        private void CategoryCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            CheckBox cb = sender as CheckBox;
+            Category c = cb.DataContext as Category;
+
+            if (c != null)
+                c.IsKept = false;
         }
     }
 }

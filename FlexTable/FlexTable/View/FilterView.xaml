@@ -31,7 +31,9 @@
                     <ControlTemplate TargetType="CheckBox">
                         <Grid Background="{TemplateBinding Background}"
             BorderBrush="{TemplateBinding BorderBrush}"
-            BorderThickness="{TemplateBinding BorderThickness}">
+            BorderThickness="{TemplateBinding BorderThickness}"
+                              
+                              >
                             <VisualStateManager.VisualStateGroups>
                                 <VisualStateGroup x:Name="CombinedStates">
                                     <VisualState x:Name="UncheckedNormal" />
@@ -295,7 +297,9 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
         <util:BooleanToVisibilityConverter x:Name="BooleanToVisibilityConverter" />
+        <util:NullableBooleanToBooleanConverter x:Key="NullableBooleanToBooleanConverter"/>
     </UserControl.Resources>
     
     <Grid>
@@ -319,21 +323,15 @@
             </StackPanel>
         </Border>
         <ListView    
+            Background="White"
             Grid.Row="1"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Top"
             ItemsSource="{x:Bind Path=ViewModel.FilterColumnViewModels, Mode=OneWay}"
             SelectionMode="None"
             x:Name="FilterColumnList"
+            Margin="10 0 0 0"
                       >
-            <!--<ListView.RenderTransform>
-                <TranslateTransform x:Name="FilterListRenderTransform" X="0" Y="-30" />
-            </ListView.RenderTransform>
-            <ListView.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <StackPanel Padding="0 0 25 50" />
-                </ItemsPanelTemplate>
-            </ListView.ItemsPanel>
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
                     <Setter Property="Template">
@@ -348,19 +346,15 @@
                     <Setter Property="MinHeight" Value="0" />
                 </Style>
             </ListView.ItemContainerStyle>
-            <ListView.ItemContainerTransitions>
-                <TransitionCollection>
-                    <AddDeleteThemeTransition />
-                    <ContentThemeTransition />
-                    <ReorderThemeTransition />
-                </TransitionCollection>
-            </ListView.ItemContainerTransitions>-->
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="viewModel:ColumnViewModel">
                     <StackPanel>
                         <StackPanel Orientation="Horizontal">
-                            <CheckBox Style="{StaticResource MyCheckBoxStyle}">
-                                <Button Content="{x:Bind Name}"></Button>
+                            <CheckBox Style="{StaticResource MyCheckBoxStyle}" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch"
+                                      IsChecked="{x:Bind Path=IsKept,Mode=OneWay}">
+                                <Button Content="{x:Bind Path=Name}" Click="Button_Click" Padding="0" Width="400"
+                                        HorizontalContentAlignment="Left" Background="Transparent"
+                                        ></Button>
                             </CheckBox>
                         </StackPanel>
                         <ListView    
@@ -370,11 +364,30 @@
                             SelectionMode="None"
                             ScrollViewer.VerticalScrollMode="Disabled"
                             Visibility="{x:Bind IsCategoryVisible, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}"
+                            Margin="20 0 0 0"
                         >
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ListViewItem">
+                                                <ContentPresenter Margin="0" />
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Setter Property="Padding" Value="0" />
+                                    <Setter Property="Margin" Value="0" />
+                                    <Setter Property="MinHeight" Value="0" />
+                                </Style>
+                            </ListView.ItemContainerStyle>
                             <ListView.ItemTemplate>
                                 <DataTemplate x:DataType="model:Category">
                                     <StackPanel Orientation="Horizontal">
-                                        <CheckBox Style="{StaticResource MyCheckBoxStyle}">
+                                        <CheckBox Style="{StaticResource MyCheckBoxStyle}" 
+                                                  Checked="CategoryCheckBox_Checked"
+                                                  Unchecked="CategoryCheckBox_Unchecked"
+                                                  Click="CategoryCheckBox_Click"
+                                                  IsChecked="{Binding IsKept,Converter={StaticResource NullableBooleanToBooleanConverter},Mode=OneWay}">
                                             <TextBlock Text="{x:Bind Value}"/>
                                         </CheckBox>
                                     </StackPanel>

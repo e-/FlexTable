@@ -170,7 +170,10 @@ namespace FlexTable.ViewModel
         }
 
         private Boolean isCategoryVisible = false;
-        public Boolean IsCategoryVisible { get { return isCategoryVisible; } set { isCategoryVisible = true; OnPropertyChanged(nameof(isCategoryVisible)); } }
+        public Boolean IsCategoryVisible { get { return isCategoryVisible; } set { isCategoryVisible = value; OnPropertyChanged(nameof(IsCategoryVisible)); } }
+
+        private Boolean? isKept = true;
+        public Boolean? IsKept { get { return isKept; } set { isKept = value; OnPropertyChanged(nameof(IsKept)); } }
 
         public ColumnViewModel(MainPageViewModel mainPageViewModel)
         {

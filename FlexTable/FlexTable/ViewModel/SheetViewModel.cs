@@ -157,7 +157,7 @@ namespace FlexTable.ViewModel
                     }
 
                     // 카테고리 추가 후
-                    List<Category> categories = uniqueValues.Select(u => new Category() { Value = u }).ToList();
+                    List<Category> categories = uniqueValues.Select(u => new Category() { Value = u, ColumnViewModel = columnViewModel }).ToList();
 
                     Int32 categoryIndex = 0;
                     foreach (Category category in categories)
