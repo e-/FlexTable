@@ -26,16 +26,17 @@ namespace FlexTable.View
 {
     public sealed partial class ColumnHighlighter : UserControl
     {
-        public ColumnViewModel ColumnViewModel { get; set; }
+        public ColumnViewModel ColumnViewModel { get; private set; }
 
         public ColumnHighlighter()
         {
             this.InitializeComponent();
         }
         
-        public void Update()
+        public void Update(ColumnViewModel columnViewModel)
         {
-            ColumnViewModel columnViewModel = ColumnViewModel;
+            ColumnViewModel = columnViewModel;
+
             TableViewModel tvm = (this.DataContext as TableViewModel);
 
             Canvas.SetTop(LowerColumnHeaderWrapperElement, tvm.Height - (Double)App.Current.Resources["ColumnHeaderHeight"]);
@@ -80,25 +81,31 @@ namespace FlexTable.View
                 {
                     UpperColumn.RenderTransformOrigin = new Point(0, 0);
                     LowerColumnHeaderWrapperElement.RenderTransformOrigin = new Point(0, 1);
+
+                    Canvas.SetLeft(UpperPopupElement, 60);
+                    Canvas.SetLeft(LowerPopupElement, 60);
                 }
                 else if (left + columnViewModel.Width * 3 / 2 >= tvm.SheetViewWidth)
                 {
                     UpperColumn.RenderTransformOrigin = new Point(1, 0);
                     LowerColumnHeaderWrapperElement.RenderTransformOrigin = new Point(1, 1);
+
+                    Canvas.SetLeft(UpperPopupElement, columnViewModel.Width - 60);
+                    Canvas.SetLeft(LowerPopupElement, columnViewModel.Width - 60);
                 }
                 else
                 {
                     UpperColumn.RenderTransformOrigin = new Point(0.5, 0);
                     LowerColumnHeaderWrapperElement.RenderTransformOrigin = new Point(0.5, 1);
+
+                    Canvas.SetLeft(UpperPopupElement, columnViewModel.Width / 2);
+                    Canvas.SetLeft(LowerPopupElement, columnViewModel.Width / 2);
                 }
 
                 Canvas.SetLeft(MagnifiedColumn, left);
 
                 UpperColumnHeaderWrapperElement.Width = LowerColumnHeaderWrapperElement.Width = MagnifiedColumn.Width = columnViewModel.Width;
                 UpperColumnHeaderWrapperElement.DataContext = LowerColumnHeaderWrapperElement.DataContext = columnViewModel;
-
-                Canvas.SetLeft(UpperPopupElement, columnViewModel.Width / 2);
-                Canvas.SetLeft(LowerPopupElement, columnViewModel.Width / 2);
 
                 Canvas.SetTop(UpperPopupElement, (Double)App.Current.Resources["ColumnHeaderHeight"] * 0.2);
                 Canvas.SetTop(LowerPopupElement, columnViewModel.MainPageViewModel.Bounds.Height - (Double)App.Current.Resources["ColumnHeaderHeight"] * 1.7);
@@ -133,6 +140,14 @@ namespace FlexTable.View
                 if (Brighten.GetCurrentState() != ClockState.Active)
                     Brighten.Begin();
                 Darken.Stop();
+
+                UpperDownMenuElement.Hide();
+                UpperLeftMenuElement.Hide();
+                UpperRightMenuElement.Hide();
+
+                LowerUpMenuElement.Hide();
+                LowerLeftMenuElement.Hide();
+                LowerRightMenuElement.Hide();
             }
         }
         
@@ -147,6 +162,7 @@ namespace FlexTable.View
         private void UpperColumnHeaderWrapperElement_PointerEntered(object sender, PointerRoutedEventArgs e)
         {
             if (e.Pointer.PointerDeviceType != PointerDeviceType.Touch) return;
+            UpperColumnHeaderWrapperElement.CapturePointer(e.Pointer);
             UpperDownMenuElement.Show();
             UpperLeftMenuElement.Show();
             UpperRightMenuElement.Show();
@@ -154,17 +170,18 @@ namespace FlexTable.View
         
         Command upperSelected = Command.None;
 
-        private void UpperColumnHeaderWrapperElement_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        private void UpperColumnHeaderWrapperElement_PointerMoved(object sender, PointerRoutedEventArgs e)
         {
             if (ColumnViewModel == null) return;
 
-            Double x = e.Position.X,
-                   y = e.Position.Y,
+            Double x = e.GetCurrentPoint(UpperColumnHeaderWrapperElement).Position.X,
+                   y = e.GetCurrentPoint(UpperColumnHeaderWrapperElement).Position.Y,
                    height = (Double)App.Current.Resources["ColumnHeaderHeight"];
 
             Command newSelected = Command.None;
 
-            if(x < 10 && 0 < y && y < height) {
+            if (x < 10 && 0 < y && y < height)
+            {
                 newSelected = Command.Left;
             }
             else if (x > ColumnViewModel.Width - 10 && 0 < y && y < height)
@@ -192,22 +209,7 @@ namespace FlexTable.View
                 upperSelected = newSelected;
             }
         }
-
-        private void UpperColumnHeaderWrapperElement_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
-        {
-            TableViewModel tvm = (this.DataContext as TableViewModel);
-
-            if (ColumnViewModel != null)
-                ProcessUpperCommand();
-
-            if (!tvm.IsIndexing)
-            {
-                tvm.MainPageViewModel.View.TableView.ColumnHighlighter.ColumnViewModel = null;
-                tvm.MainPageViewModel.View.TableView.ColumnHighlighter.Update();
-                tvm.MainPageViewModel.View.ExplorationView.TopPageViewModel.State = PageViewModel.PageViewState.Empty;
-            }
-        }
-
+    
         private void UpperColumnHeaderWrapperElement_PointerReleased(object sender, PointerRoutedEventArgs e)
         {
             TableViewModel tvm = (this.DataContext as TableViewModel);
@@ -292,6 +294,7 @@ namespace FlexTable.View
         private void LowerColumnHeaderWrapperElement_PointerEntered(object sender, PointerRoutedEventArgs e)
         {
             if (e.Pointer.PointerDeviceType != PointerDeviceType.Touch) return;
+            LowerColumnHeaderWrapperElement.CapturePointer(e.Pointer);
             LowerUpMenuElement.Show();
             LowerRightMenuElement.Show();
             LowerLeftMenuElement.Show();
@@ -299,12 +302,12 @@ namespace FlexTable.View
 
         Command lowerSelected = Command.None;
 
-        private void LowerColumnHeaderWrapperElement_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        private void LowerColumnHeaderWrapperElement_PointerMoved(object sender, PointerRoutedEventArgs e)
         {
             if (ColumnViewModel == null) return;
-
-            Double x = e.Position.X,
-                   y = e.Position.Y,
+            
+            Double x = e.GetCurrentPoint(LowerColumnHeaderWrapperElement).Position.X,
+                   y = e.GetCurrentPoint(LowerColumnHeaderWrapperElement).Position.Y,
                    height = (Double)App.Current.Resources["ColumnHeaderHeight"];
 
             Command newSelected = Command.None;
@@ -337,22 +340,7 @@ namespace FlexTable.View
 
                 lowerSelected = newSelected;
             }
-        }
-
-        private void LowerColumnHeaderWrapperElement_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
-        {
-            TableViewModel tvm = (this.DataContext as TableViewModel);
-
-            if (ColumnViewModel != null)
-                ProcessLowerCommand();
-
-            if (!tvm.IsIndexing)
-            {
-                tvm.MainPageViewModel.View.TableView.ColumnHighlighter.ColumnViewModel = null;
-                tvm.MainPageViewModel.View.TableView.ColumnHighlighter.Update();
-                tvm.MainPageViewModel.View.ExplorationView.TopPageViewModel.State = PageViewModel.PageViewState.Empty;
-            }
-        }
+        }        
 
         private void LowerColumnHeaderWrapperElement_PointerReleased(object sender, PointerRoutedEventArgs e)
         {

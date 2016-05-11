@@ -42,13 +42,12 @@ namespace FlexTable.View
 
         private void Wrapper_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
-            Wrapper.CapturePointer(e.Pointer);
-            ViewModel.MainPageViewModel.View.TableView.ColumnHighlighter.ColumnViewModel = ViewModel;
-            ViewModel.MainPageViewModel.View.TableView.ColumnHighlighter.Update();
+            //Wrapper.CapturePointer(e.Pointer);
+            ViewModel.MainPageViewModel.View.TableView.ColumnHighlighter.Update(ViewModel);
             ViewModel.MainPageViewModel.ExplorationViewModel.PreviewColumn(ViewModel);
         }
 
-        private void Wrapper_PointerReleased(object sender, PointerRoutedEventArgs e)
+        /*private void Wrapper_PointerReleased(object sender, PointerRoutedEventArgs e)
         {
             ViewModel.MainPageViewModel.TableViewModel.CancelIndexing(true);
         }
@@ -56,6 +55,6 @@ namespace FlexTable.View
         private void Wrapper_PointerCaptureLost(object sender, PointerRoutedEventArgs e)
         {
             ViewModel.MainPageViewModel.TableViewModel.CancelIndexing(true);
-        }
+        }*/
     }
 }

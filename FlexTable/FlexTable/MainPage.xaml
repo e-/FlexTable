@@ -23,8 +23,8 @@
         <TextBlock Grid.Column="0" Grid.Row="0" Name="DummyCell" Style="{StaticResource CellStyle}" Foreground="Blue" IsHitTestVisible="False"></TextBlock>
 
 
-        <view:TableView Grid.Column="0" x:Name="TableViewElement" DataContext="{x:Bind ViewModel.TableViewModel}"></view:TableView>
         <view:FilterView Grid.Column="1" x:Name="FilterViewElement" DataContext="{x:Bind ViewModel.FilterViewModel}"></view:FilterView>
+        <view:TableView Grid.Column="0" x:Name="TableViewElement" DataContext="{x:Bind ViewModel.TableViewModel}"></view:TableView>
         <view:ExplorationView Grid.Column="2" x:Name="ExplorationViewElement" DataContext="{x:Bind ViewModel.ExplorationViewModel}"></view:ExplorationView>
     </Grid>
 </Page>

@@ -75,10 +75,8 @@
                 <Border Background="{StaticResource GridLineBrush}" Height="{StaticResource ColumnHeaderHeight}" 
                         x:Name="UpperColumnHeaderWrapperElement" 
                         PointerEntered="UpperColumnHeaderWrapperElement_PointerEntered"
-                        PointerReleased="UpperColumnHeaderWrapperElement_PointerReleased"
-                        ManipulationMode="All"
-                        ManipulationCompleted="UpperColumnHeaderWrapperElement_ManipulationCompleted"
-                        ManipulationDelta="UpperColumnHeaderWrapperElement_ManipulationDelta" d:IsHidden="True"
+                        PointerMoved="UpperColumnHeaderWrapperElement_PointerMoved"
+                        PointerReleased="UpperColumnHeaderWrapperElement_PointerReleased" d:IsHidden="True"
                         >
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
                         Background="Transparent" d:IsHidden="True"
@@ -125,10 +123,8 @@
             <Border Background="{StaticResource GridLineBrush}" Height="{StaticResource ColumnHeaderHeight}" 
                     x:Name="LowerColumnHeaderWrapperElement" 
                     PointerEntered="LowerColumnHeaderWrapperElement_PointerEntered"
-                    PointerReleased="LowerColumnHeaderWrapperElement_PointerReleased"
-                    ManipulationMode="All"
-                    ManipulationCompleted="LowerColumnHeaderWrapperElement_ManipulationCompleted"
-                    ManipulationDelta="LowerColumnHeaderWrapperElement_ManipulationDelta" d:IsHidden="True"
+                    PointerMoved="LowerColumnHeaderWrapperElement_PointerMoved"
+                    PointerReleased="LowerColumnHeaderWrapperElement_PointerReleased" d:IsHidden="True"
                     >
                 <Border.RenderTransformOrigin>0.5 1</Border.RenderTransformOrigin>
                 <Border.RenderTransform>

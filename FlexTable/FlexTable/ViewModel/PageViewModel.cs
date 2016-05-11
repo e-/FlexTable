@@ -883,7 +883,7 @@ namespace FlexTable.ViewModel
 
             datum.Children = new List<BarChartDatum>()
                             {
-                                new BarChartDatum()
+                               new BarChartDatum()
                                 {
                                     ColumnViewModel = null,
                                     Key = category1,
@@ -898,8 +898,8 @@ namespace FlexTable.ViewModel
                                     ColumnViewModel = null,
                                     Key = category2,
                                     Parent = datum,
-                                    Value = numerical1.AggregativeFunction.Aggregate(mainPageViewModel.SheetViewModel.FilteredRows.Select(r => (Double)r.Cells[numerical2.Index].Content)),
-                                    EnvelopeValue = numerical1.AggregativeFunction.Aggregate(mainPageViewModel.SheetViewModel.FilteredRows.Select(r => (Double)r.Cells[numerical2.Index].Content)),
+                                    Value = numerical2.AggregativeFunction.Aggregate(mainPageViewModel.SheetViewModel.FilteredRows.Select(r => (Double)r.Cells[numerical2.Index].Content)),
+                                    EnvelopeValue = numerical2.AggregativeFunction.Aggregate(mainPageViewModel.SheetViewModel.FilteredRows.Select(r => (Double)r.Cells[numerical2.Index].Content)),
                                     EnvelopeRows = mainPageViewModel.SheetViewModel.FilteredRows,
                                     Rows = null
                                 }

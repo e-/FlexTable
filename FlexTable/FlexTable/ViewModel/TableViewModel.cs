@@ -338,8 +338,7 @@ namespace FlexTable.ViewModel
             {
                 view.TableView.ScrollToColumnViewModel(columnViewModel);
 
-                view.TableView.ColumnHighlighter.ColumnViewModel = columnViewModel;
-                view.TableView.ColumnHighlighter.Update();
+                view.TableView.ColumnHighlighter.Update(columnViewModel);
 
                 Logger.Instance.Log($"indexed,{columnViewModel.Column.Name}");
                 IsIndexing = true;
@@ -360,8 +359,7 @@ namespace FlexTable.ViewModel
         {
             IsIndexing = false;
 
-            view.TableView.ColumnHighlighter.ColumnViewModel = null;
-            view.TableView.ColumnHighlighter.Update();
+            view.TableView.ColumnHighlighter.Update(null);
 
             mainPageViewModel.ExplorationViewModel.CancelPreviewColumn();
 

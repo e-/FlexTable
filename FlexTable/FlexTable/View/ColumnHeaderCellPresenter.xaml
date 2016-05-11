@@ -26,10 +26,11 @@
           Width="{x:Bind ViewModel.Width, Mode=OneWay}"
           x:Name="Wrapper"
           PointerPressed="Wrapper_PointerPressed"
-          PointerReleased="Wrapper_PointerReleased"
-          PointerCaptureLost="Wrapper_PointerCaptureLost"
           Background="Transparent"
           >
+        <!--
+          PointerReleased="Wrapper_PointerReleased"
+          PointerCaptureLost="Wrapper_PointerCaptureLost"-->
 
         <Grid.RenderTransform>
             <CompositeTransform x:Name="CompositeTransform" />

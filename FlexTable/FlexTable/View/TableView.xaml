@@ -221,11 +221,11 @@
             <Border Grid.Row="2" Grid.Column="0" Background="LightGray"></Border>
             <view:ColumnHeaderPresenter Grid.Row="2" Grid.Column="1" x:Name="BottomColumnHeaderElement" VerticalContentAlignment="Top"></view:ColumnHeaderPresenter>
 
-            <view:ColumnHighlighter Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" x:Name="ColumnHighlighterElement"></view:ColumnHighlighter>
-
             <view:ColumnIndexer Grid.Row="1" Grid.Column="1" x:Name="ColumnIndexerElement" 
                                 VerticalAlignment="Bottom"
                                 HorizontalAlignment="Left"></view:ColumnIndexer>
+
+            <view:ColumnHighlighter Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" x:Name="ColumnHighlighterElement"></view:ColumnHighlighter>
         </Grid>
 
         <Grid x:Name="StrokeGrid" Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" IsHitTestVisible="False"></Grid>
