@@ -270,7 +270,9 @@ namespace FlexTable.Crayon.Chart
                 {
                     BarChartDatum datum = d as BarChartDatum;
                     BarState barState = datum.BarState;
-                    return (barState == BarState.PartiallySelected || barState == BarState.FullySelected || (barState == BarState.Default && datum.Parent == DragToFilterFocusedBar)) ? DragToFilterOpacity : 0; 
+                    return (barState == BarState.PartiallySelected || barState == BarState.FullySelected || 
+                    (barState == BarState.Default && datum.Parent == DragToFilterFocusedBar) || Data.Count == 1) ?
+                    DragToFilterOpacity : 0; 
                 };
             } }
 

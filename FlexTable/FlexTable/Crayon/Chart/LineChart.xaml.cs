@@ -213,7 +213,7 @@ namespace FlexTable.Crayon.Chart
                     if (dataPoint.Item2 == null || dataPoint.Rows?.Count() == 0) return 0;
                     LineChartDatum datum = dataPoint.Parent;
                     LineState lineState = datum.LineState;
-                    return lineState == LineState.Selected ? 1 : 0;
+                    return lineState == LineState.Selected || Data.Count == 1 ? 1 : 0;
                 };
             }
         }

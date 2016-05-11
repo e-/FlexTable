@@ -267,7 +267,7 @@ namespace FlexTable.Crayon.Chart
                 return (textBlock, d, index) =>
                 {
                     BarChartDatum datum = d as BarChartDatum;
-                    return (datum.Rows?.Count() > 0 || (d == DragToFilterFocusedBar)) ? DragToFilterOpacity : 0; // || (d == DragToFilterFocusedBar) ? DragToFilterOpacity : 0);
+                    return (datum.Rows?.Count() > 0 || (d == DragToFilterFocusedBar) || Data.Count == 1) ? DragToFilterOpacity : 0; // || (d == DragToFilterFocusedBar) ? DragToFilterOpacity : 0);
                 };
                 } }
         

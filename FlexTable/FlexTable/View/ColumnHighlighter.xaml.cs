@@ -215,7 +215,13 @@ namespace FlexTable.View
             TableViewModel tvm = (this.DataContext as TableViewModel);
 
             if (ColumnViewModel != null)
-                ProcessUpperCommand();
+            {
+                Boolean processed = ProcessUpperCommand();
+                if(!processed)
+                {
+                    SelectAndCancelThis();
+                }
+            }
 
             if (!tvm.IsIndexing)
             {
@@ -223,9 +229,11 @@ namespace FlexTable.View
             }
         }
 
-        public void ProcessUpperCommand()
+        public Boolean ProcessUpperCommand()
         {
             TableViewModel tvm = (this.DataContext as TableViewModel);
+            Boolean processed = false;
+
             switch (upperSelected)
             {
                 case(Command.Left):
@@ -233,18 +241,21 @@ namespace FlexTable.View
                     tvm.MainPageViewModel.ReflectAll(ReflectReason.ColumnShown);
                     UpperLeftMenuElement.Unhighlight();
                     tvm.CancelIndexing(true);
+                    processed = true;
                     break;
                 case(Command.Right):
                     tvm.MainPageViewModel.SheetViewModel.SetAside(ColumnViewModel);
                     tvm.MainPageViewModel.ReflectAll(ReflectReason.ColumnHidden);
                     UpperRightMenuElement.Unhighlight();
                     tvm.CancelIndexing(true);
+                    processed = true;
                     break;
                 case(Command.Down):
                     tvm.MainPageViewModel.SheetViewModel.Sort(ColumnViewModel, SortOption.Ascending);
                     tvm.MainPageViewModel.ReflectAll(ReflectReason.ColumnSorted);
                     UpperDownMenuElement.Unhighlight();
                     tvm.CancelIndexing(true);
+                    processed = true;
                     break;
             }
 
@@ -252,6 +263,7 @@ namespace FlexTable.View
             UpperDownMenuElement.Hide();
             UpperLeftMenuElement.Hide();
             UpperRightMenuElement.Hide();
+            return processed;
         }
         
         void HighlightUpperMenu(Command command)
@@ -347,7 +359,14 @@ namespace FlexTable.View
             TableViewModel tvm = (this.DataContext as TableViewModel);
 
             if (ColumnViewModel != null)
-                ProcessLowerCommand();
+            {
+                Boolean processed = ProcessLowerCommand();
+
+                if (!processed)
+                {
+                    SelectAndCancelThis();
+                }
+            }
 
             if (!tvm.IsIndexing)
             {
@@ -355,9 +374,11 @@ namespace FlexTable.View
             }
         }
 
-        public void ProcessLowerCommand()
+        public Boolean ProcessLowerCommand()
         {
             TableViewModel tvm = (this.DataContext as TableViewModel);
+            Boolean processed = false;
+
             switch (lowerSelected)
             {
                 case (Command.Left):
@@ -365,18 +386,21 @@ namespace FlexTable.View
                     tvm.MainPageViewModel.ReflectAll(ReflectReason.ColumnShown);// 2.SelectionChanged);
                     LowerLeftMenuElement.Unhighlight();
                     tvm.CancelIndexing(true);
+                    processed = true;
                     break;
                 case (Command.Right):
                     tvm.MainPageViewModel.SheetViewModel.SetAside(ColumnViewModel);
                     tvm.MainPageViewModel.ReflectAll(ReflectReason.ColumnHidden);// 2.SelectionChanged);
                     LowerRightMenuElement.Unhighlight();
                     tvm.CancelIndexing(true);
+                    processed = true;
                     break;
                 case (Command.Up):
                     tvm.MainPageViewModel.SheetViewModel.Sort(ColumnViewModel, SortOption.Descending);
                     tvm.MainPageViewModel.ReflectAll(ReflectReason.ColumnSorted); // 2.SelectionChanged);
                     LowerUpMenuElement.Unhighlight();
                     tvm.CancelIndexing(true);
+                    processed = true;
                     break;
             }
 
@@ -384,6 +408,7 @@ namespace FlexTable.View
             LowerUpMenuElement.Hide();
             LowerLeftMenuElement.Hide();
             LowerRightMenuElement.Hide();
+            return processed;
         }
 
         void HighlightLowerMenu(Command command)
@@ -421,6 +446,30 @@ namespace FlexTable.View
                     LowerRightMenuElement.Unhighlight();
                     break;
             }
+        }
+
+        void SelectAndCancelThis()
+        {
+            TableViewModel tvm = (this.DataContext as TableViewModel);
+            var viewModel = tvm.MainPageViewModel.ExplorationViewModel.TopPageView.ViewModel;
+
+            if (viewModel.IsEmpty)
+            {
+                tvm.CancelIndexing(true);
+                return;
+            }
+
+            if (viewModel.IsNoPossibleVisualizationWarningVisible)
+            {
+                tvm.CancelIndexing(true);
+                return;
+            }
+
+            viewModel.State = PageViewModel.PageViewState.Selected;
+            viewModel.StateChanged(tvm.MainPageViewModel.ExplorationViewModel.TopPageView);
+
+            if(!tvm.IsIndexing)
+                tvm.CancelIndexing(true);
         }
     }
 }

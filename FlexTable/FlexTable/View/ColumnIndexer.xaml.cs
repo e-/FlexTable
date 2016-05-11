@@ -118,14 +118,7 @@ namespace FlexTable.View
                 else // 5개 이하일때 마지막은 모두 포함하도록
                 {
                     path = DrawArc(height, anglePerMenu * index, Math.PI / 2);
-                }
-
-                /*Int32 indexCopied = index;
-                path.PointerEntered += (o, e) =>
-                {
-                    TableViewModel.IndexColumn(e.GetCurrentPoint(this).PointerId, indexCopied);
-                };*/
-
+                }                
                 Canvas.SetTop(path, height);
 
                 IndexHelperElement.Children.Add(path);
