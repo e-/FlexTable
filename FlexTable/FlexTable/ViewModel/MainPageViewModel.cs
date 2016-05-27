@@ -47,6 +47,9 @@ namespace FlexTable.ViewModel
         private FilterViewModel filterViewModel;
         public FilterViewModel FilterViewModel { get { return filterViewModel; } set { filterViewModel = value; OnPropertyChanged(nameof(FilterViewModel)); } }
 
+        private SelectionViewModel selectionViewModel;
+        public SelectionViewModel SelectionViewModel { get { return selectionViewModel; }set { selectionViewModel = value;  OnPropertyChanged(nameof(SelectionViewModel)); } }
+
         private Double pageHeight;
         public Double PageHeight { get { return pageHeight; } set { pageHeight = value; OnPropertyChanged("PageHeight"); } }
 
@@ -100,6 +103,7 @@ namespace FlexTable.ViewModel
             TableViewModel = new TableViewModel(this, view);
             ExplorationViewModel = new ExplorationViewModel(this, view);
             FilterViewModel = new FilterViewModel(this, view);
+            SelectionViewModel = new SelectionViewModel(this, view);
             Const.Initialize();
         }
 
@@ -251,6 +255,8 @@ namespace FlexTable.ViewModel
             explorationViewModel.Initialize();
 
             filterViewModel.Initialize();
+
+            selectionViewModel.Initialize();
 
             // 메타데이터 초기화
             ExplorationViewModel.MetadataViewModel.Initialize();

@@ -93,6 +93,8 @@ namespace FlexTable.ViewModel
             // 이걸로 pageView를 채움
             pageViewModel.Reflect(ReflectReason.Preview); // ReflectType2.TrackPreviousParagraph | ReflectType2.OnCreate, ReflectReason2.PreviewRequested);
             TopPageView.ReflectState();
+
+            ExpandFilters();   
         }
 
         public void CancelPreviewColumn()
@@ -103,6 +105,18 @@ namespace FlexTable.ViewModel
                 TopPageView.ViewModel.State = PageViewModel.PageViewState.Empty;
                 TopPageView.ViewModel.Reflect(ReflectReason.CancelPreview); // ReflectType2.Default, ReflectReason2.PreviewRequested);
                 TopPageView.ReflectState();
+
+                ExpandFilters();
+            }
+        }
+
+        void ExpandFilters()
+        {
+            PageViewModel pageViewModel = TopPageView.ViewModel;
+
+            foreach (ColumnViewModel cvm in mainPageViewModel.FilterViewModel.FilterColumnViewModels)
+            {
+                cvm.IsExpanded = pageViewModel.ViewStatus.SelectedColumnViewModels.Contains(cvm);
             }
         }
 

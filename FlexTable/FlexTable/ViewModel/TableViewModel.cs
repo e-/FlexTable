@@ -196,6 +196,8 @@ namespace FlexTable.ViewModel
                 };
 
                 dispatcherTimer.Interval = TimeSpan.FromMilliseconds(animationScenario.TotalAnimationDuration);
+
+                dispatcherTimer.Start();
             }
             else
             {
@@ -222,15 +224,14 @@ namespace FlexTable.ViewModel
                     view.TableView.ColumnIndexer.Update();
                 };
 
-                dispatcherTimer.Tick += (sender, e) =>
+                tableUpdateCallback();
+                /*dispatcherTimer.Tick += (sender, e) =>
                 {
                     tableUpdateCallback();
                 };
 
-                dispatcherTimer.Interval = TimeSpan.FromMilliseconds(100);
+                dispatcherTimer.Interval = TimeSpan.FromMilliseconds(100);*/
             }
-
-            dispatcherTimer.Start();
         }
 
         public void SkipAllAnimationToFill()

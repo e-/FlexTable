@@ -29,11 +29,11 @@ namespace FlexTable.View
             this.InitializeComponent();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void ToggleExpand(object sender, RoutedEventArgs e)
         {
             ColumnViewModel cvm = (sender as Button).DataContext as ColumnViewModel;
 
-            cvm.IsCategoryVisible = !cvm.IsCategoryVisible;
+            cvm.IsExpanded = !cvm.IsExpanded;
         }
         
         private void CategoryCheckBox_Click(object sender, RoutedEventArgs e)
@@ -92,6 +92,7 @@ namespace FlexTable.View
 
             if (cvm != null)
             {
+                cvm.IsKept = true;
                 foreach(Category c in cvm.Categories)
                 {
                     c.IsKept = true;

@@ -181,6 +181,7 @@
     <Compile Include="Model\ColumnType.cs" />
     <Compile Include="Util\Logger.cs" />
     <Compile Include="Util\NullableBooleanToBooleanConverter.cs" />
+    <Compile Include="Util\Recorder.cs" />
     <Compile Include="ViewModel\CorrelationStatisticsViewModel.cs" />
     <Compile Include="ViewModel\DescriptiveStatisticsViewModel.cs" />
     <Compile Include="Model\GroupedRows.cs" />
@@ -213,6 +214,7 @@
     <Compile Include="ViewModel\PageViewModelEditableTitle.cs" />
     <Compile Include="ViewModel\PivotTableViewModel.cs" />
     <Compile Include="ViewModel\RowViewModel.cs" />
+    <Compile Include="ViewModel\SelectionViewModel.cs" />
     <Compile Include="ViewModel\SheetViewModel.cs" />
     <Compile Include="ViewModel\TableViewModel.cs" />
     <Compile Include="ViewModel\TableViewModelAnimation.cs" />
@@ -276,6 +278,9 @@
     </Compile>
     <Compile Include="View\RowPresenter.xaml.cs">
       <DependentUpon>RowPresenter.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\SelectionView.xaml.cs">
+      <DependentUpon>SelectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\TableView.xaml.cs">
       <DependentUpon>TableView.xaml</DependentUpon>
@@ -411,6 +416,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="View\RowPresenter.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\SelectionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

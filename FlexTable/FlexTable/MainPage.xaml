@@ -15,16 +15,25 @@
 
     <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}" >
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="4*"></ColumnDefinition>
-            <ColumnDefinition Width="1*"></ColumnDefinition>
+            <ColumnDefinition Width="4*" x:Name="TableViewColumnDefinition"></ColumnDefinition>
+            <ColumnDefinition Width="1*" x:Name="FilterViewColumnDefinition"></ColumnDefinition>
             <ColumnDefinition Width="5*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
 
         <TextBlock Grid.Column="0" Grid.Row="0" Name="DummyCell" Style="{StaticResource CellStyle}" Foreground="Blue" IsHitTestVisible="False"></TextBlock>
 
-
         <view:FilterView Grid.Column="1" x:Name="FilterViewElement" DataContext="{x:Bind ViewModel.FilterViewModel}"></view:FilterView>
         <view:TableView Grid.Column="0" x:Name="TableViewElement" DataContext="{x:Bind ViewModel.TableViewModel}"></view:TableView>
         <view:ExplorationView Grid.Column="2" x:Name="ExplorationViewElement" DataContext="{x:Bind ViewModel.ExplorationViewModel}"></view:ExplorationView>
+        <ToggleButton HorizontalAlignment="Center" VerticalAlignment="Top" x:Name="ToggleFilterButtonElement"
+                      Grid.ColumnSpan="3" IsChecked="True"
+               Style="{StaticResource FilterCircleIconButtonStyle}"
+               Margin="15"
+               Checked="ToggleFilterButtonElement_Checked"
+               Unchecked="ToggleFilterButtonElement_Unchecked">
+             &#xf0b0;
+        </ToggleButton>
+        <view:SelectionView Grid.ColumnSpan="3" HorizontalAlignment="Center" 
+                            VerticalAlignment="Bottom" Margin="0 0 0 80" DataContext="{x:Bind ViewModel.SelectionViewModel}"></view:SelectionView>
     </Grid>
 </Page>

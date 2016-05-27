@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="CheckBoxSelectAll.Text" xml:space="preserve">
+    <value>Select All</value>
+  </data>
   <data name="PageViewSelectColumnToPreview.Text" xml:space="preserve">
     <value>Please select a column to preview.</value>
   </data>

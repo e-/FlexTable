@@ -116,7 +116,7 @@ namespace FlexTable.View
                     RowViewModel = rowViewModel
                 };
 
-                rowPresenter.Update(null);
+                rowPresenter.Update(null, true);
 
                 AllRowCanvas.Children.Add(rowPresenter);
                 allRowPresenters.Add(rowPresenter);
@@ -129,7 +129,7 @@ namespace FlexTable.View
                     RowViewModel = rowViewModel
                 };
 
-                rowPresenter.Update(null);
+                rowPresenter.Update(null, true);
 
                 GroupedRowCanvas.Children.Add(rowPresenter);
                 groupedRowPresenters.Add(rowPresenter);
@@ -142,7 +142,7 @@ namespace FlexTable.View
                     RowViewModel = rowViewModel
                 };
 
-                rowPresenter.Update(null);
+                rowPresenter.Update(null, true);
 
                 SelectedRowCanvas.Children.Add(rowPresenter);
                 selectedRowPresenters.Add(rowPresenter);
@@ -168,10 +168,13 @@ namespace FlexTable.View
                 ActivatedScrollViewer = AllRowScrollViewer;
 
                 ColumnViewModel coloredColumnViewModel = viewStatus?.GetColoredColumnViewModel();
-                var sr = ViewModel.MainPageViewModel.SheetViewModel.FilteredRows.ToList();
+                var sr = ViewModel.MainPageViewModel.SheetViewModel.FilteredRows;
 
-                IEnumerable<RowPresenter> selected = allRowPresenters.Where(rp => sr.IndexOf(rp.RowViewModel.Row) >= 0).OrderBy(rp => rp.RowViewModel.Index),
-                    unselected = allRowPresenters.Where(rp => sr.IndexOf(rp.RowViewModel.Row) < 0).OrderBy(rp => rp.RowViewModel.Index);
+                Dictionary<Row, Boolean> dict = new Dictionary<Row, bool>();
+                foreach (Row row in sr) dict.Add(row, true);
+
+                IEnumerable<RowPresenter> selected = allRowPresenters.Where(rp => dict.ContainsKey(rp.RowViewModel.Row)).OrderBy(rp => rp.RowViewModel.Index).ToList(),
+                    unselected = allRowPresenters.Where(rp => !dict.ContainsKey(rp.RowViewModel.Row)).OrderBy(rp => rp.RowViewModel.Index).ToList();                
 
                 Int32 index = 0;
                 Double height = Const.RowHeight;
@@ -181,7 +184,7 @@ namespace FlexTable.View
                 {
                     Canvas.SetTop(rowPresenter, index * height);
                     rowPresenter.Opacity = 1;
-                    rowPresenter.Update(coloredColumnViewModel); 
+                    rowPresenter.Update(coloredColumnViewModel, false);
                     index++;
                 }
 
@@ -190,10 +193,10 @@ namespace FlexTable.View
                 {
                     Canvas.SetTop(rowPresenter, index * height);
                     rowPresenter.Opacity = 0.2;
-                    rowPresenter.Update(coloredColumnViewModel);
+                    rowPresenter.Update(coloredColumnViewModel, false);
                     index++;
                 }
-
+                
                 RowHeaderPresenter.SetRowNumber(colors, selected.Count(), index);
                 activatedRowPresenters = allRowPresenters;
             }
@@ -255,7 +258,7 @@ namespace FlexTable.View
                     Canvas.SetTop(groupedRowPresenters[i], index * height);
                     groupedRowPresenters[i].Visibility = Visibility.Visible;
                     groupedRowPresenters[i].Opacity = 1;
-                    groupedRowPresenters[i].Update(coloredColumnViewModel, firstColoredColumnViewModel, secondColoredColumnViewModel, thirdColoredColumnViewModel);
+                    groupedRowPresenters[i].Update(coloredColumnViewModel, firstColoredColumnViewModel, secondColoredColumnViewModel, thirdColoredColumnViewModel, true);
                     index++;
                 }
 
@@ -300,7 +303,7 @@ namespace FlexTable.View
                 foreach (RowPresenter rowPresenter in selectedRowPresenters.OrderBy(rp => rp.RowViewModel.Index))
                 {
                     Canvas.SetTop(rowPresenter, index * height);
-                    rowPresenter.Update(coloredColumnViewModel, firstColoredColumnViewModel, secondColoredColumnViewModel, thirdColoredColumnViewModel);
+                    rowPresenter.Update(coloredColumnViewModel, firstColoredColumnViewModel, secondColoredColumnViewModel, thirdColoredColumnViewModel, false);
                     if(filteredRows.Contains(rowPresenter.RowViewModel.Row) && (ViewModel.SelectedRows.Count() == 0 || ViewModel.SelectedRows.Contains(rowPresenter.RowViewModel.Row)))
                     {
                         rowPresenter.Opacity = 1;

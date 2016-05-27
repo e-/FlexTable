@@ -32,7 +32,7 @@ namespace FlexTable
         public View.ExplorationView ExplorationView { get { return ExplorationViewElement; } }
         public TextBlock DummyTextBlock { get { return DummyCell; } }
         public ViewModel.MainPageViewModel ViewModel => mainPageViewModel;
-
+        
         public MainPage()
         {
             mainPageViewModel = new ViewModel.MainPageViewModel(this);
@@ -56,6 +56,36 @@ namespace FlexTable
             view.TryEnterFullScreenMode();
 
             await mainPageViewModel.Initialize();
+        }
+
+        /*Boolean isFilterViewVisible = true;
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            isFilterViewVisible = !isFilterViewVisible;
+            if(isFilterViewVisible)
+            {
+                TableViewColumnDefinition.Width = new GridLength(4, GridUnitType.Star);
+                FilterViewColumnDefinition.Width = new GridLength(1, GridUnitType.Star);
+            }
+            else
+            {
+                TableViewColumnDefinition.Width = new GridLength(5, GridUnitType.Star);
+                FilterViewColumnDefinition.Width = new GridLength(0, GridUnitType.Star);
+            }
+        }
+        */
+
+        private void ToggleFilterButtonElement_Checked(object sender, RoutedEventArgs e)
+        {
+            TableViewColumnDefinition.Width = new GridLength(4, GridUnitType.Star);
+            FilterViewColumnDefinition.Width = new GridLength(1, GridUnitType.Star);
+        }
+
+        private void ToggleFilterButtonElement_Unchecked(object sender, RoutedEventArgs e)
+        {
+            TableViewColumnDefinition.Width = new GridLength(5, GridUnitType.Star);
+            FilterViewColumnDefinition.Width = new GridLength(0, GridUnitType.Star);
         }
     }
 }

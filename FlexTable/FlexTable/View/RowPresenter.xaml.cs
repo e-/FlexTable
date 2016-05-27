@@ -31,23 +31,24 @@ namespace FlexTable.View
             this.InitializeComponent();
         }
 
-        public void Update(ColumnViewModel coloredColumnViewModel) {
-            Update(coloredColumnViewModel, null, null, null);
+        public void Update(ColumnViewModel coloredColumnViewModel, Boolean updateText) {
+            Update(coloredColumnViewModel, null, null, null, updateText);
         }
 
-        public void Update(ColumnViewModel coloredColumnViewModel, ColumnViewModel firstColoredViewModel) {
-            Update(coloredColumnViewModel, firstColoredViewModel, null, null);
+        public void Update(ColumnViewModel coloredColumnViewModel, ColumnViewModel firstColoredViewModel, Boolean updateText) {
+            Update(coloredColumnViewModel, firstColoredViewModel, null, null, updateText);
         }
 
-        public void Update(ColumnViewModel coloredColumnViewModel, ColumnViewModel firstColoredViewModel, ColumnViewModel secondColoredViewModel)
+        public void Update(ColumnViewModel coloredColumnViewModel, ColumnViewModel firstColoredViewModel, ColumnViewModel secondColoredViewModel, Boolean updateText)
         {
-            Update(coloredColumnViewModel, firstColoredViewModel, secondColoredViewModel, null);
+            Update(coloredColumnViewModel, firstColoredViewModel, secondColoredViewModel, null, updateText);
         }
 
         public void Update(ColumnViewModel coloredColumnViewModel,
             ColumnViewModel firstColoredColumnViewModel,
             ColumnViewModel secondColoredColumnViewModel,
-            ColumnViewModel thirdColoredColumnViewModel)
+            ColumnViewModel thirdColoredColumnViewModel,
+            Boolean updateText)
         {
             if(cellPresenters.Count == 0)
             {
@@ -70,27 +71,36 @@ namespace FlexTable.View
             Int32 index = 0;
             foreach (Cell cell in RowViewModel.Cells)
             {
-                cellPresenters[index].Text = cell.Content.ToString();
-                cellPresenters[index].Width = cell.ColumnViewModel.Width;
-                if (cell.ColumnViewModel == coloredColumnViewModel)
-                {
-                    cellPresenters[index].Foreground = new SolidColorBrush(RowViewModel.Color);
-                }
-                else if (cell.ColumnViewModel == firstColoredColumnViewModel)
-                {
-                    cellPresenters[index].Foreground = ViewStatus.Category10FirstSolidColorBrush;
-                }
-                else if (cell.ColumnViewModel == secondColoredColumnViewModel)
-                {
-                    cellPresenters[index].Foreground = ViewStatus.Category10SecondSolidColorBrush;
-                }
-                else if (cell.ColumnViewModel == thirdColoredColumnViewModel)
-                {
-                    cellPresenters[index].Foreground = ViewStatus.Category10ThirdSolidColorBrush;
+                if(updateText)
+                    cellPresenters[index].Text = cell.Content.ToString();
+                //cellPresenters[index].Width = cell.ColumnViewModel.Width;
+
+                if (coloredColumnViewModel != null) {
+                    if (cell.ColumnViewModel == coloredColumnViewModel)
+                    {
+                        cellPresenters[index].Foreground = new SolidColorBrush(RowViewModel.Color);
+                    }
+                    else if (cell.ColumnViewModel == firstColoredColumnViewModel)
+                    {
+                        cellPresenters[index].Foreground = ViewStatus.Category10FirstSolidColorBrush;
+                    }
+                    else if (cell.ColumnViewModel == secondColoredColumnViewModel)
+                    {
+                        cellPresenters[index].Foreground = ViewStatus.Category10SecondSolidColorBrush;
+                    }
+                    else if (cell.ColumnViewModel == thirdColoredColumnViewModel)
+                    {
+                        cellPresenters[index].Foreground = ViewStatus.Category10ThirdSolidColorBrush;
+                    }
+                    else
+                    {
+                        cellPresenters[index].Foreground = ViewStatus.DefaultRowHeaderSolidColorBrush;
+                    }
                 }
                 else
                 {
-                    cellPresenters[index].Foreground = ViewStatus.DefaultRowHeaderSolidColorBrush;
+                    if(cellPresenters[index].Foreground != ViewStatus.DefaultRowHeaderSolidColorBrush)
+                        cellPresenters[index].Foreground = ViewStatus.DefaultRowHeaderSolidColorBrush;
                 }
 
                 Canvas.SetLeft(cellPresenters[index], cell.ColumnViewModel.X);

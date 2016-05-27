@@ -70,7 +70,7 @@
             
             <Style x:Key="FilterCircleIconButtonStyle" TargetType="ToggleButton">
                 <Setter Property="FontFamily" Value="FontAwesome" />
-                <Setter Property="FontSize" Value="34" />
+                <Setter Property="FontSize" Value="24" />
                 <Setter Property="Background" Value="Transparent" />
                 <Setter Property="Foreground" Value="#888"/>
                 <Setter Property="BorderBrush" Value="{ThemeResource SystemControlForegroundTransparentBrush}" />
@@ -79,8 +79,8 @@
                 <Setter Property="VerticalAlignment" Value="Center" />
                 <Setter Property="FontWeight" Value="Normal" />
                 <Setter Property="UseSystemFocusVisuals" Value="True" />
-                <Setter Property="Width" Value="70" />
-                <Setter Property="Height" Value="70" />
+                <Setter Property="Width" Value="40" />
+                <Setter Property="Height" Value="40" />
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="ToggleButton">
@@ -89,13 +89,19 @@
                                     <VisualStateGroup x:Name="CommonStates">
                                         <VisualState x:Name="Normal">
                                             <Storyboard>
-                                                <ColorAnimation Storyboard.TargetName="ContentPresenter"
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter"
+                                                                Storyboard.TargetProperty="(ContentPresenter.Foreground).(SolidColorBrush.Color)">
+                                                    <DiscreteObjectKeyFrame
+                                                        KeyTime="0"
+                                                        Value="{StaticResource HighlightColor1}" />
+                                                </ObjectAnimationUsingKeyFrames>
+                                                <!--<ColorAnimation Storyboard.TargetName="ContentPresenter"
                                                                 Storyboard.TargetProperty="(ContentPresenter.Foreground).(SolidColorBrush.Color)"
                                                                 Duration="0:0:0.3"
                                                                 BeginTime="0:0:0.3"
                                                                 EasingFunction="{StaticResource QuarticEaseInOut}"
                                                                 To="{StaticResource HighlightColor1}">
-                                                </ColorAnimation>
+                                                </ColorAnimation>-->
                                             </Storyboard>
                                         </VisualState>
                                         <VisualState x:Name="Checked">

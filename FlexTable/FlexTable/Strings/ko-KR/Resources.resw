@@ -152,6 +152,9 @@
     <value>{0:c}| 대 |{1:c}</value>
     <comment>Scatterplot</comment>
   </data>
+  <data name="CheckBoxSelectAll.Text" xml:space="preserve">
+    <value>모두 선택</value>
+  </data>
   <data name="ColumnPopupDown.Text" xml:space="preserve">
     <value>내림차순 정렬</value>
   </data>

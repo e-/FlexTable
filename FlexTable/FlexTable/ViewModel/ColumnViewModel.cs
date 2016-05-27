@@ -169,8 +169,8 @@ namespace FlexTable.ViewModel
             set { aggregativeFunction = value; OnPropertyChanged("HeaderName"); OnPropertyChanged("AggregativeFunction"); }
         }
 
-        private Boolean isCategoryVisible = false;
-        public Boolean IsCategoryVisible { get { return isCategoryVisible; } set { isCategoryVisible = value; OnPropertyChanged(nameof(IsCategoryVisible)); } }
+        private Boolean isExpanded = false;
+        public Boolean IsExpanded { get { return isExpanded; } set { isExpanded = value; OnPropertyChanged(nameof(IsExpanded)); } }
 
         private Boolean? isKept = true;
         public Boolean? IsKept { get { return isKept; } set { isKept = value; OnPropertyChanged(nameof(IsKept)); } }
