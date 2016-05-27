@@ -184,7 +184,7 @@ namespace FlexTable.Model
             else if (IsN) // 이 경우는 뉴메리컬 하나만 선택되어 비닝 된 결과가 보이는 경우이다.
             {
                 ColumnViewModel selected = FirstColumn;
-                GroupedRows = Bin(selected, sheetViewModel.FilteredRows.ToList());
+                GroupedRows = Bin(selected, sheetViewModel.FilteredRows);
                 GroupedRowViewModels = new List<RowViewModel>();
 
                 // 여기서 groupedRows가 소팅되어야함 
@@ -273,7 +273,7 @@ namespace FlexTable.Model
             else if(CategoricalCount > 0)// 이 경우는 categorical이든 datetime이든 뭔가로 그룹핑이 된 경우 
             {
                 GroupedRows = GroupRecursive(
-                    sheetViewModel.FilteredRows.ToList(), 
+                    sheetViewModel.FilteredRows, 
                     CategoricalColumnViewModels.ToList(), 
                     0);
 

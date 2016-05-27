@@ -33,7 +33,7 @@
                Unchecked="ToggleFilterButtonElement_Unchecked">
              &#xf0b0;
         </ToggleButton>
-        <view:SelectionView Grid.ColumnSpan="3" HorizontalAlignment="Center" 
+        <view:SelectionView Grid.ColumnSpan="3" HorizontalAlignment="Center" x:Name="SelectionViewElement"
                             VerticalAlignment="Bottom" Margin="0 0 0 80" DataContext="{x:Bind ViewModel.SelectionViewModel}"></view:SelectionView>
     </Grid>
 </Page>

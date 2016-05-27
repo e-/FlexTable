@@ -52,7 +52,7 @@
                 &#xf0c1;
             </TextBlock>
             <TextBlock FontSize="19" Grid.Column="1" VerticalAlignment="Center">
-                <Run x:Name="SelectedRowCountIndicator" FontWeight="Bold" Foreground="{StaticResource HighlightBrush1}"></Run><Run x:Name="SelectionMessage"/>
+                <Run x:Name="SelectedRowCountIndicator" FontWeight="Bold"></Run><Run x:Name="SelectionMessage"/>
             </TextBlock>
             <TextBlock Grid.Column="2" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="FontAwesome">
                 &#xf00d;

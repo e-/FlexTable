@@ -130,11 +130,7 @@ namespace FlexTable.ViewModel
 
             if(reason == ReflectReason.RowFiltered)
             {
-                foreach (PageView view in ExplorationViewModel.SelectedPageViews)
-                {
-                    view.SelectedRows = new List<Row>();
-                    view.HideSelectionIndicator();
-                }
+                View.SelectionView.ChangeSelecion(null, SelectionChangedType.Clear, false);
                 tableViewModel.SelectedRows = null;
             }
             
@@ -160,11 +156,6 @@ namespace FlexTable.ViewModel
                         pageView.ViewModel.ViewStatus.Generate(sheetViewModel);
 
                     pageView.ViewModel.Reflect(reason);
-
-                    /*if (pageView.SelectedRows.Count() > 0)
-                        pageView.ViewModel.Reflect(reason); // ReflectType2.TrackPreviousParagraph | ReflectType2.OnCreate | ReflectType2.OnSelectionChanged, reason);
-                    else
-                        pageView.ViewModel.Reflect(reason); // ReflectType2.TrackPreviousParagraph | ReflectType2.OnCreate, reason);*/
                 }
 
                 {
@@ -262,9 +253,10 @@ namespace FlexTable.ViewModel
             ExplorationViewModel.MetadataViewModel.Initialize();
 
             return;
+
             var dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
 
-            ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[9]);
+            ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[3]);
             
             DispatcherTimer dispatcherTimer = new DispatcherTimer();
             dispatcherTimer.Tick += (sender, e) =>

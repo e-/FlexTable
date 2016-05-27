@@ -11,6 +11,7 @@ namespace FlexTable
     {
         View.TableView TableView { get; }
         View.ExplorationView ExplorationView { get; }
+        View.SelectionView SelectionView { get; }
         TextBlock DummyTextBlock { get; }
     }
 }

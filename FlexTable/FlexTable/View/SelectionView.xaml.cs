@@ -21,7 +21,7 @@ namespace FlexTable.View
 {
     public sealed partial class SelectionView : UserControl
     {
-        public IEnumerable<Row> SelectedRows;
+        public IEnumerable<Row> SelectedRows = new List<Row>();
         public SelectionViewModel ViewModel { get { return (SelectionViewModel)DataContext; } }
 
         public SelectionView()
@@ -29,23 +29,42 @@ namespace FlexTable.View
             this.InitializeComponent();
         }
 
-        public void SetSelection(IEnumerable<Row> selectedRows)
+        public void ChangeSelecion(IEnumerable<Row> rows, SelectionChangedType selectionChangedType, Boolean reflectAll)
         {
-            SelectedRows = selectedRows;
+            if (selectionChangedType == SelectionChangedType.Add)
+                SelectedRows = SelectedRows.Concat(rows).Distinct().ToList();
+            else if (selectionChangedType == SelectionChangedType.Remove)
+                SelectedRows = SelectedRows.Except(rows).Distinct().ToList();
+            else if (selectionChangedType == SelectionChangedType.Replace)
+                SelectedRows = rows.ToList();
+            else
+                SelectedRows = new List<Row>();
 
-            Int32 count = selectedRows.Count();
+            Int32 count = SelectedRows.Count();
+
+            if (count == ViewModel.MainPageViewModel.SheetViewModel.FilteredRows.Count())
+            {
+                SelectedRows = new List<Row>();
+                count = 0;
+            }
 
             if (count == 0)
             {
                 Hide();
+                ViewModel.MainPageViewModel.TableViewModel.CancelPreviewRows();
             }
             else
             {
+                Show();
                 SelectedRowCountIndicator.Text = count.ToString();
                 SelectionMessage.Text = count == 1 ? Const.Loader.GetString("SelectionMessage1") : Const.Loader.GetString("SelectionMessage2");
+                ViewModel.MainPageViewModel.TableViewModel.PreviewRows(SelectedRows);
             }
-        }
 
+            if(reflectAll)
+                ViewModel.MainPageViewModel.ReflectAll(ReflectReason.RowSelectionChanged);
+        }
+        
         public void Show()
         {
             HideSelectionIndicatorStoryboard.Pause();
@@ -60,7 +79,7 @@ namespace FlexTable.View
 
         private void SelectionIndicatorElement_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            ViewModel.MainPageViewModel.ReflectAll(ReflectReason.RowSelectionChanged);
+            ChangeSelecion(null, SelectionChangedType.Clear, true);
         }
     }
 }

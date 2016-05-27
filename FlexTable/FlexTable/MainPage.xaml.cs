@@ -30,6 +30,7 @@ namespace FlexTable
 
         public View.TableView TableView { get { return TableViewElement; } }
         public View.ExplorationView ExplorationView { get { return ExplorationViewElement; } }
+        public View.SelectionView SelectionView { get { return SelectionViewElement; } }
         public TextBlock DummyTextBlock { get { return DummyCell; } }
         public ViewModel.MainPageViewModel ViewModel => mainPageViewModel;
         

@@ -131,35 +131,7 @@
                 <DiscreteObjectKeyFrame KeyTime="0:0:0.4" Value="Collapsed" />
             </ObjectAnimationUsingKeyFrames>
         </Storyboard>
-
-        <Storyboard x:Name="ShowSelectionIndicatorStoryboard">
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="SelectionIndicator"
-                                           Storyboard.TargetProperty="Visibility">
-                <DiscreteObjectKeyFrame KeyTime="0" Value="Visible" />
-            </ObjectAnimationUsingKeyFrames>
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="SelectionIndicatorTemporaryTransform"
-                                           Storyboard.TargetProperty="X">
-                <DiscreteObjectKeyFrame KeyTime="0" Value="0" />
-            </ObjectAnimationUsingKeyFrames>
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="SelectionIndicatorTemporaryTransform"
-                                           Storyboard.TargetProperty="Y">
-                <DiscreteObjectKeyFrame KeyTime="0" Value="0" />
-            </ObjectAnimationUsingKeyFrames>
-            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.3"
-                             Storyboard.TargetName="SelectionIndicator" Storyboard.TargetProperty="Opacity" To="1">
-            </DoubleAnimation>
-        </Storyboard>
-
-        <Storyboard x:Name="HideSelectionIndicatorStoryboard">
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="SelectionIndicator"
-                                           Storyboard.TargetProperty="Visibility">
-                <DiscreteObjectKeyFrame KeyTime="0:0:0.5" Value="Collapsed" />
-            </ObjectAnimationUsingKeyFrames>
-            <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.3"
-                             Storyboard.TargetName="SelectionIndicator" Storyboard.TargetProperty="Opacity" To="0">
-            </DoubleAnimation>
-        </Storyboard>
-
+        
         <Storyboard x:Name="FilterSelectionIndicatorStoryboard">
             <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.5"
                              Storyboard.TargetName="SelectionIndicator" Storyboard.TargetProperty="Opacity" To="0.5">
@@ -304,40 +276,6 @@
                 </ScrollViewer>
                 <local:PageLabelView x:Name="PageLabelViewElement" Height="{Binding MainPageViewModel.PageLabelCarouselHeight}" />
             </StackPanel>
-
-            <!--Transparent"-->
-            <Border HorizontalAlignment="Right" VerticalAlignment="Bottom"
-                    x:Name="SelectionIndicator"
-                    Background="Transparent"
-                    ManipulationMode="TranslateX,System" 
-                    ManipulationDelta="SelectionIndicator_ManipulationDelta"
-                    ManipulationCompleted="SelectionIndicator_ManipulationCompleted"
-                    Tapped="SelectionIndicator_Tapped"
-                    Padding="5"
-                    Height="50" Visibility="Collapsed" Opacity="0">
-                <Border.RenderTransform>
-                    <TransformGroup>
-                        <TranslateTransform X="0" Y="-10"></TranslateTransform>
-                        <TranslateTransform x:Name="SelectionIndicatorTemporaryTransform" X="0" Y="0"></TranslateTransform>
-                    </TransformGroup>
-                </Border.RenderTransform>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="40"></ColumnDefinition>
-                        <ColumnDefinition Width="180"></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
-                    <Border Background="#eee" CornerRadius="3" Grid.Column="0" Grid.ColumnSpan="2"></Border>
-                    <Border Grid.Column="0" Background="{StaticResource HighlightBrush1}" CornerRadius="3">
-                        <Button Style="{StaticResource FlatIconButtonStyle}" x:Name="SelectionFilterButton"
-                                FontSize="22" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="FontAwesome">
-                            &#xf0c1;
-                        </Button>
-                    </Border>
-                    <TextBlock FontSize="16" Grid.Column="1" VerticalAlignment="Center" Margin="10 0 0 0" Width="180">
-                        <Run x:Name="SelectedRowCountIndicator" FontWeight="Bold" Foreground="{StaticResource HighlightBrush1}"></Run><Run x:Name="SelectionMessage"/>
-                    </TextBlock>
-                </Grid>
-            </Border>
 
             <Border Height="{Binding MainPageViewModel.PageHeight}" Width="{Binding MainPageViewModel.ParagraphWidth}" Visibility="Visible" x:Name="EmptyTooltip">
                 <StackPanel VerticalAlignment="Center">

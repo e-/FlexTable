@@ -58,8 +58,7 @@ namespace FlexTable.View
         /// <summary>
         /// cannot be null
         /// </summary>
-        public IEnumerable<Row> SelectedRows { get; set; } = new List<Row>();
-
+        public IEnumerable<Row> SelectedRows => ViewModel.MainPageViewModel.View.SelectionView.SelectedRows;
 
         public PageView()
         {
@@ -114,38 +113,7 @@ namespace FlexTable.View
 
         public void SelectionChanged(object sender, IEnumerable<Row> rows, SelectionChangedType selectionChangedType)
         {
-            if (selectionChangedType == SelectionChangedType.Add)
-                SelectedRows = SelectedRows.Concat(rows).Distinct().ToList();
-            else if (selectionChangedType == SelectionChangedType.Remove)
-                SelectedRows = SelectedRows.Except(rows).Distinct().ToList();
-            else if (selectionChangedType == SelectionChangedType.Replace)
-                SelectedRows = rows.ToList();
-            else
-                SelectedRows = new List<Row>();
-
-            Int32 count = SelectedRows.Count();
-
-            if (count == ViewModel.MainPageViewModel.SheetViewModel.FilteredRows.Count())
-            {
-                SelectedRows = new List<Row>();
-                count = 0;
-            }
-
-            if (count == 0)
-            {
-                HideSelectionIndicator();
-                ViewModel.MainPageViewModel.TableViewModel.CancelPreviewRows();
-            }
-            else
-            {
-                HideSelectionIndicatorStoryboard.Pause();
-                ShowSelectionIndicatorStoryboard.Begin();
-                SelectedRowCountIndicator.Text = count.ToString();
-                SelectionMessage.Text = count == 1 ? Const.Loader.GetString("SelectionMessage1") : Const.Loader.GetString("SelectionMessage2");
-                ViewModel.MainPageViewModel.TableViewModel.PreviewRows(SelectedRows);
-            }
-
-            ViewModel.Reflect(ReflectReason.RowSelectionChanged);// 2.OnSelectionChanged | ReflectType2.TrackPreviousParagraph, reason);
+            ViewModel.MainPageViewModel.View.SelectionView.ChangeSelecion(rows, selectionChangedType, true);
         }
 
         private void FilterOut(object sender, IEnumerable<Category> categories)
@@ -166,12 +134,6 @@ namespace FlexTable.View
 
             ViewModel.MainPageViewModel.SheetViewModel.UpdateFilter();
             ViewModel.MainPageViewModel.ReflectAll(ReflectReason.RowFiltered);            
-        }
-
-        public void HideSelectionIndicator()
-        {
-            ShowSelectionIndicatorStoryboard.Pause();
-            HideSelectionIndicatorStoryboard.Begin();
         }
 
         private void RemoveColumnViewModel(object sender, string title)
@@ -392,7 +354,6 @@ namespace FlexTable.View
                 if (delta > Const.PageViewToggleThreshold) // 많이 내려간 경우
                 {
                     ViewModel.State = PageViewModel.PageViewState.Undoing;
-                    SelectionChanged(null, null, SelectionChangedType.Clear);//, ReflectReason2.SelectionChanged);
                     ViewModel.StateChanged(this);
                 }
                 else
@@ -518,33 +479,6 @@ namespace FlexTable.View
             dataPackage.SetBitmap(RandomAccessStreamReference.CreateFromStream(stream));
 
             Clipboard.SetContent(dataPackage);
-        }
-
-        private void SelectionIndicator_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
-        {
-            Double delta = e.Cumulative.Translation.X;
-            if (delta < 0) delta = 0;
-            if (delta > Const.SelectionDismissThreshold) delta = Const.SelectionDismissThreshold;
-            SelectionIndicatorTemporaryTransform.X = delta;
-            SelectionIndicator.Opacity = (Const.SelectionDismissThreshold - delta) / Const.SelectionDismissThreshold;
-        }
-
-        private void SelectionIndicator_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
-        {
-            Double delta = e.Cumulative.Translation.X;
-            if (delta > Const.SelectionDismissThreshold)
-            {
-                SelectionChanged(this, null, SelectionChangedType.Clear);
-            }
-            else
-            {
-                ResetSelectionIndicatorPositionStoryboard.Begin();
-            }
-        }
-        
-        private void SelectionIndicator_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            SelectionChanged(this, null, SelectionChangedType.Clear);
         }
     }
 }

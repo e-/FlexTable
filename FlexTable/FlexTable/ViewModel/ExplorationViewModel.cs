@@ -85,11 +85,7 @@ namespace FlexTable.ViewModel
             // 복제한 view status를 추가 한 다음 
             pageViewModel.ViewStatus = selectedViewStatus;
             pageViewModel.State = PageViewModel.PageViewState.Previewing;
-
-            // 셀렉션 유지
-            if (SelectedPageViews.Count > 0)
-                TopPageView.SelectedRows = new List<Row>(SelectedPageViews.Last().SelectedRows);
-
+            
             // 이걸로 pageView를 채움
             pageViewModel.Reflect(ReflectReason.Preview); // ReflectType2.TrackPreviousParagraph | ReflectType2.OnCreate, ReflectReason2.PreviewRequested);
             TopPageView.ReflectState();
