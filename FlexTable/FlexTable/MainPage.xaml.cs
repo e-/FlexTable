@@ -79,7 +79,7 @@ namespace FlexTable
 
         private void ToggleFilterButtonElement_Checked(object sender, RoutedEventArgs e)
         {
-            TableViewColumnDefinition.Width = new GridLength(4, GridUnitType.Star);
+            TableViewColumnDefinition.Width = new GridLength(4.5, GridUnitType.Star);
             FilterViewColumnDefinition.Width = new GridLength(1, GridUnitType.Star);
         }
 

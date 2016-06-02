@@ -166,6 +166,9 @@ namespace FlexTable.ViewModel
             {
                 State = TableViewState.Animation;
                 view.TableView.ReflectState(viewStatus);
+
+                //view.TableView.ActivatedScrollViewer.ChangeView(animationScenario.SpotlightColumnViewModel.StashedX, null, null, true);
+
                 foreach (ColumnViewModel cvm in mainPageViewModel.SheetViewModel.ColumnViewModels)
                 {
                     cvm.UpdateHeaderName();
@@ -181,6 +184,10 @@ namespace FlexTable.ViewModel
                 {
                     if (callbackCount < callbackLimitCount) callbackCount = callbackLimitCount;
                     else return;
+
+                    view.TableView.AllRowScrollViewer.ChangeView(0, 0, null, true);
+                    view.TableView.GroupedRowScrollViewer.ChangeView(0, 0, null, true);
+                    view.TableView.SelectedRowScrollViewer.ChangeView(0, 0, null, true);
 
                     dispatcherTimer.Stop();
 
@@ -208,6 +215,10 @@ namespace FlexTable.ViewModel
                     if (callbackCount < callbackLimitCount) callbackCount = callbackLimitCount;
                     else return;
 
+                    view.TableView.AllRowScrollViewer.ChangeView(0, 0, null, true);
+                    view.TableView.GroupedRowScrollViewer.ChangeView(0, 0, null, true);
+                    view.TableView.SelectedRowScrollViewer.ChangeView(0, 0, null, true);
+
                     dispatcherTimer.Stop();
                     UpdateState(viewStatus);
 
@@ -224,13 +235,15 @@ namespace FlexTable.ViewModel
                     view.TableView.ColumnIndexer.Update();
                 };
 
-                tableUpdateCallback();
-                /*dispatcherTimer.Tick += (sender, e) =>
+                //tableUpdateCallback(); // 이렇게 바로 실행하면 컬럼 선택/해제시 페이지뷰가 올라/내려가는 애니메이션이 끊김
+                dispatcherTimer.Tick += (sender, e) =>
                 {
                     tableUpdateCallback();
                 };
 
-                dispatcherTimer.Interval = TimeSpan.FromMilliseconds(100);*/
+                dispatcherTimer.Interval = TimeSpan.FromMilliseconds(50);
+
+                dispatcherTimer.Start();
             }
         }
 
@@ -374,7 +387,7 @@ namespace FlexTable.ViewModel
                 StashViewStatus(mainPageViewModel.ExplorationViewModel.ViewStatus, AnimationHint.AnimationType.SelectRows);
             }
             SelectedRows = selectedRows.ToList();
-            Reflect(mainPageViewModel.ExplorationViewModel.ViewStatus, ReflectReason.RowSelected); // PreviewRequested);
+            //Reflect(mainPageViewModel.ExplorationViewModel.ViewStatus, ReflectReason.RowSelected); // PreviewRequested);
         }
 
         public void CancelPreviewRows()
@@ -384,7 +397,7 @@ namespace FlexTable.ViewModel
                 StashViewStatus(mainPageViewModel.ExplorationViewModel.ViewStatus, AnimationHint.AnimationType.UnselectRows);
             }
             SelectedRows = null;
-            Reflect(mainPageViewModel.ExplorationViewModel.ViewStatus, ReflectReason.RowUnselected); // PreviewRequested);
+            //Reflect(mainPageViewModel.ExplorationViewModel.ViewStatus, ReflectReason.RowUnselected); // PreviewRequested);
         }        
 
         public void SelectRowsByRange(Double startY, Double endY)

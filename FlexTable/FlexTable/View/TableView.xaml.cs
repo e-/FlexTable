@@ -323,6 +323,8 @@ namespace FlexTable.View
                 HideGroupedRowViewerStoryboard.Begin();
                 HideSelectedRowViewerStoryboard.Begin();
                 ShowAnimatingRowViewerStoryboard.Begin();
+
+                AnimatingRowViewer.ChangeView(ActivatedScrollViewer.HorizontalOffset, ActivatedScrollViewer.VerticalOffset, null, true);
             }
 
             UpdateScrollViews();

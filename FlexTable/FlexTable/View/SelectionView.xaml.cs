@@ -57,7 +57,7 @@ namespace FlexTable.View
             {
                 Show();
                 SelectedRowCountIndicator.Text = count.ToString();
-                SelectionMessage.Text = count == 1 ? Const.Loader.GetString("SelectionMessage1") : Const.Loader.GetString("SelectionMessage2");
+                //SelectionMessage.Text = count == 1 ? Const.Loader.GetString("SelectionMessage1") : Const.Loader.GetString("SelectionMessage2");
                 ViewModel.MainPageViewModel.TableViewModel.PreviewRows(SelectedRows);
             }
 

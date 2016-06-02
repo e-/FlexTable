@@ -99,77 +99,11 @@
                 <DiscreteObjectKeyFrame KeyTime="0:0:0.3" Value="Collapsed" />
             </ObjectAnimationUsingKeyFrames>
         </Storyboard>
-        <Style x:Key="ListViewStyle" TargetType="ListView">
-            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto" />
-            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
-            <Setter Property="ScrollViewer.HorizontalScrollMode" Value="Enabled" />
-            <Setter Property="ScrollViewer.VerticalScrollMode" Value="Enabled" />
-            <Setter Property="ScrollViewer.ZoomMode" Value="Disabled" />
-            <Setter Property="ScrollViewer.IsDeferredScrollingEnabled" Value="False" />
-            <Setter Property="SelectionMode" Value="None" />
-            <Setter Property="ItemContainerTransitions">
-                <Setter.Value>
-                    <TransitionCollection>
-                    </TransitionCollection>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <Style x:Key="ListViewItemContainerStyle" TargetType="ListViewItem">
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ListViewItem">
-                        <ContentPresenter Margin="0" />
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-            <Setter Property="Padding" Value="0" />
-            <Setter Property="Margin" Value="0" />
-            <Setter Property="MinHeight" Value="0" />
-        </Style>
-
-        <DataTemplate x:DataType="viewModel:RowViewModel" x:Key="ListViewDataTemplate">
-            <ListView ItemsSource="{x:Bind Path=Cells, Mode=OneWay}"
-                                  SelectionMode="None"
-                                  Height="{StaticResource RowHeight}"
-                                  Margin="0"
-                                  Width="{x:Bind Path=MainPageViewModel.SheetViewModel.SheetWidth}"
-                      HorizontalAlignment="Left"
-                                  IsHitTestVisible="False"
-                                  Padding="0">
-                <ListView.ItemContainerTransitions>
-                    <TransitionCollection />
-                </ListView.ItemContainerTransitions>
-                <ListView.ItemContainerStyle>
-                    <Style TargetType="ListViewItem">
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="ListViewItem">
-                                    <ContentPresenter />
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                        <Setter Property="Padding" Value="0" />
-                        <Setter Property="Margin" Value="0" />
-                    </Style>
-                </ListView.ItemContainerStyle>
-                <ListView.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel Orientation="Horizontal" />
-                    </ItemsPanelTemplate>
-                </ListView.ItemsPanel>
-                <ListView.ItemTemplate>
-                    <DataTemplate x:DataType="model:Cell">
-                        <TextBlock Text="{x:Bind Path=RawContent}" Width="{x:Bind Path=ColumnViewModel.Width}" 
-                                               Style="{StaticResource CellStyle}" Margin="0 -14 0 0" />
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-        </DataTemplate>
     </UserControl.Resources>
 
-    <Grid Margin="0 0 0 0">
-        <Grid Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" x:Name="SheetView">
+    <Border BorderBrush="{StaticResource DarkerGridLineBrush}" Margin="-1 0 0 0" BorderThickness="1">
+    <Grid>
+        <Grid x:Name="SheetView">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="{StaticResource RowHeaderWidthInGridLength}"></ColumnDefinition>
                 <ColumnDefinition Width="*"></ColumnDefinition>
@@ -228,7 +162,8 @@
             <view:ColumnHighlighter Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" x:Name="ColumnHighlighterElement"></view:ColumnHighlighter>
         </Grid>
 
-        <Grid x:Name="StrokeGrid" Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" IsHitTestVisible="False"></Grid>
-        <Grid x:Name="NewStrokeGrid" Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" IsHitTestVisible="False"></Grid>
+        <Grid x:Name="StrokeGrid" IsHitTestVisible="False"></Grid>
+        <Grid x:Name="NewStrokeGrid" IsHitTestVisible="False"></Grid>
     </Grid>
+    </Border>
 </UserControl>

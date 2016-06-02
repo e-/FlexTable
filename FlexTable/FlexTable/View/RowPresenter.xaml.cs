@@ -75,32 +75,25 @@ namespace FlexTable.View
                     cellPresenters[index].Text = cell.Content.ToString();
                 //cellPresenters[index].Width = cell.ColumnViewModel.Width;
 
-                if (coloredColumnViewModel != null) {
-                    if (cell.ColumnViewModel == coloredColumnViewModel)
-                    {
-                        cellPresenters[index].Foreground = new SolidColorBrush(RowViewModel.Color);
-                    }
-                    else if (cell.ColumnViewModel == firstColoredColumnViewModel)
-                    {
-                        cellPresenters[index].Foreground = ViewStatus.Category10FirstSolidColorBrush;
-                    }
-                    else if (cell.ColumnViewModel == secondColoredColumnViewModel)
-                    {
-                        cellPresenters[index].Foreground = ViewStatus.Category10SecondSolidColorBrush;
-                    }
-                    else if (cell.ColumnViewModel == thirdColoredColumnViewModel)
-                    {
-                        cellPresenters[index].Foreground = ViewStatus.Category10ThirdSolidColorBrush;
-                    }
-                    else
-                    {
-                        cellPresenters[index].Foreground = ViewStatus.DefaultRowHeaderSolidColorBrush;
-                    }
+                if (cell.ColumnViewModel == coloredColumnViewModel)
+                {
+                    cellPresenters[index].Foreground = new SolidColorBrush(RowViewModel.Color);
+                }
+                else if (cell.ColumnViewModel == firstColoredColumnViewModel)
+                {
+                    cellPresenters[index].Foreground = ViewStatus.Category10FirstSolidColorBrush;
+                }
+                else if (cell.ColumnViewModel == secondColoredColumnViewModel)
+                {
+                    cellPresenters[index].Foreground = ViewStatus.Category10SecondSolidColorBrush;
+                }
+                else if (cell.ColumnViewModel == thirdColoredColumnViewModel)
+                {
+                    cellPresenters[index].Foreground = ViewStatus.Category10ThirdSolidColorBrush;
                 }
                 else
                 {
-                    if(cellPresenters[index].Foreground != ViewStatus.DefaultRowHeaderSolidColorBrush)
-                        cellPresenters[index].Foreground = ViewStatus.DefaultRowHeaderSolidColorBrush;
+                    cellPresenters[index].Foreground = ViewStatus.DefaultRowHeaderSolidColorBrush;
                 }
 
                 Canvas.SetLeft(cellPresenters[index], cell.ColumnViewModel.X);

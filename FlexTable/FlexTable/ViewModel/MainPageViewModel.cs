@@ -48,22 +48,25 @@ namespace FlexTable.ViewModel
         public FilterViewModel FilterViewModel { get { return filterViewModel; } set { filterViewModel = value; OnPropertyChanged(nameof(FilterViewModel)); } }
 
         private SelectionViewModel selectionViewModel;
-        public SelectionViewModel SelectionViewModel { get { return selectionViewModel; }set { selectionViewModel = value;  OnPropertyChanged(nameof(SelectionViewModel)); } }
+        public SelectionViewModel SelectionViewModel { get { return selectionViewModel; } set { selectionViewModel = value; OnPropertyChanged(nameof(SelectionViewModel)); } }
 
         private Double pageHeight;
-        public Double PageHeight { get { return pageHeight; } set { pageHeight = value; OnPropertyChanged("PageHeight"); } }
+        public Double PageHeight { get { return pageHeight; } set { pageHeight = value; OnPropertyChanged(nameof(PageHeight)); } }
+
+        private Double quarterHeight;
+        public Double QuarterHeight { get { return quarterHeight; } set { quarterHeight = value; OnPropertyChanged(nameof(QuarterHeight)); } }
 
         private Double negativePageHeight;
-        public Double NegativePageHeight { get { return negativePageHeight; } set { negativePageHeight = value; OnPropertyChanged("NegativePageHeight"); } }
+        public Double NegativePageHeight { get { return negativePageHeight; } set { negativePageHeight = value; OnPropertyChanged(nameof(NegativePageHeight)); } }
 
         private Double tableWidth;
         public Double TableWidth { get { return tableWidth; } set { tableWidth = value; OnPropertyChanged(nameof(TableWidth)); } }
 
         private Double pageWidth;
-        public Double PageWidth { get { return pageWidth; } set { pageWidth = value; OnPropertyChanged("PageWidth"); } }
+        public Double PageWidth { get { return pageWidth; } set { pageWidth = value; OnPropertyChanged(nameof(PageWidth)); } }
 
         private Double pageOffset;
-        public Double PageOffset { get { return pageOffset; } set { pageOffset = value; OnPropertyChanged("PageOffset"); } }
+        public Double PageOffset { get { return pageOffset; } set { pageOffset = value; OnPropertyChanged(nameof(PageOffset)); } }
 
         private Double paragraphWidth = 794;
         public Double ParagraphWidth
@@ -122,10 +125,6 @@ namespace FlexTable.ViewModel
             foreach (ColumnViewModel cvm in SheetViewModel.ColumnViewModels)
             {
                 cvm.IsSelected = viewStatus.SelectedColumnViewModels.IndexOf(cvm) >= 0;
-                /*if(isN && cvm.IsSelected && cvm.SortOption == SortOption.None)
-                {
-                    SheetViewModel.Sort(cvm, SortOption.Ascending);
-                }*/
             }
 
             if(reason == ReflectReason.RowFiltered)
@@ -176,12 +175,6 @@ namespace FlexTable.ViewModel
                         pageView.ViewModel.ViewStatus.Generate(sheetViewModel);
 
                     pageView.ViewModel.Reflect(reason);
-
-                    /*
-                    if (pageView.SelectedRows.Count() > 0)
-                        pageView.ViewModel.Reflect(reason); // ReflectType2.TrackPreviousParagraph | ReflectType2.OnCreate | ReflectType2.OnSelectionChanged, reason);
-                    else
-                        pageView.ViewModel.Reflect(reason); // ReflectType2.TrackPreviousParagraph | ReflectType2.OnCreate, reason);*/
                 }
             }
         }
@@ -220,10 +213,11 @@ namespace FlexTable.ViewModel
             this.Sheet = sheet;
 
             PageHeight = Bounds.Height / 2 - 4;// Bounds.Height; 
+            QuarterHeight = Bounds.Height / 4;
             NegativePageHeight = -PageHeight;
             PageOffset = PageHeight + 8;
-            TableWidth = Bounds.Width * 4 / 10;
-            PageWidth = Bounds.Width / 2;
+            TableWidth = Bounds.Width * 4.5 / 10;
+            PageWidth = Bounds.Width * 4.5 / 10;
             ParagraphWidth = PageWidth - 40;
 
             PageHeaderHeight = 0; // 110; 

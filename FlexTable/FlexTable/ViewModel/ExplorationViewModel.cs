@@ -168,7 +168,8 @@ namespace FlexTable.ViewModel
                 Logger.Instance.Log($"column selected,{String.Join(",", ViewStatus.SelectedColumnViewModels.Select(cvm => cvm.Column.Name))}");
                 mainPageViewModel.ReflectAll(ReflectReason.ColumnSelected);
                 
-                view.TableView.ScrollToColumnViewModel(mainPageViewModel.SheetViewModel.ColumnViewModels.OrderBy(c => c.Order).First());
+                //view.TableView.ScrollToColumnViewModel(mainPageViewModel.SheetViewModel.ColumnViewModels.OrderBy(c => c.Order).First());
+                //항상 움직이면 안됨. 애니메이션이 있으면 시작점으로 움직여야 하지만 애니메이션이 없는 경우 그대로 있어야함.
 
                 // Preview 풀기
                 mainPageViewModel.TableViewModel.CancelIndexing(false);

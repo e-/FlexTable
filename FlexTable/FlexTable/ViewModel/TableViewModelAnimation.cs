@@ -18,6 +18,7 @@ namespace FlexTable.ViewModel
             public Double TotalAnimationDuration { get; set; }
             public Double TableHeaderUpdateTime { get; set; }
             public Storyboard AnimationStoryboard { get; set; }
+            public ColumnViewModel SpotlightColumnViewModel { get; set; }
 
             public static AnimationScenario None = new AnimationScenario()
             {
@@ -70,7 +71,6 @@ namespace FlexTable.ViewModel
 
             Double colorChangingAnimationDuration = 0;
             Double horizontalAnimationDuration = 0;
-
 
             if (collapsingRowViewModels.Any(rvm => rvm.StashedColor != rootRowViewModel.Color))
             {
@@ -156,7 +156,8 @@ namespace FlexTable.ViewModel
             {
                 TotalAnimationDuration = DelayBeforeAnimation + UnitAnimationDuration + horizontalAnimationDuration + colorChangingAnimationDuration,
                 TableHeaderUpdateTime = DelayBeforeAnimation + UnitAnimationDuration + colorChangingAnimationDuration,
-                AnimationStoryboard = storyboard
+                AnimationStoryboard = storyboard,
+                SpotlightColumnViewModel = columnViewModel
             };
         }
 
@@ -276,7 +277,8 @@ namespace FlexTable.ViewModel
             {
                 TotalAnimationDuration = DelayBeforeAnimation + UnitAnimationDuration + horizontalAnimationDuration + colorChangingAnimationDuration,
                 TableHeaderUpdateTime = DelayBeforeAnimation + UnitAnimationDuration + colorChangingAnimationDuration,
-                AnimationStoryboard = storyboard
+                AnimationStoryboard = storyboard,
+                SpotlightColumnViewModel = columnViewModel
             };
         }
 
@@ -310,10 +312,6 @@ namespace FlexTable.ViewModel
 
             TableViewState previousState = stashedViewStatus.TableViewState,
                            currentState = viewStatus.TableViewState;
-
-            view.TableView.AllRowScrollViewer.ChangeView(0, 0, null, true);
-            view.TableView.GroupedRowScrollViewer.ChangeView(0, 0, null, true);
-            view.TableView.SelectedRowScrollViewer.ChangeView(0, 0, null, true);
 
             switch (previousState)
             {

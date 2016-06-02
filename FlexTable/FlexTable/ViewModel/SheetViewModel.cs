@@ -336,7 +336,7 @@ namespace FlexTable.ViewModel
             UpdateColumnX();
         }
         
-        public void UpdateColumnX()
+        private void UpdateColumnX()
         {
             Double total = 0;
             foreach (ColumnViewModel columnViewModel in columnViewModels.OrderBy(c => c.Order))
