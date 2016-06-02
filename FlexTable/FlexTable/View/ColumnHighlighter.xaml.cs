@@ -39,7 +39,7 @@ namespace FlexTable.View
 
             TableViewModel tvm = (this.DataContext as TableViewModel);
 
-            Canvas.SetTop(LowerColumnHeaderWrapperElement, tvm.Height - (Double)App.Current.Resources["ColumnHeaderHeight"]);
+            Canvas.SetTop(LowerColumnHeaderWrapperElement, tvm.Height - Const.ColumnHeaderHeight);
 
             if (columnViewModel != null)
             {
@@ -58,7 +58,7 @@ namespace FlexTable.View
                     {
                         cell = new TextBlock()
                         {
-                            Style = App.Current.Resources["CellStyle"] as Style,
+                            Style = Const.CellStyle
                         };
                         TableCanvas.Children.Add(cell);
                     }
@@ -107,8 +107,8 @@ namespace FlexTable.View
                 UpperColumnHeaderWrapperElement.Width = LowerColumnHeaderWrapperElement.Width = MagnifiedColumn.Width = columnViewModel.Width;
                 UpperColumnHeaderWrapperElement.DataContext = LowerColumnHeaderWrapperElement.DataContext = columnViewModel;
 
-                Canvas.SetTop(UpperPopupElement, (Double)App.Current.Resources["ColumnHeaderHeight"] * 0.2);
-                Canvas.SetTop(LowerPopupElement, columnViewModel.MainPageViewModel.Bounds.Height - (Double)App.Current.Resources["ColumnHeaderHeight"] * 1.7);
+                Canvas.SetTop(UpperPopupElement, Const.ColumnHeaderHeight * 0.2);
+                Canvas.SetTop(LowerPopupElement, columnViewModel.MainPageViewModel.Bounds.Height - Const.ColumnHeaderHeight * 1.7);
 
                 Wrapper.Visibility = Visibility.Visible;
 
@@ -154,7 +154,7 @@ namespace FlexTable.View
         private void Darken_Completed(object sender, object e)
         {
             TableViewModel tvm = (this.DataContext as TableViewModel);
-            TableScrollViewer.Height = tvm.SheetViewHeight / (Double)this.Resources["ZoomScale"] - (Double)App.Current.Resources["ColumnHeaderHeight"] / 2 / (Double)this.Resources["ZoomScale"];
+            TableScrollViewer.Height = tvm.SheetViewHeight / (Double)this.Resources["ZoomScale"] - Const.ColumnHeaderHeight / 2 / (Double)this.Resources["ZoomScale"];
         }
         
         enum Command { Left, Right, Up, Down, None };
@@ -176,7 +176,7 @@ namespace FlexTable.View
 
             Double x = e.GetCurrentPoint(UpperColumnHeaderWrapperElement).Position.X,
                    y = e.GetCurrentPoint(UpperColumnHeaderWrapperElement).Position.Y,
-                   height = (Double)App.Current.Resources["ColumnHeaderHeight"];
+                   height = Const.ColumnHeaderHeight;
 
             Command newSelected = Command.None;
 
@@ -320,7 +320,7 @@ namespace FlexTable.View
             
             Double x = e.GetCurrentPoint(LowerColumnHeaderWrapperElement).Position.X,
                    y = e.GetCurrentPoint(LowerColumnHeaderWrapperElement).Position.Y,
-                   height = (Double)App.Current.Resources["ColumnHeaderHeight"];
+                   height = Const.ColumnHeaderHeight;
 
             Command newSelected = Command.None;
 

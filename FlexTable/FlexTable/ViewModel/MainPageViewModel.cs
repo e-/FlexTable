@@ -31,18 +31,18 @@ namespace FlexTable.ViewModel
             get { return sheet; }
             set { 
                 sheet = value;
-                OnPropertyChanged("Sheet"); 
+                OnPropertyChanged(nameof(Sheet)); 
             }
         }
 
         private SheetViewModel sheetViewModel;
-        public SheetViewModel SheetViewModel { get { return sheetViewModel; } set { sheetViewModel = value; OnPropertyChanged("SheetViewModel"); } }
+        public SheetViewModel SheetViewModel { get { return sheetViewModel; } set { sheetViewModel = value; OnPropertyChanged(nameof(SheetViewModel)); } }
 
         private TableViewModel tableViewModel;
-        public TableViewModel TableViewModel { get { return tableViewModel; } set { tableViewModel = value; OnPropertyChanged("TableViewModel"); } }
+        public TableViewModel TableViewModel { get { return tableViewModel; } set { tableViewModel = value; OnPropertyChanged(nameof(TableViewModel)); } }
 
         private ExplorationViewModel explorationViewModel;
-        public ExplorationViewModel ExplorationViewModel { get { return explorationViewModel; } set { explorationViewModel = value; OnPropertyChanged("ExplorationViewModel"); } }
+        public ExplorationViewModel ExplorationViewModel { get { return explorationViewModel; } set { explorationViewModel = value; OnPropertyChanged(nameof(ExplorationViewModel)); } }
 
         private FilterViewModel filterViewModel;
         public FilterViewModel FilterViewModel { get { return filterViewModel; } set { filterViewModel = value; OnPropertyChanged(nameof(FilterViewModel)); } }
@@ -118,7 +118,7 @@ namespace FlexTable.ViewModel
             ReflectAll(ExplorationViewModel.ViewStatus, reason);
         }
 
-        public async void ReflectAll(ViewStatus viewStatus, ReflectReason reason)
+        public void ReflectAll(ViewStatus viewStatus, ReflectReason reason)
         {
             Boolean isN = viewStatus.IsN;
 
@@ -131,6 +131,10 @@ namespace FlexTable.ViewModel
             {
                 View.SelectionView.ChangeSelecion(null, SelectionChangedType.Clear, false);
                 tableViewModel.SelectedRows = null;
+            }
+            if(reason == ReflectReason.ColumnUnselected && viewStatus.SelectedCount == 0)
+            {
+                View.SelectionView.ChangeSelecion(null, SelectionChangedType.Clear, false);
             }
             
             Logger.Instance.Log($"{reason}");

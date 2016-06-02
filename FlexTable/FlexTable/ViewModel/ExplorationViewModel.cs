@@ -28,7 +28,7 @@ namespace FlexTable.ViewModel
         }
 
         MetadataViewModel metadataViewModel;
-        public MetadataViewModel MetadataViewModel { get { return metadataViewModel; } set { metadataViewModel = value; OnPropertyChanged("MetadataViewModel"); } }
+        public MetadataViewModel MetadataViewModel { get { return metadataViewModel; } set { metadataViewModel = value; OnPropertyChanged(nameof(MetadataViewModel)); } }
 
         private ViewStatus initialViewStatus = new ViewStatus();
         /// <summary>

@@ -52,7 +52,7 @@ namespace FlexTable.View
         {
             if(cellPresenters.Count == 0)
             {
-                Style style = App.Current.Resources["CellStyle"] as Style;
+                Style style = Const.CellStyle;
 
                 foreach (Cell cell in RowViewModel.Cells)
                 {

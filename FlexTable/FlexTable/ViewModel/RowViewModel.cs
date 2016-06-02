@@ -24,8 +24,7 @@ namespace FlexTable.ViewModel
             set
             {
                 index = value;
-                OnPropertyChanged("Index");
-                OnPropertyChanged("IndexFromOne");
+                OnPropertyChanged(nameof(Index));
             }
         }
         public Double StashedY { get; set; }

@@ -40,8 +40,8 @@ namespace FlexTable.ViewModel
         public Double Width => mainPageViewModel.Bounds.Width;
         public Double Height => mainPageViewModel.Bounds.Height;
 
-        public Double SheetViewWidth => mainPageViewModel.TableWidth - (Double)App.Current.Resources["RowHeaderWidth"];
-        public Double SheetViewHeight => mainPageViewModel.Bounds.Height - (Double)App.Current.Resources["ColumnHeaderHeight"] * 2;
+        public Double SheetViewWidth => mainPageViewModel.TableWidth - Const.RowHeaderWidth;
+        public Double SheetViewHeight => mainPageViewModel.Bounds.Height - Const.ColumnHeaderHeight * 2;
 
         private Double paddedSheetWidth;
         public Double PaddedSheetWidth { get { return paddedSheetWidth; } set { paddedSheetWidth = value; OnPropertyChanged(nameof(PaddedSheetWidth)); } }

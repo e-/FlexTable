@@ -60,22 +60,22 @@ namespace FlexTable.ViewModel
         public Boolean IsLineChartVisible { get { return isLineChartVisible; } set { isLineChartVisible = value; OnPropertyChanged(nameof(IsLineChartVisible)); } }
 
         private Boolean isDescriptiveStatisticsVisible = false;
-        public Boolean IsDescriptiveStatisticsVisible { get { return isDescriptiveStatisticsVisible; } set { isDescriptiveStatisticsVisible = value; OnPropertyChanged("IsDescriptiveStatisticsVisible"); } }
+        public Boolean IsDescriptiveStatisticsVisible { get { return isDescriptiveStatisticsVisible; } set { isDescriptiveStatisticsVisible = value; OnPropertyChanged(nameof(IsDescriptiveStatisticsVisible)); } }
         
         private Boolean isDistributionVisible = false;
-        public Boolean IsDistributionVisible { get { return isDistributionVisible; } set { isDistributionVisible = value; OnPropertyChanged("IsDistributionVisible"); } }
+        public Boolean IsDistributionVisible { get { return isDistributionVisible; } set { isDistributionVisible = value; OnPropertyChanged(nameof(IsDistributionVisible)); } }
 
         private Boolean isGroupedBarChartVisible = false;
-        public Boolean IsGroupedBarChartVisible { get { return isGroupedBarChartVisible; } set { isGroupedBarChartVisible = value; OnPropertyChanged("IsGroupedBarChartVisible"); } }
+        public Boolean IsGroupedBarChartVisible { get { return isGroupedBarChartVisible; } set { isGroupedBarChartVisible = value; OnPropertyChanged(nameof(IsGroupedBarChartVisible)); } }
 
         private Boolean isScatterplotVisible = false;
-        public Boolean IsScatterplotVisible { get { return isScatterplotVisible; } set { isScatterplotVisible = value; OnPropertyChanged("IsScatterplotVisible"); } }
+        public Boolean IsScatterplotVisible { get { return isScatterplotVisible; } set { isScatterplotVisible = value; OnPropertyChanged(nameof(IsScatterplotVisible)); } }
 
         private Boolean isPivotTableVisible = false;
-        public Boolean IsPivotTableVisible { get { return isPivotTableVisible; } set { isPivotTableVisible = value; OnPropertyChanged("IsPivotTableVisible"); } }
+        public Boolean IsPivotTableVisible { get { return isPivotTableVisible; } set { isPivotTableVisible = value; OnPropertyChanged(nameof(IsPivotTableVisible)); } }
 
         private Boolean isCorrelationStatisticsVisible = false;
-        public Boolean IsCorrelationStatisticsVisible { get { return isCorrelationStatisticsVisible; } set { isCorrelationStatisticsVisible = value; OnPropertyChanged("IsCorrelationStatisticsVisible"); } }
+        public Boolean IsCorrelationStatisticsVisible { get { return isCorrelationStatisticsVisible; } set { isCorrelationStatisticsVisible = value; OnPropertyChanged(nameof(IsCorrelationStatisticsVisible)); } }
 
         private Boolean isBarChartWarningVisible = false;
         public Boolean IsBarChartWarningVisible { get { return isBarChartWarningVisible; } set { isBarChartWarningVisible = value; OnPropertyChanged(nameof(IsBarChartWarningVisible)); } }

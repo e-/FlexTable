@@ -17,8 +17,8 @@ namespace FlexTable.Model
             set
             {
                 index = value; 
-                OnPropertyChanged("IndexString"); 
-                OnPropertyChanged("Top");
+                OnPropertyChanged(nameof(IndexString)); 
+                OnPropertyChanged(nameof(Top));
             }
         }
 
@@ -26,7 +26,7 @@ namespace FlexTable.Model
         public Double Opacity
         {
             get { return opacity; }
-            set { opacity = value; OnPropertyChanged("Opacity"); }
+            set { opacity = value; OnPropertyChanged(nameof(Opacity)); }
         }
 
         public String IndexString { get { return index.ToString(); } }

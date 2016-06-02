@@ -205,7 +205,6 @@
     <Compile Include="Util\HtmlToTextBlockFormatter.cs" />
     <Compile Include="ViewModel\AnimatingRowViewModel.cs" />
     <Compile Include="ViewModel\ColumnViewModel.cs" />
-    <Compile Include="ViewModel\CustomHistogramViewModel.cs" />
     <Compile Include="ViewModel\ExplorationViewModel.cs" />
     <Compile Include="ViewModel\FilterViewModel.cs" />
     <Compile Include="ViewModel\MainPageViewModel.cs" />
@@ -237,9 +236,6 @@
     <Compile Include="View\CorrelationStatisticsView.xaml.cs">
       <DependentUpon>CorrelationStatisticsView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\CustomHistogramView.xaml.cs">
-      <DependentUpon>CustomHistogramView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="View\DescriptiveStatisticsView.xaml.cs">
       <DependentUpon>DescriptiveStatisticsView.xaml</DependentUpon>
     </Compile>
@@ -261,9 +257,7 @@
     <Compile Include="View\MetedataView.xaml.cs">
       <DependentUpon>MetedataView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\PageLabelView.xaml.cs">
-      <DependentUpon>PageLabelView.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="View\PageLabelView.xaml.cs" />
     <Compile Include="View\PageView.xaml.cs">
       <DependentUpon>PageView.xaml</DependentUpon>
     </Compile>
@@ -363,10 +357,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\CustomHistogramView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="View\DescriptiveStatisticsView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -396,8 +386,8 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="View\PageLabelView.xaml">
-      <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="View\PageView.xaml">
       <Generator>MSBuild:Compile</Generator>

@@ -31,8 +31,8 @@ namespace FlexTable.View
         }
 
         public void Update()
-        {           
-            Style style = App.Current.Resources["CellStyle"] as Style;
+        {
+            Style style = Const.CellStyle;
             Cell cell = AnimatingRowViewModel.RowViewModel.Cells[AnimatingRowViewModel.ColumnViewModel.Index];
 
             CellPresenter = new TextBlock()

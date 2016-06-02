@@ -16,13 +16,13 @@ namespace FlexTable.ViewModel
     public class SheetViewModel : Notifiable
     {
         private Sheet sheet;
-        public Sheet Sheet { get { return sheet; } set { sheet = value; OnPropertyChanged("Sheet"); } }
+        public Sheet Sheet { get { return sheet; } set { sheet = value; OnPropertyChanged(nameof(Sheet)); } }
 
         private Double sheetWidth;
-        public Double SheetWidth { get { return sheetWidth; } private set { sheetWidth = value; OnPropertyChanged("SheetWidth"); } }
+        public Double SheetWidth { get { return sheetWidth; } private set { sheetWidth = value; OnPropertyChanged(nameof(SheetWidth)); } }
 
         private Double sheetHeight;
-        public Double SheetHeight { get { return sheetHeight; } private set { sheetHeight = value; OnPropertyChanged("SheetHeight"); } }
+        public Double SheetHeight { get { return sheetHeight; } private set { sheetHeight = value; OnPropertyChanged(nameof(SheetHeight)); } }
 
         public Double AllRowsSheetHeight { get { return allRowViewModels.Count * Const.RowHeight; } }
 
@@ -216,7 +216,7 @@ namespace FlexTable.ViewModel
             MeasureColumnWidth();
             UpdateColumnX();
 
-            SheetWidth = columnViewModels.Select(c => c.Width).Sum() + (Double)App.Current.Resources["RowHeaderWidth"];
+            SheetWidth = columnViewModels.Select(c => c.Width).Sum() + Const.RowHeaderWidth;
             SheetHeight = allRowViewModels.Count * Const.RowHeight;
         }
 

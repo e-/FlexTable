@@ -346,10 +346,10 @@ namespace FlexTable.View
             IReadOnlyList<InkStroke> strokes = this.inkManager.GetStrokes();
             
             Double centerX = strokes[0].BoundingRect.X + strokes[0].BoundingRect.Width / 2 -
-                (Double)App.Current.Resources["RowHeaderWidth"] + ActivatedScrollViewer.HorizontalOffset;
+                Const.RowHeaderWidth + ActivatedScrollViewer.HorizontalOffset;
 
             Double screenHeight = this.ViewModel.MainPageViewModel.Bounds.Height;
-            Double columnHeaderHeight = (Double)App.Current.Resources["ColumnHeaderHeight"];
+            Double columnHeaderHeight = Const.ColumnHeaderHeight;
 
             ColumnViewModel selectedColumnViewModel = null;
 
@@ -427,10 +427,10 @@ namespace FlexTable.View
         void StrokeAdding(Rect boundingRect)
         {
             Double centerX = boundingRect.X + boundingRect.Width / 2 -
-                (Double)App.Current.Resources["RowHeaderWidth"] + ActivatedScrollViewer.HorizontalOffset;
+                Const.RowHeaderWidth + ActivatedScrollViewer.HorizontalOffset;
 
             Double screenHeight = this.ViewModel.MainPageViewModel.Bounds.Height;
-            Double columnHeaderHeight = (Double)App.Current.Resources["ColumnHeaderHeight"];
+            Double columnHeaderHeight = Const.ColumnHeaderHeight;
 
             ColumnViewModel selectedColumnViewModel = null;
 
@@ -484,10 +484,10 @@ namespace FlexTable.View
             this.inkManager = inkManager;
 
             Double centerX = strokes[0].BoundingRect.X + strokes[0].BoundingRect.Width / 2 -
-                (Double)App.Current.Resources["RowHeaderWidth"] + ActivatedScrollViewer.HorizontalOffset;
+                Const.RowHeaderWidth + ActivatedScrollViewer.HorizontalOffset;
 
             Double screenHeight = this.ViewModel.MainPageViewModel.Bounds.Height;
-            Double columnHeaderHeight = (Double)App.Current.Resources["ColumnHeaderHeight"];
+            Double columnHeaderHeight = Const.ColumnHeaderHeight;
 
             ColumnViewModel selectedColumnViewModel = null;
 

@@ -20,32 +20,32 @@ namespace FlexTable.ViewModel
             get { return column; } 
             set { 
                 column = value;
-                OnPropertyChanged("HeaderName");
+                OnPropertyChanged(nameof(HeaderName));
             }
         }
 
         private Int32 index;
-        public Int32 Index { get { return index; } set { index = value; OnPropertyChanged("Index"); } }
+        public Int32 Index { get { return index; } set { index = value; OnPropertyChanged(nameof(Index)); } }
 
         private Int32 order;
-        public Int32 Order { get { return order; } set { order = value; OnPropertyChanged("Order"); } }
+        public Int32 Order { get { return order; } set { order = value; OnPropertyChanged(nameof(Order)); } }
 
         private Double width;
-        public Double Width { get { return width; } set { width = value; OnPropertyChanged("Width"); } }
+        public Double Width { get { return width; } set { width = value; OnPropertyChanged(nameof(Width)); } }
 
         public Double StashedX { get; set; }
         private Double x;
-        public Double X { get { return x; } set { x = value; OnPropertyChanged("X"); } }
+        public Double X { get { return x; } set { x = value; OnPropertyChanged(nameof(X)); } }
 
         private Boolean isHidden;
-        public Boolean IsHidden { get { return isHidden; } set { isHidden = value; OnPropertyChanged("IsHidden"); } }
+        public Boolean IsHidden { get { return isHidden; } set { isHidden = value; OnPropertyChanged(nameof(IsHidden)); } }
 
         public ColumnType Type { get; set; }
         public CategoricalType CategoricalType { get; set; }
         public String Unit { get; set; }
 
         private Boolean isSelected = false;
-        public Boolean IsSelected { get { return isSelected; } set { isSelected = value; OnPropertyChanged("IsSelected"); } }
+        public Boolean IsSelected { get { return isSelected; } set { isSelected = value; OnPropertyChanged(nameof(IsSelected)); } }
 
         public Boolean IsAscendingSorted { get { return sortOption == SortOption.Ascending; } }
         public Boolean IsDescendingSorted { get { return sortOption == SortOption.Descending; } }
@@ -166,7 +166,7 @@ namespace FlexTable.ViewModel
         public AggregativeFunction.BaseAggregation AggregativeFunction
         {
             get { return aggregativeFunction; }
-            set { aggregativeFunction = value; OnPropertyChanged("HeaderName"); OnPropertyChanged("AggregativeFunction"); }
+            set { aggregativeFunction = value; OnPropertyChanged(nameof(HeaderName)); OnPropertyChanged(nameof(AggregativeFunction)); }
         }
 
         private Boolean isExpanded = false;
@@ -182,7 +182,7 @@ namespace FlexTable.ViewModel
 
         public void UpdateHeaderName()
         {
-            OnPropertyChanged("HeaderName");
+            OnPropertyChanged(nameof(HeaderName));
         }
 
         public void Stash()

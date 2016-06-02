@@ -14,12 +14,12 @@ namespace FlexTable.Model
     public class Sheet : Notifiable
     {
         private String name;
-        public String Name { get { return name; } set { name = value; OnPropertyChanged("Name"); } }
+        public String Name { get { return name; } set { name = value; OnPropertyChanged(nameof(Name)); } }
 
         private List<Column> columns = new List<Column>();
         public List<Column> Columns { get { return columns; } }
 
         private List<Row> rows = new List<Row>();
-        public List<Row> Rows { get { return rows; } private set { rows = value; OnPropertyChanged("Rows"); } }
+        public List<Row> Rows { get { return rows; } private set { rows = value; OnPropertyChanged(nameof(Rows)); } }
     }
 }
