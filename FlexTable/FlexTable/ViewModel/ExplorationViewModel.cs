@@ -38,8 +38,6 @@ namespace FlexTable.ViewModel
 
         public PageView TopPageView { get { return view.ExplorationView.TopPageView; } }
 
-        public PageViewModel DummyPageViewModel { get; set; } // for surpressing initial pageview binding warnings
-        
         List<PageView> selectedPageViews = new List<PageView>();
         public List<PageView> SelectedPageViews => selectedPageViews;
         ColumnViewModel previewingColumnViewModel = null;

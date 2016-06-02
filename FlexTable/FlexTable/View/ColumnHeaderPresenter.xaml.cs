@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FlexTable.ViewModel;
+using System;
 using System.Collections.Generic;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -18,6 +19,8 @@ namespace FlexTable.View
             }
         }
 
+        public TableViewModel ViewModel => (TableViewModel)DataContext;
+
         public ColumnHeaderPresenter()
         {
             this.InitializeComponent();
@@ -32,8 +35,8 @@ namespace FlexTable.View
         {
             if (Items.Children.Count == 0)
             {
-                ViewModel.SheetViewModel sheetViewModel = (this.DataContext as ViewModel.TableViewModel).SheetViewModel;
-                foreach (ViewModel.ColumnViewModel cvm in sheetViewModel.ColumnViewModels)
+                SheetViewModel sheetViewModel = (this.DataContext as TableViewModel).SheetViewModel;
+                foreach (ColumnViewModel cvm in sheetViewModel.ColumnViewModels)
                 {
                     ColumnHeaderCellPresenter chcp = new ColumnHeaderCellPresenter()
                     {

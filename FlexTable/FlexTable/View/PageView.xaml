@@ -187,110 +187,112 @@
                 IsHoldingEnabled="False"
                 >
         <Grid Margin="20 0 20 0">
-            <StackPanel Height="{Binding MainPageViewModel.PageHeight}" Background="White"
+            <StackPanel Background="White"
                         x:Name="ChartWrapper" Visibility="Collapsed" Opacity="0"
-                        Width="{Binding MainPageViewModel.ParagraphWidth}"
+                        Height="{x:Bind ViewModel.MainPageViewModel.PageHeight}" 
+                        Width="{x:Bind ViewModel.MainPageViewModel.ParagraphWidth}"
                         >
                 <ScrollViewer HorizontalScrollBarVisibility="Hidden" HorizontalScrollMode="Auto" 
                               VerticalScrollBarVisibility="Hidden" VerticalScrollMode="Disabled"
                               x:Name="Carousel" Background="Transparent"
-                              Width="{Binding MainPageViewModel.ParagraphWidth}"
+                              Width="{x:Bind ViewModel.MainPageViewModel.ParagraphWidth}"
                               ViewChanged="Carousel_ViewChanged">
-                    <Canvas x:Name="ParagraphContainerCanvasElement" Height="{Binding MainPageViewModel.ParagraphHeight}"
+                    <Canvas x:Name="ParagraphContainerCanvasElement" 
+                            Height="{x:Bind ViewModel.MainPageViewModel.ParagraphHeight}"
                             ManipulationMode="TranslateY,System"
                             >
-                        <StackPanel x:Name="BarChartWrapperElement" Visibility="{Binding IsBarChartVisible, Converter={StaticResource BooleanToVisibilityConverter}}" 
+                        <StackPanel x:Name="BarChartWrapperElement" Visibility="{x:Bind ViewModel.IsBarChartVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" 
                                     x:Uid="PageViewBarChartWrapperElement" Background="Transparent">
                             <local:EditableTitle x:Name="BarChartTitleElement" IsHitTestVisible="False"></local:EditableTitle>
-                            <TextBlock Style="{StaticResource TooManyElementsWarningStyle}" Visibility="{Binding IsBarChartWarningVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <TextBlock Style="{StaticResource TooManyElementsWarningStyle}" Visibility="{x:Bind ViewModel.IsBarChartWarningVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                                 <Run FontFamily="FontAwesome" Foreground="#CC0000">&#xf071;</Run>
                                 <Run x:Uid="PageViewTooManyElements"></Run>
                             </TextBlock>
                             <crayon:BarChart x:Name="BarChartElement" IsHitTestVisible="False" x:Uid="PageViewBarChartElement"/>
                         </StackPanel>
 
-                        <StackPanel x:Name="GroupedBarChartWrapperElement" Visibility="{Binding IsGroupedBarChartVisible, Converter={StaticResource BooleanToVisibilityConverter}}" 
+                        <StackPanel x:Name="GroupedBarChartWrapperElement" Visibility="{x:Bind ViewModel.IsGroupedBarChartVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" 
                                     x:Uid="PageViewGroupedBarChartWrapperElement" Background="Transparent">
                             <local:EditableTitle x:Name="GroupedBarChartTitleElement" IsHitTestVisible="False"></local:EditableTitle>
-                            <TextBlock Style="{StaticResource TooManyElementsWarningStyle}" Visibility="{Binding IsGroupedBarChartWarningVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <TextBlock Style="{StaticResource TooManyElementsWarningStyle}" Visibility="{x:Bind ViewModel.IsGroupedBarChartWarningVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                                 <Run FontFamily="FontAwesome" Foreground="#CC0000">&#xf071;</Run>
                                 <Run x:Uid="PageViewTooManyElements"></Run>
                             </TextBlock>
                             <crayon:GroupedBarChart x:Name="GroupedBarChartElement" IsHitTestVisible="False" x:Uid="PageViewGroupedBarChartElement"/>
                         </StackPanel>
 
-                        <StackPanel x:Name="LineChartWrapperElement" Visibility="{Binding IsLineChartVisible, Converter={StaticResource BooleanToVisibilityConverter}}" 
+                        <StackPanel x:Name="LineChartWrapperElement" Visibility="{x:Bind ViewModel.IsLineChartVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" 
                                     x:Uid="PageViewLineChartWrapperElement" Background="Transparent">
                             <local:EditableTitle x:Name="LineChartTitleElement" IsHitTestVisible="False"></local:EditableTitle>
-                            <TextBlock Style="{StaticResource TooManyElementsWarningStyle}" Visibility="{Binding IsLineChartWarningVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <TextBlock Style="{StaticResource TooManyElementsWarningStyle}" Visibility="{x:Bind ViewModel.IsLineChartWarningVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                                 <Run FontFamily="FontAwesome" Foreground="#CC0000">&#xf071;</Run>
                                 <Run x:Uid="PageViewTooManyElements"></Run>
                             </TextBlock>
                             <crayon:LineChart x:Name="LineChartElement" IsHitTestVisible="False" x:Uid="PageViewLineChartElement"/>
                         </StackPanel>
 
-                        <StackPanel x:Name="DistributionWrapperElement" Visibility="{Binding IsDistributionVisible, Converter={StaticResource BooleanToVisibilityConverter}}" 
+                        <StackPanel x:Name="DistributionWrapperElement" Visibility="{x:Bind ViewModel.IsDistributionVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" 
                                     x:Uid="PageViewDistributionWrapperElement" Background="Transparent">
                             <local:EditableTitle x:Name="DistributionViewTitleElement" IsHitTestVisible="False"></local:EditableTitle>
                             <local:DistributionView x:Name="DistributionViewElement" IsHitTestVisible="False" x:Uid="PageViewDistributionViewElement" />
                         </StackPanel>
 
-                        <StackPanel x:Name="DescriptiveStatisticsWrapperElement" Visibility="{Binding IsDescriptiveStatisticsVisible, Converter={StaticResource BooleanToVisibilityConverter}}" 
+                        <StackPanel x:Name="DescriptiveStatisticsWrapperElement" Visibility="{x:Bind ViewModel.IsDescriptiveStatisticsVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" 
                                     x:Uid="PageViewDescriptiveStatisticsWrapperElement" Background="Transparent">
                             <local:EditableTitle x:Name="DescriptiveStatisticsTitleElement" IsHitTestVisible="False"></local:EditableTitle>
                             <local:DescriptiveStatisticsView x:Name="DescriptiveStatisticsViewElement" x:Uid="PageViewDescriptiveStatisticsViewElement"/>
                         </StackPanel>
 
-                        <StackPanel x:Name="ScatterplotWrapperElement" Visibility="{Binding IsScatterplotVisible, Converter={StaticResource BooleanToVisibilityConverter}}" 
+                        <StackPanel x:Name="ScatterplotWrapperElement" Visibility="{x:Bind ViewModel.IsScatterplotVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" 
                                     x:Uid="PageViewScatterplotWrapperElement" Background="Transparent">
                             <local:EditableTitle x:Name="ScatterplotTitleElement" IsHitTestVisible="False"></local:EditableTitle>
-                            <TextBlock Style="{StaticResource TooManyElementsWarningStyle}" Visibility="{Binding IsScatterplotWarningVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <TextBlock Style="{StaticResource TooManyElementsWarningStyle}" Visibility="{x:Bind ViewModel.IsScatterplotWarningVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                                 <Run FontFamily="FontAwesome" Foreground="#CC0000">&#xf071;</Run>
                                 <Run x:Uid="PageViewTooManyElements"></Run>
                             </TextBlock>
                             <crayon:Scatterplot x:Name="ScatterplotElement" IsHitTestVisible="False"/>
                         </StackPanel>
 
-                        <StackPanel x:Name="PivotTableWrapperElement" Visibility="{Binding IsPivotTableVisible, Converter={StaticResource BooleanToVisibilityConverter}}" 
+                        <StackPanel x:Name="PivotTableWrapperElement" Visibility="{x:Bind ViewModel.IsPivotTableVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" 
                                     x:Uid="PageViewPivotTableWrapperElement" Background="Transparent">
-                            <local:EditableTitle x:Name="PivotTableTitleElement" MaxWidth="{Binding MainPageViewModel.ParagraphWidth}" IsHitTestVisible="False"></local:EditableTitle>
+                            <local:EditableTitle x:Name="PivotTableTitleElement" MaxWidth="{x:Bind ViewModel.MainPageViewModel.ParagraphWidth}" IsHitTestVisible="False"></local:EditableTitle>
                             <local:PivotTableView x:Name="PivotTableViewElement" VerticalAlignment="Center" x:Uid="PageViewPivotTableViewElement"></local:PivotTableView>
                         </StackPanel>
 
-                        <StackPanel x:Name="CorrelationStatisticsWrapperElement" Visibility="{Binding IsCorrelationStatisticsVisible, Converter={StaticResource BooleanToVisibilityConverter}}" 
+                        <StackPanel x:Name="CorrelationStatisticsWrapperElement" Visibility="{x:Bind ViewModel.IsCorrelationStatisticsVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" 
                                     x:Uid="PageViewCorrelationStatisticsWrapperElement" Background="Transparent">
                             <local:EditableTitle x:Name="CorrelationStatisticsTitleElement" IsHitTestVisible="False"></local:EditableTitle>
                             <local:CorrelationStatisticsView x:Name="CorrelationStatisticsViewElement" x:Uid="PageViewCorrelationStatisticsViewElement"/>
                         </StackPanel>
 
-                        <StackPanel Visibility="{Binding IsNoPossibleVisualizationWarningVisible, Converter={StaticResource BooleanToVisibilityConverter}}" 
+                        <StackPanel Visibility="{x:Bind ViewModel.IsNoPossibleVisualizationWarningVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" 
                                     x:Name="NoVisualizationWarningWrapperElement"
                                     x:Uid="PageViewNoVisualizationWarningElement" Background="Transparent">
                             <TextBlock Style="{StaticResource TooManyElementsWarningStyle}" TextAlignment="Center" Margin="0 250 0 0"
-                                       Width="{Binding MainPageViewModel.ParagraphWidth}">
+                                       Width="{x:Bind ViewModel.MainPageViewModel.ParagraphWidth}">
                                 <Run FontFamily="FontAwesome" Foreground="#CC0000">&#xf071;</Run>
                                 <Run x:Uid="PageViewNoVisualization"></Run>
                             </TextBlock>
                         </StackPanel>
                     </Canvas>
                 </ScrollViewer>
-                <local:PageLabelView x:Name="PageLabelViewElement" Height="{Binding MainPageViewModel.PageLabelCarouselHeight}" />
+                <local:PageLabelView x:Name="PageLabelViewElement" Height="{x:Bind ViewModel.MainPageViewModel.PageLabelCarouselHeight}" />
             </StackPanel>
 
-            <Border Height="{Binding MainPageViewModel.PageHeight}" Width="{Binding MainPageViewModel.ParagraphWidth}" Visibility="Visible" x:Name="EmptyTooltip">
+            <Border Height="{x:Bind ViewModel.MainPageViewModel.PageHeight}" Width="{x:Bind ViewModel.MainPageViewModel.ParagraphWidth}" Visibility="Visible" x:Name="EmptyTooltip">
                 <StackPanel VerticalAlignment="Center">
                     <TextBlock FontSize="25" TextAlignment="Center" x:Uid="PageViewSelectColumnToPreview" />
                 </StackPanel>
             </Border>
 
-            <Border Height="{Binding MainPageViewModel.PageHeight}" Width="{Binding MainPageViewModel.ParagraphWidth}" 
+            <Border Height="{x:Bind ViewModel.MainPageViewModel.PageHeight}" Width="{x:Bind ViewModel.MainPageViewModel.ParagraphWidth}" 
                     Visibility="Collapsed" x:Name="UndoTooltip" Background="Transparent" Opacity="0">
                 <StackPanel VerticalAlignment="Center">
-                    <TextBlock FontSize="25" TextAlignment="Center" Visibility="{Binding IsPrimaryUndoMessageVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <TextBlock FontSize="25" TextAlignment="Center" Visibility="{x:Bind ViewModel.IsPrimaryUndoMessageVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <Run FontFamily="FontAwesome">&#xf062;</Run>
                         <Run x:Uid="PageViewUndo1">Swipe up to undo.</Run>
                     </TextBlock>
-                    <TextBlock FontSize="25" TextAlignment="Center" Visibility="{Binding IsPrimaryUndoMessageVisible, Converter={StaticResource BooleanToInvertedVisibilityConverter}}">
+                    <TextBlock FontSize="25" TextAlignment="Center" Visibility="{x:Bind ViewModel.IsPrimaryUndoMessageVisible, Mode=OneWay, Converter={StaticResource BooleanToInvertedVisibilityConverter}}">
                         <Run FontFamily="FontAwesome">&#xf0e2;</Run>
                         <Run x:Uid="PageViewUndo2">Lift the finger to undo.</Run>
                     </TextBlock>
@@ -298,6 +300,6 @@
             </Border>
         </Grid>
         <!--</Border>-->
-        <Image Source="ms-appx:///Assets/horizontal-separator.png" Width="{Binding MainPageViewModel.PageWidth}" Margin="-20 0 -20 0" Height="8" Opacity="0.5"></Image>
+        <Image Source="ms-appx:///Assets/horizontal-separator.png" Width="{x:Bind ViewModel.MainPageViewModel.PageWidth}" Margin="-20 0 -20 0" Height="8" Opacity="0.5"></Image>
     </StackPanel>
 </UserControl>

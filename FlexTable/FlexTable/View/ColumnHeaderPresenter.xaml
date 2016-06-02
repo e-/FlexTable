@@ -10,13 +10,13 @@
     d:DesignWidth="400"
     >
 
-    <Border Background="{StaticResource GridLineBrush}" Width="{Binding SheetViewWidth}">
+    <Border Background="{StaticResource GridLineBrush}" Width="{x:Bind ViewModel.SheetViewWidth, Mode=OneWay}">
         <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden"
                       HorizontalScrollMode="Disabled" VerticalScrollMode="Disabled" Name="HeaderScrollViewer"
                       ZoomMode="Disabled"
-                      Width="{Binding SheetViewWidth}"
+                      Width="{x:Bind ViewModel.SheetViewWidth, Mode=OneWay}"
                       >
-            <Canvas x:Name="Items" Width="{Binding PaddedSheetWidth}"></Canvas>
+            <Canvas x:Name="Items" Width="{x:Bind ViewModel.PaddedSheetWidth, Mode=OneWay}"></Canvas>
         </ScrollViewer>
     </Border>
 </UserControl>

@@ -9,39 +9,39 @@
     d:DesignHeight="300"
     d:DesignWidth="400">
     <UserControl.Resources>
-        <Style TargetType="Border" x:Name="TeaserHeaderStyle">
+        <Style TargetType="Border" x:Key="TeaserHeaderStyle">
             <Setter Property="Padding" Value="5 0" />
         </Style>
-        <Style TargetType="TextBlock" x:Name="TeaserHeaderTextStyle">
+        <Style TargetType="TextBlock" x:Key="TeaserHeaderTextStyle">
             <Setter Property="FontSize" Value="30" />
             <Setter Property="TextAlignment" Value="Center" />
         </Style>
 
-        <Style TargetType="Border" x:Name="TeaserValueStyle">
+        <Style TargetType="Border" x:Key="TeaserValueStyle">
             <Setter Property="Padding" Value="5 10" />
         </Style>
-        <Style TargetType="TextBlock" x:Name="TeaserValueTextStyle">
+        <Style TargetType="TextBlock" x:Key="TeaserValueTextStyle">
             <Setter Property="FontSize" Value="45" />
             <Setter Property="TextAlignment" Value="Center" />
         </Style>
 
-        <Style TargetType="Border" x:Name="HeaderStyle">
+        <Style TargetType="Border" x:Key="HeaderStyle">
             <Setter Property="Padding" Value="5 10" />            
             <Setter Property="Background" Value="#eee" />
             <Setter Property="BorderBrush" Value="#ddd" />
             <Setter Property="BorderThickness" Value="1" />
         </Style>
-        <Style TargetType="TextBlock" x:Name="HeaderTextStyle">
+        <Style TargetType="TextBlock" x:Key="HeaderTextStyle">
             <Setter Property="FontSize" Value="16" />
             <Setter Property="TextAlignment" Value="Center" />
         </Style>
 
-        <Style TargetType="Border" x:Name="ValueStyle">
+        <Style TargetType="Border" x:Key="ValueStyle">
             <Setter Property="Padding" Value="5 10" />
             <Setter Property="BorderBrush" Value="#ddd" />
             <Setter Property="BorderThickness" Value="1" />
         </Style>
-        <Style TargetType="TextBlock" x:Name="ValueTextStyle">
+        <Style TargetType="TextBlock" x:Key="ValueTextStyle">
             <Setter Property="FontSize" Value="16" />
             <Setter Property="TextAlignment" Value="Center" />
         </Style>

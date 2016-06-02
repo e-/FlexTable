@@ -124,7 +124,7 @@
                           ZoomMode="Disabled" Grid.Row="1" Grid.Column="1"
                           ManipulationMode="All"
                           x:Name="AllRowViewer">
-                <Canvas x:Name="AllRowCanvas" Width="{Binding PaddedSheetWidth}" Height="{Binding PaddedSheetHeight}">
+                    <Canvas x:Name="AllRowCanvas" Width="{x:Bind ViewModel.PaddedSheetWidth, Mode=OneWay}" Height="{x:Bind ViewModel.PaddedSheetHeight, Mode=OneWay}">
                 </Canvas>
             </ScrollViewer>
 
@@ -132,7 +132,7 @@
                           ZoomMode="Disabled" Grid.Row="1" Grid.Column="1"
                           ManipulationMode="All"
                           x:Name="GroupedRowViewer">
-                <Canvas x:Name="GroupedRowCanvas" Width="{Binding PaddedSheetWidth}" Height="{Binding PaddedSheetHeight}">
+                    <Canvas x:Name="GroupedRowCanvas" Width="{x:Bind ViewModel.PaddedSheetWidth, Mode=OneWay}" Height="{x:Bind ViewModel.PaddedSheetHeight, Mode=OneWay}">
                 </Canvas>
             </ScrollViewer>
 
@@ -140,7 +140,7 @@
                           ZoomMode="Disabled" Grid.Row="1" Grid.Column="1"
                           x:Name="SelectedRowViewer" ManipulationMode="All"
                           >
-                <Canvas x:Name="SelectedRowCanvas" Width="{Binding PaddedSheetWidth}" Height="{Binding PaddedSheetHeight}">
+                    <Canvas x:Name="SelectedRowCanvas" Width="{x:Bind ViewModel.PaddedSheetWidth, Mode=OneWay}" Height="{x:Bind ViewModel.PaddedSheetHeight, Mode=OneWay}">
                 </Canvas>
             </ScrollViewer>
 
@@ -148,7 +148,7 @@
                         ZoomMode="Disabled" Grid.Row="1" Grid.Column="1"
                         ManipulationMode="All"
                         x:Name="AnimatingRowViewer">
-                <Canvas x:Name="AnimatingRowCanvasElement" Width="{Binding PaddedSheetWidth}" Height="{Binding PaddedSheetHeight}">
+                    <Canvas x:Name="AnimatingRowCanvasElement" Width="{x:Bind ViewModel.PaddedSheetWidth, Mode=OneWay}" Height="{x:Bind ViewModel.PaddedSheetHeight, Mode=OneWay}">
                 </Canvas>
             </ScrollViewer>
 

@@ -40,7 +40,7 @@ namespace FlexTable.ViewModel
         public Double Width => mainPageViewModel.Bounds.Width;
         public Double Height => mainPageViewModel.Bounds.Height;
 
-        public Double SheetViewWidth => mainPageViewModel.TableWidth - Const.RowHeaderWidth;
+        public Double SheetViewWidth => Math.Max(0, mainPageViewModel.TableWidth - Const.RowHeaderWidth);
         public Double SheetViewHeight => mainPageViewModel.Bounds.Height - Const.ColumnHeaderHeight * 2;
 
         private Double paddedSheetWidth;
@@ -80,11 +80,6 @@ namespace FlexTable.ViewModel
         {
             this.mainPageViewModel = mainPageViewModel;
             this.view = view;
-
-            OnPropertyChanged(nameof(Width));
-            OnPropertyChanged(nameof(Height));
-            OnPropertyChanged(nameof(SheetViewWidth));
-            OnPropertyChanged(nameof(SheetViewHeight));
         }
 
         public void Initialize()
@@ -110,6 +105,11 @@ namespace FlexTable.ViewModel
             view.TableView.ReflectState(null);
 
             view.TableView.ColumnIndexer.Update();
+
+            OnPropertyChanged(nameof(Width));
+            OnPropertyChanged(nameof(Height));
+            OnPropertyChanged(nameof(SheetViewWidth));
+            OnPropertyChanged(nameof(SheetViewHeight));
         }
 
         private ViewStatus stashedViewStatus = null;

@@ -25,6 +25,8 @@ namespace FlexTable.View
 {
     public sealed partial class MetedataView : UserControl
     {
+        public MetadataViewModel ViewModel => (MetadataViewModel)DataContext;
+
         public MetedataView()
         {
             this.InitializeComponent();

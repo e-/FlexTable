@@ -59,7 +59,7 @@
 
     <StackPanel Padding="30">
         <TextBlock Style="{StaticResource TitleStyle}">
-            <Run Text="{Binding SheetName}" />
+            <Run Text="{x:Bind ViewModel.SheetName, Mode=OneWay}" />
         </TextBlock>
         <Grid Margin="50 30 50 20">
             <Grid.ColumnDefinitions>
@@ -79,18 +79,18 @@
             </Border>
 
             <Border Grid.Column="0" Grid.Row="1" Style="{StaticResource TeaserValueStyle}">
-                <TextBlock Text="{Binding RowCount}" Style="{StaticResource TeaserValueTextStyle}"/>
+                <TextBlock Text="{x:Bind ViewModel.RowCount, Mode=OneWay}" Style="{StaticResource TeaserValueTextStyle}"/>
             </Border>
             <Border Grid.Column="1" Grid.Row="1" Style="{StaticResource TeaserValueStyle}">
-                <TextBlock Text="{Binding ColumnCount}" Style="{StaticResource TeaserValueTextStyle}"/>
+                <TextBlock Text="{x:Bind ViewModel.ColumnCount, Mode=OneWay}" Style="{StaticResource TeaserValueTextStyle}"/>
             </Border>
         </Grid>
         
         <TextBlock Style="{StaticResource TextBlockStyle}">
             &#x2022; 
-            <Run Text="{Binding CategoricalColumnCount}"></Run>
+            <Run Text="{x:Bind ViewModel.CategoricalColumnCount, Mode=OneWay}"></Run>
             <Run x:Uid="MetadataViewCategoricalColumns"> categorical columns and </Run>
-            <Run Text="{Binding NumericalColumnCount}"></Run> 
+            <Run Text="{x:Bind ViewModel.NumericalColumnCount, Mode=OneWay}"></Run> 
             <Run x:Uid="MetadataViewNumericalColumns"> numerical columns.</Run>
         </TextBlock>
         <Button x:Name="LoadFile" Click="LoadFile_Click" Margin="0 20 0 0" Padding="0 20" x:Uid="MetadataViewOpen" HorizontalAlignment="Stretch">Load a CSV File</Button>

@@ -12,12 +12,12 @@
 
     <Grid x:Name="Wrapper">
         <Canvas x:Name="PageViewElement">
-            <Border Canvas.Top="0" Width="{Binding MainPageViewModel.PageWidth}">
+            <Border Canvas.Top="0" Width="{x:Bind ViewModel.MainPageViewModel.PageWidth, Mode=OneWay}">
                 <StackPanel>
-                    <Border Height="{Binding MainPageViewModel.PageHeight}">
-                        <local:MetedataView DataContext="{Binding MetadataViewModel}"></local:MetedataView>
+                    <Border Height="{x:Bind ViewModel.MainPageViewModel.PageHeight, Mode=OneWay}">
+                        <local:MetedataView DataContext="{x:Bind ViewModel.MetadataViewModel, Mode=OneWay}"></local:MetedataView>
                     </Border>
-                    <Image Source="ms-appx:///Assets/horizontal-separator.png" Width="{Binding MainPageViewModel.PageWidth}" Margin="-20 0 -20 0" Height="8" Opacity="0.5"></Image>
+                    <Image Source="ms-appx:///Assets/horizontal-separator.png" Width="{x:Bind ViewModel.MainPageViewModel.PageWidth, Mode=OneWay}" Margin="-20 0 -20 0" Height="8" Opacity="0.5"></Image>
                 </StackPanel>
             </Border>
         </Canvas>
