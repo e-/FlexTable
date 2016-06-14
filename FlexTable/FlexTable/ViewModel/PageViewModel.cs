@@ -326,9 +326,7 @@ namespace FlexTable.ViewModel
             }
 
             if(!ViewStatus.IsEmpty) pageView.UpdateCarousel(trackPreviousParagraph, null);// firstChartTag?.ToString());
-        }
-
-        
+        }      
         
         #region Visualizaiton Generator
 
@@ -587,7 +585,7 @@ namespace FlexTable.ViewModel
             pageView.BarChartTitle.Clear();
             AddEditableTitle(pageView.BarChartTitle, Const.Loader.GetString("ChartTitleCN"), categorical, numerical);
 
-            pageView.BarChart.YStartsFromZero = false;
+            pageView.BarChart.YStartsFromZero = true; // false;
             pageView.BarChart.HorizontalAxisTitle = categorical.Name;
             pageView.BarChart.VerticalAxisTitle = numerical.HeaderNameWithUnit;
             pageView.BarChart.LegendTitle = categorical.Name;
@@ -632,7 +630,7 @@ namespace FlexTable.ViewModel
             pageView.LineChartTitle.Clear();
             AddEditableTitle(pageView.LineChartTitle, Const.Loader.GetString("ChartTitleCN"), categorical, numerical);
 
-            pageView.LineChart.YStartsFromZero = false;
+            pageView.LineChart.YStartsFromZero = true; // false;
             pageView.LineChart.HorizontalAxisTitle = categorical.Name;
             pageView.LineChart.VerticalAxisTitle = numerical.HeaderNameWithUnit;
             pageView.LineChart.LegendTitle = "";
@@ -937,7 +935,7 @@ namespace FlexTable.ViewModel
             pageView.GroupedBarChartTitle.Clear();
             AddEditableTitle(pageView.GroupedBarChartTitle, Const.Loader.GetString("ChartTitleCNN"), categorical, numerical1, numerical2);
 
-            pageView.GroupedBarChart.YStartsFromZero = false;
+            pageView.GroupedBarChart.YStartsFromZero = true;// false;
             pageView.GroupedBarChart.HorizontalAxisTitle = categorical.Name;
             pageView.GroupedBarChart.VerticalAxisTitle = $"{numerical1.Name} {Const.Loader.GetString("And")} {numerical2.Name} {numerical1.UnitString}";
             pageView.GroupedBarChart.LegendTitle = Const.Loader.GetString("Legend");
@@ -1014,7 +1012,7 @@ namespace FlexTable.ViewModel
             pageView.LineChartTitle.Clear();
             AddEditableTitle(pageView.LineChartTitle, Const.Loader.GetString("ChartTitleCNN"), categorical, numerical1, numerical2);
 
-            pageView.LineChart.YStartsFromZero = false;
+            pageView.LineChart.YStartsFromZero = true; // false;
             pageView.LineChart.HorizontalAxisTitle = categorical.Name;
             pageView.LineChart.VerticalAxisTitle = $"{numerical1.Name} {Const.Loader.GetString("And")} {numerical2.Name} {numerical1.UnitString}";
             pageView.LineChart.LegendTitle = Const.Loader.GetString("Legend");
