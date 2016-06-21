@@ -8,8 +8,8 @@
     <Application.Resources>
         <ResourceDictionary>
             <x:Double x:Key="RowHeight">24</x:Double>
-            <x:Double x:Key="RowHeaderWidth">110</x:Double>
-            <x:Double x:Key="HalfRowHeaderWidth">55</x:Double>
+            <x:Double x:Key="RowHeaderWidth">80</x:Double>
+            <x:Double x:Key="HalfRowHeaderWidth">40</x:Double>
             <x:Double x:Key="ColumnHeaderHeight">70</x:Double>
             <SolidColorBrush x:Key="BrighterGridLineBrush" Color="#F0F0F0" />
             <SolidColorBrush x:Key="GridLineBrush" Color="#EEEEEE" />
@@ -23,7 +23,7 @@
             <Color x:Key="DarkerHighlightColor1">#1B9D8B</Color>
             <SolidColorBrush Color="{StaticResource DarkerHighlightColor1}" x:Key="DarkerHighlightBrush1" />
 
-            <GridLength x:Key="RowHeaderWidthInGridLength">110</GridLength>
+            <GridLength x:Key="RowHeaderWidthInGridLength">80</GridLength>
             <GridLength x:Key="ColumnHeaderHeightInGridLength">70</GridLength>
 
             <Style TargetType="TextBlock" x:Key="CellStyle">
