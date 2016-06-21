@@ -14,7 +14,7 @@
     >
     <UserControl.Resources>
         <QuadraticEase x:Name="EasingFunction" EasingMode="EaseInOut" />
-        <x:Double x:Key="ZoomScale">1.2</x:Double>
+        <x:Double x:Key="ZoomScale">1.0</x:Double>
         <Storyboard x:Name="Darken" Completed="Darken_Completed">
             <ColorAnimation Storyboard.TargetProperty="(Canvas.Background).(SolidColorBrush.Color)" To="#66333333"
                             EasingFunction="{StaticResource EasingFunction}" Duration="00:00:00.2" Storyboard.TargetName="Wrapper" 

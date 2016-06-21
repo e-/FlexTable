@@ -81,7 +81,7 @@ namespace FlexTable.View
             return path;
         }
 
-        const Double AngleSpan = Math.PI / 2 / 9 * 7;
+        const Double AngleSpan = Math.PI / 2 * 8 / 9;
         readonly Color WrapperFillColor = Color.FromArgb(50, 200, 200, 200);
 
         public void Update() // 처음에 초기화하거나 컬럼의 순서가 바뀌면 이게 호출되어야함
@@ -107,7 +107,8 @@ namespace FlexTable.View
                 Path path = null;
                 //TextBlock textBlock = null;
 
-                if (index == 0)
+                path = DrawArc(height, anglePerMenu * index, anglePerMenu * (index + 1));
+                /*if (index == 0)
                 {
                     path = DrawArc(height, 0, anglePerMenu * (index + 1));
                 }
@@ -118,7 +119,8 @@ namespace FlexTable.View
                 else // 5개 이하일때 마지막은 모두 포함하도록
                 {
                     path = DrawArc(height, anglePerMenu * index, Math.PI / 2);
-                }                
+                }               
+                */
                 Canvas.SetTop(path, height);
 
                 IndexHelperElement.Children.Add(path);
