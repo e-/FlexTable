@@ -38,7 +38,9 @@ namespace FlexTable
         RowFiltered,
         RowSelectionChanged,
 
-        PageScrolled
+        PageScrolled,
+
+        Reset
     };
 
     // Define an extension method in a non-nested static class.

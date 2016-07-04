@@ -19,6 +19,7 @@ using FlexTable.ViewModel;
 using Windows.Devices.Input;
 using Windows.UI.Xaml.Media.Animation;
 using FlexTable.Model;
+using FlexTable.Util;
 
 // 사용자 정의 컨트롤 항목 템플릿에 대한 설명은 http://go.microsoft.com/fwlink/?LinkId=234236에 나와 있습니다.
 
@@ -219,7 +220,7 @@ namespace FlexTable.View
                 Boolean processed = ProcessUpperCommand();
                 if(!processed)
                 {
-                    SelectAndCancelThis();
+                    SelectAndCancelHighlight();
                 }
             }
 
@@ -364,7 +365,7 @@ namespace FlexTable.View
 
                 if (!processed)
                 {
-                    SelectAndCancelThis();
+                    SelectAndCancelHighlight();
                 }
             }
 
@@ -448,11 +449,12 @@ namespace FlexTable.View
             }
         }
 
-        void SelectAndCancelThis()
+        void SelectAndCancelHighlight() // 아무 메뉴도 선택하지 않고 바로 떼는 경우 
         {
             TableViewModel tvm = (this.DataContext as TableViewModel);
             var viewModel = tvm.MainPageViewModel.ExplorationViewModel.TopPageView.ViewModel;
 
+            Logger.Instance.Log("column header tapped in ColumnHighlighter");
             if (viewModel.IsEmpty)
             {
                 tvm.CancelIndexing(true);

@@ -68,5 +68,10 @@ namespace FlexTable.View
 
             PageViewElement.Children.Remove(currentTopPageView);
         }        
+
+        public void RemoveNonTopPage(PageView pageView)
+        {
+            PageViewElement.Children.Remove(pageView);
+        }
     }
 }

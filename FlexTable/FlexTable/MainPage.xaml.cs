@@ -71,5 +71,10 @@ namespace FlexTable
         {
             Settings.Instance.AnimationEnabled = AnimationSwitch.IsOn;
         }
+
+        private void HomeButton_Click(object sender, RoutedEventArgs e)
+        {
+            ViewModel.Reset();
+        }
     }
 }

@@ -296,5 +296,36 @@ namespace FlexTable.ViewModel
             dispatcherTimer.Interval = TimeSpan.FromMilliseconds(500);
             dispatcherTimer.Start();
         }    
+
+        public void Reset()
+        {
+            // home button tapped
+
+            if (explorationViewModel.ViewStatus.SelectedCount > 0)
+            {
+                // exploration view에서 올라가 있는 것 다 제거
+                foreach(PageView pageView in ExplorationViewModel.SelectedPageViews)
+                {
+                    view.ExplorationView.RemoveNonTopPage(pageView);
+                }
+
+                // exploration view model 에서 선택된 page view 다 지움
+                ExplorationViewModel.SelectedPageViews.Clear();
+
+                // 빈 view status로 반영
+                ViewStatus emptyViewStatus = new ViewStatus();
+
+                // 현재 preview에 해당하는 page view를 비어있게
+
+                PageView topPageView = view.ExplorationView.TopPageView;
+                PageViewModel topPageViewModel = topPageView.ViewModel;
+
+                topPageViewModel.ViewStatus = emptyViewStatus;
+                topPageViewModel.State = PageViewModel.PageViewState.Empty;
+                topPageView.ReflectState();
+
+                ReflectAll(emptyViewStatus, ReflectReason.Reset);
+            }
+        }
     }
 }

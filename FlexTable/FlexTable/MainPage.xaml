@@ -34,6 +34,12 @@
                         <TranslateTransform X="0" Y="{x:Bind ViewModel.QuarterHeight, Mode=OneWay}" />
                     </view:SelectionView.RenderTransform>
                 </view:SelectionView>
+                <Button x:Name="HomeButton" Click="HomeButton_Click"
+                        Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Left"
+                        Width="50" Height="40" Margin="15" FontSize="25" Padding="0"
+                        Style="{StaticResource FlatIconButtonStyle}">
+                    &#xf015;
+                </Button>
                 <Button x:Name="TogglePreferences" Click="TogglePreferences_Click"
                         Grid.Column="2" VerticalAlignment="Top" HorizontalAlignment="Right"
                         Style="{StaticResource FlatIconButtonStyle}"
