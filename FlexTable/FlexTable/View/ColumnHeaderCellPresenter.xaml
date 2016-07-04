@@ -17,51 +17,72 @@
                              To="{Binding X}" Duration="00:00:00.5" EasingFunction="{StaticResource QuarticEaseInOut}">
             </DoubleAnimation>
         </Storyboard>
-        
+
+        <Style TargetType="TextBlock" x:Key="TypeTextBlockStyle">
+            <Setter Property="HorizontalAlignment" Value="Center"></Setter>
+            <Setter Property="FontSize" Value="8" />
+            <Setter Property="Opacity" Value="0.5" />
+        </Style>
         <util:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
 
     </UserControl.Resources>
-    
-    <Grid Height="{StaticResource ColumnHeaderHeight}" 
-          Width="{x:Bind ViewModel.Width, Mode=OneWay}"
-          x:Name="Wrapper"
-          PointerPressed="Wrapper_PointerPressed"
-          Background="Transparent"
-          >
-        <!--
-          PointerReleased="Wrapper_PointerReleased"
-          PointerCaptureLost="Wrapper_PointerCaptureLost"-->
 
-        <Grid.RenderTransform>
-            <CompositeTransform x:Name="CompositeTransform" />
-        </Grid.RenderTransform>
+    <Grid
+        Width="{x:Bind ViewModel.Width, Mode=OneWay}"
+        Height="{StaticResource ColumnHeaderHeight}"
+        Padding="0 8"
+        x:Name="VerticalGrid"
+        >
+        <StackPanel  
+            x:Name="Wrapper"
+            PointerPressed="Wrapper_PointerPressed"
+            Background="Transparent">
+            <StackPanel.RenderTransform>
+                <CompositeTransform x:Name="CompositeTransform" />
+            </StackPanel.RenderTransform>
 
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
-                    Background="Transparent" IsHitTestVisible="False"
-                    x:Name="ColumnStackPanel"
-                    Padding="0 8"
-                    >
-            <Grid Width="13">
-                <TextBlock FontFamily="FontAwesome" Foreground="{StaticResource HighlightBrush1}" 
-                            FontSize="10" TextAlignment="Right"
-                            Padding="0 3 3 0"
-                            Visibility="{x:Bind ViewModel.IsSelected, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
-                    &#xf00c;
+            <Grid x:Name="TopIndicators">
+                <TextBlock Visibility="{x:Bind ViewModel.IsCategorical, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}" Style="{StaticResource TypeTextBlockStyle}">
+                    <Run FontSize="13">A</Run>bc
+                </TextBlock>
+                <TextBlock Visibility="{x:Bind ViewModel.IsNumerical, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}" Style="{StaticResource TypeTextBlockStyle}">
+                    <Run FontSize="13">1</Run>23
                 </TextBlock>
             </Grid>
-            <TextBlock Text="{x:Bind ViewModel.HeaderName, Mode=OneWay}" VerticalAlignment="Center" FontWeight="Bold"/>
-            <Grid Width="10">
-                <TextBlock FontFamily="FontAwesome"
-                           FontSize="10" TextAlignment="Left"
-                           Padding="3 2 0 0"
-                           Visibility="{x:Bind ViewModel.IsDescendingSorted, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
-                    &#xf0d7;
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
+                        Background="Transparent" IsHitTestVisible="False"
+                        x:Name="ColumnStackPanel"
+                        >
+                <Grid Width="13">
+                    <TextBlock FontFamily="FontAwesome" Foreground="{StaticResource HighlightBrush1}" 
+                                FontSize="10" TextAlignment="Right"
+                                Padding="0 3 3 0"
+                                Visibility="{x:Bind ViewModel.IsSelected, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
+                        &#xf00c;
+                    </TextBlock>
+                </Grid>
+                <TextBlock Text="{x:Bind ViewModel.HeaderName, Mode=OneWay}" VerticalAlignment="Center" FontWeight="Bold"/>
+                <Grid Width="10">
+                    <TextBlock FontFamily="FontAwesome"
+                               FontSize="10" TextAlignment="Left"
+                               Padding="3 2 0 0"
+                               Visibility="{x:Bind ViewModel.IsDescendingSorted, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
+                        &#xf0d7;
+                    </TextBlock>
+                    <TextBlock FontFamily="FontAwesome"
+                               FontSize="10" TextAlignment="Left"
+                               Padding="3 2 0 0"
+                               Visibility="{x:Bind ViewModel.IsAscendingSorted, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
+                        &#xf0d8;
+                    </TextBlock>
+                </Grid>
+            </StackPanel>
+            <Grid x:Name="BottomIndicators">
+                <TextBlock Visibility="{x:Bind ViewModel.IsCategorical, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}" Style="{StaticResource TypeTextBlockStyle}">
+                    <Run FontSize="13">A</Run>bc
                 </TextBlock>
-                <TextBlock FontFamily="FontAwesome"
-                           FontSize="10" TextAlignment="Left"
-                           Padding="3 2 0 0"
-                           Visibility="{x:Bind ViewModel.IsAscendingSorted, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
-                    &#xf0d8;
+                <TextBlock Visibility="{x:Bind ViewModel.IsNumerical, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}" Style="{StaticResource TypeTextBlockStyle}">
+                    <Run FontSize="13">1</Run>23
                 </TextBlock>
             </Grid>
         </StackPanel>

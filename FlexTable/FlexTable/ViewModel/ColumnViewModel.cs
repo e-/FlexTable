@@ -42,6 +42,9 @@ namespace FlexTable.ViewModel
 
         public ColumnType Type { get; set; }
         public CategoricalType CategoricalType { get; set; }
+        public Boolean IsCategorical { get { return Type == ColumnType.Categorical; } }
+        public Boolean IsNumerical { get { return Type == ColumnType.Numerical; } }
+
         public String Unit { get; set; }
 
         private Boolean isSelected = false;

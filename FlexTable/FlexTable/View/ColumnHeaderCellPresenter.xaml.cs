@@ -47,14 +47,19 @@ namespace FlexTable.View
             ViewModel.MainPageViewModel.ExplorationViewModel.PreviewColumn(ViewModel);
         }
 
-        /*private void Wrapper_PointerReleased(object sender, PointerRoutedEventArgs e)
+        public void AlignContent(VerticalAlignment va)
         {
-            ViewModel.MainPageViewModel.TableViewModel.CancelIndexing(true);
+            Wrapper.VerticalAlignment = va;
         }
 
-        private void Wrapper_PointerCaptureLost(object sender, PointerRoutedEventArgs e)
+        public void HideTopTypeIndicators()
         {
-            ViewModel.MainPageViewModel.TableViewModel.CancelIndexing(true);
-        }*/
+            TopIndicators.Visibility = Visibility.Collapsed;
+        }
+
+        public void HideBottomTypeIndicators()
+        {
+            BottomIndicators.Visibility = Visibility.Collapsed;
+        }
     }
 }

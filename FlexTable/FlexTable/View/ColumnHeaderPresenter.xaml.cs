@@ -45,11 +45,13 @@ namespace FlexTable.View
 
                     if (this.Name == "BottomColumnHeaderElement")
                     {
-                        chcp.ContentVerticalAlignment = VerticalAlignment.Top;
+                        chcp.AlignContent(VerticalAlignment.Top);
+                        chcp.HideTopTypeIndicators();
                     }
                     else
                     {
-                        chcp.ContentVerticalAlignment = VerticalAlignment.Bottom;
+                        chcp.AlignContent(VerticalAlignment.Bottom);
+                        chcp.HideBottomTypeIndicators();
                     }
                     Items.Children.Add(chcp);
                 }

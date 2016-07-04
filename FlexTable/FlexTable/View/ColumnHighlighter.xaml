@@ -61,13 +61,20 @@
                 <DiscreteObjectKeyFrame KeyTime="0:0:0.2" Value="Collapsed" />
             </ObjectAnimationUsingKeyFrames>
         </Storyboard>
+        
+        <Style TargetType="TextBlock" x:Key="TypeTextBlockStyle">
+            <Setter Property="HorizontalAlignment" Value="Center"></Setter>
+            <Setter Property="FontSize" Value="8" />
+            <Setter Property="Opacity" Value="0.5" />
+        </Style>
+        
         <util:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </UserControl.Resources>
 
-    <Canvas Background="#00000000" x:Name="Wrapper" Visibility="Collapsed" d:IsHidden="True">
-        <Canvas x:Name="MagnifiedColumn" d:IsHidden="True">
+    <Canvas Background="#00000000" x:Name="Wrapper" Visibility="Collapsed">
+        <Canvas x:Name="MagnifiedColumn">
             <!-- x position -->
-            <StackPanel Background="#00FFFFFF" x:Name="UpperColumn" d:IsHidden="True">
+            <StackPanel Background="#00FFFFFF" x:Name="UpperColumn">
                 <StackPanel.RenderTransformOrigin>0.5 0</StackPanel.RenderTransformOrigin>
                 <StackPanel.RenderTransform>
                     <CompositeTransform ScaleX="1" ScaleY="1" x:Name="UpperCompositeTransform"></CompositeTransform>
@@ -76,88 +83,102 @@
                         x:Name="UpperColumnHeaderWrapperElement" 
                         PointerEntered="UpperColumnHeaderWrapperElement_PointerEntered"
                         PointerMoved="UpperColumnHeaderWrapperElement_PointerMoved"
-                        PointerReleased="UpperColumnHeaderWrapperElement_PointerReleased" d:IsHidden="True"
+                        PointerReleased="UpperColumnHeaderWrapperElement_PointerReleased"
                         >
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
-                        Background="Transparent" d:IsHidden="True"
-                                 VerticalAlignment="Bottom" Padding="0 8"
-                        >
-                        <Grid Width="13" d:IsHidden="True">
-                            <TextBlock FontFamily="FontAwesome" Foreground="{StaticResource HighlightBrush1}" 
-                                FontSize="10" TextAlignment="Right"
-                                Padding="0 3 3 0" 
-                                Visibility="{Binding IsSelected, Converter={StaticResource BooleanToVisibilityConverter}}" d:IsHidden="True">
-                        &#xf00c;
-                            </TextBlock>
-                        </Grid>
-                        <TextBlock Text="{Binding HeaderName}" FontWeight="Bold" d:IsHidden="True"
-                           />
-                        <Grid Width="10" d:IsHidden="True">
-                            <TextBlock FontFamily="FontAwesome"
-                               FontSize="10" TextAlignment="Left"
-                               Padding="3 2 0 0"
-                               Visibility="{Binding IsDescendingSorted, Converter={StaticResource BooleanToVisibilityConverter}}" d:IsHidden="True">
-                        &#xf0d7;
-                            </TextBlock>
-                            <TextBlock FontFamily="FontAwesome"
-                               FontSize="10" TextAlignment="Left"
-                               Padding="3 2 0 0"
-                               Visibility="{Binding IsAscendingSorted, Converter={StaticResource BooleanToVisibilityConverter}}" d:IsHidden="True">
-                        &#xf0d8;
-                            </TextBlock>
-                        </Grid>
+                    <StackPanel VerticalAlignment="Bottom" Padding="0 8">
+                        <TextBlock Visibility="{Binding IsCategorical, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}" Style="{StaticResource TypeTextBlockStyle}">
+                        <Run FontSize="13">A</Run>bc
+                        </TextBlock>
+                        <TextBlock Visibility="{Binding IsNumerical, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}" Style="{StaticResource TypeTextBlockStyle}">
+                        <Run FontSize="13">1</Run>23
+                        </TextBlock>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
+                            Background="Transparent" d:IsHidden="True"
+                            >
+                            <Grid Width="13" d:IsHidden="True">
+                                <TextBlock FontFamily="FontAwesome" Foreground="{StaticResource HighlightBrush1}" 
+                                    FontSize="10" TextAlignment="Right"
+                                    Padding="0 3 3 0" 
+                                    Visibility="{Binding IsSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            &#xf00c;
+                                </TextBlock>
+                            </Grid>
+                            <TextBlock Text="{Binding HeaderName}" FontWeight="Bold" />
+                            <Grid Width="10" d:IsHidden="True">
+                                <TextBlock FontFamily="FontAwesome"
+                                   FontSize="10" TextAlignment="Left"
+                                   Padding="3 2 0 0"
+                                   Visibility="{Binding IsDescendingSorted, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            &#xf0d7;
+                                </TextBlock>
+                                <TextBlock FontFamily="FontAwesome"
+                                   FontSize="10" TextAlignment="Left"
+                                   Padding="3 2 0 0"
+                                   Visibility="{Binding IsAscendingSorted, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            &#xf0d8;
+                                </TextBlock>
+                            </Grid>
+                        </StackPanel>
                     </StackPanel>
                 </Border>
 
                 <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" 
-                              ZoomMode="Disabled" Grid.Row="1" Grid.Column="1"
+                              ZoomMode="Disabled"
                               ManipulationMode="All"
-                              x:Name="TableScrollViewer" d:IsHidden="True"
+                              x:Name="TableScrollViewer"
                               >
-                    <Canvas x:Name="TableCanvas" Height="{Binding PaddedSheetHeight}" d:IsHidden="True">
+                    <Canvas x:Name="TableCanvas" Height="{Binding PaddedSheetHeight}">
                     </Canvas>
                 </ScrollViewer>
-                <Border Height="1000" Background="Transparent" d:IsHidden="True" />
+                <Border Height="1500" Background="Transparent"/>
             </StackPanel>
 
             <Border Background="{StaticResource GridLineBrush}" Height="{StaticResource ColumnHeaderHeight}" 
                     x:Name="LowerColumnHeaderWrapperElement" 
                     PointerEntered="LowerColumnHeaderWrapperElement_PointerEntered"
                     PointerMoved="LowerColumnHeaderWrapperElement_PointerMoved"
-                    PointerReleased="LowerColumnHeaderWrapperElement_PointerReleased" d:IsHidden="True"
+                    PointerReleased="LowerColumnHeaderWrapperElement_PointerReleased"
                     >
                 <Border.RenderTransformOrigin>0.5 1</Border.RenderTransformOrigin>
                 <Border.RenderTransform>
                     <CompositeTransform ScaleX="1" ScaleY="1" x:Name="LowerCompositeTransform"></CompositeTransform>
                 </Border.RenderTransform>
 
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
-                    Background="Transparent" d:IsHidden="True" VerticalAlignment="Top" Padding="0 8"
-                    >
-                    <Grid Width="13" d:IsHidden="True">
-                        <TextBlock FontFamily="FontAwesome" Foreground="{StaticResource HighlightBrush1}" 
+                <StackPanel VerticalAlignment="Top" Padding="0 8">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
+                    Background="Transparent">
+                        <Grid Width="13">
+                            <TextBlock FontFamily="FontAwesome" Foreground="{StaticResource HighlightBrush1}" 
                             FontSize="10" TextAlignment="Right"
                             Padding="0 3 3 0" 
-                            Visibility="{Binding IsSelected, Converter={StaticResource BooleanToVisibilityConverter}}" d:IsHidden="True">
+                            Visibility="{Binding IsSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
                     &#xf00c;
-                        </TextBlock>
-                    </Grid>
-                    <TextBlock Text="{Binding HeaderName}" FontWeight="Bold" d:IsHidden="True"
+                            </TextBlock>
+                        </Grid>
+                        <TextBlock Text="{Binding HeaderName}" FontWeight="Bold" d:IsHidden="True"
                         />
-                    <Grid Width="10" d:IsHidden="True">
-                        <TextBlock FontFamily="FontAwesome"
+                        <Grid Width="10">
+                            <TextBlock FontFamily="FontAwesome"
                             FontSize="10" TextAlignment="Left"
                             Padding="3 2 0 0"
-                            Visibility="{Binding IsDescendingSorted, Converter={StaticResource BooleanToVisibilityConverter}}" d:IsHidden="True">
+                            Visibility="{Binding IsDescendingSorted, Converter={StaticResource BooleanToVisibilityConverter}}">
                     &#xf0d7;
-                        </TextBlock>
-                        <TextBlock FontFamily="FontAwesome"
+                            </TextBlock>
+                            <TextBlock FontFamily="FontAwesome"
                             FontSize="10" TextAlignment="Left"
                             Padding="3 2 0 0"
-                            Visibility="{Binding IsAscendingSorted, Converter={StaticResource BooleanToVisibilityConverter}}" d:IsHidden="True">
+                            Visibility="{Binding IsAscendingSorted, Converter={StaticResource BooleanToVisibilityConverter}}">
                     &#xf0d8;
-                        </TextBlock>
-                    </Grid>
+                            </TextBlock>
+                        </Grid>
+                    </StackPanel>
+
+                    <TextBlock Visibility="{Binding IsCategorical, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}" Style="{StaticResource TypeTextBlockStyle}">
+                    <Run FontSize="13">A</Run>bc
+                    </TextBlock>
+                    <TextBlock Visibility="{Binding IsNumerical, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}" Style="{StaticResource TypeTextBlockStyle}">
+                    <Run FontSize="13">1</Run>23
+                    </TextBlock>
                 </StackPanel>
             </Border>
 

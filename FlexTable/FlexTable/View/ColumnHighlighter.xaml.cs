@@ -154,7 +154,7 @@ namespace FlexTable.View
         private void Darken_Completed(object sender, object e)
         {
             TableViewModel tvm = (this.DataContext as TableViewModel);
-            TableScrollViewer.Height = tvm.SheetViewHeight / (Double)this.Resources["ZoomScale"] - Const.ColumnHeaderHeight / 2 / (Double)this.Resources["ZoomScale"];
+            //TableScrollViewer.Height = tvm.SheetViewHeight / (Double)this.Resources["ZoomScale"] - Const.ColumnHeaderHeight / 2 / (Double)this.Resources["ZoomScale"];
         }
         
         enum Command { Left, Right, Up, Down, None };
