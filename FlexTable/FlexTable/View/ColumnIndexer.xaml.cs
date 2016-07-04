@@ -172,10 +172,13 @@ namespace FlexTable.View
             return index;
         }
 
+        uint lastCapturedPointerId = 0;
+
         private void IndexHelperElement_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             if (TableViewModel.MainPageViewModel.View.TableView.ColumnHighlighter.ColumnViewModel != null) return;
             CapturePointer(e.Pointer);
+            lastCapturedPointerId = e.Pointer.PointerId;
 
             HideHelperStoryboard.Pause();
             ShowHelperStoryboard.Begin();
@@ -217,9 +220,11 @@ namespace FlexTable.View
 
         private void UserControl_PointerMoved(object sender, PointerRoutedEventArgs e)
         {
-            Point position = e.GetCurrentPoint(this).Position;
-
-            TableViewModel.IndexColumn(e.GetCurrentPoint(this).PointerId, GetActivatedIndex(position));
+            if (e.Pointer.PointerId == lastCapturedPointerId)
+            {
+                Point position = e.GetCurrentPoint(this).Position;
+                TableViewModel.IndexColumn(e.GetCurrentPoint(this).PointerId, GetActivatedIndex(position));
+            }
         }
     }
 }
