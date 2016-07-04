@@ -35,11 +35,6 @@ namespace FlexTable.Util
 
             StorageFile file = await fileOpenPicker.PickSingleFileAsync();
             return file;
-            /*if (textFile == null) return null;
-
-            String read = await FileIO.ReadTextAsync(textFile);
-
-            return read;*/
         }
     }
 }

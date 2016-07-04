@@ -7,6 +7,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel.Core;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
 using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
@@ -57,36 +58,18 @@ namespace FlexTable
             view.TryEnterFullScreenMode();
 
             await mainPageViewModel.Initialize();
+
+            AnimationSwitch.IsOn = Settings.Instance.AnimationEnabled;
         }
 
-        /*Boolean isFilterViewVisible = true;
-
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void TogglePreferences_Click(object sender, RoutedEventArgs e)
         {
-            isFilterViewVisible = !isFilterViewVisible;
-            if(isFilterViewVisible)
-            {
-                TableViewColumnDefinition.Width = new GridLength(4, GridUnitType.Star);
-                FilterViewColumnDefinition.Width = new GridLength(1, GridUnitType.Star);
-            }
-            else
-            {
-                TableViewColumnDefinition.Width = new GridLength(5, GridUnitType.Star);
-                FilterViewColumnDefinition.Width = new GridLength(0, GridUnitType.Star);
-            }
-        }
-        */
-
-        private void ToggleFilterButtonElement_Checked(object sender, RoutedEventArgs e)
-        {
-            TableViewColumnDefinition.Width = new GridLength(4.5, GridUnitType.Star);
-            FilterViewColumnDefinition.Width = new GridLength(1, GridUnitType.Star);
+            GlobalSplitView.IsPaneOpen = !GlobalSplitView.IsPaneOpen;
         }
 
-        private void ToggleFilterButtonElement_Unchecked(object sender, RoutedEventArgs e)
+        private void AnimationSwitch_Toggled(object sender, RoutedEventArgs e)
         {
-            TableViewColumnDefinition.Width = new GridLength(5, GridUnitType.Star);
-            FilterViewColumnDefinition.Width = new GridLength(0, GridUnitType.Star);
+            Settings.Instance.AnimationEnabled = AnimationSwitch.IsOn;
         }
     }
 }

@@ -116,9 +116,6 @@ namespace FlexTable.Util
         private static Boolean CheckColumnInfo(String[] values, List<Column> columns)
         {
             return true;
-            /*if (values.Length != columns.Count) return false;
-
-            foreach(String value in )*/
         }
     }
 }

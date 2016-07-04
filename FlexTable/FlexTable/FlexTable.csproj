@@ -182,6 +182,7 @@
     <Compile Include="Util\Logger.cs" />
     <Compile Include="Util\NullableBooleanToBooleanConverter.cs" />
     <Compile Include="Util\Recorder.cs" />
+    <Compile Include="Util\Settings.cs" />
     <Compile Include="ViewModel\CorrelationStatisticsViewModel.cs" />
     <Compile Include="ViewModel\DescriptiveStatisticsViewModel.cs" />
     <Compile Include="Model\GroupedRows.cs" />

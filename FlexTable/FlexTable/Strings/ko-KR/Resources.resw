@@ -201,7 +201,7 @@
     <value>범례</value>
   </data>
   <data name="Max" xml:space="preserve">
-    <value>최대값</value>
+    <value>최댓값</value>
   </data>
   <data name="Mean" xml:space="preserve">
     <value>평균</value>
@@ -222,7 +222,7 @@
     <value>행의 수</value>
   </data>
   <data name="Min" xml:space="preserve">
-    <value>최소값</value>
+    <value>최솟값</value>
   </data>
   <data name="None" xml:space="preserve">
     <value>없음</value>

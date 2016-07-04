@@ -65,7 +65,7 @@
         <Style TargetType="TextBlock" x:Key="TypeTextBlockStyle">
             <Setter Property="HorizontalAlignment" Value="Center"></Setter>
             <Setter Property="FontSize" Value="8" />
-            <Setter Property="Opacity" Value="0.5" />
+            <Setter Property="Opacity" Value="0.3" />
         </Style>
         
         <util:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />

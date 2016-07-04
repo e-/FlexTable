@@ -185,16 +185,14 @@ namespace FlexTable.ViewModel
 
         public async Task Initialize()
         {
-            ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
+            
             Sheet sheet;
 
-            if (localSettings.Values.ContainsKey("recent"))
+            if (Settings.Instance.RecentFile != null)
             {
-                String recent = (String)localSettings.Values["recent"];
-
                 try
                 {
-                    sheet = await CsvLoader.LoadLocal(recent);
+                    sheet = await CsvLoader.LoadLocal(Settings.Instance.RecentFile);
                 }
                 catch
                 {

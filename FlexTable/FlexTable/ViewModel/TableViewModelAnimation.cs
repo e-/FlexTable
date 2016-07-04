@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Media;
+using FlexTable.Util;
 
 namespace FlexTable.ViewModel
 {
@@ -28,8 +29,8 @@ namespace FlexTable.ViewModel
             };
         }
                 
-        const Double DelayBeforeAnimation = 300;
-        const Double UnitAnimationDuration = 500;
+        const Double DelayBeforeAnimation = 200;
+        const Double UnitAnimationDuration = 300;
 
 
         private AnimationScenario PlayCollapseAnimation(List<RowViewModel> previousRowViewModels, List<RowViewModel> currentRowViewModels, ColumnViewModel columnViewModel) 
@@ -303,6 +304,8 @@ namespace FlexTable.ViewModel
         /// <returns></returns>
         private AnimationScenario CreateTableAnimation(ViewStatus viewStatus)
         {
+            if (!Settings.Instance.AnimationEnabled) return AnimationScenario.None;
+
             if (stashedViewStatus == null) return AnimationScenario.None;
 
             //AnimationHint hint = stashedViewStatus.AnimationHint;

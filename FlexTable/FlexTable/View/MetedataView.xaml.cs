@@ -18,6 +18,7 @@ using Windows.UI.Xaml.Navigation;
 using Windows.Storage.Streams;
 using FlexTable.Model;
 using FlexTable.ViewModel;
+using FlexTable.Util;
 
 // 사용자 정의 컨트롤 항목 템플릿에 대한 설명은 http://go.microsoft.com/fwlink/?LinkId=234236에 나와 있습니다.
 
@@ -39,8 +40,7 @@ namespace FlexTable.View
                 return;
             Sheet sheet = await Util.CsvLoader.Load(file);
 
-            ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
-            localSettings.Values["recent"] = file.Name;
+            Settings.Instance.RecentFile = file.Name;
 
             MainPageViewModel mpvm = (DataContext as MetadataViewModel).MainPageViewModel;
             
