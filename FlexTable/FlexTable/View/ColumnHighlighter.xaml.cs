@@ -116,19 +116,22 @@ namespace FlexTable.View
                 TableScrollViewer.Height = tvm.SheetViewHeight;
                 TableScrollViewer.ChangeView(null, tvm.ScrollTop, null, true);
 
-                if (columnViewModel.IsHidden)
+                if (Const.PopupMenuEnabled)
                 {
-                    UpperRightMenuElement.Visibility = Visibility.Collapsed;
-                    UpperLeftMenuElement.Visibility = Visibility.Visible;
-                    LowerRightMenuElement.Visibility = Visibility.Collapsed;
-                    LowerLeftMenuElement.Visibility = Visibility.Visible;
-                }
-                else
-                {
-                    UpperRightMenuElement.Visibility = Visibility.Visible;
-                    UpperLeftMenuElement.Visibility = Visibility.Collapsed;
-                    LowerRightMenuElement.Visibility = Visibility.Visible;
-                    LowerLeftMenuElement.Visibility = Visibility.Collapsed;
+                    if (columnViewModel.IsHidden)
+                    {
+                        UpperRightMenuElement.Visibility = Visibility.Collapsed;
+                        UpperLeftMenuElement.Visibility = Visibility.Visible;
+                        LowerRightMenuElement.Visibility = Visibility.Collapsed;
+                        LowerLeftMenuElement.Visibility = Visibility.Visible;
+                    }
+                    else
+                    {
+                        UpperRightMenuElement.Visibility = Visibility.Visible;
+                        UpperLeftMenuElement.Visibility = Visibility.Collapsed;
+                        LowerRightMenuElement.Visibility = Visibility.Visible;
+                        LowerLeftMenuElement.Visibility = Visibility.Collapsed;
+                    }
                 }
 
                 Brighten.Stop();
@@ -142,13 +145,16 @@ namespace FlexTable.View
                     Brighten.Begin();
                 Darken.Stop();
 
-                UpperDownMenuElement.Hide();
-                UpperLeftMenuElement.Hide();
-                UpperRightMenuElement.Hide();
+                if (Const.PopupMenuEnabled)
+                {
+                    UpperDownMenuElement.Hide();
+                    UpperLeftMenuElement.Hide();
+                    UpperRightMenuElement.Hide();
 
-                LowerUpMenuElement.Hide();
-                LowerLeftMenuElement.Hide();
-                LowerRightMenuElement.Hide();
+                    LowerUpMenuElement.Hide();
+                    LowerLeftMenuElement.Hide();
+                    LowerRightMenuElement.Hide();
+                }
             }
         }
         
@@ -164,6 +170,7 @@ namespace FlexTable.View
         {
             if (e.Pointer.PointerDeviceType != PointerDeviceType.Touch) return;
             UpperColumnHeaderWrapperElement.CapturePointer(e.Pointer);
+            if (!Const.PopupMenuEnabled) return;
             UpperDownMenuElement.Show();
             UpperLeftMenuElement.Show();
             UpperRightMenuElement.Show();
@@ -232,6 +239,8 @@ namespace FlexTable.View
 
         public Boolean ProcessUpperCommand()
         {
+            if (!Const.PopupMenuEnabled) return false;
+
             TableViewModel tvm = (this.DataContext as TableViewModel);
             Boolean processed = false;
 
@@ -308,6 +317,7 @@ namespace FlexTable.View
         {
             if (e.Pointer.PointerDeviceType != PointerDeviceType.Touch) return;
             LowerColumnHeaderWrapperElement.CapturePointer(e.Pointer);
+            if (!Const.PopupMenuEnabled) return;
             LowerUpMenuElement.Show();
             LowerRightMenuElement.Show();
             LowerLeftMenuElement.Show();
@@ -377,6 +387,8 @@ namespace FlexTable.View
 
         public Boolean ProcessLowerCommand()
         {
+            if (!Const.PopupMenuEnabled) return false;
+
             TableViewModel tvm = (this.DataContext as TableViewModel);
             Boolean processed = false;
 

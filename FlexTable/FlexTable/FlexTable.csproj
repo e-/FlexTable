@@ -169,6 +169,7 @@
     <Compile Include="Crayon\Const.cs" />
     <Compile Include="Crayon\Event.cs" />
     <Compile Include="Crayon\Key.cs" />
+    <Compile Include="Events.cs" />
     <Compile Include="IMainPage.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
