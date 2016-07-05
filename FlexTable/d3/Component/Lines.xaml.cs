@@ -102,7 +102,7 @@ namespace d3.Component
             foreach (Object datum in Data.List)
             {
                 Path path;
-                Int32 localIndex = index;
+                Object localDatum = datum;
 
                 if (LineCanvas.Children.Count > index)
                 {
@@ -124,7 +124,7 @@ namespace d3.Component
                     {
                         path.PointerPressed += delegate (object sender, PointerRoutedEventArgs e)
                         {
-                            LinePointerPressed(path, e, Data.List[localIndex], localIndex);
+                            LinePointerPressed(path, e, localDatum);
                         };
                     }
 
@@ -132,7 +132,7 @@ namespace d3.Component
                     {
                         path.PointerReleased += delegate (object sender, PointerRoutedEventArgs e)
                         {
-                            LinePointerReleased(path, e, Data.List[localIndex], localIndex);
+                            LinePointerReleased(path, e, localDatum);
                         };
                     }
 
@@ -140,7 +140,7 @@ namespace d3.Component
                     {
                         path.Tapped += delegate (object sender, TappedRoutedEventArgs e)
                         {
-                            LineTapped(path, e, Data.List[localIndex], localIndex);
+                            LineTapped(path, e, localDatum);
                         };
                     }
 

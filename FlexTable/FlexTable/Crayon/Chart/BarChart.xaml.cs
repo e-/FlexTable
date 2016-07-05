@@ -470,7 +470,7 @@ namespace FlexTable.Crayon.Chart
             drawable.RemoveAllStrokes();
         }
 
-        void RectangleElement_RectangleTapped(object sender, object e, object datum, Int32 index)
+        void RectangleElement_RectangleTapped(object sender, object e, object datum)
         {
             TappedRoutedEventArgs args = e as TappedRoutedEventArgs;
             //if (args.PointerDeviceType == PointerDeviceType.Pen) return;

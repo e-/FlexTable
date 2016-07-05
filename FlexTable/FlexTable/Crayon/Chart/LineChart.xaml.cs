@@ -436,7 +436,7 @@ namespace FlexTable.Crayon.Chart
         }
 
 
-        private void LegendHandleRectangleElement_RectangleTapped(object sender, object e, object datum, int index)
+        private void LegendHandleRectangleElement_RectangleTapped(object sender, object e, object datum)
         {
             TappedRoutedEventArgs args = e as TappedRoutedEventArgs;
             LineChartDatum lineChartDatum = datum as LineChartDatum;

@@ -83,5 +83,21 @@ namespace FlexTable.Crayon.Chart
         {
             return Key.ToString();
         }
+
+        public override bool Equals(object obj)
+        {
+            if (!(obj is BarChartDatum)) return false;
+            if (Parent == null)
+            {
+                return Key == ((BarChartDatum)obj).Key;
+            }
+            else
+            {
+                BarChartDatum o = (BarChartDatum)obj;
+                if (o.Parent == null) return false;
+
+                return Key == o.Key && Parent.Key == o.Parent.Key;
+            }
+        }
     }
 }

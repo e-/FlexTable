@@ -137,64 +137,45 @@ namespace d3.Component
 
         public void Update(TransitionType transitionType)
         {
-
             Int32 index = 0;
             Storyboard sb = new Storyboard()
             {
-                //BeginTime = Const.AnimationDelay
             };
+
+            /***
+             * 현재 데이터: Data.List
+             * 현재 화면상 요소: RectangleCanvas.Children
+             * 화면 상 요소 의 데이터는 Tag로 참조 가능
+             ***/
+
+            Boolean[] flag = new Boolean[Data.List.Count];
+
+            List<Rectangle> exitSelection = new List<Rectangle>();
+            Dictionary<Object, Rectangle> map = new Dictionary<object, Rectangle>();
+
+            foreach(UIElement ele in RectangleCanvas.Children)
+            {
+                Rectangle rect = ele as Rectangle;
+                if(rect.Tag != null)
+                    map[rect.Tag] = rect;
+            }
 
             foreach (Object datum in Data.List)
             {
-                Rectangle rect = null;
-
-                if (index >= RectangleCanvas.Children.Count) // 없는 사각형은 새로 만듦
+                Object matchedKey = null, matchedValue = null;
+                foreach(Object key in map.Keys)
                 {
-                    Int32 localIndex = index;
-
-                    rect = new Rectangle()
+                    if(key.Equals(datum))
                     {
-                        Width = 1, //WidthGetter(datum, index),
-                        Height = 1, //HeightGetter(datum, index),
-                        Fill = ColorGetter == null ? new SolidColorBrush(Colors.LightGray) : new SolidColorBrush(ColorGetter(datum, index)),
-                        Opacity = OpacityGetter == null ? 1 : OpacityGetter(datum, index),
-                        RenderTransform = new CompositeTransform()
-                    };
-                    
-                    rect.Tapped += delegate (object sender, TappedRoutedEventArgs e)
-                    {
-                        if (RectangleTapped != null)
-                        {
-                            RectangleTapped(rect, e, Data.List[localIndex], localIndex);
-                        }
-                    };
-                
-                    if (RectangleManipulationDelta != null)
-                    {
-                        rect.ManipulationMode = ManipulationModes.TranslateY | ManipulationModes.System;
-                        rect.ManipulationDelta += delegate (object sender, ManipulationDeltaRoutedEventArgs e)
-                        {
-                            RectangleManipulationDelta(sender, e, Data.List[localIndex], localIndex);
-                        };
+                        matchedKey = key;
+                        matchedValue = map[key];
+                        break;
                     }
-
-                    if (RectangleManipulationCompleted != null)
-                    {
-                        rect.ManipulationCompleted += delegate (object sender, ManipulationCompletedRoutedEventArgs e)
-                        {
-                            RectangleManipulationCompleted(sender, e, Data.List[localIndex], localIndex);
-                        };
-                    }
-
-                    (rect.RenderTransform as CompositeTransform).TranslateX = XGetter(datum, index);
-                    (rect.RenderTransform as CompositeTransform).TranslateY = YGetter(datum, index);
-                    (rect.RenderTransform as CompositeTransform).ScaleX = WidthGetter(datum, index);
-                    (rect.RenderTransform as CompositeTransform).ScaleY = HeightGetter(datum, index);
-                    RectangleCanvas.Children.Add(rect);
                 }
-                else
+                if(matchedValue != null) // 이미 있음 -> update
                 {
-                    rect = RectangleCanvas.Children[index] as Rectangle;
+                    Rectangle rect = matchedValue as Rectangle;
+                    rect.Tag = datum;
                     rect.Visibility = Visibility.Visible;
 
                     Double newWidth = WidthGetter(datum, index);
@@ -277,14 +258,73 @@ namespace d3.Component
                             }
                         }
                     }
+                    
+                    map.Remove(matchedKey);
+                }
+                else // 없음 -> enter
+                {
+                    Rectangle rect = null;
+
+                    IEnumerable<Rectangle> empty = RectangleCanvas.Children.Where(ele => (ele as Rectangle).Tag == null).Select(ele => ele as Rectangle);
+
+                    if(empty.Count() > 0)
+                    {
+                        rect = empty.First();
+                        rect.Visibility = Visibility.Visible;
+                    }
+                    else
+                    {
+                        rect = new Rectangle();
+                        RectangleCanvas.Children.Add(rect);
+                    }
+
+                    Object localDatum = datum;
+
+                    rect.Width = 1;//WidthGetter(datum, index),
+                    rect.Height = 1; //HeightGetter(datum, index),
+                    rect.Fill = ColorGetter == null ? new SolidColorBrush(Colors.LightGray) : new SolidColorBrush(ColorGetter(datum, index));
+                    rect.Opacity = OpacityGetter == null ? 1 : OpacityGetter(datum, index);
+                    rect.RenderTransform = new CompositeTransform();
+                    rect.Tag = localDatum;
+
+                    rect.Tapped += delegate (object sender, TappedRoutedEventArgs e)
+                    {
+                        if (RectangleTapped != null)
+                        {
+                            RectangleTapped(rect, e, localDatum);
+                        }
+                    };
+
+                    if (RectangleManipulationDelta != null)
+                    {
+                        rect.ManipulationMode = ManipulationModes.TranslateY | ManipulationModes.System;
+                        rect.ManipulationDelta += delegate (object sender, ManipulationDeltaRoutedEventArgs e)
+                        {
+                            RectangleManipulationDelta(sender, e, localDatum);
+                        };
+                    }
+
+                    if (RectangleManipulationCompleted != null)
+                    {
+                        rect.ManipulationCompleted += delegate (object sender, ManipulationCompletedRoutedEventArgs e)
+                        {
+                            RectangleManipulationCompleted(sender, e, localDatum);
+                        };
+                    }
+
+                    (rect.RenderTransform as CompositeTransform).TranslateX = XGetter(datum, index);
+                    (rect.RenderTransform as CompositeTransform).TranslateY = YGetter(datum, index);
+                    (rect.RenderTransform as CompositeTransform).ScaleX = WidthGetter(datum, index);
+                    (rect.RenderTransform as CompositeTransform).ScaleY = HeightGetter(datum, index);
                 }
 
                 index++;                    
             }
 
-            for (Int32 i = RectangleCanvas.Children.Count - 1; i >= index; --i)
+            foreach(KeyValuePair<Object, Rectangle> kv in map)
             {
-                RectangleCanvas.Children[i].Visibility = Visibility.Collapsed;
+                kv.Value.Visibility = Visibility.Collapsed;
+                kv.Value.Tag = null;
             }
 
             if (previousStoryboard != null) previousStoryboard.Pause();

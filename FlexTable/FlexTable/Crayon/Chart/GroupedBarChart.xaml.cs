@@ -498,7 +498,7 @@ namespace FlexTable.Crayon.Chart
             drawable.RemoveAllStrokes();
         }
 
-        private void LegendHandleRectangleElement_RectangleTapped(object sender, object e, object datum, int index)
+        private void LegendHandleRectangleElement_RectangleTapped(object sender, object e, object datum)
         {
             if (secondColumnViewModel == null) return;
 
@@ -518,7 +518,7 @@ namespace FlexTable.Crayon.Chart
             args.Handled = true;
         }
 
-        void HandleRectangleElement_RectangleTapped(object sender, object e, object datum, Int32 index)
+        void HandleRectangleElement_RectangleTapped(object sender, object e, object datum)
         {
             TappedRoutedEventArgs args = e as TappedRoutedEventArgs;
             GroupedBarChartDatum groupedBarChartDatum = (datum as BarChartDatum).Parent; // GroupedBarChartDatum;

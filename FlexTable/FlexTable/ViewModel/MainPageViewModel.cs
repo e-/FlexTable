@@ -252,7 +252,7 @@ namespace FlexTable.ViewModel
 
             var dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
 
-            ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[3]);
+            ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[2]);
             
             DispatcherTimer dispatcherTimer = new DispatcherTimer();
             dispatcherTimer.Tick += (sender, e) =>
@@ -265,8 +265,7 @@ namespace FlexTable.ViewModel
                 //PageView topPageView = ExplorationViewModel.SelectedPageViews.Last();
                 //topPageView.SelectionChanged(null, sheetViewModel.FilteredRows.Where((r, index) => index < 50).ToList(), SelectionChangedType.Add, ReflectReason.ChartSelection);
 
-                return;
-                ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[2]);
+                ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[1]);
 
                 DispatcherTimer dispatcherTimer2 = new DispatcherTimer();
                 dispatcherTimer2.Tick += (sender2, e2) =>

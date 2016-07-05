@@ -236,7 +236,7 @@ namespace FlexTable.Crayon.Chart
             LegendHandleRectangleElement.RectangleTapped += LegendHandleRectangleElement_RectangleTapped;
         }
 
-        private void LegendHandleRectangleElement_RectangleTapped(object sender, object e, object datum, int index)
+        private void LegendHandleRectangleElement_RectangleTapped(object sender, object e, object datum)
         {
             TappedRoutedEventArgs args = e as TappedRoutedEventArgs;
             IEnumerable<ScatterplotDatum> selected = Data.Where(d => d.Key == datum);
