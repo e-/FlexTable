@@ -291,7 +291,7 @@ namespace d3.Component
                     {
                         if (RectangleTapped != null)
                         {
-                            RectangleTapped(rect, e, localDatum);
+                            RectangleTapped(rect, e, rect.Tag);
                         }
                     };
 
@@ -300,7 +300,7 @@ namespace d3.Component
                         rect.ManipulationMode = ManipulationModes.TranslateY | ManipulationModes.System;
                         rect.ManipulationDelta += delegate (object sender, ManipulationDeltaRoutedEventArgs e)
                         {
-                            RectangleManipulationDelta(sender, e, localDatum);
+                            RectangleManipulationDelta(sender, e, rect.Tag);
                         };
                     }
 
@@ -308,7 +308,7 @@ namespace d3.Component
                     {
                         rect.ManipulationCompleted += delegate (object sender, ManipulationCompletedRoutedEventArgs e)
                         {
-                            RectangleManipulationCompleted(sender, e, localDatum);
+                            RectangleManipulationCompleted(sender, e, rect.Tag);
                         };
                     }
 
