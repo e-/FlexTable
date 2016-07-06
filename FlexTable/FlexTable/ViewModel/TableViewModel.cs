@@ -468,6 +468,12 @@ namespace FlexTable.ViewModel
             {
                 Category category = rowViewModel.Cells[columnViewModel.Index].Content as Category;
                 category.IsKept = false;
+                ColumnViewModel cvm = category.ColumnViewModel;
+
+                if (cvm.Categories.All(c => c.IsKept)) cvm.IsKept = true;
+                else if (cvm.Categories.All(c => !c.IsKept)) cvm.IsKept = false;
+                else cvm.IsKept = null;
+
                 mainPageViewModel.SheetViewModel.UpdateFilter();
                 mainPageViewModel.ReflectAll(ReflectReason.RowFiltered);
             }            
