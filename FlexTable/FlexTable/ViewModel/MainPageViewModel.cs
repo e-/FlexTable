@@ -300,6 +300,8 @@ namespace FlexTable.ViewModel
         {
             // home button tapped
 
+            view.SelectionView.ChangeSelecion(null, SelectionChangedType.Clear, false);
+
             if (explorationViewModel.ViewStatus.SelectedCount > 0)
             {
                 // exploration view에서 올라가 있는 것 다 제거
