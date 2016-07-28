@@ -337,16 +337,17 @@ namespace FlexTable.ViewModel
         uint ignoredPointerId;
         uint activatedPointerId; // for cancel indexing
 
-        public void IndexColumn(uint id, Int32 index) //Double y)
+        public void IndexColumn(uint id, Int32 index)
         {
             if (ignoredPointerId == id) return;
 
             Double totalHeight = SheetViewHeight;
-            Int32 columnIndex = index; // (Int32)Math.Floor(y / totalHeight * SheetViewModel.ColumnViewModels.Count);
+            Int32 columnIndex = index;
 
             if (columnIndex < 0 || columnIndex >= SheetViewModel.ColumnViewModels.Count) return;
 
             ColumnViewModel columnViewModel = SheetViewModel.ColumnViewModels.Where(cvm => !cvm.IsSelected).OrderBy(cvm => cvm.Order).ElementAt(index);
+            activatedPointerId = id;
 
             if (view.TableView.ColumnHighlighter.ColumnViewModel != columnViewModel)
             {
@@ -359,8 +360,6 @@ namespace FlexTable.ViewModel
 
                 mainPageViewModel.ExplorationViewModel.PreviewColumn(columnViewModel);
             }
-
-            activatedPointerId = id;
         }
 
         /// <summary>

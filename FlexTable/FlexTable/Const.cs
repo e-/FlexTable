@@ -17,6 +17,7 @@ namespace FlexTable
         public static Double RowHeaderWidth = 100;
         public static Style CellStyle;
         public const Boolean PopupMenuEnabled = false;
+        public static Double ColumnIndexerChatteringThreshold = 200;
 
         public static ResourceLoader Loader = new ResourceLoader();
 

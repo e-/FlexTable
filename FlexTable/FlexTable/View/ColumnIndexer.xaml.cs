@@ -12,6 +12,7 @@ using Windows.UI;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
 using Windows.UI.Input;
+using FlexTable.Util;
 
 // 사용자 정의 컨트롤 항목 템플릿에 대한 설명은 http://go.microsoft.com/fwlink/?LinkId=234236에 나와 있습니다.
 
@@ -197,33 +198,66 @@ namespace FlexTable.View
             if (viewModel.IsEmpty)
             {
                 TableViewModel.CancelIndexing(true);
+                lastIndex = -1;
+                lastStayedIndex = -1;
                 return;
             }
 
             if (viewModel.IsNoPossibleVisualizationWarningVisible)
             {
                 TableViewModel.CancelIndexing(true);
+                lastIndex = -1;
+                lastStayedIndex = -1;
                 return;
+            }
+
+            Debug.WriteLine((DateTime.Now - indexedDateTime).TotalMilliseconds);
+
+            if(lastStayedIndex >= 0 && (DateTime.Now - indexedDateTime).TotalMilliseconds <= Const.ColumnIndexerChatteringThreshold)
+            {
+                TableViewModel.IndexColumn(e.GetCurrentPoint(this).PointerId, lastStayedIndex);
+                Debug.WriteLine("chattering occurred");
+                Logger.Instance.Log($"chattering occurred, threshold: {Const.ColumnIndexerChatteringThreshold}");
             }
 
             viewModel.State = PageViewModel.PageViewState.Selected;
             viewModel.StateChanged(tvm.MainPageViewModel.ExplorationViewModel.TopPageView);
             TableViewModel.CancelIndexing(true);
+            lastIndex = -1;
+            lastStayedIndex = -1;
         }
 
         private void UserControl_PointerCanceled(object sender, PointerRoutedEventArgs e)
         {
             TableViewModel.CancelIndexing(true);
+            lastIndex = -1;
+            lastStayedIndex = -1;
             ShowHelperStoryboard.Pause();
             HideHelperStoryboard.Begin();
         }
+
+        Int32 lastIndex = -1;
+        Int32 lastStayedIndex = -1;
+        DateTime indexedDateTime = DateTime.MinValue;
 
         private void UserControl_PointerMoved(object sender, PointerRoutedEventArgs e)
         {
             if (e.Pointer.PointerId == lastCapturedPointerId)
             {
                 Point position = e.GetCurrentPoint(this).Position;
-                TableViewModel.IndexColumn(e.GetCurrentPoint(this).PointerId, GetActivatedIndex(position));
+                Int32 activatedIndex = GetActivatedIndex(position);
+                TableViewModel.IndexColumn(e.GetCurrentPoint(this).PointerId, activatedIndex);
+                
+                if(lastIndex != activatedIndex) // 다르다.
+                {
+                    if((DateTime.Now - indexedDateTime).TotalMilliseconds >= Const.ColumnIndexerChatteringThreshold) // threshold보다 길면
+                    {
+                        lastStayedIndex = lastIndex;
+                    }
+
+                    indexedDateTime = DateTime.Now;
+                    lastIndex = activatedIndex;
+                }
             }
         }
     }
