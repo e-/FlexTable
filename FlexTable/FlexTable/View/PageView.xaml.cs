@@ -116,8 +116,9 @@ namespace FlexTable.View
             ViewModel.MainPageViewModel.View.SelectionView.ChangeSelecion(rows, selectionChangedType, true);
         }
 
-        private void FilterOut(object sender, IEnumerable<Category> categories)
+        private void FilterOut(object sender, IEnumerable<Category> categoriesRaw)
         {
+            List<Category> categories = categoriesRaw.ToList();
             foreach(Category category in categories)
             {
                 category.IsKept = false;

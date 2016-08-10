@@ -69,7 +69,7 @@ namespace FlexTable.View
             {
                 ColumnViewModel cvm = c.ColumnViewModel;
 
-                if (cvm.Categories.Count(sb => sb.IsKept) > 1)
+                if (cvm.Categories.Count(sb => sb.IsKept && sb != c) >= 1)
                 {
                     c.IsKept = false;
                     cb.IsChecked = false;

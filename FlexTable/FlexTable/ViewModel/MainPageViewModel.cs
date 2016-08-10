@@ -275,8 +275,7 @@ namespace FlexTable.ViewModel
                     ExplorationViewModel.TopPageView.ViewModel.State = PageViewModel.PageViewState.Selected;
                     ExplorationViewModel.PageViewStateChanged(ExplorationViewModel.TopPageView.ViewModel, ExplorationViewModel.TopPageView);
 
-                    return;
-                    ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[1]);
+                    ExplorationViewModel.PreviewColumn(SheetViewModel.ColumnViewModels[3]);
 
                     DispatcherTimer dispatcherTimer3 = new DispatcherTimer();
                     dispatcherTimer3.Tick += (sender3, e3) =>

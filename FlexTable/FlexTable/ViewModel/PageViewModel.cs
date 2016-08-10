@@ -148,8 +148,14 @@ namespace FlexTable.ViewModel
 
             List<GroupedRows> groupedRows = ViewStatus.GroupedRows;
             Object firstChartTag = "dummy tag wer";
-            Boolean useTransition = !chartTypeChanged && selectionChanged || reason == ReflectReason.ColumnChanged || reason == ReflectReason.RowFiltered;
-
+            
+            Boolean useTransition = (!chartTypeChanged && selectionChanged) || reason == ReflectReason.ColumnChanged || reason == ReflectReason.RowFiltered;
+            Boolean isTop = false;
+            if (mainPageViewModel.ExplorationViewModel.SelectedPageViews.Count > 0 &&
+                mainPageViewModel.ExplorationViewModel.SelectedPageViews.Last().ViewModel == this)
+                isTop = true;
+            if (!isTop) useTransition = false;
+            
             if(ViewStatus.IsEmpty)
             {
 
