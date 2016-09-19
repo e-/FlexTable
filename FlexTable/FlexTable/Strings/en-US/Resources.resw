@@ -118,19 +118,19 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AggregatedColumnName" xml:space="preserve">
-    <value>{1}|의 |{0}</value>
+    <value>{0}|(|{1}|)</value>
   </data>
   <data name="And" xml:space="preserve">
-    <value>및</value>
+    <value>and</value>
   </data>
   <data name="BinnedColumnName" xml:space="preserve">
-    <value>{0}|의 구간</value>
+    <value>Bin(|{0}|)</value>
   </data>
   <data name="ChartTitleCC" xml:space="preserve">
-    <value>빈도수 by |{0:c}| and |{1:c}</value>
+    <value>Frequency of |{0:c}| and |{1:c}</value>
   </data>
   <data name="ChartTitleCCC" xml:space="preserve">
-    <value>빈도수 by |{0:c}|, |{1:c}|, and |{2:c}|</value>
+    <value>Frequency of |{0:c}|, |{1:c}|, and |{2:c}|</value>
   </data>
   <data name="ChartTitleCCN" xml:space="preserve">
     <value>{2:a}| by |{0:c}| and |{1:c}</value>
@@ -139,167 +139,171 @@
     <value>{1:a}| by |{0:c}</value>
   </data>
   <data name="ChartTitleCNN" xml:space="preserve">
-    <value>{1:u}| 및 |{2:u}| by |{0:c}</value>
+    <value>{1:u}| and |{2:u}| by |{0:c}</value>
   </data>
   <data name="ChartTitleCNvsN" xml:space="preserve">
-    <value>{1:c}| 대 |{2:c}| by |{0:c}</value>
+    <value>{1:c}| vs |{2:c}| by |{0:c}</value>
     <comment>ColoredScatterplot</comment>
   </data>
   <data name="ChartTitleNN" xml:space="preserve">
-    <value>{0:u}| 및 |{1:u}</value>
+    <value>{0:u}| and |{1:u}</value>
   </data>
   <data name="ChartTitleNvsN" xml:space="preserve">
-    <value>{0:c}| 대 |{1:c}</value>
+    <value>{0:c}| vs |{1:c}</value>
     <comment>Scatterplot</comment>
   </data>
   <data name="CheckBoxSelectAll.Text" xml:space="preserve">
-    <value>모두 선택</value>
+    <value>Select All</value>
   </data>
   <data name="ColumnPopupDown.Text" xml:space="preserve">
-    <value>내림차순 정렬</value>
+    <value>Sort Descending</value>
   </data>
   <data name="ColumnPopupLeft.Text" xml:space="preserve">
-    <value>보이기</value>
+    <value>Show</value>
   </data>
   <data name="ColumnPopupRight.Text" xml:space="preserve">
-    <value>숨기기</value>
+    <value>Hide</value>
   </data>
   <data name="ColumnPopupUp.Text" xml:space="preserve">
-    <value>오름차순 정렬</value>
+    <value>Sort Ascending</value>
   </data>
   <data name="CorrelationalStatisticsTitle" xml:space="preserve">
-    <value>{0:c}| 및 |{1:c}|의 상관통계</value>
+    <value>Correlational Statistics on |{0:c}| and |{1:c}</value>
   </data>
   <data name="Count" xml:space="preserve">
-    <value>개수</value>
+    <value>Count</value>
   </data>
   <data name="CountColumnName" xml:space="preserve">
-    <value>{0}|의 개수</value>
+    <value>Count(|{0}|)</value>
   </data>
   <data name="DescriptiveStatisticsTitle" xml:space="preserve">
-    <value>{0:c}|의 기술통계</value>
+    <value>Descriptive Statistics on {0:c}</value>
   </data>
   <data name="DistributionTitle" xml:space="preserve">
-    <value>{0:c}|의 분포</value>
+    <value>Distribution of |{0:c}</value>
   </data>
   <data name="FilterOutMessage" xml:space="preserve">
-    <value>{0}개의 행</value>
+    <value>{0} Rows</value>
+    <comment>unused</comment>
   </data>
   <data name="FilterPresenterFilteredMessage.Text" xml:space="preserve">
-    <value>제외됨</value>
+    <value>Filtered</value>
+    <comment>unused</comment>
   </data>
   <data name="Frequency" xml:space="preserve">
-    <value>빈도수</value>
+    <value>Frequency</value>
   </data>
   <data name="FrequencyTitle" xml:space="preserve">
-    <value>빈도수 by |{0:c}</value>
+    <value>Frequency of |{0:c}</value>
   </data>
   <data name="Legend" xml:space="preserve">
-    <value>범례</value>
+    <value>Legend</value>
   </data>
   <data name="Max" xml:space="preserve">
-    <value>최댓값</value>
+    <value>Max</value>
   </data>
   <data name="Mean" xml:space="preserve">
-    <value>평균</value>
+    <value>Avg</value>
   </data>
   <data name="MetadataViewCategoricalColumns.Text" xml:space="preserve">
-    <value>개의 범주형 컬럼과 </value>
+    <value>categorical columns and</value>
   </data>
   <data name="MetadataViewColumnCount.Text" xml:space="preserve">
-    <value>열의 수</value>
+    <value>Columns</value>
   </data>
   <data name="MetadataViewNumericalColumns.Text" xml:space="preserve">
-    <value>개의 실수형 컬럼이 있습니다.</value>
+    <value>numerical columns in the data.</value>
   </data>
   <data name="MetadataViewOpen.Content" xml:space="preserve">
-    <value>새 파일 열기</value>
+    <value>Load a CSV file</value>
   </data>
   <data name="MetadataViewRowCount.Text" xml:space="preserve">
-    <value>행의 수</value>
+    <value>Rows</value>
   </data>
   <data name="Min" xml:space="preserve">
-    <value>최솟값</value>
+    <value>Min</value>
   </data>
   <data name="None" xml:space="preserve">
-    <value>없음</value>
+    <value>None</value>
   </data>
   <data name="PageViewBarChartElement.Tag" xml:space="preserve">
-    <value>세로 막대형</value>
+    <value>Bar Chart</value>
   </data>
   <data name="PageViewBarChartWrapperElement.Tag" xml:space="preserve">
-    <value>세로 막대형</value>
+    <value>Bar Chart</value>
   </data>
   <data name="PageViewCorrelationStatisticsViewElement.Tag" xml:space="preserve">
-    <value>상관통계</value>
+    <value>Correlation</value>
   </data>
   <data name="PageViewCorrelationStatisticsWrapperElement.Tag" xml:space="preserve">
-    <value>상관통계</value>
+    <value>Correlation</value>
   </data>
   <data name="PageViewDescriptiveStatisticsViewElement.Tag" xml:space="preserve">
-    <value>기술통계</value>
+    <value>Descriptive</value>
   </data>
   <data name="PageViewDescriptiveStatisticsWrapperElement.Tag" xml:space="preserve">
-    <value>기술통계</value>
+    <value>Descriptive</value>
   </data>
   <data name="PageViewDistributionViewElement.Tag" xml:space="preserve">
-    <value>분포</value>
+    <value>Distribution</value>
   </data>
   <data name="PageViewDistributionWrapperElement.Tag" xml:space="preserve">
-    <value>분포</value>
+    <value>Distribution</value>
   </data>
   <data name="PageViewGroupedBarChartElement.Tag" xml:space="preserve">
-    <value>묶은 막대형</value>
+    <value>Grouped Bar</value>
   </data>
   <data name="PageViewGroupedBarChartWrapperElement.Tag" xml:space="preserve">
-    <value>묶은 막대형</value>
+    <value>Grouped Bar</value>
   </data>
   <data name="PageViewLineChartElement.Tag" xml:space="preserve">
-    <value>꺾은선형</value>
+    <value>Line Chart</value>
   </data>
   <data name="PageViewLineChartWrapperElement.Tag" xml:space="preserve">
-    <value>꺾은선형</value>
+    <value>Line Chart</value>
   </data>
   <data name="PageViewNoVisualization.Text" xml:space="preserve">
     <value>현재 사용 가능한 시각화가 없습니다. 다른 컬럼들을 선택해주세요.</value>
   </data>
   <data name="PageViewNoVisualizationWarningElement.Tag" xml:space="preserve">
-    <value>경고</value>
+    <value>Warning</value>
   </data>
   <data name="PageViewPivotTableViewElement.Tag" xml:space="preserve">
-    <value>피벗 테이블</value>
+    <value>Pivot Table</value>
   </data>
   <data name="PageViewPivotTableWrapperElement.Tag" xml:space="preserve">
-    <value>피벗 테이블</value>
+    <value>Pivot Table</value>
   </data>
   <data name="PageViewScatterplotElement.Tag" xml:space="preserve">
-    <value>분산형</value>
+    <value>Scatterplot</value>
   </data>
   <data name="PageViewScatterplotWrapperElement.Tag" xml:space="preserve">
-    <value>분산형</value>
+    <value>Scatterplot</value>
   </data>
   <data name="PageViewSelectColumnToPreview.Text" xml:space="preserve">
-    <value>차트를 만드려면 컬럼을 선택하세요.</value>
+    <value>Please select a column to preview.</value>
   </data>
   <data name="PageViewTooManyElements.Text" xml:space="preserve">
-    <value>너무 많은 시각적 요소로 인해 일부가 생략되었습니다.</value>
+    <value>There are too many visual elements. Some elements may be hidden.</value>
   </data>
   <data name="PageViewUndo1.Text" xml:space="preserve">
-    <value>위로 밀어서 되돌리기</value>
+    <value>Swipe up to undo.</value>
   </data>
   <data name="PageViewUndo2.Text" xml:space="preserve">
-    <value>손가락을 떼어서 되돌리기</value>
+    <value>Lift the finger to undo.</value>
   </data>
   <data name="PivotTableTitleCNN" xml:space="preserve">
-    <value>{0:c}|에 따른 |{1:a}| 및 |{2:a}</value>
+    <value>{1:a}| and |{2:a}| by |{0:c}</value>
   </data>
   <data name="SelectionMessage1" xml:space="preserve">
     <value>개의 행이 선택됨</value>
+    <comment>unused</comment>
   </data>
   <data name="SelectionMessage2" xml:space="preserve">
     <value>개의 행이 선택됨</value>
+    <comment>unused</comment>
   </data>
   <data name="Sum" xml:space="preserve">
-    <value>합계</value>
+    <value>Sum</value>
   </data>
 </root>

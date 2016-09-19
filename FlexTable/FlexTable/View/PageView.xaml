@@ -290,11 +290,11 @@
                 <StackPanel VerticalAlignment="Center">
                     <TextBlock FontSize="25" TextAlignment="Center" Visibility="{x:Bind ViewModel.IsPrimaryUndoMessageVisible, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <Run FontFamily="FontAwesome">&#xf062;</Run>
-                        <Run x:Uid="PageViewUndo1">Swipe up to undo.</Run>
+                        <Run x:Uid="PageViewUndo1"></Run>
                     </TextBlock>
                     <TextBlock FontSize="25" TextAlignment="Center" Visibility="{x:Bind ViewModel.IsPrimaryUndoMessageVisible, Mode=OneWay, Converter={StaticResource BooleanToInvertedVisibilityConverter}}">
                         <Run FontFamily="FontAwesome">&#xf0e2;</Run>
-                        <Run x:Uid="PageViewUndo2">Lift the finger to undo.</Run>
+                        <Run x:Uid="PageViewUndo2"></Run>
                     </TextBlock>
                 </StackPanel>
             </Border>
