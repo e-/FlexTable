@@ -13,5 +13,6 @@ namespace FlexTable
         View.ExplorationView ExplorationView { get; }
         View.SelectionView SelectionView { get; }
         TextBlock DummyTextBlock { get; }
+        View.ScreenshotButtons ScreenshotButtons { get; }
     }
 }

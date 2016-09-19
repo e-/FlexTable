@@ -34,7 +34,8 @@ namespace FlexTable
         public View.SelectionView SelectionView { get { return SelectionViewElement; } }
         public TextBlock DummyTextBlock { get { return DummyCell; } }
         public ViewModel.MainPageViewModel ViewModel => mainPageViewModel;
-        
+        public View.ScreenshotButtons ScreenshotButtons => ScreenshotButtonsElement;
+
         public MainPage()
         {
             mainPageViewModel = new ViewModel.MainPageViewModel(this);

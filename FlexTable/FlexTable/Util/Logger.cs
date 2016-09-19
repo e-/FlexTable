@@ -49,6 +49,7 @@ namespace FlexTable.Util
 
         public async void Log(String log)
         {
+            return;
             String withTime = $"{DateTime.Now.ToString("MMM월 d일 H시 mm분 ss초")},{log}\r\n";
             buffer += withTime;
             bufferCount++;

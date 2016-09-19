@@ -159,10 +159,10 @@
             <ColorAnimationUsingKeyFrames Storyboard.TargetName="Wrapper"
                                            Storyboard.TargetProperty="(StackPanel.Background).(SolidColorBrush.Color)">
                 <DiscreteColorKeyFrame KeyTime="0" Value="White" />
-                <DiscreteColorKeyFrame KeyTime="0:0:0.3" Value="Transparent" />
+                <DiscreteColorKeyFrame KeyTime="0:0:1" Value="Transparent" />
             </ColorAnimationUsingKeyFrames>
             <DoubleAnimation EasingFunction="{StaticResource QuarticEaseInOut}" Duration="00:00:00.3"
-                             Storyboard.TargetName="Wrapper" Storyboard.TargetProperty="Opacity" From="0.2" To="1">
+                             Storyboard.TargetName="ChartWrapper" Storyboard.TargetProperty="Opacity" From="0.2" To="1">
             </DoubleAnimation>
         </Storyboard>
 
@@ -184,7 +184,8 @@
 
     <StackPanel x:Name="Wrapper"
                 ManipulationMode="TranslateY,System"
-                IsHoldingEnabled="False"
+                Holding="Wrapper_Holding"
+                Background="Transparent"
                 >
         <Grid Margin="20 0 20 0">
             <StackPanel Background="White"

@@ -454,14 +454,13 @@ namespace FlexTable.View
             ViewModel.StateChanged(this);
         }
 
-        private async void Clipboard_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            FlashStoryboard.Begin();
-
+        public async void Capture()
+        {            
             RenderTargetBitmap renderBitmap = new RenderTargetBitmap();
             uint width = (uint)Carousel.ActualWidth + 1;
             uint height = (uint)Carousel.ActualHeight;
             Carousel.Measure(new Size(width, height));
+            Carousel.Background = new SolidColorBrush(Colors.White);
             //Carousel.Arrange(new Rect(0, 0, width, height));
 
             await renderBitmap.RenderAsync(Carousel, (int)width, (int)height);
@@ -471,8 +470,8 @@ namespace FlexTable.View
             {
                 Size = width * height * 4
             };
-            BitmapEncoder encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.BmpEncoderId, stream);
-            encoder.SetPixelData(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Straight, (uint)renderBitmap.PixelWidth, (uint)renderBitmap.PixelHeight, 96d, 96d, pixels.ToArray());
+            BitmapEncoder encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, stream);
+            encoder.SetPixelData(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Premultiplied, (uint)renderBitmap.PixelWidth, (uint)renderBitmap.PixelHeight, 96d, 96d, pixels.ToArray());
             await encoder.FlushAsync();
             stream.Seek(0);
 
@@ -480,6 +479,20 @@ namespace FlexTable.View
             dataPackage.SetBitmap(RandomAccessStreamReference.CreateFromStream(stream));
 
             Clipboard.SetContent(dataPackage);
+            FlashStoryboard.Begin();
+            Carousel.Background = new SolidColorBrush(Colors.Transparent);
+        }
+
+        private void Wrapper_Holding(object sender, HoldingRoutedEventArgs e)
+        {
+            if(e.HoldingState == HoldingState.Started)
+            {
+                ViewModel.MainPageViewModel.View.ScreenshotButtons.Show();
+            }
+            else if(e.HoldingState == HoldingState.Completed)
+            {
+                ViewModel.MainPageViewModel.View.ScreenshotButtons.Hide();
+            }
         }
     }
 }
