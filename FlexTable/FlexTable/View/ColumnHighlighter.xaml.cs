@@ -108,8 +108,8 @@ namespace FlexTable.View
                 UpperColumnHeaderWrapperElement.Width = LowerColumnHeaderWrapperElement.Width = MagnifiedColumn.Width = columnViewModel.Width;
                 UpperColumnHeaderWrapperElement.DataContext = LowerColumnHeaderWrapperElement.DataContext = columnViewModel;
 
-                Canvas.SetTop(UpperPopupElement, Const.ColumnHeaderHeight * 0.2);
-                Canvas.SetTop(LowerPopupElement, columnViewModel.MainPageViewModel.Bounds.Height - Const.ColumnHeaderHeight * 1.7);
+                Canvas.SetTop(UpperPopupElement, Const.ColumnHeaderHeight * 0.05);
+                Canvas.SetTop(LowerPopupElement, columnViewModel.MainPageViewModel.Bounds.Height - Const.ColumnHeaderHeight * 1.45);
 
                 Wrapper.Visibility = Visibility.Visible;
 

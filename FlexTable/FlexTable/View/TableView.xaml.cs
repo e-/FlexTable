@@ -382,12 +382,12 @@ namespace FlexTable.View
                     {
                         String upperCandidate = candidate.ToUpper();
 
-                        if (selectedColumnViewModel != null && selectedColumnViewModel.Type == Model.ColumnType.Numerical
+                        if (selectedColumnViewModel != null && selectedColumnViewModel.Type == ColumnType.Numerical
                             && ViewModel.MainPageViewModel.ExplorationViewModel.ViewStatus.SelectedColumnViewModels.Count > 0)
                         {
                             switch (upperCandidate)
                             {
-                                case "MIN":
+                                case "MIN":                                    
                                     selectedColumnViewModel.AggregativeFunction = new AggregativeFunction.MinAggregation();
                                     ViewModel.MainPageViewModel.ReflectAll(ReflectReason.AggregateFunctionChanged); // 2.ColumnViewModelChanged);
                                     Debug.WriteLine("Min selected");
@@ -402,6 +402,7 @@ namespace FlexTable.View
                                     timer.Stop();
                                     return;
                                 case "AVG":
+                                case "A":
                                 case "MEAN":
                                     selectedColumnViewModel.AggregativeFunction = new AggregativeFunction.MeanAggregation();
                                     ViewModel.MainPageViewModel.ReflectAll(ReflectReason.AggregateFunctionChanged); // 2.ColumnViewModelChanged);
@@ -410,6 +411,7 @@ namespace FlexTable.View
                                     timer.Stop();
                                     return;
                                 case "SUM":
+                                case "S":
                                     selectedColumnViewModel.AggregativeFunction = new AggregativeFunction.SumAggregation();
                                     ViewModel.MainPageViewModel.ReflectAll(ReflectReason.AggregateFunctionChanged); // 2.ColumnViewModelChanged);
                                     Debug.WriteLine("Sum selected");

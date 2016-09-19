@@ -93,6 +93,6 @@
             <Run Text="{x:Bind ViewModel.NumericalColumnCount, Mode=OneWay}"></Run> 
             <Run x:Uid="MetadataViewNumericalColumns"> numerical columns.</Run>
         </TextBlock>
-        <Button x:Name="LoadFile" Click="LoadFile_Click" Margin="0 20 0 0" Padding="0 20" x:Uid="MetadataViewOpen" HorizontalAlignment="Stretch">Load a CSV File</Button>
+        <Button x:Name="LoadFile" Click="LoadFile_Click" Margin="0 20 0 0" Padding="0 20" FontSize="20" x:Uid="MetadataViewOpen" HorizontalAlignment="Stretch">Load a CSV File</Button>
     </StackPanel>
 </UserControl>

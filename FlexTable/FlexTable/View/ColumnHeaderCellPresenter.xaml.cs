@@ -40,11 +40,33 @@ namespace FlexTable.View
             XAnimation.Begin();
         }
 
+        Boolean holding = false;
         private void Wrapper_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             //Wrapper.CapturePointer(e.Pointer);
-            ViewModel.MainPageViewModel.View.TableView.ColumnHighlighter.Update(ViewModel);
+            if (e.Pointer.PointerDeviceType == PointerDeviceType.Pen) return;
+            
             ViewModel.MainPageViewModel.ExplorationViewModel.PreviewColumn(ViewModel);
+            holding = false;
+        }
+
+        private void Wrapper_PointerReleased(object sender, PointerRoutedEventArgs e)
+        {
+            if (e.Pointer.PointerDeviceType == PointerDeviceType.Pen) return;
+            if (holding) return;
+            var viewModel = ViewModel.MainPageViewModel.ExplorationViewModel.TopPageView.ViewModel;
+
+            viewModel.State = PageViewModel.PageViewState.Selected;
+            viewModel.StateChanged(viewModel.MainPageViewModel.ExplorationViewModel.TopPageView);
+        }
+
+        private void Wrapper_Holding(object sender, HoldingRoutedEventArgs e)
+        {
+            if (e.HoldingState == Windows.UI.Input.HoldingState.Started)
+            {
+                holding = true;
+                ViewModel.MainPageViewModel.View.TableView.ColumnHighlighter.Update(ViewModel);
+            }
         }
 
         public void AlignContent(VerticalAlignment va)

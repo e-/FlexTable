@@ -36,6 +36,8 @@
         <StackPanel  
             x:Name="Wrapper"
             PointerPressed="Wrapper_PointerPressed"
+            PointerReleased="Wrapper_PointerReleased"
+            Holding="Wrapper_Holding"
             Background="Transparent">
             <StackPanel.RenderTransform>
                 <CompositeTransform x:Name="CompositeTransform" />
